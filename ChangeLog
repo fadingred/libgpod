@@ -1,0 +1,19 @@
+2005-09-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* AUTHORS:
+	* COPYING:
+	* INSTALL:
+	* Makefile.am:
+	* autogen.sh:
+	* configure.ac:
+	* libgpod-1.0.pc.in:
+	* po/Makefile.in.in:
+	* po/POTFILES.in:
+	* src/Makefile.am:
+	* src/itdb.h:
+	* src/itdb_itunesdb.c: 
+	* src/itdb_playlist.c:
+	* src/itdb_private.h:
+	* src/itdb_track.c: 
+	* tests/Makefile.am:
+	* tests/itdb_main.c: initial import

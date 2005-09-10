@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libgpod
+Description: A library to manipulate songs and playlists stored on an ipod
+Version: @VERSION@
+Requires: glib-2.0 
+Libs: -L${libdir} -lgpod
+Cflags: -I${includedir}/gpod-1.0
