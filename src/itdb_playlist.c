@@ -782,6 +782,7 @@ void itdb_spl_update (Itdb_iTunesDB *itdb, Itdb_Playlist *spl)
 /* update all smart playlists */
 void itdb_spl_update_all (Itdb_iTunesDB *itdb)
 {
+    auto void spl_update (Itdb_Playlist *playlist, Itdb_iTunesDB *itdb);
     void spl_update (Itdb_Playlist *playlist, Itdb_iTunesDB *itdb)
     {
 	g_return_if_fail (playlist);

@@ -1,5 +1,15 @@
 2005-09-10  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac:
+	* src/itdb_itunesdb.c: (get_mhod_type), (get_mhod),
+	(get_mhod_string), (get_playlist), (get_mhit),
+	(itdb_shuffle_write_file):
+	* src/itdb_playlist.c: (itdb_spl_update_all):
+	* tests/itdb_main.c: (main): fixed compilation warnings to be able
+	to compile with -Werror
+
+2005-09-10  Christophe Fergeau  <teuf@gnome.org>
+
 	* README: added quick description of the library purpose
 
 2005-09-10  Christophe Fergeau  <teuf@gnome.org>

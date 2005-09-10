@@ -739,7 +739,7 @@ Itdb_iTunesDB *itdb_new (void)
  * on error (e.g. because there's no mhod at @seek). */
 /* A return value of -1 and no error set means that no mhod was found
    at @seek */
-static gint32 get_mhod_type (FContents *cts, glong seek, gint32 *ml)
+static gint32 get_mhod_type (FContents *cts, glong seek, guint32 *ml)
 {
     gint32 type = -1;
 
@@ -767,13 +767,14 @@ static gint32 get_mhod_type (FContents *cts, glong seek, gint32 *ml)
    the mhod.
    On error NULL is returned and cts->error is set appropriately. */
 static void *get_mhod (FContents *cts, gulong mhod_seek,
-		       gint32 *ml, gint32 *mty)
+		       guint32 *ml, gint32 *mty)
 {
   gunichar2 *entry_utf16 = NULL;
   SPLPref *splp = NULL;
   guint8 limitsort_opposite;
   void *result = NULL;
-  gint32 xl, len;
+  gint32 xl;
+  guint32 len;
   gint32 header_length;
   gulong seek;
 
@@ -980,7 +981,7 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
    UTF16). After use you must free the string with g_free(). Returns
    NULL if no string is avaible. *ml is set to -1 in case of error and
    cts->error is set appropriately. */
-static gunichar2 *get_mhod_string (FContents *cts, glong seek, gint32 *ml, gint32 *mty)
+static gunichar2 *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *mty)
 {
     gunichar2 *result = NULL;
 
@@ -1015,13 +1016,14 @@ static gunichar2 *get_mhod_string (FContents *cts, glong seek, gint32 *ml, gint3
    be. On error -1 is returned and fimp->error is set appropriately. */
 static glong get_playlist (FImport *fimp, glong seek)
 {
+  auto gint pos_comp (gpointer a, gpointer b);
   gint pos_comp (gpointer a, gpointer b)
   {
     return ((gint)a - (gint)b);
   }
 
   gunichar2 *plname_utf16 = NULL;
-  guint32 i, type, tracknum, mhod_num;
+  guint32 i, tracknum, mhod_num;
   glong nextseek;
   guint32 hlen;
   Itdb_Playlist *plitem = NULL;
@@ -1076,6 +1078,7 @@ static glong get_playlist (FImport *fimp, glong seek)
       gunichar2 *plname_utf16_maybe;
       SPLPref *splpref = NULL;
       SPLRules *splrules = NULL;
+      gint32 type;
 
       seek += hlen;
       type = get_mhod_type (cts, seek, &hlen);
@@ -1182,7 +1185,7 @@ static glong get_playlist (FImport *fimp, glong seek)
 	  gint32 pos = -1;
 	  guint32 posid;
 	  gint32 mhod_type;
-	  gint32 mhod_len;
+	  guint32 mhod_len;
 	  guint32 mhit_len;
 	  guint32 ref;
 	  mhit_len = get32lint(cts, seek+4);
@@ -1237,7 +1240,8 @@ static glong get_mhit (FImport *fimp, glong seek)
   Itdb_Track *track;
   gchar *entry_utf8;
   gunichar2 *entry_utf16;
-  gint32 type, zip;
+  gint32 type;
+  guint32 zip;
   struct playcount *playcount;
   guint32 i, temp, mhod_nums;
   FContents *cts;
@@ -3081,6 +3085,7 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb,
 gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 				  const gchar *filename, GError **error)
 {
+    auto gboolean haystack (gchar *fdesc, gchar **desclist);
     gboolean haystack (gchar *fdesc, gchar **desclist)
     {
 	gchar **dlp;
