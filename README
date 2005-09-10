@@ -1,0 +1,7 @@
+libgpod is a library meant to abstract access to an iPod content. It provides
+an easy to use API to retrieve the list of files and playlist stored on an 
+iPod, to modify them and to save them back to the iPod.
+This code was originally part of gtkpod (gtkpod.sf.net), when the iPod content
+parsing code was made to be self-contained with gtkpod 0.93, we chose to put
+this code in a separate library so that other project can benefit from it 
+without duplicating code.
