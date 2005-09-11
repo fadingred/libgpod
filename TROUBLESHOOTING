@@ -1,0 +1,25 @@
+Possible errors:
+----------------
+
+* If you get an error stating
+
+"possibly undefined macro: AC_PROG_INTLTOOL"
+
+when running ./autogen.sh you need to install the "intltool"
+package. On Debian
+
+"apt-get install intltool"
+
+will do that for you.
+
+
+
+* If you get an error stating
+
+"checking for XML::Parser... configure: error: XML::Parser perl module is required for intltool"
+
+you need to install the libxml-parser package. On Debian
+
+"apt-get install libxml-parser-perl"
+
+will do that for you.
