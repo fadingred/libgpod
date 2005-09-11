@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-08-27 21:51:32 jcs>
+/* Time-stamp: <2005-09-11 14:58:01 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -832,6 +832,7 @@ void itdb_splr_validate (SPLRule *splr)
     case splat_inthelast:
 	splr->fromvalue = SPLDATE_IDENTIFIER;
 	splr->tovalue = SPLDATE_IDENTIFIER;
+	splr->tounits = 1;
 	break;
     case splat_none:
     case splat_string:
