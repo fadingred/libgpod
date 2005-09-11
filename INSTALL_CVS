@@ -1,12 +1,8 @@
 If you install from CVS, call
 
 ./autogen.sh
-
-to generate and run the configure script.
-
-You can then proceed with
-
+./configure
 make
 make install
 
-to make and install the library.
+See the INSTALL and TROUBLESHOOTING file for more information.

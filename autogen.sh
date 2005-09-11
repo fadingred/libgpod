@@ -24,6 +24,9 @@ find -type f \( -name missing -o -name install-sh -o -name mkinstalldirs \
 echo Running autoreconf...
 autoreconf --force --install
 
+echo "Running intltoolize"
+intltoolize --copy --force --automake
+
 # For the Debian package build
 test -d debian && {
 	# link these in Debian builds

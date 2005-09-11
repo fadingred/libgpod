@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-06-17 22:25:30 jcs>
+/* Time-stamp: <2005-09-11 17:51:54 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -198,7 +198,7 @@ enum {
 #define SPLACTION_LAST_MINUTES_VALUE	60			// number of seconds in 1 minute
 #define SPLACTION_LAST_YEARS_VALUE		31536000 	// number of seconds in 365 days
 
-// fun ones.. Near as I can tell, all of these work. It's open like that. :)
+/* fun ones.. Near as I can tell, all of these work. It's open like that. :)*/
 #define SPLACTION_LAST_LUNARCYCLE_VALUE	2551443		// a "lunar cycle" is the time it takes the moon to circle the earth
 #define SPLACTION_LAST_SIDEREAL_DAY		86164		// a "sidereal day" is time in one revolution of earth on its axis
 #define SPLACTION_LAST_SWATCH_BEAT		86			// a "swatch beat" is 1/1000th of a day.. search for "internet time" on google

@@ -1,5 +1,10 @@
 2005-09-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* configure.ac: changed position of AC_GNU_SOURCE (caused error
+	  strange error messages) 
+        * autogen.sh: replace so it works without gnome-common
+	* src/itdb.h: replaced '//' by '/* ... */' to avoid strange error
+	  message during compile.
 	* src/itdb_playlist.c: (itdb_splr_validate)
 	  Guilherme Salgado <salgado@freeshell.org> patch to make
 	  'inthelast' SPL work.
