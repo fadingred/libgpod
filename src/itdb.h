@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-11 17:51:54 jcs>
+/* Time-stamp: <2005-09-13 22:40:34 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -317,6 +317,7 @@ typedef struct
     GList *playlists;
     gchar *filename;    /* filename of iTunesDB */
     gchar *mountpoint;  /* mountpoint of iPod (if available) */
+    gint   musicdirs;   /* number of /iPod_Control/Music/F.. dirs */
     guint32 version;
     guint64 id;
     /* below is for use by application */
@@ -442,13 +443,14 @@ guint32 itdb_playlists_number (Itdb_iTunesDB *itdb);
 gchar * itdb_resolve_path (const gchar *root,
 			   const gchar * const * components);
 gboolean itdb_rename_files (const gchar *mp, GError **error);
-gboolean itdb_cp_track_to_ipod (const gchar *mp, Itdb_Track *track,
+gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 				gchar *filename, GError **error);
 gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 		  GError **error);
 void itdb_filename_fs2ipod (gchar *filename);
 void itdb_filename_ipod2fs (gchar *ipod_file);
-gchar *itdb_filename_on_ipod (const gchar *mp, Itdb_Track *track);
+gchar *itdb_filename_on_ipod (Itdb_Track *track);
+void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp);
 
 /* track functions */
 Itdb_Track *itdb_track_new (void);

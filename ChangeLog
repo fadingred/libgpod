@@ -1,3 +1,12 @@
+2005-09-13  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb_itunesdb: changed API for itdb_filename_on_ipod ()
+	* itdb.h: added 'gint musicdirs' to Itdb_iTunesDB (number of
+	  F.. dirs available)
+	* itdb_itunesdb: itdb_cp_track_to_ipod() will now determine the
+	  number of available F.. dirs before copying by calling new
+	  function itdb_count_musicdirs()
+
 2005-09-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* configure.ac: changed position of AC_GNU_SOURCE (caused error

@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-08-29 23:23:59 jcs>
+/* Time-stamp: <2005-09-13 23:12:02 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -3313,9 +3313,58 @@ void itdb_filename_ipod2fs (gchar *ipod_file)
 
 
 
+/* Set the mountpoint.
+ *
+ * Always use this function to set the mountpoint as it will reset the
+ * number of available /iPod_Control/Music/F.. dirs
+*/
+void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp)
+{
+    g_return_if_fail (itdb);
+
+    g_free (itdb->mountpoint);
+    itdb->mountpoint = g_strdup (mp);
+    itdb->musicdirs = 0;
+}
+
+
+
+static void itdb_count_musicdirs (Itdb_iTunesDB *itdb)
+{
+    gchar *dest_components[] = {"iPod_Control", "Music",
+				NULL, NULL, NULL};
+    gchar *dir_filename = NULL;
+    gint dir_num;
+
+    g_return_if_fail (itdb);
+    g_return_if_fail (itdb->mountpoint);
+
+    for (dir_num=0; ;++dir_num)
+    {
+      gchar dir_num_str[5];
+
+      g_snprintf (dir_num_str, 5, "F%02d", dir_num);
+      dest_components[2] = dir_num_str;
+  
+      dir_filename =
+	  itdb_resolve_path (itdb->mountpoint,
+			     (const gchar **)dest_components);
+
+      if (!dir_filename)  break;
+      g_free (dir_filename);
+    }
+
+    itdb->musicdirs = dir_num;
+}
+
+
+
+
 /* Copy one track to the iPod. The PC filename is @filename
    and is taken literally.
-   @path is the mountpoint of the iPod (in local encoding).
+
+   The mountpoint of the iPod (in local encoding) is expected in
+   track->itdb->mountpoint.
 
    If @track->transferred is set to TRUE, nothing is done. Upon
    successful transfer @track->transferred is set to TRUE.
@@ -3330,22 +3379,28 @@ void itdb_filename_ipod2fs (gchar *ipod_file)
    If @track->ipod_path is already set, this one will be used
    instead. If a file with this name already exists, it will be
    overwritten. */
-gboolean itdb_cp_track_to_ipod (const gchar *mp, Itdb_Track *track,
+gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 				gchar *filename, GError **error)
 {
   static gint dir_num = -1;
   gchar *track_db_path, *ipod_fullfile;
   gboolean success;
   gint mplen = 0;
+  const gchar *mp;
+  Itdb_iTunesDB *itdb;
 
-  g_return_val_if_fail (mp, FALSE);
   g_return_val_if_fail (track, FALSE);
+  g_return_val_if_fail (track->itdb, FALSE);
+  g_return_val_if_fail (track->itdb->mountpoint, FALSE);
   g_return_val_if_fail (filename, FALSE);
 
   if(track->transferred)  return TRUE; /* nothing to do */ 
 
+  mp = track->itdb->mountpoint;
+  itdb = track->itdb;
+
   /* If track->ipod_path exists, we use that one instead. */
-  ipod_fullfile = itdb_filename_on_ipod (mp, track);
+  ipod_fullfile = itdb_filename_on_ipod (track);
 
   if (!ipod_fullfile)
   {
@@ -3357,9 +3412,26 @@ gboolean itdb_cp_track_to_ipod (const gchar *mp, Itdb_Track *track,
       gint32 oops = 0;
       gint32 rand = g_random_int_range (0, 899999); /* 0 to 900000 */
 
-      if (dir_num == -1) dir_num = g_random_int_range (0, 20);
-      else dir_num = (dir_num + 1) % 20;
-  
+      if (itdb->musicdirs <= 0)
+	  itdb_count_musicdirs (itdb);
+
+      if (itdb->musicdirs <= 0)
+      {
+	  gchar *str = g_build_filename (mp, dest_components[0],
+					 dest_components[1], NULL);
+
+	  g_set_error (error,
+		       ITDB_FILE_ERROR,
+		       ITDB_FILE_ERROR_NOTFOUND,
+		       _("No 'F..' directories found in '%s'."),
+		       str);
+	  g_free (str);
+	  return FALSE;
+      }
+		       
+      if (dir_num == -1) dir_num = g_random_int_range (0, itdb->musicdirs);
+      else dir_num = (dir_num + 1) % itdb->musicdirs;
+
       g_snprintf (dir_num_str, 5, "F%02d", dir_num);
       dest_components[2] = dir_num_str;
   
@@ -3445,7 +3517,10 @@ gboolean itdb_cp_track_to_ipod (const gchar *mp, Itdb_Track *track,
 
 /* Return the full iPod filename as stored in @track. Return value
    must be g_free()d after use.
-   @mp: mount point of the iPod file system (in local encoding)
+
+   mount point of the iPod file system (in local encoding) is expected
+   in track->itdb->mountpoint
+
    @track: track
    Return value: full filename to @track on the iPod or NULL if no
    filename is set in @track.
@@ -3456,11 +3531,17 @@ gboolean itdb_cp_track_to_ipod (const gchar *mp, Itdb_Track *track,
    itdb_resolve_path() ) and might return a filename with different
    case than the original filename. Don't copy it back to @track
    unless you must */
-gchar *itdb_filename_on_ipod (const gchar *mp, Itdb_Track *track)
+gchar *itdb_filename_on_ipod (Itdb_Track *track)
 {
     gchar *result = NULL;
+    const gchar *mp;
 
     g_return_val_if_fail (track, NULL);
+    g_return_val_if_fail (track->itdb, NULL);
+
+    if (!track->itdb->mountpoint) return NULL;
+
+    mp = track->itdb->mountpoint;
 
     if(track->ipod_path && *track->ipod_path)
     {
