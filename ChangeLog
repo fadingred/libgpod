@@ -1,3 +1,9 @@
+2005-09-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* autogen.sh: automatically call ./configure
+	* configure.ac: added supported languages de fr he it ja sv
+	* po/: added language files from gtkpod project
+
 2005-09-13  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_itunesdb: changed API for itdb_filename_on_ipod ()

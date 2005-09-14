@@ -57,7 +57,7 @@ AC_SUBST(LIBGPOD_LIBS)
 dnl **************************************************
 dnl * internationalization support
 dnl **************************************************
-ALL_LINGUAS=""
+ALL_LINGUAS="de fr he it ja sv"
 
 GETTEXT_PACKAGE=libgpod
 AC_SUBST(GETTEXT_PACKAGE)

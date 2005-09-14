@@ -1,7 +1,6 @@
 If you install from CVS, call
 
 ./autogen.sh
-./configure
 make
 make install
 

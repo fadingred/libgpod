@@ -1,0 +1,254 @@
+# French language translation for gtkpod 
+# Copyright (C) 2005 Éric Lassauge
+# Éric Lassauge <lassauge@users.sf.net>, 2005.
+# Copyright (C) 2003 David Le Brun
+# David Le Brun <david@dyn-ns.net>, 2003.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gtkpod 0.94\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-09-14 21:51+0900\n"
+"PO-Revision-Date: 2005-09-14 21:46+0900\n"
+"Last-Translator: Éric Lassauge <lassauge@users.sf.net>\n"
+"Language-Team: FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+
+#: ../src/itdb_itunesdb.c:313
+#, c-format
+msgid "Illegal seek to offset %ld (length %ld) in file '%s'."
+msgstr "Erreur de flux à l'offset %ld (longueur %ld) dans le fichier «%s»."
+
+#: ../src/itdb_itunesdb.c:521
+#, c-format
+msgid "Not a Play Counts file: '%s' (missing mhdp header)."
+msgstr "«%s» n»est pas un fichier de compteurs (entête mhdp manquant)"
+
+#: ../src/itdb_itunesdb.c:535
+#, c-format
+msgid "Play Counts file ('%s'): header length smaller than expected (%d<96)."
+msgstr ""
+"Fichier de compteurs ('%s') : longueur de l'entête plus petite que prévue (%"
+"d<96)."
+
+#: ../src/itdb_itunesdb.c:548
+#, c-format
+msgid "Play Counts file ('%s'): entry length smaller than expected (%d<12)."
+msgstr ""
+"Fichier de compteur ('%s') : longueur des données plus petite que prévue (%"
+"d<12)."
+
+#: ../src/itdb_itunesdb.c:803
+#, c-format
+msgid "iTunesDB corrupt: no MHOD at offset %ld in file '%s'."
+msgstr "Corruption d'iTunesDB : pas de MHOD à l'offset %ld du fichier «%s»."
+
+#: ../src/itdb_itunesdb.c:923
+#, c-format
+msgid ""
+"Length of smart playlist rule field (%d) not as expected. Trying to continue "
+"anyhow.\n"
+msgstr ""
+"Longueur du champ de la règle (%d) de la liste intelligente inattendue. "
+"Tentative pour continuer quand même.\n"
+
+#: ../src/itdb_itunesdb.c:966
+msgid "Did not find SLst hunk as expected. Trying to continue.\n"
+msgstr ""
+"Ne peut trouver le SLst attendu. Tentative pour continuer quand même.\n"
+
+#: ../src/itdb_itunesdb.c:972
+#, c-format
+msgid ""
+"Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n"
+"\n"
+msgstr ""
+"Type MHOD inconnu (%d) lors du parcours de iTunesDB. Ignorance de l'erreur.\n"
+
+#: ../src/itdb_itunesdb.c:1053 ../src/itdb_itunesdb.c:1744
+#: ../src/itdb_itunesdb.c:1779
+#, c-format
+msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
+msgstr "Corruption d'iTunesDB : longueur 0 à %ld du fichier «%s»."
+
+#: ../src/itdb_itunesdb.c:1148
+msgid "Master-PL"
+msgstr "Liste principale"
+
+#: ../src/itdb_itunesdb.c:1150
+msgid "Playlist"
+msgstr "Liste de lecture"
+
+#: ../src/itdb_itunesdb.c:1175
+#, c-format
+msgid "iTunesDB corrupt: found mhyp at %ld in file '%s'."
+msgstr "Corruption d'iTunesDB : trouvé mhyp à %ld du fichier «%s»."
+
+#: ../src/itdb_itunesdb.c:1223
+#, c-format
+msgid "Itdb_Track ID '%d' not found.\n"
+msgstr "Itdb_Track ID «%d» non trouvé.\n"
+
+#: ../src/itdb_itunesdb.c:1487
+msgid "OTG Playlist"
+msgstr "Liste de lecture OTG"
+
+#: ../src/itdb_itunesdb.c:1501
+#, c-format
+msgid "Not a OTG playlist file: '%s' (missing mhpo header)."
+msgstr ""
+"Le fichier '%s' n'est pas un fichier de liste OTG (entête mhpo manquant)."
+
+#: ../src/itdb_itunesdb.c:1515
+#, c-format
+msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
+msgstr "Fichier de liste OTG («%s») : entête plus petit que prévu (%d<20)."
+
+#: ../src/itdb_itunesdb.c:1527
+#, c-format
+msgid ""
+"OTG playlist file file ('%s'): entry length smaller than expected (%d<4)."
+msgstr ""
+"Fichier de liste OTG ('%s') : longueur de données plus petite que prévue (%"
+"d<4)."
+
+#: ../src/itdb_itunesdb.c:1562
+#, c-format
+msgid "OTG playlist file '%s': reference to non-existent track (%d)."
+msgstr "Fichier de liste OTG «%s» : référence à un morceau inexistant (%d)."
+
+#: ../src/itdb_itunesdb.c:1607
+#, c-format
+msgid "OTG Playlist %d"
+msgstr "Liste de lecture OTG %d"
+
+#: ../src/itdb_itunesdb.c:1650
+#, c-format
+msgid "Not a iTunesDB: '%s' (missing mhdb header)."
+msgstr "«%s» n»est pas un fichier iTunesDB (entête mhdb manquante)"
+
+#: ../src/itdb_itunesdb.c:1666
+#, c-format
+msgid ""
+"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%ld<32). "
+"Aborting."
+msgstr ""
+"iTunesDB ('%s') : longueur de l'entête mhsd plus petite que prévue (%ld<32). "
+"Interruption."
+
+#: ../src/itdb_itunesdb.c:1698
+#, c-format
+msgid "iTunesDB '%s' corrupt: already found two playlist mhsds -- giving up."
+msgstr ""
+"Corruption de iTunesDB ('%s') : déjà trouvés deux listes mhsds -- abandon."
+
+#. this should not be -- issue warning
+#: ../src/itdb_itunesdb.c:1759
+msgid ""
+"iTunesDB possibly corrupt: number of tracks (mhit hunks) inconsistent. "
+"Trying to continue.\n"
+msgstr ""
+"Corruption possible de iTunesDB : nombre de fichiers (mhit) incohérent. "
+"Tentative pour continuer quand même.\n"
+
+#. this should not be -- issue warning
+#: ../src/itdb_itunesdb.c:1841
+msgid ""
+"iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. "
+"Trying to continue.\n"
+msgstr ""
+"Corruption possible d'iTunesDB : nombre de listes (mhyp) incohérent. "
+"Tentative pour continuer quand même.\n"
+
+#: ../src/itdb_itunesdb.c:1879
+#, c-format
+msgid "File not found: '%s'."
+msgstr "Fichier introuvable : «%s»."
+
+#: ../src/itdb_itunesdb.c:2396
+#, c-format
+msgid "Cannot write mhod of type %d\n"
+msgstr "Impossible d'écrire mhod du type %d\n"
+
+#: ../src/itdb_itunesdb.c:2522 ../src/itdb_itunesdb.c:2635
+msgid "Database in memory corrupt (track pointer == NULL). Aborting export."
+msgstr ""
+"Base de données en mémoire corrompue (track pointer == NULL). Abandon de "
+"l'export."
+
+#: ../src/itdb_itunesdb.c:2678
+msgid "Database in memory corrupt (playlist pointer == NULL). Aborting export."
+msgstr ""
+"Base de données en mémoire corrompue (playlist pointer == NULL). Abandon de "
+"l'export."
+
+#: ../src/itdb_itunesdb.c:2718
+#, c-format
+msgid "Opening of '%s' for writing failed."
+msgstr "Échec de l'ouverture en écriture de «%s»."
+
+#: ../src/itdb_itunesdb.c:2729
+#, c-format
+msgid "Writing to '%s' failed."
+msgstr "Erreur d'écriture du fichier «%s»."
+
+#: ../src/itdb_itunesdb.c:2740
+#, c-format
+msgid "Writing to '%s' failed (%s)."
+msgstr "Échec de l'écriture dans «%s» (%s)."
+
+#: ../src/itdb_itunesdb.c:2881 ../src/itdb_itunesdb.c:3052
+#: ../src/itdb_itunesdb.c:3245 ../src/itdb_itunesdb.c:3451
+#, c-format
+msgid "Path not found: '%s'."
+msgstr "Chemin non trouvé : «%s»."
+
+#: ../src/itdb_itunesdb.c:3265
+#, c-format
+msgid "Error renaming '%s' to '%s' (%s)."
+msgstr "Impossible de renommer «%s» en «%s» (%s)."
+
+#: ../src/itdb_itunesdb.c:3282
+#, c-format
+msgid "Error removing '%s' (%s)."
+msgstr "Erreur de suppression du fichier «%s» (%s)."
+
+#: ../src/itdb_itunesdb.c:3426
+#, c-format
+msgid "No 'F..' directories found in '%s'."
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:3589
+#, c-format
+msgid "Error opening '%s' for reading (%s)."
+msgstr "Ne peut ouvrir en lecture le fichier «%s» (%s)."
+
+#: ../src/itdb_itunesdb.c:3600
+#, c-format
+msgid "Error opening '%s' for writing (%s)."
+msgstr "Ne peut ouvrir en écriture le fichier «%s» (%s)."
+
+#: ../src/itdb_itunesdb.c:3617
+#, c-format
+msgid "Error while reading from '%s' (%s)."
+msgstr "Erreur lors de la lecture à partir de : %s (%s)."
+
+#: ../src/itdb_itunesdb.c:3633
+#, c-format
+msgid "Error while writing to '%s' (%s)."
+msgstr "Erreur d'écriture dans «%s» (%s)."
+
+#: ../src/itdb_itunesdb.c:3646 ../src/itdb_itunesdb.c:3656
+#, c-format
+msgid "Error when closing '%s' (%s)."
+msgstr "Erreur à la fermeture «%s» (%s)."
+
+#. New action!
+#: ../src/itdb_playlist.c:71
+#, c-format
+msgid "Unknown action (%d) in smart playlist will be ignored.\n"
+msgstr "L'action inconnue (%d) dans la liste intelligente sera ignorée.\n"
