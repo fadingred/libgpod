@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-13 22:40:34 jcs>
+/* Time-stamp: <2005-09-16 23:48:44 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -440,6 +440,7 @@ guint32 itdb_tracks_number_nontransferred (Itdb_iTunesDB *itdb);
 guint32 itdb_playlists_number (Itdb_iTunesDB *itdb);
 
 /* general file functions */
+gint itdb_musicdirs_number (Itdb_iTunesDB *itdb);
 gchar * itdb_resolve_path (const gchar *root,
 			   const gchar * const * components);
 gboolean itdb_rename_files (const gchar *mp, GError **error);

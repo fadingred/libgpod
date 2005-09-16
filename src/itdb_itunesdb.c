@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-13 23:12:02 jcs>
+/* Time-stamp: <2005-09-16 23:51:04 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -3328,33 +3328,40 @@ void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp)
 }
 
 
+/* Determine the number of F.. directories in iPod_Control/Music.
 
-static void itdb_count_musicdirs (Itdb_iTunesDB *itdb)
+   If itdb->musicdirs is already set, simply return the previously
+   determined number. Otherwise count the directories first and set
+   itdb->musicdirs. */
+gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
 {
     gchar *dest_components[] = {"iPod_Control", "Music",
 				NULL, NULL, NULL};
     gchar *dir_filename = NULL;
     gint dir_num;
 
-    g_return_if_fail (itdb);
-    g_return_if_fail (itdb->mountpoint);
+    g_return_val_if_fail (itdb, 0);
+    g_return_val_if_fail (itdb->mountpoint, 0);
 
-    for (dir_num=0; ;++dir_num)
-    {
-      gchar dir_num_str[5];
+    if (itdb->musicdirs <= 0)
+    {   /* count number of dirs */
+	for (dir_num=0; ;++dir_num)
+	{
+	    gchar dir_num_str[5];
 
-      g_snprintf (dir_num_str, 5, "F%02d", dir_num);
-      dest_components[2] = dir_num_str;
+	    g_snprintf (dir_num_str, 5, "F%02d", dir_num);
+	    dest_components[2] = dir_num_str;
   
-      dir_filename =
-	  itdb_resolve_path (itdb->mountpoint,
-			     (const gchar **)dest_components);
+	    dir_filename =
+		itdb_resolve_path (itdb->mountpoint,
+				   (const gchar **)dest_components);
 
-      if (!dir_filename)  break;
-      g_free (dir_filename);
+	    if (!dir_filename)  break;
+	    g_free (dir_filename);
+	}
+	itdb->musicdirs = dir_num;
     }
-
-    itdb->musicdirs = dir_num;
+    return itdb->musicdirs;
 }
 
 
@@ -3412,10 +3419,7 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
       gint32 oops = 0;
       gint32 rand = g_random_int_range (0, 899999); /* 0 to 900000 */
 
-      if (itdb->musicdirs <= 0)
-	  itdb_count_musicdirs (itdb);
-
-      if (itdb->musicdirs <= 0)
+      if (itdb_musicdirs_number (itdb) <= 0)
       {
 	  gchar *str = g_build_filename (mp, dest_components[0],
 					 dest_components[1], NULL);
@@ -3430,7 +3434,7 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
       }
 		       
       if (dir_num == -1) dir_num = g_random_int_range (0, itdb->musicdirs);
-      else dir_num = (dir_num + 1) % itdb->musicdirs;
+      else dir_num = (dir_num + 1) % itdb_musicdirs_number (itdb);
 
       g_snprintf (dir_num_str, 5, "F%02d", dir_num);
       dest_components[2] = dir_num_str;
