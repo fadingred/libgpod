@@ -225,7 +225,7 @@ msgstr "Errore nella rimozione di '%s' (%s)."
 #: ../src/itdb_itunesdb.c:3426
 #, c-format
 msgid "No 'F..' directories found in '%s'."
-msgstr ""
+msgstr "Nessuna directory 'F..' trovata in '%s'"
 
 #: ../src/itdb_itunesdb.c:3589
 #, c-format
