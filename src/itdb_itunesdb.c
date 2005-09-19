@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-19 17:56:57 jcs>
+/* Time-stamp: <2005-09-19 21:31:28 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -395,13 +395,29 @@ static guint16 get16lint (FContents *cts, glong seek)
 {
     guint32 n=0;
 
-    if (check_seek (cts, seek, 4))
+    if (check_seek (cts, seek, 2))
     {
 	g_return_val_if_fail (cts->contents, 0);
 	memcpy (&n, &cts->contents[seek], 4);
 #       if (G_BYTE_ORDER == G_BIG_ENDIAN)
 	  n = GUINT16_SWAP_LE_BE (n);
 #       endif
+    }
+    return n;
+}
+
+/* Get the 3-byte-number stored at position "seek" in little endian
+   encoding. On error the GError in @cts is set. */
+static guint32 get24lint (FContents *cts, glong seek)
+{
+    guint32 n=0;
+
+    if (check_seek (cts, seek, 3))
+    {
+	g_return_val_if_fail (cts->contents, 0);
+	n = ((guint32)get8int (cts, seek+0)) +
+	    (((guint32)get8int (cts, seek+1)) >> 8) +
+	    (((guint32)get8int (cts, seek+2)) >> 16);
     }
     return n;
 }
@@ -646,13 +662,71 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	/* unk16 only exists if the entry length is at least 0x14 */
 	if (entry_length >= 0x14)
 	{
-	    playcount->unk16 = get32lint (cts, seek+16);
+	    playcount->pc_unk16 = get32lint (cts, seek+16);
 	    CHECK_ERROR (fimp, FALSE);
 	}
 	else
 	{
-	    playcount->unk16 = 0;
+	    playcount->pc_unk16 = 0;
 	}
+    }
+    return TRUE;
+}
+
+
+/* called by init_playcounts */
+static gboolean itunesstats_read (FImport *fimp, FContents *cts)
+{
+    guint32 entry_num, i=0;
+    glong seek;
+
+    g_return_val_if_fail (fimp, FALSE);
+    g_return_val_if_fail (cts, FALSE);
+
+    /* number of entries */
+    entry_num = get32lint (cts, 0);
+    CHECK_ERROR (fimp, FALSE);
+
+    seek = 6;
+    for (i=0; i<entry_num; ++i)
+    {
+	struct playcount *playcount = g_new0 (struct playcount, 1);
+	guint32 entry_length = get24lint (cts, seek+0);
+	CHECK_ERROR (fimp, FALSE);
+	if (entry_length < 0x18)
+	{
+	    g_set_error (&fimp->error,
+			 ITDB_FILE_ERROR,
+			 ITDB_FILE_ERROR_CORRUPT,
+			 _("iTunesStats file ('%s'): entry length smaller than expected (%d<18)."),
+			 cts->filename, entry_length);
+	    return FALSE;
+	}
+
+	fimp->playcounts = g_list_append (fimp->playcounts, playcount);
+	/* NOTE:
+	 *
+	 * The iPod (firmware 1.3, 2.0, ...?) doesn't seem to use the
+	 * timezone information correctly -- no matter what you set
+	 * iPod's timezone to, it will always record as if it were set
+	 * to UTC -- we need to subtract the difference between
+	 * current timezone and UTC to get a correct
+	 * display. -- this should be done by the application were
+	 * necessary */
+	playcount->bookmark_time = get24lint (cts, seek+3);
+	CHECK_ERROR (fimp, FALSE);
+	playcount->st_unk06 = get24lint (cts, seek+6);
+	CHECK_ERROR (fimp, FALSE);
+	playcount->st_unk09 = get24lint (cts, seek+9);
+	CHECK_ERROR (fimp, FALSE);
+	playcount->playcount = get24lint (cts, seek+12);
+	CHECK_ERROR (fimp, FALSE);
+	playcount->skipped = get24lint (cts, seek+15);
+	CHECK_ERROR (fimp, FALSE);
+	
+	playcount->rating = NO_PLAYCOUNT;
+
+	seek += entry_length;
     }
     return TRUE;
 }
@@ -661,15 +735,19 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 
 /* Read the Play Count file (formed by adding "Play Counts" to the
  * directory component of fimp->itdb->itdb_filename) and set up the
- * GList *playcounts.
+ * GList *playcounts. If no Play Count file is present, attempt to
+ * read the iTunesStats file instead, which is used on the Shuffle for
+ * the same purpose.
+ *
  * Returns TRUE on success (also when no Play Count
  * file is found as this is not an error) and FALSE otherwise, in
  * which case fimp->error is set accordingly. */
 static gboolean playcounts_init (FImport *fimp)
 {
-  const gchar *db[] = {"Play Counts", NULL};
-  gchar *plcname, *dirname;
-  gboolean result=FALSE;
+  const gchar *plc[] = {"Play Counts", NULL};
+  const gchar *ist[] = {"iTunesStats", NULL};
+  gchar *plcname, *dirname, *istname;
+  gboolean result=TRUE;
   struct stat filestat;
   FContents *cts;
 
@@ -681,25 +759,54 @@ static gboolean playcounts_init (FImport *fimp)
 
   dirname = g_path_get_dirname (fimp->itdb->filename);
 
-  plcname = itdb_resolve_path (dirname, db);
+  plcname = itdb_resolve_path (dirname, plc);
+  istname = itdb_resolve_path (dirname, ist);
 
   g_free (dirname);
 
   /* skip if no playcounts file is present */
-  if (!plcname) return TRUE;
-
-  /* skip if playcounts file has zero-length (often happens after
-   * dosfsck) */
-  stat (plcname, &filestat);
-  if (filestat.st_size < 0x60) return TRUE; /* check for header length */
-
-  cts = fcontents_read (plcname, &fimp->error);
-  if (cts)
+  if (plcname)
   {
-      result = playcounts_read (fimp, cts);
-      fcontents_free (cts);
+      /* skip if playcounts file has zero-length (often happens after
+       * dosfsck) */
+      stat (plcname, &filestat);
+      if (filestat.st_size >= 0x60)
+      {
+	  cts = fcontents_read (plcname, &fimp->error);
+	  if (cts)
+	  {
+	      result = playcounts_read (fimp, cts);
+	      fcontents_free (cts);
+	  }
+	  else
+	  {
+	      result = FALSE;
+	  }
+      }
   }
+  else if (istname)
+  {
+      /* skip if iTunesStats file has zero-length (often happens after
+       * dosfsck) */
+      stat (plcname, &filestat);
+      if (filestat.st_size >= 0x06)
+      {
+	  cts = fcontents_read (istname, &fimp->error);
+	  if (cts)
+	  {
+	      result = itunesstats_read (fimp, cts);
+	      fcontents_free (cts);
+	  }
+	  else
+	  {
+	      result = FALSE;
+	  }
+      }
+  }
+
   g_free (plcname);
+  g_free (istname);
+
   return result;
 }
 

@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-07-09 15:48:29 jcs>
+/* Time-stamp: <2005-09-19 21:30:34 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -61,10 +61,13 @@ typedef struct
 /* data of playcounts GList above */
 struct playcount {
     guint32 playcount;
+    guint32 skipped;     /* skipped (only for Shuffle's iTunesStats */
     guint32 time_played;
     guint32 bookmark_time;
     gint32 rating;
-    gint32 unk16;
+    gint32 pc_unk16;     /* unknown field in Play Counts file */
+    gint32 st_unk06;     /* unknown field in iTunesStats file */
+    gint32 st_unk09;     /* unknown field in iTunesStats file */
 };
 
 /* value to indicate that playcount was not set in struct playcount

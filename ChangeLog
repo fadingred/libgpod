@@ -1,7 +1,13 @@
-2005-09-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2005-09-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * added additional fields to Itdb_Track that are present since
 	  version 0x0c of the iTunesDB. Write long mhit version.
+
+	* applied patch provided by Christophe Fergeau <teuf at gnome.org>
+	  for artwork database support (read-only).
+
+	* read iTunesStats file if present (corresponds to Play Counts
+	  file on the Shuffle).
 
 2005-09-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
