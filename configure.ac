@@ -57,6 +57,11 @@ LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
 AC_SUBST(LIBGPOD_CFLAGS)
 AC_SUBST(LIBGPOD_LIBS)
 
+PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-2.0, have_gdkpixbuf=yes, have_gdkpibux=no)
+AM_CONDITIONAL(HAVE_GDKPIXBUF, test x"$have_gdkpixbuf" = xyes)
+AC_SUBST(GDKPIXBUF_CFLAGS)
+AC_SUBST(GDKPIXBUF_LIBS)
+
 dnl **************************************************
 dnl * internationalization support
 dnl **************************************************

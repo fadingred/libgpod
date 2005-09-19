@@ -1,0 +1,182 @@
+/*
+ *  Copyright (C) 2005 Christophe Fergeau
+ *
+ * 
+ *  The code contained in this file is free software; you can redistribute
+ *  it and/or modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either version
+ *  2.1 of the License, or (at your option) any later version.
+ *  
+ *  This file is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this code; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ *  iTunes and iPod are trademarks of Apple
+ * 
+ *  This product is not supported/written/published by Apple!
+ *
+ */
+
+#include "db-artwork-debug.h"
+
+#ifdef DEBUG_ARTWORKDB
+G_GNUC_INTERNAL void
+dump_mhif (MhifHeader *mhif)
+{
+
+	g_print ("MHIF (%d):\n", sizeof (MhifHeader));
+	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhif->header_len));
+	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhif->total_len));
+	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhif->unknown1));
+	g_print ("\tCorrelation ID: %d (=> F%d_1.ithmb)\n", 
+		 GINT_FROM_LE (mhif->correlation_id),
+		 GINT_FROM_LE (mhif->correlation_id));
+	g_print ("\tImage size: %d bytes\n", GINT_FROM_LE (mhif->image_size));
+}
+
+
+static char *
+get_utf16_string (void* buffer, gint length)
+{
+	char *result;
+	gunichar2 *tmp;
+	int i;
+	/* Byte-swap the utf16 characters if necessary (I'm relying
+	 * on gcc to optimize most of this code away on LE platforms)
+	 */
+	tmp = g_memdup (buffer, length);
+	for (i = 0; i < length/2; i++) {
+		tmp[i] = GINT16_FROM_LE (tmp[i]);
+	}
+	result = g_utf16_to_utf8 (tmp, length/2, NULL, NULL, NULL);
+	g_free (tmp);
+
+	return result;
+	
+}
+
+G_GNUC_INTERNAL void 
+dump_mhod_type_3 (MhodHeaderArtworkType3 *mhod3) 
+{
+	gchar *str;
+
+	g_print ("MHOD (%d):\n", sizeof (MhodHeaderArtworkType3));
+	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod3->header_len));
+	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod3->total_len));
+	g_print ("\tType: %d\n", GINT_FROM_LE (mhod3->type));
+	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhod3->unknown1));
+	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhod3->unknown2));
+	g_print ("\tString length: %u\n", GINT_FROM_LE (mhod3->string_len));
+	g_print ("\tMHOD version: %u\n", GINT_FROM_LE (mhod3->mhod_version));
+	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhod3->unknown4));
+	str = get_utf16_string (mhod3->string, mhod3->string_len);
+	g_print ("\tString: %s\n", str);
+	g_free (str);
+}
+
+G_GNUC_INTERNAL void
+dump_mhni (MhniHeader *mhni) 
+{
+	g_print ("MHNI (%d):\n", sizeof (MhniHeader));
+	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhni->header_len));
+	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhni->total_len));
+	g_print ("\tNumber of children: %08x\n", GINT_FROM_LE (mhni->num_children));
+	g_print ("\tCorrelation ID: %d (=> F%d_1.ithmb)\n", 
+		 GINT_FROM_LE (mhni->correlation_id),
+		 GINT_FROM_LE (mhni->correlation_id));
+	g_print ("\tithmb offset: %u bytes\n", GINT_FROM_LE (mhni->ithmb_offset));
+	g_print ("\tImage size: %u bytes\n", GINT_FROM_LE (mhni->image_size));
+	g_print ("\tUnknown3: %08x\n", GINT_FROM_LE (mhni->unknown3));
+	g_print ("\tImage dimensions: %08x\n", GINT_FROM_LE (mhni->image_dimensions));
+}
+
+G_GNUC_INTERNAL void
+dump_mhod (MhodHeader *mhod) 
+{
+	g_print ("MHOD (%d):\n", sizeof (MhodHeader));
+	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod->header_len));
+	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod->total_len));
+	g_print ("\tType: %d\n", GINT_FROM_LE (mhod->type));
+	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhod->unknown1));
+	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhod->unknown2));
+}
+
+G_GNUC_INTERNAL void
+dump_mhii (MhiiHeader *mhii)
+{
+	g_print ("MHII (%d):\n", sizeof (MhiiHeader));
+	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhii->header_len));
+	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhii->total_len));
+	g_print ("\tNumber of children: %d\n", GINT_FROM_LE (mhii->num_children));
+	g_print ("\tImage ID: %08x\n", GINT_FROM_LE (mhii->image_id));
+	g_print ("\tSong ID: %016llx\n", GINT64_FROM_LE (mhii->song_id));
+	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhii->unknown4));
+	g_print ("\tUnknown5: %08x\n", GINT_FROM_LE (mhii->unknown5));
+	g_print ("\tUnknown6: %08x\n", GINT_FROM_LE (mhii->unknown6));
+	g_print ("\tUnknown7: %08x\n", GINT_FROM_LE (mhii->unknown7));
+	g_print ("\tUnknown8: %08x\n", GINT_FROM_LE (mhii->unknown8));
+	g_print ("\tImage size: %d bytes\n", GINT_FROM_LE (mhii->orig_img_size));
+}
+
+G_GNUC_INTERNAL void
+dump_mhl (MhlHeader *mhl, const char *id)
+{
+	GString *str;
+
+	str = g_string_new (id);
+	g_string_ascii_up (str);
+	g_print ("%s (%d):\n", str->str, sizeof (MhlHeader));
+	g_print ("\tHeader size: %d\n", GINT_FROM_LE (mhl->header_len));
+	g_print ("\tNumber of items: %d\n", GINT_FROM_LE (mhl->num_children));
+	g_string_free (str, TRUE);
+}
+
+G_GNUC_INTERNAL void
+dump_mhsd (MhsdHeader *mhsd)
+{
+	g_print ("MHSD (%d):\n", sizeof (MhsdHeader));
+	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhsd->header_len));
+	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhsd->total_len));
+	g_print ("\tIndex: %d ", GINT_FROM_LE (mhsd->index));
+	switch (GINT_FROM_LE (mhsd->index)) {
+	case MHSD_IMAGE_LIST:
+		g_print ("(Image list)\n");
+		break;
+	case MHSD_ALBUM_LIST:
+		g_print ("(Album list)\n");
+		break;
+	case MHSD_FILE_LIST:
+		g_print ("(File list)\n");
+		break;
+
+	default:
+		g_print ("(Unknown index\n");
+		break;
+	}
+}
+
+G_GNUC_INTERNAL void
+dump_mhfd (MhfdHeader *mhfd)
+{
+	g_print ("MHFD (%d): \n", sizeof (MhfdHeader));
+	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhfd->header_len));
+	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhfd->total_len));
+	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhfd->unknown1));
+	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhfd->unknown2));
+	g_print ("\tNumber of children: %d\n", GINT_FROM_LE (mhfd->num_children));
+	g_print ("\tUnknown3: %08x\n", GINT_FROM_LE (mhfd->unknown3));
+	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhfd->unknown4));
+	g_print ("\tUnknown5: %016llx\n", GINT64_FROM_LE (mhfd->unknown5));
+	g_print ("\tUnknown6: %016llx\n", GINT64_FROM_LE (mhfd->unknown6));
+	g_print ("\tUnknown7: %08x\n", GINT_FROM_LE (mhfd->unknown7));
+	g_print ("\tUnknown8: %08x\n", GINT_FROM_LE (mhfd->unknown8));
+	g_print ("\tUnknown9: %08x\n", GINT_FROM_LE (mhfd->unknown9));
+	g_print ("\tUnknown10: %08x\n", GINT_FROM_LE (mhfd->unknown10));
+	g_print ("\tUnknown11: %08x\n", GINT_FROM_LE (mhfd->unknown11));
+}
+#endif

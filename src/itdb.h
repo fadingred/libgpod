@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-19 17:50:40 jcs>
+/* Time-stamp: <2005-09-19 19:14:40 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -40,9 +40,9 @@
 #  include <config.h>
 #endif
 
+#include <sys/types.h>
 #include <time.h>
 #include <glib.h>
-
 
 /* one star is how much (track->rating) */
 #define ITDB_RATING_STEP 20
@@ -307,6 +307,27 @@ typedef struct SPLRules
     GList *rules;
 } SPLRules;
 
+/* This structure can represent two slightly different images:
+ *   - an image before it's transferred to the iPod (it will then be scaled
+ *     as necessary to generate the 2 thumbnails needed by the iPod), 
+ *     for such images, filename points to a 'real' image file, offset is
+ *     not significant, size, width and height may or may not be set
+ *     and id corresponds to the image id to write in mhii records of the 
+ *     photo database
+ * 
+ *   - a thumbnail (big or small) stored on a database in the iPod.
+ *     For such images, id isn't significant, filename point to a .ithmb file
+ *     on the iPod
+ */
+struct _Itdb_Image {
+	char *filename;
+	off_t offset;
+	size_t size;
+	unsigned int width;
+	unsigned int height;
+	unsigned int id; 
+};
+typedef struct _Itdb_Image Itdb_Image;
 
 typedef void (* ItdbUserDataDestroyFunc) (gpointer userdata);
 typedef gpointer (* ItdbUserDataDuplicateFunc) (gpointer userdata);
@@ -484,6 +505,11 @@ typedef struct
   guint32 unk208, unk212, unk216, unk220, unk224;
   guint32 unk228, unk232, unk236, unk240;
 
+  /* This is for Cover Art support */
+  Itdb_Image *full_size_thumbnail;
+  Itdb_Image *now_playing_thumbnail;
+  Itdb_Image *orig_image;
+
   /* below is for use by application */
   guint64 usertype;
   gpointer userdata;
@@ -585,6 +611,9 @@ void itdb_spl_copy_rules (Itdb_Playlist *dest, Itdb_Playlist *src);
 gboolean itdb_splr_eval (Itdb_iTunesDB *itdb, SPLRule *splr, Itdb_Track *track);
 void itdb_spl_update (Itdb_iTunesDB *itdb, Itdb_Playlist *spl);
 void itdb_spl_update_all (Itdb_iTunesDB *itdb);
+
+/* thumbnails functions */
+unsigned char *itdb_image_get_rgb_data (Itdb_Image *image);
 
 /* time functions */
 guint64 itdb_time_get_mac_time (void);

@@ -120,6 +120,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include "itdb_private.h"
+#include "db-artwork-parser.h"
 #include <glib/gi18n-lib.h>
 
 #define ITUNESDB_DEBUG 0
@@ -1981,6 +1982,19 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 	    itdb->mountpoint = g_strdup (mp);
 	}
 	g_free (filename);
+
+	/* We don't test the return value of ipod_parse_artwork_db since the 
+	 * database content will be consistent even if we fail to get the 
+	 * various thumbnails, we ignore the error since older ipods don't have
+	 * thumbnails.
+	 * FIXME: this probably should go into itdb_parse_file, but I don't
+	 * understand its purpose, and ipod_parse_artwork_db needs the 
+	 * mountpoint field from the itdb, which may not be available in the 
+	 * other function
+	 */
+	ipod_parse_artwork_db (itdb);
+
+
     }
     else
     {
@@ -2034,6 +2048,7 @@ Itdb_iTunesDB *itdb_parse_file (const gchar *filename, GError **error)
 	    g_propagate_error (error, fimp->error);
     }
     itdb_free_fimp (fimp);
+
     return itdb;
 }
 
