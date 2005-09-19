@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-16 23:48:44 jcs>
+/* Time-stamp: <2005-09-19 17:50:40 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -353,19 +353,29 @@ typedef struct
 } Itdb_Playlist;
 
 
+/* some of the descriptive comments below are copied verbatim from
+   http://ipodlinux.org/ITunesDB. 
+   http://ipodlinux.org/ITunesDB is the best source for information
+   about the iTunesDB and related files. */
 typedef struct
 {
   Itdb_iTunesDB *itdb;       /* pointer to iTunesDB (for convenience) */
-  gchar   *album;            /* album (utf8)           */
-  gchar   *artist;           /* artist (utf8)          */
   gchar   *title;            /* title (utf8)           */
-  gchar   *genre;            /* genre (utf8)           */
-  gchar   *comment;          /* comment (utf8)         */
-  gchar   *composer;         /* Composer (utf8)        */
-  gchar   *fdesc;            /* eg. "MP3-File"...(utf8)*/
-  gchar   *grouping;         /* ? (utf8)               */
   gchar   *ipod_path;        /* name of file on iPod: uses ":"
 				instead of "/"                        */
+  gchar   *album;            /* album (utf8)           */
+  gchar   *artist;           /* artist (utf8)          */
+  gchar   *genre;            /* genre (utf8)           */
+  gchar   *filetype;         /* eg. "MP3-File"...(utf8)*/
+  gchar   *comment;          /* comment (utf8)         */
+  gchar   *category;         /* Category for podcast   */
+  gchar   *composer;         /* Composer (utf8)        */
+  gchar   *grouping;         /* ? (utf8)               */
+  gchar   *description;      /* see note for MHOD_ID in itdb_itunesdb.c */
+  gchar   *podcasturl;       /* see note for MHOD_ID in itdb_itunesdb.c */
+  gchar   *podcastrss;       /* see note for MHOD_ID in itdb_itunesdb.c */
+  gchar   *chapterdata;      /* see note for MHOD_ID in itdb_itunesdb.c */
+  gchar   *subtitle;         /* see note for MHOD_ID in itdb_itunesdb.c */
   guint32 id;                /* unique ID of track     */
   gint32  size;              /* size of file in bytes  */
   gint32  tracklen;          /* Length of track in ms  */
@@ -384,19 +394,96 @@ typedef struct
   guint32 bookmark_time;     /* bookmark set for (AudioBook) in ms  */
   guint32 rating;            /* star rating (stars * RATING_STEP (20))     */
   guint32 playcount;         /* number of times track was played    */
-  guint32 recent_playcount;  /* times track was played since last sync     */
+  guint32 playcount2;        /* Also stores the play count of the
+				song.  Don't know if it ever differs
+				from the above value. During sync itdb
+				sets playcount2 to the same value as
+				playcount. */
+  guint32 recent_playcount;  /* times track was played since last sync */
   gboolean transferred;      /* has file been transferred to iPod?  */
   gint16 BPM;                /* supposed to vary the playback speed */
   guint8  app_rating;        /* star rating set by appl. (not iPod) */
-  guint16 type;
+  guint16 type;              /* CBR MP3s are type 0x100, VBR MP3s are
+			        type 0x101, AAC are type 0x0 */
   guint8  compilation;
   guint32 starttime;
   guint32 stoptime;
   guint8  checked;
   guint64 dbid;              /* unique database ID */
-/* present in the mhit but not used by gtkpod yet */
-  guint32 unk020, unk024, unk084, unk100, unk124;
-  guint32 unk128, unk132, unk136, unk140, unk144, unk148, unk152;
+  guint32 drm_userid;        /* Apple Store/Audible User ID (for DRM'ed
+				files only, set to 0 otherwise). */
+  guint32 visible;           /*  If this value is 1, the song is visible
+				 on the iPod. All other values cause
+				 the file to be hidden. */
+  gchar filetype_marker[4];  /* This appears to always be 0 on hard
+                                drive based iPods, but for the
+                                iTunesDB that is written to an iPod
+                                Shuffle, iTunes 4.7.1 writes out the
+                                file's type as an ANSI string(!). For
+                                example, a MP3 file has a filetype of
+                                0x4d503320 -> 0x4d = 'M', 0x50 = 'P',
+                                0x33 = '3', 0x20 = <space>. (always
+                                left set to 0 by itdb)*/
+  guint16 artwork_count;     /*  The number of album artwork items
+				 associated with this song. */
+  guint32 artwork_size;      /* The total size of artwork (in bytes)
+				attached to this song, when it is
+				converted to JPEG format. Observed in
+				iPodDB version 0x0b and with an iPod
+				Photo. */
+  float samplerate2;         /* The sample rate of the song expressed
+				as an IEEE 32 bit floating point
+				number.  It's uncertain why this is
+				here.  itdb will set this when adding
+				a track */
+
+  guint16 unk060;     /* unknown */
+  guint16 unk126;     /* unknown, but always seems to be 0xffff for
+			 MP3/AAC songs, 0x0 for uncompressed songs
+			 (like WAVE format), 0x1 for Audible. itdb
+			 will try to set this when adding a new track */
+  guint32 unk132;     /* unknown */
+  guint32 unk140;     /*  date/time added to music store? definitely a
+			  timestamp, always appears to be a time of
+			  0700 GMT */
+  guint32 unk144;     /* unknown, but MP3 songs appear to be always
+			 0x0000000c or 0x0100000c (if played one or
+			 more times in iTunes), AAC songs are always
+			 0x01000033, Audible files are 0x01000029, WAV
+			 files are 0x0. itdb will attempt to set this
+			 value when adding a track. */  
+  guint32 unk148;     /* unknown - used for Apple Store DRM songs
+			 (always 0x01010100?), zero otherwise */
+  guint32 unk152;     /* unknown */
+  guint32 unk156, unk160;
+  guint32 unk164;     /* unknown (0x02?) in dbversion 0x0d, for
+			 podcasts this seems to be set to
+			 0x01010102. The 0x10000 bit seems to control
+			 whether or not iTunes remembers the last
+			 played position of this song. This will work
+			 on any song, not just podcasts.
+			 Assumption:
+			 Audiobooks also get this bit set by
+			 default. Assumption2: This is really four
+			 single byte flags, perhaps? Might want to try
+			 find various examples and compare them. */
+  guint64 dbid2;      /* not clear. if not set, itdb will set this to
+			 the same value as dbid when adding a track */
+  guint32 unk176;     /* unknown - added in dbversion 0x0c, first
+			 values observed in 0x0d. Observed to be
+			 0x00010000 for non-podcasts and 0x00020000
+			 for a podcast. */
+  guint32 unk180, unk184;
+  guint32 samplecount;/* Number of samples in the song. First observed
+			 in dbversion 0x0d, and only for AAC and WAV
+			 files (not MP3?!?). */
+  guint32 unk192, unk196, unk200;
+  guint32 unk204;     /*  unknown - added in dbversion 0x0c, first
+			  values observed in 0x0d. Observed to be 0x0
+			  or 0x1. */
+  guint32 unk208, unk212, unk216, unk220, unk224;
+  guint32 unk228, unk232, unk236, unk240;
+
   /* below is for use by application */
   guint64 usertype;
   gpointer userdata;

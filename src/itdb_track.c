@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-06-17 22:12:16 jcs>
+/* Time-stamp: <2005-09-19 17:50:14 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -35,9 +35,96 @@ Itdb_Track *itdb_track_new (void)
 {
     Itdb_Track *track = g_new0 (Itdb_Track, 1);
 
-    track->unk020 = 1;
+    track->visible = 1;
     return track;
 }
+
+/* Attempt to set some of the unknowns to reasonable defaults */
+static void itdb_track_set_defaults (Itdb_Track *tr)
+{
+    auto gboolean haystack (gchar *filetype, gchar **desclist);
+    gboolean haystack (gchar *filetype, gchar **desclist)
+    {
+	gchar **dlp;
+	if (!filetype || !desclist) return FALSE;
+	for (dlp=desclist; *dlp; ++dlp)
+	{
+	    if (strstr (filetype, *dlp)) return TRUE;
+	}
+	return FALSE;
+    }
+
+    gchar *mp3_desc[] = {"MPEG", "MP3", "mpeg", "mp3", NULL};
+    gchar *mp4_desc[] = {"AAC", "MP4", "aac", "mp4", NULL};
+    gchar *audible_subdesc[] = {"Audible", "audible", "Book", "book", NULL};
+    gchar *wav_desc[] = {"WAV", "wav", NULL};
+
+    /* The exact meaning of unk126 is unknown, but always seems to be
+       0xffff for MP3/AAC songs, 0x0 for uncompressed songs (like WAVE
+       format), 0x1 for Audible. */
+    if (tr->unk126 == 0)
+    {
+	if (haystack (tr->filetype, mp3_desc))
+	{
+	    tr->unk126 = 0xffff;
+	}
+	else if (haystack (tr->filetype, mp4_desc))
+	{
+	    if (haystack (tr->filetype, audible_subdesc))
+	    {
+		tr->unk126 = 0x01;
+	    }
+		else
+	    {
+		tr->unk126 = 0xffff;
+	    }
+	}
+	else if (haystack (tr->filetype, wav_desc))
+	{
+	    tr->unk126 = 0x00;
+	}
+	else
+	{
+	    tr->unk126 = 0x00;  /* default value */
+	}
+    }
+    /* The exact meaning of unk144 is unknown, but MP3 songs appear to
+       be always 0x0000000c or 0x0100000c (if played one or more times
+       in iTunes), AAC songs are always 0x01000033, Audible files are
+       0x01000029, WAV files are 0x0. */
+    if (tr->unk144 == 0)
+    {
+	if (haystack (tr->filetype, mp3_desc))
+	{
+	    tr->unk144 = 0x0000000c;
+	}
+	else if (haystack (tr->filetype, mp4_desc))
+	{
+	    if (haystack (tr->filetype, audible_subdesc))
+	    {
+		tr->unk144 = 0x01000029;
+	    }
+		else
+	    {
+		tr->unk144 = 0x01000033;
+	    }
+	}
+	else if (haystack (tr->filetype, wav_desc))
+	{
+	    tr->unk144 = 0x00;
+	}
+	else
+	{
+	    tr->unk144 = 0x00;  /* default value */
+	}
+    }
+    /* The sample rate of the song expressed as an IEEE 32 bit
+       floating point number.  It's uncertain why this is here.  itdb
+       will set this when adding a track */
+    tr->samplerate2 = tr->samplerate;
+    if (tr->dbid2 == 0)  tr->dbid2 = tr->dbid;
+}
+    
 
 
 /* Add @track to @itdb->tracks at position @pos (or at the end if pos
@@ -50,6 +137,8 @@ void itdb_track_add (Itdb_iTunesDB *itdb, Itdb_Track *track, gint32 pos)
     g_return_if_fail (!track->userdata || track->userdata_duplicate);
 
     track->itdb = itdb;
+
+    itdb_track_set_defaults (track);
 
     if (pos == -1)  itdb->tracks = g_list_append (itdb->tracks, track);
     else  itdb->tracks = g_list_insert (itdb->tracks, track, pos);
@@ -66,7 +155,7 @@ void itdb_track_free (Itdb_Track *track)
     g_free (track->genre);
     g_free (track->comment);
     g_free (track->composer);
-    g_free (track->fdesc);
+    g_free (track->filetype);
     g_free (track->grouping);
     g_free (track->ipod_path);
     if (track->userdata && track->userdata_destroy)
@@ -122,7 +211,7 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
     tr_dup->genre = g_strdup (tr->genre);
     tr_dup->comment = g_strdup (tr->comment);
     tr_dup->composer = g_strdup (tr->composer);
-    tr_dup->fdesc = g_strdup (tr->fdesc);
+    tr_dup->filetype = g_strdup (tr->filetype);
     tr_dup->grouping = g_strdup (tr->grouping);
     tr_dup->ipod_path = g_strdup (tr->ipod_path);
 

@@ -1,3 +1,15 @@
+2005-09-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * added additional fields to Itdb_Track that are present since
+	  version 0x0c of the iTunesDB. Write long mhit version.
+
+2005-09-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * renamed fdesc to filetype
+
+	* po/it.po: updated (thanks to Edward Matteucci)
+
+
 2005-09-16  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb.h/itdb_itunesdb.c: changed 'static void

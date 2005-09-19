@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-11 14:58:01 jcs>
+/* Time-stamp: <2005-09-17 21:52:19 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -305,7 +305,7 @@ gboolean itdb_splr_eval (Itdb_iTunesDB *itdb, SPLRule *splr, Itdb_Track *track)
 	strcomp = track->genre;
 	break;
     case SPLFIELD_KIND:
-	strcomp = track->fdesc;
+	strcomp = track->filetype;
 	break;
     case SPLFIELD_COMMENT:
 	strcomp = track->comment;

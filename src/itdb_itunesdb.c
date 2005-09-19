@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-16 23:51:04 jcs>
+/* Time-stamp: <2005-09-19 17:56:57 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -128,16 +128,42 @@
 #define ITUNESDB_COPYBLK 262144      /* blocksize for cp () */
 
 
+/* Note: some of the comments for the MHOD_IDs are copied verbatim
+ * from http://ipodlinux.org/ITunesDB */
+
 enum MHOD_ID {
   MHOD_ID_TITLE = 1,
-  MHOD_ID_PATH = 2,
+  MHOD_ID_PATH = 2,   /* file path on iPod (special format) */
   MHOD_ID_ALBUM = 3,
   MHOD_ID_ARTIST = 4,
   MHOD_ID_GENRE = 5,
-  MHOD_ID_FDESC = 6,
+  MHOD_ID_FILETYPE = 6,
+/* MHOD_ID_EQSETTING = 7, */
   MHOD_ID_COMMENT = 8,
+/* Category - This is the category ("Technology", "Music", etc.) where
+   the podcast was located. Introduced in db version 0x0d. */
+  MHOD_ID_CATEGORY = 9,
   MHOD_ID_COMPOSER = 12,
   MHOD_ID_GROUPING = 13,
+/* Description text (such as podcast show notes). Accessible by
+   wselecting the center button on the iPod, where this string is
+   displayed along with the song title, date, and
+   timestamp. Introduced in db version 0x0d. */
+  MHOD_ID_DESCRIPTION = 14,
+/* Podcast Enclosure URL. Note: this is either a UTF-8 or ASCII
+   encoded string (NOT UTF-16). Also, there is no mhod::length value
+   for this type. Introduced in db version 0x0d.  */
+  MHOD_ID_PODCASTURL = 15,
+/* Podcast RSS URL. Note: this is either a UTF-8 or ASCII encoded
+   string (NOT UTF-16). Also, there is no mhod::length value for this
+   type. Introduced in db version 0x0d. */
+  MHOD_ID_PODCASTRSS = 16,
+/* Chapter data. This is a m4a-style entry that is used to display
+   subsongs within a mhit. Introduced in db version 0x0d. */
+/*  MHOD_ID_CHAPTERDATA = 17,*/
+/* Subtitle (usually the same as Description). Introduced in db
+   version 0x0d. */
+  MHOD_ID_SUBTITLE = 18,
   MHOD_ID_SPLPREF = 50,  /* settings for smart playlist */
   MHOD_ID_SPLRULES = 51, /* rules for smart playlist     */
   MHOD_ID_MHYP = 52,     /* unknown                     */
@@ -362,6 +388,22 @@ static guint8 get8int (FContents *cts, glong seek)
     return n;
 }
 
+/* Get the 2-byte-number stored at position "seek" in little endian
+   encoding. On error the GError in @cts is set. */
+static guint16 get16lint (FContents *cts, glong seek)
+{
+    guint32 n=0;
+
+    if (check_seek (cts, seek, 4))
+    {
+	g_return_val_if_fail (cts->contents, 0);
+	memcpy (&n, &cts->contents[seek], 4);
+#       if (G_BYTE_ORDER == G_BIG_ENDIAN)
+	  n = GUINT16_SWAP_LE_BE (n);
+#       endif
+    }
+    return n;
+}
 
 /* Get the 4-byte-number stored at position "seek" in little endian
    encoding. On error the GError in @cts is set. */
@@ -378,6 +420,22 @@ static guint32 get32lint (FContents *cts, glong seek)
 #       endif
     }
     return n;
+}
+
+/* Get 4 byte floating number */
+static float get32lfloat (FContents *cts, glong seek)
+{
+    union
+    {
+	guint32 i;
+	float   f;
+    } flt;
+
+    g_return_val_if_fail (sizeof (float) == 4, 0);
+
+    flt.i = get32lint (cts, seek);
+
+    return flt.f;
 }
 
 
@@ -828,21 +886,37 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
   case MHOD_ID_ALBUM:
   case MHOD_ID_ARTIST:
   case MHOD_ID_GENRE:
-  case MHOD_ID_FDESC:
+  case MHOD_ID_FILETYPE:
   case MHOD_ID_COMMENT:
+  case MHOD_ID_CATEGORY:
   case MHOD_ID_COMPOSER:
   case MHOD_ID_GROUPING:
-      xl = get32lint (cts, seek+4);   /* entry length   */
+  case MHOD_ID_DESCRIPTION:
+  case MHOD_ID_SUBTITLE:
+      xl = get32lint (cts, seek+4);   /* length of string */
       if (cts->error) return NULL;
       entry_utf16 = g_new0 (gunichar2, (xl+2)/2);
       if (seek_get_n_bytes (cts, (gchar *)entry_utf16, seek+16, xl))
       {
-	  result = fixup_little_utf16 (entry_utf16);
+	  fixup_little_utf16 (entry_utf16);
+	  result = g_utf16_to_utf8 (entry_utf16, -1, NULL, NULL, NULL);
       }
       else
       {   /* error */
-	  g_free (entry_utf16);
-	  return NULL;
+	  result = NULL;
+      }
+      g_free (entry_utf16);
+      break;
+  case MHOD_ID_PODCASTURL:
+  case MHOD_ID_PODCASTRSS:
+      /* length of string */
+      xl = get32lint (cts, mhod_seek+8) - header_length;
+      if (cts->error) return NULL;
+      result = g_new0 (gchar, xl+1);
+      if (!seek_get_n_bytes (cts, (gchar *)result, seek, xl))
+      {
+	  g_free (result);
+	  result = NULL;
       }
       break;
   case MHOD_ID_SPLPREF:  /* Settings for smart playlist */
@@ -978,12 +1052,12 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
 
 /* Returns the value of a string type mhod. return the length of the
    mhod *ml, the mhod type *mty, and a string with the entry (in
-   UTF16). After use you must free the string with g_free(). Returns
+   UTF8). After use you must free the string with g_free(). Returns
    NULL if no string is avaible. *ml is set to -1 in case of error and
    cts->error is set appropriately. */
-static gunichar2 *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *mty)
+static gchar *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *mty)
 {
-    gunichar2 *result = NULL;
+    gchar *result = NULL;
 
     *mty = get_mhod_type (cts, seek, ml);
     if (cts->error) return NULL;
@@ -995,10 +1069,15 @@ static gunichar2 *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint
     case MHOD_ID_ALBUM:
     case MHOD_ID_ARTIST:
     case MHOD_ID_GENRE:
-    case MHOD_ID_FDESC:
+    case MHOD_ID_FILETYPE:
     case MHOD_ID_COMMENT:
+    case MHOD_ID_CATEGORY:
     case MHOD_ID_COMPOSER:
     case MHOD_ID_GROUPING:
+    case MHOD_ID_DESCRIPTION:
+    case MHOD_ID_PODCASTURL:
+    case MHOD_ID_PODCASTRSS:
+    case MHOD_ID_SUBTITLE:
 	result = get_mhod (cts, seek, ml, mty);
 	break;
     case MHOD_ID_SPLPREF:
@@ -1022,7 +1101,7 @@ static glong get_playlist (FImport *fimp, glong seek)
     return ((gint)a - (gint)b);
   }
 
-  gunichar2 *plname_utf16 = NULL;
+  gchar *plname_utf8 = NULL;
   guint32 i, tracknum, mhod_num;
   glong nextseek;
   guint32 hlen;
@@ -1075,7 +1154,7 @@ static glong get_playlist (FImport *fimp, glong seek)
   CHECK_ERROR (fimp, -1);
   for (i=0; i < mhod_num; ++i)
   {
-      gunichar2 *plname_utf16_maybe;
+      gchar *plname_utf8_maybe;
       SPLPref *splpref = NULL;
       SPLRules *splrules = NULL;
       gint32 type;
@@ -1089,13 +1168,13 @@ static glong get_playlist (FImport *fimp, glong seek)
 	  /* here we could do something about the playlist settings */
 	  break;
       case MHOD_ID_TITLE:
-	  plname_utf16_maybe = get_mhod (cts, seek, &hlen, &type);
+	  plname_utf8_maybe = get_mhod (cts, seek, &hlen, &type);
 	  CHECK_ERROR (fimp, -1);
-	  if (plname_utf16_maybe)
+	  if (plname_utf8_maybe)
 	  {
 	      /* sometimes there seem to be two mhod TITLE headers */
-	      g_free (plname_utf16);
-	      plname_utf16  = plname_utf16_maybe;
+	      g_free (plname_utf8);
+	      plname_utf8  = plname_utf8_maybe;
 	  }
 	  break;
       case MHOD_ID_SPLPREF:
@@ -1124,10 +1203,15 @@ static glong get_playlist (FImport *fimp, glong seek)
       case MHOD_ID_ALBUM:
       case MHOD_ID_ARTIST:
       case MHOD_ID_GENRE:
-      case MHOD_ID_FDESC:
+      case MHOD_ID_FILETYPE:
       case MHOD_ID_COMMENT:
+      case MHOD_ID_CATEGORY:
       case MHOD_ID_COMPOSER:
       case MHOD_ID_GROUPING:
+      case MHOD_ID_DESCRIPTION:
+      case MHOD_ID_PODCASTURL:
+      case MHOD_ID_PODCASTRSS:
+      case MHOD_ID_SUBTITLE:
 	  /* these are not expected here */
 	  break;
       case MHOD_ID_MHYP:
@@ -1136,10 +1220,9 @@ static glong get_playlist (FImport *fimp, glong seek)
       }
   }
 
-  if (plname_utf16)
+  if (plname_utf8)
   {
-      plitem->name = g_utf16_to_utf8 (plname_utf16, -1, NULL, NULL, NULL);
-      g_free (plname_utf16);
+      plitem->name = plname_utf8;
   }
   else
   {   /* we did not read a valid mhod TITLE header -> */
@@ -1239,11 +1322,11 @@ static glong get_mhit (FImport *fimp, glong seek)
 {
   Itdb_Track *track;
   gchar *entry_utf8;
-  gunichar2 *entry_utf16;
   gint32 type;
+  guint32 header_len;
   guint32 zip;
   struct playcount *playcount;
-  guint32 i, temp, mhod_nums;
+  guint32 i, mhod_nums;
   FContents *cts;
 
 #if ITUNESDB_DEBUG
@@ -1261,88 +1344,104 @@ static glong get_mhit (FImport *fimp, glong seek)
       return -1;
   }
 
+  header_len = get32lint (cts, seek+4);
+  CHECK_ERROR (fimp, -1);
+
+  /* Check if entire mhit can be read -- that way we won't have to
+   * check for read errors every time we access a single byte */
+
+  check_seek (cts, seek, header_len);
+
   mhod_nums = get32lint (cts, seek+12);
   CHECK_ERROR (fimp, -1);
 
   track = itdb_track_new ();
 
-  track->id = get32lint(cts, seek+16);            /* iPod ID          */
-  CHECK_ERROR (fimp, -1);
-  track->unk020 = get32lint (cts, seek+20);
-  CHECK_ERROR (fimp, -1);
-  track->unk024 = get32lint (cts, seek+24);
-  CHECK_ERROR (fimp, -1);
-  temp = get32lint (cts, seek+28);
-  CHECK_ERROR (fimp, -1);
-  track->rating = (temp & 0xff000000) >> 24;      /* rating          */
-  track->compilation = (temp & 0x00ff0000) >> 16;
-  track->type = temp & 0x0000ffff;
-  track->time_added = get32lint(cts, seek+32);    /* time added       */
-  CHECK_ERROR (fimp, -1);
-  track->size = get32lint(cts, seek+36);          /* file size        */
-  CHECK_ERROR (fimp, -1);
-  track->tracklen = get32lint(cts, seek+40);      /* time             */
-  CHECK_ERROR (fimp, -1);
-  track->track_nr = get32lint(cts, seek+44);      /* track number     */
-  CHECK_ERROR (fimp, -1);
-  track->tracks = get32lint(cts, seek+48);        /* nr of tracks     */
-  CHECK_ERROR (fimp, -1);
-  track->year = get32lint(cts, seek+52);          /* year             */
-  CHECK_ERROR (fimp, -1);
-  track->bitrate = get32lint(cts, seek+56);       /* bitrate          */
-  CHECK_ERROR (fimp, -1);
-  track->samplerate = get32lint(cts,seek+60)>>16; /* sample rate      */
-  CHECK_ERROR (fimp, -1);
-  track->volume = get32lint(cts, seek+64);        /* volume adjust    */
-  CHECK_ERROR (fimp, -1);
-  track->starttime = get32lint (cts, seek+68);
-  CHECK_ERROR (fimp, -1);
-  track->stoptime = get32lint (cts, seek+72);
-  CHECK_ERROR (fimp, -1);
-  track->soundcheck = get32lint (cts, seek+76);   /* soundcheck       */
-  CHECK_ERROR (fimp, -1);
-  track->playcount = get32lint (cts, seek+80);    /* playcount        */
-  CHECK_ERROR (fimp, -1);
-  track->unk084 = get32lint (cts, seek+84);
-  CHECK_ERROR (fimp, -1);
-  track->time_played = get32lint(cts, seek+88);   /* last time played */
-  CHECK_ERROR (fimp, -1);
-  track->cd_nr = get32lint(cts, seek+92);         /* CD nr            */
-  CHECK_ERROR (fimp, -1);
-  track->cds = get32lint(cts, seek+96);           /* CD nr of..       */
-  CHECK_ERROR (fimp, -1);
-  track->unk100 = get32lint (cts, seek+100);
-  CHECK_ERROR (fimp, -1);
-  track->time_modified = get32lint(cts, seek+104);/* last mod. time   */
-  CHECK_ERROR (fimp, -1);
-  track->bookmark_time = get32lint (cts, seek+108); /* time bookmarked */
-  CHECK_ERROR (fimp, -1);
-  track->dbid = get64lint (cts, seek+112);
-  CHECK_ERROR (fimp, -1);
-  temp = get32lint (cts, seek+120);
-  CHECK_ERROR (fimp, -1);
-  track->BPM = temp >> 16;
-  track->app_rating = (temp & 0xff00)>> 8;/* The rating set by * the
-					     application, as opposed to
-					     the rating set on the iPod
-					     itself */
-  track->checked = temp & 0xff;           /* Checked/Unchecked: 0/1 */
-  track->unk124 = get32lint (cts, seek+124);
-  CHECK_ERROR (fimp, -1);
-  track->unk128 = get32lint (cts, seek+128);
-  CHECK_ERROR (fimp, -1);
-  track->unk132 = get32lint (cts, seek+132);
-  CHECK_ERROR (fimp, -1);
-  track->unk136 = get32lint (cts, seek+136);
-  CHECK_ERROR (fimp, -1);
-  track->unk140 = get32lint (cts, seek+140);
-  CHECK_ERROR (fimp, -1);
-  track->unk144 = get32lint (cts, seek+144);
-  CHECK_ERROR (fimp, -1);
-  track->unk148 = get32lint (cts, seek+148);
-  CHECK_ERROR (fimp, -1);
-  track->unk152 = get32lint (cts, seek+152);
-  CHECK_ERROR (fimp, -1);
+  /* size of the mhit header: For dbversion <= 0x0b (iTunes 4.7 and
+     earlier), the length is 0x9c. As of dbversion 0x0c and 0x0d
+     (iTunes 4.7.1 - iTunes 4.9), the size is 0xf4. */
+  if (header_len < 0x9c)
+  {
+      g_return_val_if_fail (cts->filename, FALSE);
+      g_set_error (&fimp->error,
+		   ITDB_FILE_ERROR,
+		   ITDB_FILE_ERROR_CORRUPT,
+		   _("mhit header length smaller than expected (%x < 0x9c) at offset %ld in file '%s'."),
+		   header_len, seek, cts->filename);
+      return -1;
+  }
+
+  if (header_len >= 0x9c)
+  {
+      track->id = get32lint(cts, seek+16);         /* iPod ID          */
+      track->visible = get32lint (cts, seek+20);
+      seek_get_n_bytes (cts, track->filetype_marker, seek+24, 4);
+      track->type = get16lint (cts, seek+28);
+      track->compilation = get8int (cts, seek+30);
+      track->rating = get8int (cts, seek+31);
+      track->time_added = get32lint(cts, seek+32); /* time added       */
+      track->size = get32lint(cts, seek+36);       /* file size        */
+      track->tracklen = get32lint(cts, seek+40);   /* time             */
+      track->track_nr = get32lint(cts, seek+44);   /* track number     */
+      track->tracks = get32lint(cts, seek+48);     /* nr of tracks     */
+      track->year = get32lint(cts, seek+52);       /* year             */
+      track->bitrate = get32lint(cts, seek+56);    /* bitrate          */
+      track->unk060 = get32lint(cts, seek+60);     /* unknown          */
+      track->samplerate = get16lint(cts,seek+62);  /* sample rate      */
+      track->volume = get32lint(cts, seek+64);     /* volume adjust    */
+      track->starttime = get32lint (cts, seek+68);
+      track->stoptime = get32lint (cts, seek+72);
+      track->soundcheck = get32lint (cts, seek+76);/* soundcheck       */
+      track->playcount = get32lint (cts, seek+80); /* playcount        */
+      track->playcount2 = get32lint (cts, seek+84);
+      track->time_played = get32lint(cts, seek+88);/* last time played */
+      track->cd_nr = get32lint(cts, seek+92);      /* CD nr            */
+      track->cds = get32lint(cts, seek+96);        /* CD nr of..       */
+      /* Apple Store/Audible User ID (for DRM'ed files only, set to 0
+	 otherwise). */
+      track->drm_userid = get32lint (cts, seek+100);
+      track->time_modified = get32lint(cts, seek+104);/* last mod. time */
+      track->bookmark_time = get32lint (cts, seek+108);/*time bookmarked*/
+      track->dbid = get64lint (cts, seek+112);
+      track->checked = get8int (cts, seek+120); /*Checked/Unchecked: 0/1*/
+      /* The rating set by the application, as opposed to the rating
+	 set on the iPod itself */
+      track->app_rating = get8int (cts, seek+121);
+      track->BPM = get16lint (cts, seek+122);
+      track->artwork_count = get16lint (cts, seek+124);
+      track->unk126 = get16lint (cts, seek+126);
+      track->artwork_size = get32lint (cts, seek+128);
+      track->unk132 = get32lint (cts, seek+132);
+      track->samplerate2 = get32lfloat (cts, seek+136);
+      track->unk140 = get32lint (cts, seek+140);
+      track->unk144 = get32lint (cts, seek+144);
+      track->unk148 = get32lint (cts, seek+148);
+      track->unk152 = get32lint (cts, seek+152);
+  }
+  if (header_len >= 0xf4)
+  {
+      track->unk156 = get32lint (cts, seek+156);
+      track->unk160 = get32lint (cts, seek+160);
+      track->unk164 = get32lint (cts, seek+164);
+      track->dbid2 = get64lint (cts, seek+168);
+      track->unk176 = get32lint (cts, seek+176);
+      track->unk180 = get32lint (cts, seek+180);
+      track->unk184 = get32lint (cts, seek+184);
+      track->samplecount = get32lint (cts, seek+188);
+      track->unk192 = get32lint (cts, seek+192);
+      track->unk196 = get32lint (cts, seek+196);
+      track->unk200 = get32lint (cts, seek+200);
+      track->unk204 = get32lint (cts, seek+204);
+      track->unk208 = get32lint (cts, seek+208);
+      track->unk212 = get32lint (cts, seek+212);
+      track->unk216 = get32lint (cts, seek+216);
+      track->unk220 = get32lint (cts, seek+220);
+      track->unk224 = get32lint (cts, seek+224);
+      track->unk228 = get32lint (cts, seek+228);
+      track->unk232 = get32lint (cts, seek+232);
+      track->unk236 = get32lint (cts, seek+236);
+      track->unk240 = get32lint (cts, seek+240);
+  }
 
   track->transferred = TRUE;                   /* track is on iPod! */
 
@@ -1407,33 +1506,35 @@ gchar *time_time_to_string (time_t time);
 
   for (i=0; i<mhod_nums; ++i)
   {
-      entry_utf16 = get_mhod_string (cts, seek, &zip, &type);
+      entry_utf8 = get_mhod_string (cts, seek, &zip, &type);
       CHECK_ERROR (fimp, -1);
-      if (entry_utf16 != NULL)
+      if (entry_utf8 != NULL)
       {
-	  entry_utf8 = g_utf16_to_utf8 (entry_utf16, -1, NULL, NULL, NULL);
 	  switch ((enum MHOD_ID)type)
 	  {
+	  case MHOD_ID_TITLE:
+	      track->title = entry_utf8;
+	      break;
+	  case MHOD_ID_PATH:
+	      track->ipod_path = entry_utf8;
+	      break;
 	  case MHOD_ID_ALBUM:
 	      track->album = entry_utf8;
 	      break;
 	  case MHOD_ID_ARTIST:
 	      track->artist = entry_utf8;
 	      break;
-	  case MHOD_ID_TITLE:
-	      track->title = entry_utf8;
-	      break;
 	  case MHOD_ID_GENRE:
 	      track->genre = entry_utf8;
 	      break;
-	  case MHOD_ID_PATH:
-	      track->ipod_path = entry_utf8;
-	      break;
-	  case MHOD_ID_FDESC:
-	      track->fdesc = entry_utf8;
+	  case MHOD_ID_FILETYPE:
+	      track->filetype = entry_utf8;
 	      break;
 	  case MHOD_ID_COMMENT:
 	      track->comment = entry_utf8;
+	      break;
+	  case MHOD_ID_CATEGORY:
+	      track->category = entry_utf8;
 	      break;
 	  case MHOD_ID_COMPOSER:
 	      track->composer = entry_utf8;
@@ -1441,11 +1542,22 @@ gchar *time_time_to_string (time_t time);
 	  case MHOD_ID_GROUPING:
 	      track->grouping = entry_utf8;
 	      break;
+	  case MHOD_ID_DESCRIPTION:
+	      track->description = entry_utf8;
+	      break;
+	  case MHOD_ID_PODCASTURL:
+	      track->podcasturl = entry_utf8;
+	      break;
+	  case MHOD_ID_PODCASTRSS:
+	      track->podcastrss = entry_utf8;
+	      break;
+	  case MHOD_ID_SUBTITLE:
+	      track->subtitle = entry_utf8;
+	      break;
 	  default: /* unknown entry -- discard */
 	      g_free (entry_utf8);
 	      break;
 	  }
-	  g_free (entry_utf16);
       }
       seek += zip;
   }
@@ -2002,6 +2114,25 @@ static void put32lint (WContents *cts, guint32 n)
     put_data (cts, (gchar *)&n, 4);
 }
 
+/* Write 4 byte floating number */
+static void put32lfloat (WContents *cts, float f)
+{
+    union
+    {
+	guint32 i;
+	float   f;
+    } flt;
+
+    if (sizeof (float) != 4)
+    {
+	put32lint (cts, 0);
+	g_return_if_reached ();
+    }
+
+    flt.f = f;
+    put32lint (cts, flt.i);
+}
+
 
 /* Append @n times 2-byte-long zeros */
 static void put16_n0 (WContents *cts, gulong n)
@@ -2121,7 +2252,6 @@ static void mk_mhbd (FExport *fexp)
   put32lint (cts, 104); /* header size */
   put32lint (cts, -1);  /* size of whole mhdb -- fill in later */
   put32lint (cts, 1);   /* ? */
-  if (fexp->itdb->version < 0x09) fexp->itdb->version = 0x09;
   /* Version number: 0x01: iTunes 2
                      0x02: iTunes 3
 		     0x09: iTunes 4.2
@@ -2188,36 +2318,36 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   g_return_if_fail (track);
 
   put_data (cts, "mhit", 4);
-  put32lint (cts, 156);  /* header size */
+  put32lint (cts, 0xf4);  /* header size */
   put32lint (cts, -1);   /* size of whole mhit -- fill in later */
   put32lint (cts, -1);   /* nr of mhods in this mhit -- later   */
-  put32lint (cts, track->id); /* track index number
-					* */
-  put32lint (cts, track->unk020);
-  put32lint (cts, track->unk024);
-  /* rating, compil., type */
-  put32lint (cts, ((guint32)track->rating << 24) |
-	     ((guint32)track->compilation << 16) |
-	     ((guint32)track->type & 0x0000ffff));
+  put32lint (cts, track->id); /* track index number */
 
-  put32lint (cts, track->time_added); /* timestamp             */
-  put32lint (cts, track->size);    /* filesize                  */
-  put32lint (cts, track->tracklen); /* length of track in ms     */
+  put32lint (cts, track->visible);
+  put_data  (cts, track->filetype_marker, 4);
+  put16lint (cts, track->type);
+  put8int   (cts, track->compilation);
+  put8int   (cts, track->rating);
+  put32lint (cts, track->time_added); /* timestamp               */
+  put32lint (cts, track->size);    /* filesize                   */
+  put32lint (cts, track->tracklen);/* length of track in ms      */
   put32lint (cts, track->track_nr);/* track number               */
   put32lint (cts, track->tracks);  /* number of tracks           */
   put32lint (cts, track->year);    /* the year                   */
   put32lint (cts, track->bitrate); /* bitrate                    */
-  put32lint (cts, track->samplerate << 16);
+  put16lint (cts, track->unk060);  /* unknown                    */
+  put16lint (cts, track->samplerate);
   put32lint (cts, track->volume);  /* volume adjust              */
   put32lint (cts, track->starttime);
   put32lint (cts, track->stoptime);
   put32lint (cts, track->soundcheck);
   put32lint (cts, track->playcount);/* playcount                 */
-  put32lint (cts, track->unk084);
+  track->playcount2 = track->playcount;
+  put32lint (cts, track->playcount2);
   put32lint (cts, track->time_played); /* last time played       */
   put32lint (cts, track->cd_nr);   /* CD number                  */
   put32lint (cts, track->cds);     /* number of CDs              */
-  put32lint (cts, track->unk100);
+  put32lint (cts, track->drm_userid);
   put32lint (cts, track->time_modified); /* timestamp            */
   put32lint (cts, track->bookmark_time);
   put64lint (cts, track->dbid);
@@ -2225,14 +2355,37 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   else                  put8int (cts, 0);
   put8int (cts, track->app_rating);
   put16lint (cts, track->BPM);
-  put32lint (cts, track->unk124);
-  put32lint (cts, track->unk128);
+  put16lint (cts, track->artwork_count);
+  put16lint (cts, track->unk126);
+  put32lint (cts, track->artwork_size);
   put32lint (cts, track->unk132);
-  put32lint (cts, track->unk136);
+  put32lfloat (cts, track->samplerate2);
   put32lint (cts, track->unk140);
   put32lint (cts, track->unk144);
   put32lint (cts, track->unk148);
   put32lint (cts, track->unk152);
+  /* since iTunesDB version 0x0c */
+  put32lint (cts, track->unk156);
+  put32lint (cts, track->unk160);
+  put32lint (cts, track->unk164);
+  put64lint (cts, track->dbid2);
+  put32lint (cts, track->unk176);
+  put32lint (cts, track->unk180);
+  put32lint (cts, track->unk184);
+  put32lint (cts, track->samplecount);
+  put32lint (cts, track->unk192);
+  put32lint (cts, track->unk196);
+  put32lint (cts, track->unk200);
+  put32lint (cts, track->unk204);
+  put32lint (cts, track->unk208);
+  put32lint (cts, track->unk212);
+  put32lint (cts, track->unk216);
+  put32lint (cts, track->unk220);
+  put32lint (cts, track->unk224);
+  put32lint (cts, track->unk228);
+  put32lint (cts, track->unk232);
+  put32lint (cts, track->unk236);
+  put32lint (cts, track->unk240);
 }
 
 
@@ -2266,10 +2419,13 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
   case MHOD_ID_ALBUM:
   case MHOD_ID_ARTIST:
   case MHOD_ID_GENRE:
-  case MHOD_ID_FDESC:
+  case MHOD_ID_FILETYPE:
   case MHOD_ID_COMMENT:
+  case MHOD_ID_CATEGORY:
   case MHOD_ID_COMPOSER:
   case MHOD_ID_GROUPING:
+  case MHOD_ID_DESCRIPTION:
+  case MHOD_ID_SUBTITLE:
       g_return_if_fail (data);
       {
 	  /* convert to utf16  */
@@ -2280,14 +2436,27 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
 	  put_data (cts, "mhod", 4);  /* header                     */
 	  put32lint (cts, 24);        /* size of header             */
 	  put32lint (cts, 2*len+40);  /* size of header + body      */
-	  put32lint (cts, type);      /* type of the entry          */
-	  put32_n0 (cts, 2);            /* unknown                    */
+	  put32lint (cts, type);      /* type of the mhod           */
+	  put32_n0 (cts, 2);          /* unknown                    */
 	  /* end of header, start of data */
 	  put32lint (cts, 1);         /* always 1 for these MHOD_IDs*/
 	  put32lint (cts, 2*len);     /* size of string             */
 	  put32_n0 (cts, 2);          /* unknown                    */
-	  put_data (cts, (gchar *)entry_utf16, 2*len); /* the string */
+	  put_data (cts, (gchar *)entry_utf16, 2*len);/* the string */
 	  g_free (entry_utf16);
+      }
+      break;
+  case MHOD_ID_PODCASTURL:
+  case MHOD_ID_PODCASTRSS:
+      g_return_if_fail (data);
+      {
+	  guint32 len = strlen ((gchar *)data);
+	  put_data (cts, "mhod", 4);  /* header                     */
+	  put32lint (cts, 24);        /* size of header             */
+	  put32lint (cts, 24+len);    /* size of header + data      */
+	  put32lint (cts, type);      /* type of the mhod           */
+	  put32_n0 (cts, 2);          /* unknown                    */
+	  put_data (cts, (gchar *)data, len); /* the string         */
       }
       break;
   case MHOD_ID_PLAYLIST:
@@ -2548,14 +2717,19 @@ static gboolean write_mhsd_one(FExport *fexp)
 	    mk_mhod (cts, MHOD_ID_GENRE, track->genre);
 	    ++mhod_num;
 	}
-	if (track->fdesc && *track->fdesc)
+	if (track->filetype && *track->filetype)
 	{
-	    mk_mhod (cts, MHOD_ID_FDESC, track->fdesc);
+	    mk_mhod (cts, MHOD_ID_FILETYPE, track->filetype);
 	    ++mhod_num;
 	}
 	if (track->comment && *track->comment)
 	{
 	    mk_mhod (cts, MHOD_ID_COMMENT, track->comment);
+	    ++mhod_num;
+	}
+	if (track->category && *track->category)
+	{
+	    mk_mhod (cts, MHOD_ID_CATEGORY, track->category);
 	    ++mhod_num;
 	}
 	if (track->composer && *track->composer)
@@ -2566,6 +2740,26 @@ static gboolean write_mhsd_one(FExport *fexp)
 	if (track->grouping && *track->grouping)
 	{
 	    mk_mhod (cts, MHOD_ID_GROUPING, track->grouping);
+	    ++mhod_num;
+	}
+	if (track->description && *track->description)
+	{
+	    mk_mhod (cts, MHOD_ID_DESCRIPTION, track->description);
+	    ++mhod_num;
+	}
+	if (track->subtitle && *track->subtitle)
+	{
+	    mk_mhod (cts, MHOD_ID_SUBTITLE, track->subtitle);
+	    ++mhod_num;
+	}
+	if (track->podcasturl && *track->podcasturl)
+	{
+	    mk_mhod (cts, MHOD_ID_PODCASTURL, track->podcasturl);
+	    ++mhod_num;
+	}
+	if (track->podcastrss && *track->podcastrss)
+	{
+	    mk_mhod (cts, MHOD_ID_PODCASTRSS, track->podcastrss);
 	    ++mhod_num;
 	}
         /* Fill in the missing items of the mhit header */
@@ -3085,14 +3279,14 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb,
 gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 				  const gchar *filename, GError **error)
 {
-    auto gboolean haystack (gchar *fdesc, gchar **desclist);
-    gboolean haystack (gchar *fdesc, gchar **desclist)
+    auto gboolean haystack (gchar *filetype, gchar **desclist);
+    gboolean haystack (gchar *filetype, gchar **desclist)
     {
 	gchar **dlp;
-	if (!fdesc || !desclist) return FALSE;
+	if (!filetype || !desclist) return FALSE;
 	for (dlp=desclist; *dlp; ++dlp)
 	{
-	    if (strstr (fdesc, *dlp)) return TRUE;
+	    if (strstr (filetype, *dlp)) return TRUE;
 	}
 	return FALSE;
     }
@@ -3147,16 +3341,16 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 	/* The next one should be 0x01 for MP3,
 	** 0x02 for AAC, and 0x04 for WAV, but I can't find
 	** a suitable indicator within the track structure? */
-	/* JCS: let's do heuristic on tr->fdesc which would contain
+	/* JCS: let's do heuristic on tr->filetype which would contain
 	   "MPEG audio file", "AAC audio file", "Protected AAC audio
 	   file", "AAC audio book file", "WAV audio file" (or similar
-	   if not written by gtkpod */
+	   if not written by gtkpod) */
 
-	if (haystack (tr->fdesc, mp3_desc))
+	if (haystack (tr->filetype, mp3_desc))
 	    put24bint (cts, 0x01);
-	else if (haystack (tr->fdesc, mp4_desc))
+	else if (haystack (tr->filetype, mp4_desc))
 	    put24bint (cts, 0x02);
-	else if (haystack (tr->fdesc, wav_desc))
+	else if (haystack (tr->filetype, wav_desc))
 	    put24bint (cts, 0x04);
 	else
 	    put24bint (cts, 0x01);  /* default to mp3 */
