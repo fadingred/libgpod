@@ -12,3 +12,10 @@ photos please contact us so we can work together. Just drop a mail to
 Gtkpod-devel@lists.sourceforge.net (you may ask to be CC in the
 answer).
 
+----------------------------------------------------------------------
+For the time being please always use the current version in CVS. See
+http://sourceforge.net/cvs/?group_id=67873 for information on how to
+access the CVS server. The module to download is called 'libgpod'. The
+package released on sourceforge is simply there to raise awareness and
+hopefully have some package maintainers pick up the library.
+----------------------------------------------------------------------

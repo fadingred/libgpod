@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-19 21:31:28 jcs>
+/* Time-stamp: <2005-09-20 00:06:36 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1258,7 +1258,7 @@ static glong get_playlist (FImport *fimp, glong seek)
   CHECK_ERROR (fimp, -1);
   plitem->unk040 = get32lint (cts, seek+40);
   CHECK_ERROR (fimp, -1);
-  plitem->unk044 = get32lint (cts, seek+44);
+  plitem->sortorder = get32lint (cts, seek+44);
   CHECK_ERROR (fimp, -1);
   for (i=0; i < mhod_num; ++i)
   {
@@ -2926,7 +2926,7 @@ static gboolean write_playlist(FExport *fexp, Itdb_Playlist *pl)
     put64lint (cts, pl->id);       /* 64 bit ID                 */
     put32lint (cts, pl->unk036);
     put32lint (cts, pl->unk040);
-    put32lint (cts, pl->unk044);
+    put32lint (cts, pl->sortorder);
     put32_n0 (cts, 15);            /* ?                         */
 
     mk_mhod (cts, MHOD_ID_TITLE, pl->name);

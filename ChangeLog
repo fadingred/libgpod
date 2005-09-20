@@ -6,8 +6,10 @@
 	* applied patch provided by Christophe Fergeau <teuf at gnome.org>
 	  for artwork database support (read-only).
 
-	* read iTunesStats file if present (corresponds to Play Counts
-	  file on the Shuffle).
+	* itdb_itunesdb.c: read iTunesStats file if present (corresponds
+	  to Play Counts file on the Shuffle).
+
+	* itdb.h: implemented sortorder in playlists (new enum)
 
 2005-09-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

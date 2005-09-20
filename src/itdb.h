@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-19 19:14:40 jcs>
+/* Time-stamp: <2005-09-19 22:52:40 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -354,16 +354,17 @@ typedef struct
 typedef struct
 {
     Itdb_iTunesDB *itdb;  /* pointer to iTunesDB (for convenience) */
-    gchar *name;          /* name of playlist in UTF8      */
-    guint32 type;         /* PL_TYPE_MPL: master play list */
-    gint  num;            /* number of tracks in playlist  */
-    GList *members;       /* tracks in playlist (Track *)  */
-    gboolean is_spl;      /* smart playlist?               */
-    guint32 timestamp;    /* some timestamp                */
-    guint64 id;           /* playlist ID                   */
-    guint32 unk036, unk040, unk044;
-    SPLPref splpref;      /* smart playlist prefs          */
-    SPLRules splrules;    /* rules for smart playlists     */
+    gchar *name;          /* name of playlist in UTF8              */
+    guint32 type;         /* PL_TYPE_MPL: master play list         */
+    gint  num;            /* number of tracks in playlist          */
+    GList *members;       /* tracks in playlist (Track *)          */
+    gboolean is_spl;      /* smart playlist?                       */
+    guint32 timestamp;    /* some timestamp                        */
+    guint64 id;           /* playlist ID                           */
+    guint32 unk036, unk040;
+    guint32 sortorder;    /* How to sort playlist -- see below     */
+    SPLPref splpref;      /* smart playlist prefs                  */
+    SPLRules splrules;    /* rules for smart playlists             */
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
@@ -372,6 +373,72 @@ typedef struct
     /* function called to free userdata */
     ItdbUserDataDestroyFunc userdata_destroy;
 } Itdb_Playlist;
+
+
+/*
+Playlist Sort Order
+
+1 - playlist order (manual sort order)
+2 - ???
+3 - songtitle
+4 - album
+5 - artist
+6 - bitrate
+7 - genre
+8 - kind
+9 - date modified
+10 - track nr
+11 - size
+12 - time
+13 - year
+14 - sample rate
+15 - comment
+16 - date added
+17 - equalizer
+18 - composer
+19 - ???
+20 - play count
+21 - last played
+22 - disc nr
+23 - my rating
+24 - release date (I guess, it's the value for the "Podcasts" list)
+25 - BPM
+26 - grouping
+27 - category
+28 - description
+*/
+
+typedef enum
+{
+    ITDB_PSO_MANUAL = 1,
+/*    ITDB_PSO_UNKNOWN = 2, */
+    ITDB_PSO_TITLE = 3,
+    ITDB_PSO_ALBUM = 4,
+    ITDB_PSO_ARTIST = 5,
+    ITDB_PSO_BIRATE = 6,
+    ITDB_PSO_GENRE = 7,
+    ITDB_PSO_FILETYPE = 8,
+    ITDB_PSO_TIME_MODIFIED = 9,
+    ITDB_PSO_TRACK_NR = 10,
+    ITDB_PSO_SIZE = 11,
+    ITDB_PSO_TIME = 12,  /* ? */
+    ITDB_PSO_YEAR = 13,
+    ITDB_PSO_SAMPLERATE = 14,
+    ITDB_PSO_COMMENT = 15,
+    ITDB_PSO_TIME_ADDED = 16,
+    ITDB_PSO_EQUALIZER = 17, /* ? */
+    ITDB_PSO_COMPOSER = 18,
+/*    ITDB_PSO_UNKNOWN = 19, */
+    ITDB_PSO_PLAYCOUNT = 20,
+    ITDB_PSO_TIME_PLAYED = 21,
+    ITDB_PSO_CD_NR = 22,
+    ITDB_PSO_RATING = 23,
+    ITDB_PSO_RELEASE_DATE = 24, /* used by podcasts */
+    ITDB_PSO_BPM = 25,
+    ITDB_PSO_GROUPING = 26,
+    ITDB_PSO_CATEGORY = 27,
+    ITDB_PSO_DESCRIPTION = 28
+} ItdbPlaylistSortOrder;
 
 
 /* some of the descriptive comments below are copied verbatim from

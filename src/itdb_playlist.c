@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-17 21:52:19 jcs>
+/* Time-stamp: <2005-09-19 22:54:16 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1016,6 +1016,8 @@ Itdb_Playlist *itdb_playlist_new (const gchar *title, gboolean spl)
 
     pl->type = ITDB_PL_TYPE_NORM;
     pl->name = g_strdup (title);
+    pl->sortorder = ITDB_PSO_MANUAL;
+
     pl->is_spl = spl;
     if (spl)
     {
@@ -1085,6 +1087,7 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
 	} while (id == 0);
 	pl->id = id;
     }
+    if (pl->sortorder == 0)  pl->sortorder = ITDB_PSO_MANUAL;
     if (pos == -1)  itdb->playlists = g_list_append (itdb->playlists, pl);
     else  itdb->playlists = g_list_insert (itdb->playlists, pl, pos);
 }
