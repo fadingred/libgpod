@@ -1,3 +1,13 @@
+2005-09-21  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb_itunesdb.c: streamline parse_fimp() for more
+	flexibility. Please report if formerly readable iTunesDB cannot be
+	read any more :-/
+
+2005-09-20  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* Release of 0.1.3
+
 2005-09-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * added additional fields to Itdb_Track that are present since

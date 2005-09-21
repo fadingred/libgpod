@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-20 00:06:36 jcs>
+/* Time-stamp: <2005-09-22 00:36:40 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -360,7 +360,7 @@ static gboolean seek_get_n_bytes (FContents *cts, gchar *data,
 /* Compare @n bytes of @cts->contents starting at @seek and
  * @data. Returns TRUE if equal, FALSE if not. Also returns FALSE on
  * error, so you must check cts->error */
-static gboolean cmp_n_bytes_seek (FContents *cts, gchar *data,
+static gboolean cmp_n_bytes_seek (FContents *cts, const gchar *data,
 				  glong seek, glong len)
 {
     if (check_seek (cts, seek, len))
@@ -1841,13 +1841,291 @@ static gboolean read_OTG_playlists (FImport *fimp)
 }
 
 
+/* convenience function: set error for zero length hunk */
+static void set_error_zero_length_hunk (GError **error, glong seek,
+					gchar *filename)
+{
+    g_set_error (error,
+		 ITDB_FILE_ERROR,
+		 ITDB_FILE_ERROR_CORRUPT,
+		 _("iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."),
+		 seek, filename);
+}
+
+/* convenience function: set error for missing hunk */
+static void set_error_a_not_found_in_b (GError **error,
+					const gchar *a,
+					const gchar *b,
+					glong mhsd_seek)
+{
+    g_set_error (error,
+		 ITDB_FILE_ERROR,
+		 ITDB_FILE_ERROR_CORRUPT,
+		 _("iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."),
+		 a, b, mhsd_seek);
+}
+
+
+/* finds next occurence of section @a in section b (@b_seek) starting
+   at @start_seek
+*/
+/* Return value:
+   -1 and cts->error not set: section @a could not be found
+   -1 and cts->error set: some error occured
+   >=0: start of next occurence of section @a
+*/
+static glong find_next_a_in_b (FContents *cts,
+			       const gchar *a,
+			       glong b_seek, glong start_seek)
+{
+    glong b_len;
+    glong offset, len;
+
+    g_return_val_if_fail (a, -1);
+    g_return_val_if_fail (cts, -1);
+    g_return_val_if_fail (strlen (a) == 4, -1);
+    g_return_val_if_fail (b_seek>=0, -1);
+    g_return_val_if_fail (start_seek >= b_seek, -1);
+
+/*     printf ("%s: b_seek: %lx, start_seek: %lx\n", a, b_seek, start_seek); */
+
+    b_len = get32lint (cts, b_seek+8);
+    if (cts->error) return -1;
+
+    offset = start_seek - b_seek;
+    len = 0;
+    do
+    {   /* skip headers inside the b hunk (b_len) until we find header
+	   @a */
+	len = get32lint (cts, b_seek+offset+4);
+	if (cts->error) return -1;
+	if (len == 0)
+	{   /* This needs to be checked, otherwise we might hang */
+	    set_error_zero_length_hunk (&cts->error, b_seek+offset,
+					cts->filename);
+	    return -1;
+	}
+	offset += len;
+/* 	printf ("offset: %lx, b_len: %lx, bseek+offset: %lx\n",  */
+/* 		offset, b_len, b_seek+offset); */
+    } while ((offset < b_len-4) && 
+	     !cmp_n_bytes_seek (cts, a, b_seek+offset, 4));
+    if (cts->error) return -1;
+
+    if (offset >= b_len)	return -1;
+
+/*     printf ("%s found at %lx\n", a, b_seek+offset); */
+
+    return b_seek+offset;
+}
+
+
+
+
+/* return the position of mhsd with type @type */
+/* Return value:
+     -1 if mhsd cannot be found. cts->error will not be set
+
+     0 and cts->error is set if some other error occurs.
+     Since the mhsd can never be at position 0 (a mhbd must be there),
+     a return value of 0 always indicates an error.
+*/
+static glong find_mhsd (FContents *cts, guint32 type)
+{
+    guint32 i, len, mhsd_num;
+    glong seek;
+
+    if (!cmp_n_bytes_seek (cts, "mhbd", 0, 4))
+    {
+	if (!cts->error)
+	{   /* set error */
+	    g_set_error (&cts->error,
+			 ITDB_FILE_ERROR,
+			 ITDB_FILE_ERROR_CORRUPT,
+			 _("Not a iTunesDB: '%s' (missing mhdb header)."),
+			 cts->filename);
+	}
+	return 0;
+    }
+    len = get32lint (cts, 4);
+    if (cts->error) return 0;
+    /* all the headers I know are 0x68 long -- if this one is longer
+       we can could simply ignore the additional information */
+    /* Since 'we' (parse_fimp()) only need data from the first 32
+       bytes, don't complain unless it's smaller than that */
+    if (len < 32)
+    {
+	g_set_error (&cts->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_CORRUPT,
+		     _("iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). Aborting."),
+		     cts->filename, len);
+	return FALSE;
+    }
+
+    mhsd_num = get32lint (cts, 20);
+    if (cts->error) return 0;
+
+    seek = 0;
+    for (i=0; i<mhsd_num; ++i)
+    {
+	guint32 mhsd_type;
+
+	seek += len;
+	if (!cmp_n_bytes_seek (cts, "mhsd", seek, 4))
+	{
+	    if (!cts->error)
+	    {   /* set error */
+		g_set_error (&cts->error,
+			     ITDB_FILE_ERROR,
+			     ITDB_FILE_ERROR_CORRUPT,
+			     _("iTunesDB '%s' corrupt: mhsd expected at %ld."),
+			     cts->filename, seek);
+	    }
+	    return 0;
+	}
+	len = get32lint (cts, seek+8);
+	if (cts->error) return 0;
+	
+	mhsd_type = get32lint (cts, seek+12);
+	if (cts->error) return 0;
+
+	if (mhsd_type == type) return seek;
+    }
+    return -1;
+}
+
+
+/* Read the tracklist (mhlt). mhsd_seek must point to type 1 mhsd
+   (this is treated as a programming error) */
+/* Return value:
+   TRUE: import successful
+   FALSE: error occured, fimp->error is set */
+static gboolean parse_tracks (FImport *fimp, glong mhsd_seek)
+{
+    FContents *cts;
+    glong mhlt_seek, seek;
+    guint32 nr_tracks, i;
+
+    g_return_val_if_fail (fimp, FALSE);
+    g_return_val_if_fail (fimp->itdb, FALSE);
+    g_return_val_if_fail (fimp->itunesdb, FALSE);
+    g_return_val_if_fail (fimp->itunesdb->filename, FALSE);
+    g_return_val_if_fail (mhsd_seek >= 0, FALSE);
+
+    cts = fimp->itunesdb;
+
+    g_return_val_if_fail (cmp_n_bytes_seek (cts, "mhsd", mhsd_seek, 4),
+			  FALSE);
+
+   /* The mhlt header should be the next after the mhsd header. In
+      order to allow slight changes in the format, we skip headers
+      until we find an mhlt inside the given mhsd */
+
+    mhlt_seek = find_next_a_in_b (cts, "mhlt", mhsd_seek, mhsd_seek);
+    CHECK_ERROR (fimp, FALSE);
+
+    if (mhlt_seek == -1)
+    {
+	set_error_a_not_found_in_b (&fimp->error,
+				    "mhlt", "mhsd", mhsd_seek);
+	return FALSE;
+    }
+
+    /* Now we are at the mhlt */
+    nr_tracks = get32lint (cts, mhlt_seek+8);
+    CHECK_ERROR (fimp, FALSE);
+
+    seek = find_next_a_in_b (cts, "mhit", mhsd_seek, mhlt_seek);
+    CHECK_ERROR (fimp, FALSE);
+    /* seek should now point to the first mhit */
+    for (i=0; i<nr_tracks; ++i)
+    {
+	/* seek could be -1 if first mhit could not be found */
+	if (seek != -1)
+	    seek = get_mhit (fimp, seek);
+	if (fimp->error) return FALSE;
+	if (seek == -1)
+	{   /* this should not be -- issue warning */
+	    g_warning (_("iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to continue.\n"));
+	    break;
+	}
+    }
+    return TRUE;
+}
+
+
+
+/* Read the playlists (mhlp). mhsd_seek must point to type 2 or type 3
+   mhsd (this is treated as a programming error) */
+/* Return value:
+   TRUE: import successful
+   FALSE: error occured, fimp->error is set */
+static gboolean parse_playlists (FImport *fimp, glong mhsd_seek)
+{
+    FContents *cts;
+    glong seek, mhlp_seek;
+    guint32 nr_playlists, i;
+
+    g_return_val_if_fail (fimp, FALSE);
+    g_return_val_if_fail (fimp->itdb, FALSE);
+    g_return_val_if_fail (fimp->itunesdb, FALSE);
+    g_return_val_if_fail (fimp->itunesdb->filename, FALSE);
+    g_return_val_if_fail (mhsd_seek >= 0, FALSE);
+
+    cts = fimp->itunesdb;
+
+    g_return_val_if_fail (cmp_n_bytes_seek (cts, "mhsd", mhsd_seek, 4),
+			  FALSE);
+
+    /* The mhlp header should be the next after the mhsd header. In
+       order to allow slight changes in the format, we skip headers
+       until we find an mhlp inside the given mhsd */
+
+    mhlp_seek = find_next_a_in_b (cts, "mhlp", mhsd_seek, mhsd_seek);
+    CHECK_ERROR (fimp, FALSE);
+
+    if (mhlp_seek == -1)
+    {
+	set_error_a_not_found_in_b (&fimp->error,
+				    "mhlp", "mhsd", mhsd_seek);
+	return FALSE;
+    }
+    /* Now we are at the mhlp */
+
+    nr_playlists = get32lint (cts, mhlp_seek+8);
+    CHECK_ERROR (fimp, FALSE);
+
+    /* Create track-id tree for quicker track lookup */
+    fimp->idtree = itdb_track_id_tree_create (fimp->itdb);
+
+    seek = find_next_a_in_b (cts, "mhyp", mhsd_seek, mhlp_seek);
+    CHECK_ERROR (fimp, FALSE);
+    /* seek should now point to the first mhit */
+    for (i=0; i<nr_playlists; ++i)
+    {
+	/* seek could be -1 if first mhyp could not be found */
+	if (seek != -1)
+	    seek = get_playlist (fimp, seek);
+	if (fimp->error) return FALSE;
+	if (seek == -1)
+	{   /* this should not be -- issue warning */
+	    g_warning (_("iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. Trying to continue.\n"));
+	    break;
+	}
+    }
+
+    itdb_track_id_tree_destroy (fimp->idtree);
+    fimp->idtree = NULL;
+
+    return TRUE;
+}
 
 static gboolean parse_fimp (FImport *fimp)
 {
-    glong seek=0, pl_mhsd=0;
-    guint32 i, zip, nr_tracks=0, nr_playlists=0;
-    gboolean swapped_mhsd = FALSE;
+    glong seek=0;
     FContents *cts;
+    glong mhsd_1, mhsd_2, mhsd_3;
 
     g_return_val_if_fail (fimp, FALSE);
     g_return_val_if_fail (fimp->itdb, FALSE);
@@ -1856,214 +2134,51 @@ static gboolean parse_fimp (FImport *fimp)
 
     cts = fimp->itunesdb;
 
-    if (!cmp_n_bytes_seek (cts, "mhbd", 0, 4))
-    {
-	if (cts->error)
-	{
-	    g_propagate_error (&fimp->error, cts->error);
-	}
-	else
-	{   /* set error */
-	    g_set_error (&fimp->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_CORRUPT,
-			 _("Not a iTunesDB: '%s' (missing mhdb header)."),
-			 cts->filename);
-	}
-	return FALSE;
-    }
-    seek = get32lint (cts, 4);
+    /* get the positions of the various mhsd */
+    /* type 1: track list */
+    mhsd_1 = find_mhsd (cts, 1);
     CHECK_ERROR (fimp, FALSE);
-    /* all the headers I know are 0x68 long -- if this one is longer
-       we can could simply ignore the additional information */
-    /* Since we only need data from the first 32 bytes, don't complain
-     * unless it's smaller than that */
-    if (seek < 32)
-    {
-	g_set_error (&fimp->error,
-		     ITDB_FILE_ERROR,
-		     ITDB_FILE_ERROR_CORRUPT,
-		     _("iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%ld<32). Aborting."),
-		     cts->filename, seek);
-	return FALSE;
-    }
+    /* type 2: standard playlist section -- Podcasts playlist will be
+       just an ordinary playlist */
+    mhsd_2 = find_mhsd (cts, 2);
+    CHECK_ERROR (fimp, FALSE);
+    /* type 3: playlist section with special version of Podcasts
+       playlist (optional) */
+    mhsd_3 = find_mhsd (cts, 3);
+    CHECK_ERROR (fimp, FALSE);
 
     fimp->itdb->version = get32lint (cts, seek+16);
     CHECK_ERROR (fimp, FALSE);
     fimp->itdb->id = get64lint (cts, seek+24);
     CHECK_ERROR (fimp, FALSE);
 
-    for (;;)
-    {
-	if (cmp_n_bytes_seek (cts, "mhsd", seek, 4))
-	{   /* mhsd header -> determine start of playlists */
-	    guint32 sth;
-	    guint32 len;
-	    len = get32lint (cts, seek+8);
-	    CHECK_ERROR (fimp, FALSE);
-	    sth = get32lint (cts, seek+12);
-	    CHECK_ERROR (fimp, FALSE);
-	    if (sth == 1)
-	    {   /* OK, tracklist, save start of playlists */
-		if (!swapped_mhsd)
-		    pl_mhsd = seek + len;
-	    }
-	    else if (sth == 2)
-	    {   /* bad: these are playlists... switch */
-		if (swapped_mhsd)
-		{ /* already switched once -> forget it */
-		    g_set_error (&fimp->error,
-				 ITDB_FILE_ERROR,
-				 ITDB_FILE_ERROR_CORRUPT,
-				 _("iTunesDB '%s' corrupt: already found two playlist mhsds -- giving up."),
-				 cts->filename);
-		    return FALSE;
-		}
-		else
-		{
-		    pl_mhsd = seek;
-		    seek += len;
-		    swapped_mhsd = TRUE;
-		}
-	    }
-	    else
-	    { /* neither playlist nor track MHSD --> skip it */
-		seek += len;
-	    }
-	}
-	else
-	{   /* if the cmp_n_bytes_seek() failed we must check if it is
-	       because of an error */
-	    CHECK_ERROR (fimp, FALSE);
-	}
-	if (cmp_n_bytes_seek (cts, "mhlt", seek, 4))
-	{   /* mhlt header -> number of tracks */
-	    nr_tracks = get32lint (cts, seek+8);
-	    CHECK_ERROR (fimp, FALSE);
-	    if (nr_tracks == 0)
-	    {   /* no tracks -- skip directly to next mhsd */
-		break;
-	    }
-	}
-	else
-	{   /* if the cmp_n_bytes_seek() failed we must check if it is
-	       because of an error */
-	    CHECK_ERROR (fimp, FALSE);
-	}
-	if (cmp_n_bytes_seek (cts, "mhit", seek, 4))
-	{   /* mhit header -> start of tracks*/
-	    break;
-	}
-	zip = get32lint (cts, seek+4);
-	CHECK_ERROR (fimp, FALSE);
-	if (zip == 0)
-	{
-	    g_set_error (&fimp->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_CORRUPT,
-			 _("iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."),
-			 seek, cts->filename);
-	    return FALSE;
-	}
-	seek += zip;
-    }
-    /* now we should be at the first MHIT */
-
-    /* get every file entry */
-    for (i=0; i<nr_tracks; ++i)
-    {
-	seek = get_mhit (fimp, seek);
-	if (fimp->error)  return FALSE;
-	if (seek == -1)
-	{   /* this should not be -- issue warning */
-	    g_warning (_("iTunesDB possibly corrupt: number of tracks (mhit hunks) inconsistent. Trying to continue.\n"));
-	    break;
-	}
+    if (mhsd_1 == -1)
+    {   /* Very bad: no type 1 mhsd which should hold the tracklist */
+	g_set_error (&fimp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_CORRUPT,
+		     _("iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section found)"),
+		     cts->filename);
+	return FALSE;
     }
 
-    /* next: playlists */
-    seek = pl_mhsd;
-    for (;;)
-    {   /* this is all a bit of magic to make sure we can handle
-	   slightly "off-standard" iTunesDBs as well. Normally we
-	   would expect hunks in the following order: <mhsd type 2>,
-	   <mhlp> containing the number of playlists, <mhyp>: first
-	   playlist header. Here we just scan everything until we find
-	   the first <mhyp> ignoring everything we don't know. */
-	zip = get32lint (cts, seek+4);
-	if (zip == 0)
-	{
-	    g_set_error (&fimp->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_CORRUPT,
-			 _("iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."),
-			 seek, cts->filename);
-	    return FALSE;
-	}
-	CHECK_ERROR (fimp, FALSE);
-	if (cmp_n_bytes_seek (cts, "mhsd", seek, 4))
-	{   /* We just check if it's actually a playlist mhsd (type=2)
-	       or not (type = 1, should not be...) */
-	    guint32 type;
-	    guint32 len = get32lint (cts, seek+8);
-	    CHECK_ERROR (fimp, FALSE);
-	    type = get32lint (cts, seek+12);
-	    CHECK_ERROR (fimp, FALSE);
-	    if (type != 2)
-	    {  /* this is not a playlist MHSD -> skip it */
-		seek += len;
-		continue;
-	    }
-	    else
-	    {   /* jump to next hunk */
-		seek += zip;
-		continue;
-	    }
-	}
-	else
-	{
-	    CHECK_ERROR (fimp, FALSE);
-	}
-	if (cmp_n_bytes_seek (cts, "mhlp", seek, 4))
-	{ /* mhlp header -> number of playlists */
-	    nr_playlists = get32lint (cts, seek+8);
-	    CHECK_ERROR (fimp, FALSE);
-	    seek += zip;
-	    continue;
-	}
-	else
-	{
-	    CHECK_ERROR (fimp, FALSE);
-	}
-	if (cmp_n_bytes_seek (cts, "mhyp", seek, 4))
-	{ /* mhyp header -> start of playlists */
-	    break;
-	}
-	else
-	{
-	    CHECK_ERROR (fimp, FALSE);
-	}
-	seek += zip;
-    }
+    parse_tracks (fimp, mhsd_1);
+    if (fimp->error) return FALSE;
 
-#if ITUNESDB_DEBUG
-    fprintf(stderr, "iTunesDB part2 starts at: %x\n", (int)seek);
-#endif
-
-    /* Create track-id tree for quicker track lookup */
-    fimp->idtree = itdb_track_id_tree_create (fimp->itdb);
-    for (i=0; i<nr_playlists; ++i)
-    {
-	seek = get_playlist (fimp, seek);
-	if (fimp->error) return FALSE;
-	if (seek == -1)
-	{   /* this should not be -- issue warning */
-	    g_warning (_("iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. Trying to continue.\n"));
-	    break;
-	}
+    if (mhsd_3 != -1)
+	parse_playlists (fimp, mhsd_3);
+    else if (mhsd_2 != -1)
+	parse_playlists (fimp, mhsd_2);
+    else
+    {  /* Very bad: no type 2 or type 3 mhsd which should hold the
+	  playlists */
+	g_set_error (&fimp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_CORRUPT,
+		     _("iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 sections found)"),
+		     cts->filename);
+	return FALSE;
     }
-    itdb_track_id_tree_destroy (fimp->idtree);
-    fimp->idtree = NULL;
 
     return TRUE;
 }
