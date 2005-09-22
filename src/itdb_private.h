@@ -99,5 +99,6 @@ typedef struct
 } FExport;
 
 
-gboolean itdb_spl_action_known (SPLAction action);
+G_GNUC_INTERNAL gboolean itdb_spl_action_known (SPLAction action);
+
 #endif

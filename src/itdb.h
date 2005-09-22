@@ -307,6 +307,12 @@ typedef struct SPLRules
     GList *rules;
 } SPLRules;
 
+enum ItdbImageType {
+	ITDB_IMAGE_FULL_SCREEN,
+	ITDB_IMAGE_NOW_PLAYING
+};
+
+
 /* This structure can represent two slightly different images:
  *   - an image before it's transferred to the iPod (it will then be scaled
  *     as necessary to generate the 2 thumbnails needed by the iPod), 
@@ -320,13 +326,14 @@ typedef struct SPLRules
  *     on the iPod
  */
 struct _Itdb_Image {
-	char *filename;
+	enum ItdbImageType type;
+  	char *filename;
 	off_t offset;
 	size_t size;
 	unsigned int width;
 	unsigned int height;
-	unsigned int id; 
 };
+
 typedef struct _Itdb_Image Itdb_Image;
 
 typedef void (* ItdbUserDataDestroyFunc) (gpointer userdata);
@@ -573,9 +580,9 @@ typedef struct
   guint32 unk228, unk232, unk236, unk240;
 
   /* This is for Cover Art support */
-  Itdb_Image *full_size_thumbnail;
-  Itdb_Image *now_playing_thumbnail;
-  Itdb_Image *orig_image;
+  GList *thumbnails;
+  unsigned int image_id;
+  char *orig_image_filename;
 
   /* below is for use by application */
   guint64 usertype;
@@ -681,6 +688,9 @@ void itdb_spl_update_all (Itdb_iTunesDB *itdb);
 
 /* thumbnails functions */
 unsigned char *itdb_image_get_rgb_data (Itdb_Image *image);
+int itdb_track_set_thumbnail (Itdb_Track *song, const char *filename);
+void itdb_track_remove_thumbnail (Itdb_Track *song);
+void itdb_track_free_generated_thumbnails (Itdb_Track *track);
 
 /* time functions */
 guint64 itdb_time_get_mac_time (void);

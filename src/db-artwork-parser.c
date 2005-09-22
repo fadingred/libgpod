@@ -28,7 +28,6 @@
 #include "db-image-parser.h"
 #include "db-itunes-parser.h"
 #include "db-parse-context.h"
-/*#include "image-parser.h"*/
 
 typedef int (*ParseListItem)(DBParseContext *ctx, Itdb_iTunesDB *db, GError *error);
 
@@ -89,15 +88,11 @@ parse_mhod_3 (DBParseContext *ctx, GError *error)
 }
 #endif
 
-#define FULL_THUMB_SIDE_LEN 0x8c
-#define NOW_PLAYING_THUMB_SIDE_LEN 0x38
-
 static int
 parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 {
 	MhniHeader *mhni;
-	int width;
-	int height;
+	Itdb_Image *thumb;
 
 	mhni = db_parse_context_get_m_header (ctx, MhniHeader, "mhni");
 	if (mhni == NULL) {
@@ -121,16 +116,9 @@ parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 		g_free (mhod_ctx);
 	}
 #else
-	width = (GINT_FROM_LE (mhni->image_dimensions) & 0xffff0000) >> 16;
-	height = (GINT_FROM_LE (mhni->image_dimensions) & 0x0000ffff);
-	
-	if ((width == FULL_THUMB_SIDE_LEN) || (width == FULL_THUMB_SIDE_LEN)) {
-		song->full_size_thumbnail = ipod_image_new_from_mhni (mhni, song->itdb->mountpoint);
-	} else if ((width == NOW_PLAYING_THUMB_SIDE_LEN) || (width == NOW_PLAYING_THUMB_SIDE_LEN)) {
-		song->now_playing_thumbnail = ipod_image_new_from_mhni (mhni, song->itdb->mountpoint);
-	} else {
-		g_print ("Unrecognized image size: %08x\n", 
-			 GINT_FROM_LE (mhni->image_dimensions));
+	thumb = ipod_image_new_from_mhni (mhni, song->itdb->mountpoint);
+	if (thumb != NULL) {
+		song->thumbnails = g_list_append (song->thumbnails, thumb);
 	}
 #endif
 	return 0;
@@ -189,7 +177,12 @@ parse_mhii (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 		return -1;
 	}
 
-	song->orig_image = ipod_image_new_from_mhii (mhii);
+	if (song->artwork_size != GINT_FROM_LE (mhii->orig_img_size)-1) {
+		g_warning ("iTunesDB and ArtworkDB artwork sizes don't match (%d %d)", song->artwork_size , GINT_FROM_LE (mhii->orig_img_size));
+	}
+
+	song->artwork_size = GINT_FROM_LE (mhii->orig_img_size)-1;
+	song->image_id = GINT_FROM_LE (mhii->image_id);
 #endif
 
 	cur_offset = ctx->header_len;
@@ -336,21 +329,20 @@ parse_mhfd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 
 
 G_GNUC_INTERNAL char *
-ipod_db_get_artwork_db_path (Itdb_iTunesDB *db)
+ipod_db_get_artwork_db_path (const char *mount_point)
 {
-	return g_build_filename (G_DIR_SEPARATOR_S, db->mountpoint,
-				 "iPod_Control", "Artwork", "ArtworkDB", 
-				 NULL);
+	const char *paths[] = {"iPod_Control", "Artwork", "ArtworkDB", NULL};
+	return itdb_resolve_path (mount_point, paths);
 }
 
 
 static char *
 ipod_db_get_photo_db_path (const char *mount_point)
 {
+	const char *paths[] = {"Photos", "Photo Database", NULL};
 	g_return_val_if_fail (mount_point != NULL, NULL);
-	return  g_build_filename (G_DIR_SEPARATOR_S, mount_point,
-				  "Photos", "Photo Database",
-				  NULL);
+	return itdb_resolve_path (mount_point, paths);
+				  
 }
 
 
@@ -360,7 +352,7 @@ ipod_parse_artwork_db (Itdb_iTunesDB *db)
 	DBParseContext *ctx;
 	char *filename;
 
-	filename = ipod_db_get_artwork_db_path (db);
+	filename = ipod_db_get_artwork_db_path (db->mountpoint);
 	ctx = db_parse_context_new_from_file (filename);	
 	g_free (filename);
 	if (ctx == NULL) {
@@ -368,11 +360,13 @@ ipod_parse_artwork_db (Itdb_iTunesDB *db)
 	}	
 
 	parse_mhfd (ctx, db, NULL);
-	g_free (ctx);
+	db_parse_context_destroy (ctx, TRUE);
 	return 0;
 
  error:
-	/* FIXME: needs to destroy ctx and to release the mmap'ed memory*/
+	if (ctx != NULL) {
+		db_parse_context_destroy (ctx, TRUE);
+	}
 	return -1;
 }
 
@@ -393,6 +387,7 @@ ipod_parse_photo_db (const char *mount_point)
 	}
 
 	parse_mhfd (ctx, NULL, NULL);
-	g_free (ctx);
+	db_parse_context_destroy (ctx, TRUE);
+
 	return 0;
 }

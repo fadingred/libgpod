@@ -49,5 +49,6 @@ G_GNUC_INTERNAL DBParseContext *db_parse_context_get_next_child (DBParseContext 
 G_GNUC_INTERNAL void *db_parse_context_get_m_header_internal (DBParseContext *ctx, const char *id, off_t size) G_GNUC_INTERNAL;
 
 G_GNUC_INTERNAL DBParseContext *db_parse_context_new_from_file (const char *filename) G_GNUC_INTERNAL;
+G_GNUC_INTERNAL void db_parse_context_destroy (DBParseContext *ctx, gboolean unmap);
 
 #endif

@@ -29,6 +29,7 @@
 
 #include "itdb_private.h"
 #include <string.h>
+#include <glib/gstdio.h>
 
 /* Generate a new Itdb_Track structure */
 Itdb_Track *itdb_track_new (void)
@@ -144,6 +145,22 @@ void itdb_track_add (Itdb_iTunesDB *itdb, Itdb_Track *track, gint32 pos)
     else  itdb->tracks = g_list_insert (itdb->tracks, track, pos);
 }
 
+void
+itdb_track_free_generated_thumbnails (Itdb_Track *track)
+{
+    GList *it;
+
+    for (it = track->thumbnails; it != NULL; it = it->next) {
+	Itdb_Image *image;
+
+	image = (Itdb_Image *)it->data;
+	g_free (image->filename);
+	g_free (image);
+    }
+    g_list_free (track->thumbnails);
+    track->thumbnails = NULL;
+}
+
 /* Free the memory taken by @track */
 void itdb_track_free (Itdb_Track *track)
 {
@@ -158,6 +175,8 @@ void itdb_track_free (Itdb_Track *track)
     g_free (track->filetype);
     g_free (track->grouping);
     g_free (track->ipod_path);
+    itdb_track_free_generated_thumbnails (track);
+    g_free (track->orig_image_filename);
     if (track->userdata && track->userdata_destroy)
 	(*track->userdata_destroy) (track->userdata);
     g_free (track);
@@ -291,4 +310,31 @@ Itdb_Track *itdb_track_id_tree_by_id (GTree *idtree, guint32 id)
     g_return_val_if_fail (idtree, NULL);
 
     return (Itdb_Track *)g_tree_lookup (idtree, &id);
+}
+
+void
+itdb_track_remove_thumbnail (Itdb_Track *song)
+{
+    itdb_track_free_generated_thumbnails (song);
+    g_free (song->orig_image_filename);
+    song->orig_image_filename = NULL;
+    song->image_id = 0;
+}
+
+
+int 
+itdb_track_set_thumbnail (Itdb_Track *song, const char *filename)
+{
+    struct stat statbuf;
+
+    g_return_val_if_fail (song != NULL, -1);
+
+    if (g_stat  (filename, &statbuf) != 0) {
+	return -1;
+    }
+    itdb_track_remove_thumbnail (song);
+    song->artwork_size = statbuf.st_size;
+    song->orig_image_filename = g_strdup (filename);
+
+    return 0;
 }

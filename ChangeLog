@@ -1,3 +1,8 @@
+2005-09-22  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* applied Christophe Fergeau's patch which adds cover art writing
+	support to libgpod -> bump to version 104
+
 2005-09-21  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_itunesdb.c: streamline parse_fimp() for more

@@ -898,6 +898,7 @@ Itdb_iTunesDB *itdb_new (void)
     itdb->version = 0x09;
     itdb->id = ((guint64)g_rand_int (grand) << 32) |
 	((guint64)g_rand_int (grand));
+    g_rand_free (grand);
     return itdb;
 }
 
@@ -3301,6 +3302,14 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, const gchar *mp, GError **error)
 
     if (!mp) mp = itdb->mountpoint;
 
+    /* First, let's try to write the .ithmb files containing the artwork data
+     * since this operation modifies the 'artwork_count' and 'artwork_size' 
+     * field in the Itdb_Track contained in the database.
+     * Errors happening during that operation are considered non fatal since
+     * they shouldn't corrupt the main database.
+     */
+    ipod_write_artwork_db (itdb, mp);
+    
     itunes_path = itdb_resolve_path (mp, db);
     
     if(!itunes_path)

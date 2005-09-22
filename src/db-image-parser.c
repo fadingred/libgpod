@@ -29,20 +29,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "db-artwork-parser.h"
 #include "db-image-parser.h"
-
-#define RED_BITS   5
-#define RED_SHIFT 11
-#define RED_MASK  (((1 << RED_BITS)-1) << RED_SHIFT)
-
-#define GREEN_BITS 6
-#define GREEN_SHIFT 5
-#define GREEN_MASK (((1 << GREEN_BITS)-1) << GREEN_SHIFT)
-
-#define BLUE_BITS 5
-#define BLUE_SHIFT 0
-#define BLUE_MASK (((1 << BLUE_BITS)-1) << BLUE_SHIFT)
-
 
 static unsigned char *
 unpack_RGB_565 (gushort *pixels, unsigned int bytes_len)
@@ -72,49 +60,6 @@ unpack_RGB_565 (gushort *pixels, unsigned int bytes_len)
 	return result;
 }
 
-#if 0
-G_GNUC_UNUSED static void
-pack_RGB_565 (GdkPixbuf *pixbuf, gushort **pixels565, unsigned int *bytes_len)
-{
-	guchar *pixels;
-	gushort *result;
-	gint row_stride;
-	gint channels;
-	gint width;
-	gint height;
-	gint w;
-	gint h;
-
-	g_object_get (G_OBJECT (pixbuf), 
-		      "rowstride", &row_stride, "n-channels", &channels,
-		      "height", &height, "width", &width,
-		      "pixels", &pixels, NULL);
-
-	result = g_malloc0 (width * height * 2);
-
-	for (h = 0; h < height; h++) {
-		for (w = 0; w < width; w++) {
-			gint r;
-			gint g;
-			gint b;
-
-			r = pixels[(h*row_stride + w)*channels];
-			g = pixels[(h*row_stride + w)*channels + 1]; 
-			b = pixels[(h*row_stride + w)*channels + 2]; 
-			r >>= (8 - RED_BITS);
-			g >>= (8 - GREEN_BITS);
-			b >>= (8 - BLUE_BITS);
-			r = (r << RED_SHIFT) & RED_MASK;
-			g = (g << GREEN_SHIFT) & GREEN_MASK;
-			b = (b << BLUE_SHIFT) & BLUE_MASK;
-			result[h*height + w] =  (GINT16_TO_LE (r | g | b));
-		}
-	}
-
-	*pixels565 = result;
-	*bytes_len = width * height * 2;
-}
-#endif
 
 static unsigned char *
 get_pixel_data (Itdb_Image *image)
@@ -186,6 +131,18 @@ itdb_image_get_rgb_data (Itdb_Image *image)
 	*/
 }
 
+G_GNUC_INTERNAL char *
+ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id) 
+{
+	char *paths[] = {"iPod_Control", "Artwork", NULL, NULL};
+	char *filename;
+
+	paths[2] = g_strdup_printf ("F%04u_1.ithmb", correlation_id);
+	filename = itdb_resolve_path (mount_point, (const char **)paths);
+	g_free (paths[2]);
+	return filename;
+}
+
 G_GNUC_INTERNAL Itdb_Image *
 ipod_image_new_from_mhni (MhniHeader *mhni, const char *mount_point)
 {
@@ -195,26 +152,25 @@ ipod_image_new_from_mhni (MhniHeader *mhni, const char *mount_point)
 	if (img == NULL) {
 		return NULL;
 	}
-	img->filename = g_strdup_printf ("%s/iPod_Control/Artwork/F%04u_1.ithmb", mount_point, GINT_FROM_LE (mhni->correlation_id));
+	img->filename = ipod_image_get_ithmb_filename (mount_point,
+						       GINT_FROM_LE (mhni->correlation_id));
 	img->size = GINT_FROM_LE (mhni->image_size);
 	img->offset = GINT_FROM_LE (mhni->ithmb_offset);
 	img->width = (GINT_FROM_LE (mhni->image_dimensions) & 0xffff0000) >> 16;
 	img->height = (GINT_FROM_LE (mhni->image_dimensions) & 0x0000ffff);
 
-	return img;
-}
-
-G_GNUC_INTERNAL Itdb_Image *
-ipod_image_new_from_mhii (MhiiHeader *mhii)
-{
-	Itdb_Image *img;
-
-	img = g_new0 (Itdb_Image, 1);
-	if (img == NULL) {
+	if (mhni->correlation_id == IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID) {
+		img->type = ITDB_IMAGE_FULL_SCREEN;
+	} else if (mhni->correlation_id == IPOD_THUMBNAIL_NOW_PLAYING_CORRELATION_ID)
+	{
+		img->type = ITDB_IMAGE_NOW_PLAYING;
+			
+	} else {
+		g_print ("Unrecognized image size: %08x\n", 
+			 GINT_FROM_LE (mhni->image_dimensions));
+		g_free (img);
 		return NULL;
 	}
-	img->size = GINT_FROM_LE (mhii->orig_img_size);
-	img->id = GINT_FROM_LE (mhii->image_id);
 
-	return img;	
+	return img;
 }

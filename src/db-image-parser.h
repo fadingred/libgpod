@@ -28,7 +28,25 @@
 #include "db-itunes-parser.h"
 #include "itdb.h"
 
-Itdb_Image *ipod_image_new_from_mhni (MhniHeader *mhni, const char *mount_point);
-Itdb_Image *ipod_image_new_from_mhii (MhiiHeader *mhii);
+#define RED_BITS   5
+#define RED_SHIFT 11
+#define RED_MASK  (((1 << RED_BITS)-1) << RED_SHIFT)
+
+#define GREEN_BITS 6
+#define GREEN_SHIFT 5
+#define GREEN_MASK (((1 << GREEN_BITS)-1) << GREEN_SHIFT)
+
+#define BLUE_BITS 5
+#define BLUE_SHIFT 0
+#define BLUE_MASK (((1 << BLUE_BITS)-1) << BLUE_SHIFT)
+
+G_GNUC_INTERNAL Itdb_Image *ipod_image_new_from_mhni (MhniHeader *mhni, 
+						      const char *mount_point);
+G_GNUC_INTERNAL char *ipod_image_get_ithmb_filename (const char *mount_point, 
+						     gint correlation_id);
+
+G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_iTunesDB *db, 
+					     const char *mount_point);
+
 
 #endif
