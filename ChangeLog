@@ -1,5 +1,10 @@
 2005-09-22  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* added python bindings provided by Nicholas Piper
+	<nick at nickpiper co uk>
+
+2005-09-22  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* applied Christophe Fergeau's patch which adds cover art writing
 	support to libgpod -> bump to version 104
 
