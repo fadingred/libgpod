@@ -45,19 +45,23 @@ main (int argc, char *argv[])
 {
   GError *error=NULL;
   Itdb_iTunesDB *itdb;
+  gchar *infile = NULL;
+  gchar *outfile = NULL;
 
-#ifdef ENABLE_NLS
-  bindtextdomain (GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
-  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-  textdomain (GETTEXT_PACKAGE);
-#endif
+  if (argc >= 2)
+      infile = argv[1];
+  if (argc >= 3)
+      outfile = argv[2];
 
-  if (argc == 2)
-       itdb = itdb_parse_file (argv[1], &error);
-  else itdb = itdb_parse_file ("/home/jcs/.gtkpod/iTunesDB20050102",
-			       &error);
+  if (infile == 0)
+  {
+      printf ("Usage: %s <infile> [<outfile>]\n",  g_basename(argv[0]));
+      exit (0);
+  }
 
+  itdb = itdb_parse_file (infile, &error);
   printf ("%p\n", itdb);
+
   if (error)
   {
       if (error->message)
@@ -71,7 +75,8 @@ main (int argc, char *argv[])
       printf ("tracks: %d\n", g_list_length (itdb->tracks));
       printf ("playlists: %d\n", g_list_length (itdb->playlists));
 
-      itdb_write_file (itdb, "/home/jcs/.gtkpod/iTunesDB", &error);
+      if (outfile)
+	  itdb_write_file (itdb, outfile, &error);
       if (error)
       {
 	  if (error->message)
@@ -83,6 +88,5 @@ main (int argc, char *argv[])
 
   itdb_free (itdb);
 
-  /* all the cleanup is already done in gtkpod_main_quit() in misc.c */
   return 0;
 }

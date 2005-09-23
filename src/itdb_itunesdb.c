@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-22 00:36:40 jcs>
+/* Time-stamp: <2005-09-24 01:56:22 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -161,13 +161,13 @@ enum MHOD_ID {
   MHOD_ID_PODCASTRSS = 16,
 /* Chapter data. This is a m4a-style entry that is used to display
    subsongs within a mhit. Introduced in db version 0x0d. */
-/*  MHOD_ID_CHAPTERDATA = 17,*/
+  MHOD_ID_CHAPTERDATA = 17,
 /* Subtitle (usually the same as Description). Introduced in db
    version 0x0d. */
   MHOD_ID_SUBTITLE = 18,
   MHOD_ID_SPLPREF = 50,  /* settings for smart playlist */
   MHOD_ID_SPLRULES = 51, /* rules for smart playlist     */
-  MHOD_ID_MHYP = 52,     /* unknown                     */
+  MHOD_ID_LIBPLAYLISTINDEX = 52,  /* Library Playlist Index */
   MHOD_ID_PLAYLIST = 100
 };
 
@@ -941,7 +941,7 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
   guint8 limitsort_opposite;
   void *result = NULL;
   gint32 xl;
-  guint32 len;
+  guint32 mhod_len;
   gint32 header_length;
   gulong seek;
 
@@ -959,7 +959,7 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
 
   g_return_val_if_fail (!cts->error, NULL);
 
-  *mty = get_mhod_type (cts, mhod_seek, &len);
+  *mty = get_mhod_type (cts, mhod_seek, &mhod_len);
   if (*mty == -1)
   {
       if (!cts->error)
@@ -983,7 +983,7 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
 
   switch ((enum MHOD_ID)*mty)
   {
-  case MHOD_ID_MHYP:
+  case MHOD_ID_LIBPLAYLISTINDEX:
       /* this is not yet supported */
   case MHOD_ID_PLAYLIST:
       /* return the position indicator */
@@ -1019,10 +1019,20 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
   case MHOD_ID_PODCASTURL:
   case MHOD_ID_PODCASTRSS:
       /* length of string */
-      xl = get32lint (cts, mhod_seek+8) - header_length;
+      xl = mhod_len - header_length;
       if (cts->error) return NULL;
       result = g_new0 (gchar, xl+1);
       if (!seek_get_n_bytes (cts, (gchar *)result, seek, xl))
+      {
+	  g_free (result);
+	  result = NULL;
+      }
+      break;
+  case MHOD_ID_CHAPTERDATA: 
+      /* we'll just copy the entire data section */
+      xl = mhod_len - header_length;
+      result = g_new0 (gchar, xl);
+      if (!seek_get_n_bytes (cts, result, seek, xl))
       {
 	  g_free (result);
 	  result = NULL;
@@ -1155,7 +1165,7 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
       g_warning (_("Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n\n"), *mty);
       break;
   }
-  *ml = len;
+  *ml = mhod_len;
   return result;
 }
 
@@ -1191,8 +1201,9 @@ static gchar *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *
 	break;
     case MHOD_ID_SPLPREF:
     case MHOD_ID_SPLRULES:
-    case MHOD_ID_MHYP:
+    case MHOD_ID_LIBPLAYLISTINDEX:
     case MHOD_ID_PLAYLIST:
+    case MHOD_ID_CHAPTERDATA:
 	/* these do not have a string entry */
 	break;
     }
@@ -1200,67 +1211,353 @@ static gchar *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *
 }
 
 
-/* Get a playlist. Returns the position where the next playlist should
-   be. On error -1 is returned and fimp->error is set appropriately. */
-static glong get_playlist (FImport *fimp, glong seek)
+/* convenience function: set error for zero length hunk */
+static void set_error_zero_length_hunk (GError **error, glong seek,
+					const gchar *filename)
 {
-  auto gint pos_comp (gpointer a, gpointer b);
-  gint pos_comp (gpointer a, gpointer b)
-  {
-    return ((gint)a - (gint)b);
-  }
+    g_set_error (error,
+		 ITDB_FILE_ERROR,
+		 ITDB_FILE_ERROR_CORRUPT,
+		 _("iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."),
+		 seek, filename);
+}
 
-  gchar *plname_utf8 = NULL;
-  guint32 i, tracknum, mhod_num;
-  glong nextseek;
-  guint32 hlen;
+/* convenience function: set error for missing hunk */
+static void set_error_a_not_found_in_b (GError **error,
+					const gchar *a,
+					const gchar *b,
+					glong b_seek)
+{
+    g_set_error (error,
+		 ITDB_FILE_ERROR,
+		 ITDB_FILE_ERROR_CORRUPT,
+		 _("iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."),
+		 a, b, b_seek);
+}
+
+/* convenience function: set error if header is smaller than expected */
+static void set_error_a_header_smaller_than_b (GError **error,
+					       const gchar *a,
+					       guint32 b, guint32 len,
+					       glong a_seek,
+					       const gchar *filename)
+{
+      g_set_error (error,
+		   ITDB_FILE_ERROR,
+		   ITDB_FILE_ERROR_CORRUPT,
+		   _("header length of '%s' smaller than expected (%d < %d) at offset %ld in file '%s'."),
+		   a, b, len, a_seek, filename);
+}
+
+
+/* finds next occurence of section @a in section b (@b_seek) starting
+   at @start_seek
+*/
+/* Return value:
+   -1 and cts->error not set: section @a could not be found
+   -1 and cts->error set: some error occured
+   >=0: start of next occurence of section @a
+*/
+static glong find_next_a_in_b (FContents *cts,
+			       const gchar *a,
+			       glong b_seek, glong start_seek)
+{
+    glong b_len;
+    glong offset, len;
+
+    g_return_val_if_fail (a, -1);
+    g_return_val_if_fail (cts, -1);
+    g_return_val_if_fail (strlen (a) == 4, -1);
+    g_return_val_if_fail (b_seek>=0, -1);
+    g_return_val_if_fail (start_seek >= b_seek, -1);
+
+/*     printf ("%s: b_seek: %lx, start_seek: %lx\n", a, b_seek, start_seek); */
+
+    b_len = get32lint (cts, b_seek+8);
+    if (cts->error) return -1;
+
+    offset = start_seek - b_seek;
+    len = 0;
+    do
+    {   /* skip headers inside the b hunk (b_len) until we find header
+	   @a */
+	len = get32lint (cts, b_seek+offset+4);
+	if (cts->error) return -1;
+	if (len == 0)
+	{   /* This needs to be checked, otherwise we might hang */
+	    set_error_zero_length_hunk (&cts->error, b_seek+offset,
+					cts->filename);
+	    return -1;
+	}
+	offset += len;
+/* 	printf ("offset: %lx, b_len: %lx, bseek+offset: %lx\n",  */
+/* 		offset, b_len, b_seek+offset); */
+    } while ((offset < b_len-4) && 
+	     !cmp_n_bytes_seek (cts, a, b_seek+offset, 4));
+    if (cts->error) return -1;
+
+    if (offset >= b_len)	return -1;
+
+/*     printf ("%s found at %lx\n", a, b_seek+offset); */
+
+    return b_seek+offset;
+}
+
+
+
+
+/* return the position of mhsd with type @type */
+/* Return value:
+     -1 if mhsd cannot be found. cts->error will not be set
+
+     0 and cts->error is set if some other error occurs.
+     Since the mhsd can never be at position 0 (a mhbd must be there),
+     a return value of 0 always indicates an error.
+*/
+static glong find_mhsd (FContents *cts, guint32 type)
+{
+    guint32 i, len, mhsd_num;
+    glong seek;
+
+    if (!cmp_n_bytes_seek (cts, "mhbd", 0, 4))
+    {
+	if (!cts->error)
+	{   /* set error */
+	    g_set_error (&cts->error,
+			 ITDB_FILE_ERROR,
+			 ITDB_FILE_ERROR_CORRUPT,
+			 _("Not a iTunesDB: '%s' (missing mhdb header)."),
+			 cts->filename);
+	}
+	return 0;
+    }
+    len = get32lint (cts, 4);
+    if (cts->error) return 0;
+    /* all the headers I know are 0x68 long -- if this one is longer
+       we can could simply ignore the additional information */
+    /* Since 'we' (parse_fimp()) only need data from the first 32
+       bytes, don't complain unless it's smaller than that */
+    if (len < 32)
+    {
+	g_set_error (&cts->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_CORRUPT,
+		     _("iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). Aborting."),
+		     cts->filename, len);
+	return FALSE;
+    }
+
+    mhsd_num = get32lint (cts, 20);
+    if (cts->error) return 0;
+
+    seek = 0;
+    for (i=0; i<mhsd_num; ++i)
+    {
+	guint32 mhsd_type;
+
+	seek += len;
+	if (!cmp_n_bytes_seek (cts, "mhsd", seek, 4))
+	{
+	    if (!cts->error)
+	    {   /* set error */
+		g_set_error (&cts->error,
+			     ITDB_FILE_ERROR,
+			     ITDB_FILE_ERROR_CORRUPT,
+			     _("iTunesDB '%s' corrupt: mhsd expected at %ld."),
+			     cts->filename, seek);
+	    }
+	    return 0;
+	}
+	len = get32lint (cts, seek+8);
+	if (cts->error) return 0;
+	
+	mhsd_type = get32lint (cts, seek+12);
+	if (cts->error) return 0;
+
+	if (mhsd_type == type) return seek;
+    }
+    return -1;
+}
+
+
+
+/* Read and process the mhip at @seek. Return a pointer to the next
+   possible mhip. */
+/* Return value: -1 if no mhip is present at @seek */
+static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
+		       glong mhip_seek)
+{
+    auto gint pos_comp (gpointer a, gpointer b);
+    gint pos_comp (gpointer a, gpointer b)
+	{
+	    return ((gint)a - (gint)b);
+	}
+    FContents *cts;
+    guint32 mhip_hlen, mhip_len, mhod_num, mhod_seek;
+    Itdb_Track *tr;
+    gint32 i, pos=-1;
+    guint32 posid;
+    gint32 mhod_type;
+    guint32 trackid;
+
+    g_return_val_if_fail (fimp, -1);
+    g_return_val_if_fail (plitem, -1);
+
+    cts = fimp->itunesdb;
+
+    if (!cmp_n_bytes_seek (cts, "mhip", mhip_seek, 4))
+    {
+	CHECK_ERROR (fimp, -1);
+	return -1;
+    }
+
+    mhip_hlen = get32lint (cts, mhip_seek+4);
+    CHECK_ERROR (fimp, -1);
+
+    if (mhip_hlen < 36)
+    {
+	set_error_a_header_smaller_than_b (&fimp->error,
+					   "mhip",
+					   mhip_hlen, 36,
+					   mhip_seek, cts->filename);
+	return -1;
+    }
+
+    /* Check if entire mhip header can be read -- that way we won't
+       have to check for read errors every time we access a single
+       byte */
+
+    check_seek (cts, mhip_seek, mhip_hlen);
+    CHECK_ERROR (fimp, -1);
+
+    mhip_len = get32lint (cts, mhip_seek+8);
+    mhod_num = get32lint (cts, mhip_seek+12);
+    trackid = get32lint(cts, mhip_seek+24);
+
+    mhod_seek = mhip_seek + mhip_hlen;
+ 
+    /* the mhod that follows gives us the position in the
+       playlist (type 100). Just for flexibility, we scan all
+       following mhods and pick the type 100 */
+    for (i=0; i<mhod_num; ++i)
+    {
+	guint32 mhod_len;
+
+	mhod_type = get_mhod_type (cts, mhod_seek, &mhod_len);
+	CHECK_ERROR (fimp, -1);
+	if (mhod_type == MHOD_ID_PLAYLIST)
+	{
+	    posid = (guint32)get_mhod (cts, mhod_seek,
+				       &mhod_len, &mhod_type);
+	    CHECK_ERROR (fimp, -1);
+	    /* The posids don't have to be in numeric order, but our
+	       database depends on the playlist members being sorted
+	       according to the order they appear in the
+	       playlist. Therefore we need to find out at which
+	       position to insert the track */
+	    fimp->pos_glist = g_list_insert_sorted (
+		fimp->pos_glist, (gpointer)posid,
+		(GCompareFunc)pos_comp);
+	    pos = g_list_index (fimp->pos_glist, (gpointer)posid);
+	    /* for speedup: pos==-1 is appending at the end */
+	    if (pos == fimp->pos_len)   pos = -1;
+	    break;
+	}
+	else
+	{
+	    if (mhod_len == -1)
+	    {
+		g_warning (_("Number of MHODs in mhip at %ld inconsistent in file '%s'."),
+			   mhip_seek);
+		break;
+	    }
+	    mhod_seek += mhod_len;
+	}
+    }
+
+    tr = itdb_track_id_tree_by_id (fimp->idtree, trackid);
+    if (tr)
+    {
+	itdb_playlist_add_track (plitem, tr, pos);
+	++fimp->pos_len;
+    }
+    else
+    {
+	if (plitem->podcastflag == ITDB_PL_FLAG_NORM)
+	{
+	g_warning (_("Itdb_Track ID '%d' not found.\n"), trackid);
+	}
+    }
+
+    return mhip_seek+mhip_len;
+}
+
+
+
+
+/* Get a playlist. Returns the position where the next playlist should
+   be. On error -1 is returned and fimp->error is set
+   appropriately. */
+/* get_mhyp */
+static glong get_playlist (FImport *fimp, glong mhyp_seek)
+{
+  guint32 i, mhipnum, mhod_num;
+  glong nextseek, mhod_seek, mhip_seek;
+  guint32 header_len;
   Itdb_Playlist *plitem = NULL;
   FContents *cts;
 
 #if ITUNESDB_DEBUG
-  fprintf(stderr, "mhyp seek: %x\n", (int)seek);
+  fprintf(stderr, "mhyp seek: %x\n", (int)mhyp_seek);
 #endif
   g_return_val_if_fail (fimp, -1);
   g_return_val_if_fail (fimp->idtree, -1);
+  g_return_val_if_fail (fimp->pos_glist == NULL, -1);
+  g_return_val_if_fail (fimp->pos_len == 0, -1);
 
   cts = fimp->itunesdb;
 
-  if (!cmp_n_bytes_seek (cts, "mhyp", seek, 4))
+  if (!cmp_n_bytes_seek (cts, "mhyp", mhyp_seek, 4))
   {
       if (cts->error)
 	  g_propagate_error (&fimp->error, cts->error);
       return -1;
   }
-  hlen = get32lint (cts, seek+4); /* length of header */
+  header_len = get32lint (cts, mhyp_seek+4); /* length of header */
   CHECK_ERROR (fimp, -1);
-  if (hlen == 0)
+
+  if (header_len < 48)
   {
-      g_set_error (&fimp->error,
-		   ITDB_FILE_ERROR,
-		   ITDB_FILE_ERROR_CORRUPT,
-		   _("iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."),
-		   seek, cts->filename);
+      set_error_a_header_smaller_than_b (&fimp->error,
+					 "mhyp",
+					 header_len, 48,
+					 mhyp_seek, cts->filename);
       return -1;
   }
-  nextseek = seek + get32lint (cts, seek+8);/* possible begin of next PL */
+
+  /* Check if entire mhyp can be read -- that way we won't have to
+   * check for read errors every time we access a single byte */
+
+  check_seek (cts, mhyp_seek, header_len);
   CHECK_ERROR (fimp, -1);
-  mhod_num = get32lint (cts, seek+12); /* number of MHODs we expect */
-  CHECK_ERROR (fimp, -1);
-  tracknum = get32lint (cts, seek+16); /* number of tracks in playlist */
-  CHECK_ERROR (fimp, -1);
+
+  nextseek = mhyp_seek + get32lint (cts, mhyp_seek+8);/* possible begin of next PL */  mhod_num = get32lint (cts, mhyp_seek+12); /* number of MHODs we expect */
+  mhipnum = get32lint (cts, mhyp_seek+16); /* number of tracks
+					       (mhips) in playlist */
+
   plitem = itdb_playlist_new (NULL, FALSE);
+
   /* Some Playlists have added 256 to their type -- I don't know what
      it's for, so we just ignore it for now -> & 0xff */
-  plitem->type = get32lint (cts, seek+20) & 0xff;
-  CHECK_ERROR (fimp, -1);
-  plitem->id = get64lint (cts, seek+28);
-  CHECK_ERROR (fimp, -1);
-  plitem->unk036 = get32lint (cts, seek+36);
-  CHECK_ERROR (fimp, -1);
-  plitem->unk040 = get32lint (cts, seek+40);
-  CHECK_ERROR (fimp, -1);
-  plitem->sortorder = get32lint (cts, seek+44);
-  CHECK_ERROR (fimp, -1);
+  plitem->type = get32lint (cts, mhyp_seek+20) & 0xff;
+  plitem->id = get64lint (cts, mhyp_seek+28);
+  plitem->mhodcount = get32lint (cts, mhyp_seek+36);
+  plitem->libmhodcount = get16lint (cts, mhyp_seek+40);
+  plitem->podcastflag = get16lint (cts, mhyp_seek+42);
+  plitem->sortorder = get32lint (cts, mhyp_seek+44);
+
+  mhod_seek = mhyp_seek + header_len;
+
   for (i=0; i < mhod_num; ++i)
   {
       gchar *plname_utf8_maybe;
@@ -1268,78 +1565,89 @@ static glong get_playlist (FImport *fimp, glong seek)
       SPLRules *splrules = NULL;
       gint32 type;
 
-      seek += hlen;
-      type = get_mhod_type (cts, seek, &hlen);
+      type = get_mhod_type (cts, mhod_seek, &header_len);
       CHECK_ERROR (fimp, -1);
-      if (hlen != -1) switch ((enum MHOD_ID)type)
+      if (header_len != -1)
       {
-      case MHOD_ID_PLAYLIST:
-	  /* here we could do something about the playlist settings */
-	  break;
-      case MHOD_ID_TITLE:
-	  plname_utf8_maybe = get_mhod (cts, seek, &hlen, &type);
-	  CHECK_ERROR (fimp, -1);
-	  if (plname_utf8_maybe)
+	  switch ((enum MHOD_ID)type)
 	  {
-	      /* sometimes there seem to be two mhod TITLE headers */
-	      g_free (plname_utf8);
-	      plname_utf8  = plname_utf8_maybe;
+	  case MHOD_ID_PLAYLIST:
+	      /* here we could do something about the playlist settings */
+	      break;
+	  case MHOD_ID_TITLE:
+	      plname_utf8_maybe = get_mhod (cts, mhod_seek, &header_len, &type);
+	      CHECK_ERROR (fimp, -1);
+	      if (plname_utf8_maybe)
+	      {
+		  /* sometimes there seem to be two mhod TITLE headers */
+		  g_free (plitem->name);
+		  plitem->name = plname_utf8_maybe;
+	      }
+	      break;
+	  case MHOD_ID_SPLPREF:
+	      splpref = get_mhod (cts, mhod_seek, &header_len, &type);
+	      CHECK_ERROR (fimp, -1);
+	      if (splpref)
+	      {
+		  plitem->is_spl = TRUE;
+		  memcpy (&plitem->splpref, splpref, sizeof (SPLPref));
+		  g_free (splpref);
+		  splpref = NULL;
+	      }
+	      break;
+	  case MHOD_ID_SPLRULES:
+	      splrules = get_mhod (cts, mhod_seek, &header_len, &type);
+	      CHECK_ERROR (fimp, -1);
+	      if (splrules)
+	      {
+		  plitem->is_spl = TRUE;
+		  memcpy (&plitem->splrules, splrules, sizeof (SPLRules));
+		  g_free (splrules);
+		  splrules = NULL;
+	      }
+	      break;
+	  case MHOD_ID_PATH:
+	  case MHOD_ID_ALBUM:
+	  case MHOD_ID_ARTIST:
+	  case MHOD_ID_GENRE:
+	  case MHOD_ID_FILETYPE:
+	  case MHOD_ID_COMMENT:
+	  case MHOD_ID_CATEGORY:
+	  case MHOD_ID_COMPOSER:
+	  case MHOD_ID_GROUPING:
+	  case MHOD_ID_DESCRIPTION:
+	  case MHOD_ID_PODCASTURL:
+	  case MHOD_ID_PODCASTRSS:
+	  case MHOD_ID_SUBTITLE:
+	  case MHOD_ID_CHAPTERDATA:
+	      /* these are not expected here */
+	      break;
+	  case MHOD_ID_LIBPLAYLISTINDEX:
+	      /* this I don't know how to handle */
+	      break;
 	  }
-	  break;
-      case MHOD_ID_SPLPREF:
-	  splpref = get_mhod (cts, seek, &hlen, &type);
-	  CHECK_ERROR (fimp, -1);
-	  if (splpref)
-	  {
-	      plitem->is_spl = TRUE;
-	      memcpy (&plitem->splpref, splpref, sizeof (SPLPref));
-	      g_free (splpref);
-	      splpref = NULL;
-	  }
-	  break;
-      case MHOD_ID_SPLRULES:
-	  splrules = get_mhod (cts, seek, &hlen, &type);
-	  CHECK_ERROR (fimp, -1);
-	  if (splrules)
-	  {
-	      plitem->is_spl = TRUE;
-	      memcpy (&plitem->splrules, splrules, sizeof (SPLRules));
-	      g_free (splrules);
-	      splrules = NULL;
-	  }
-	  break;
-      case MHOD_ID_PATH:
-      case MHOD_ID_ALBUM:
-      case MHOD_ID_ARTIST:
-      case MHOD_ID_GENRE:
-      case MHOD_ID_FILETYPE:
-      case MHOD_ID_COMMENT:
-      case MHOD_ID_CATEGORY:
-      case MHOD_ID_COMPOSER:
-      case MHOD_ID_GROUPING:
-      case MHOD_ID_DESCRIPTION:
-      case MHOD_ID_PODCASTURL:
-      case MHOD_ID_PODCASTRSS:
-      case MHOD_ID_SUBTITLE:
-	  /* these are not expected here */
-	  break;
-      case MHOD_ID_MHYP:
-	  /* this I don't know how to handle */
+	  mhod_seek += header_len;
+      }
+      else
+      {
+	  g_warning (_("Number of MHODs in mhyp at %ld inconsistent in file '%s'."),
+		     mhyp_seek, cts->filename);
 	  break;
       }
   }
 
-  if (plname_utf8)
-  {
-      plitem->name = plname_utf8;
-  }
-  else
+  if (!plitem->name)
   {   /* we did not read a valid mhod TITLE header -> */
       /* we simply make up our own name */
       if (plitem->type == ITDB_PL_TYPE_MPL)
 	  plitem->name = _("Master-PL");
       else
-	  plitem->name = _("Playlist");
+      {
+	  if (plitem->podcastflag == ITDB_PL_FLAG_PODCAST)
+	      plitem->name = _("Podcasts");
+	  else
+	      plitem->name = _("Playlist");
+      }
   }
 
 #if ITUNESDB_DEBUG
@@ -1349,77 +1657,27 @@ static glong get_playlist (FImport *fimp, glong seek)
   /* add new playlist */
   itdb_playlist_add (fimp->itdb, plitem, -1);
 
+  mhip_seek = mhod_seek;
+
   i=0; /* tracks read */
-  while (i<tracknum)
+  for (i=0; i < mhipnum; ++i)
   {
-      guint32 len = get32lint (cts, seek+8);
-#if ITUNESDB_DEBUG
-      fprintf(stderr, "  %lx: seeking track %d of %d\n", seek, i+1, (int)tracknum);
-#endif
-      CHECK_ERROR (fimp, -1);
-      /* We read the mhip headers and skip everything else (the mhips
-       * seem to come in pairs: mhip/mhod mhip/mhod ...). */
-      if (cmp_n_bytes_seek (cts, "mhyp", seek, 4))
-      {   /* This cannot be, let's abort... */
+      mhip_seek = get_mhip (fimp, plitem, mhip_seek);
+      if (mhip_seek == -1)
+      {
 	  g_set_error (&fimp->error,
 		       ITDB_FILE_ERROR,
 		       ITDB_FILE_ERROR_CORRUPT,
-		       _("iTunesDB corrupt: found mhyp at %ld in file '%s'."),
-		       seek, cts->filename);
+		       _("iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %ld in file '%s'."),
+		       mhyp_seek, cts->filename);
 	  return -1;
       }
-      if (cmp_n_bytes_seek (cts, "mhip", seek, 4))
-      {
-#if ITUNESDB_DEBUG
-      fprintf(stderr, "  %lx: mhit\n", seek);
-#endif
-	  Itdb_Track *tr;
-	  gint32 pos = -1;
-	  guint32 posid;
-	  gint32 mhod_type;
-	  guint32 mhod_len;
-	  guint32 mhit_len;
-	  guint32 ref;
-	  mhit_len = get32lint(cts, seek+4);
-	  CHECK_ERROR (fimp, -1);
-	  ref = get32lint(cts, seek+24);
-	  CHECK_ERROR (fimp, -1);
-	  /* the mhod that follows gives us the position in the
-	     playlist (type 100) */
-	  mhod_type = get_mhod_type (cts, seek+mhit_len, NULL);
-	  CHECK_ERROR (fimp, -1);
-	  if (mhod_type == MHOD_ID_PLAYLIST)
-	  {
-	      posid = (guint32)get_mhod (cts, seek+mhit_len,
-					 &mhod_len, &mhod_type);
-	      CHECK_ERROR (fimp, -1);
-	      /* The posids don't have to be in numeric order, but our
-		 database depends on the playlist members being sorted
-		 according to the order they appear in the
-		 playlist. Therefore we need to find out at which
-		 position to insert the track */
-	      fimp->pos_glist = g_list_insert_sorted (
-		  fimp->pos_glist, (gpointer)posid,
-		  (GCompareFunc)pos_comp);
-	      pos = g_list_index (fimp->pos_glist, (gpointer)posid);
-	      /* For performance reasons set pos to -1 if position is
-		 end of list */
-	      if (pos == i) pos = -1;
-	  }
-	  tr = itdb_track_id_tree_by_id (fimp->idtree, ref);
-	  if (tr)
-	  {
-	      itdb_playlist_add_track (plitem, tr, pos);
-	  }
-	  else
-	      g_warning (_("Itdb_Track ID '%d' not found.\n"), ref);
-	  ++i;
-      }
-      CHECK_ERROR (fimp, -1);
-      seek += len;
-  }
+  }	  
+
+
   g_list_free (fimp->pos_glist);
   fimp->pos_glist = NULL;
+  fimp->pos_len = 0;
   return nextseek;
 }
 
@@ -1427,7 +1685,7 @@ static glong get_playlist (FImport *fimp, glong seek)
 /* returns a pointer to the next header or -1 on error. fimp->error is
    set appropriately. If no "mhit" header is found at the location
    specified, -1 is returned but no error is set. */
-static glong get_mhit (FImport *fimp, glong seek)
+static glong get_mhit (FImport *fimp, glong mhit_seek)
 {
   Itdb_Track *track;
   gchar *entry_utf8;
@@ -1437,6 +1695,7 @@ static glong get_mhit (FImport *fimp, glong seek)
   struct playcount *playcount;
   guint32 i, mhod_nums;
   FContents *cts;
+  glong seek = mhit_seek;
 
 #if ITUNESDB_DEBUG
   fprintf(stderr, "get_mhit seek: %x\n", (int)seek);
@@ -1456,6 +1715,18 @@ static glong get_mhit (FImport *fimp, glong seek)
   header_len = get32lint (cts, seek+4);
   CHECK_ERROR (fimp, -1);
 
+  /* size of the mhit header: For dbversion <= 0x0b (iTunes 4.7 and
+     earlier), the length is 0x9c. As of dbversion 0x0c and 0x0d
+     (iTunes 4.7.1 - iTunes 4.9), the size is 0xf4. */
+  if (header_len < 0x9c)
+  {
+      set_error_a_header_smaller_than_b (&fimp->error,
+					 "mhit",
+					 header_len, 0x9c,
+					 seek, cts->filename);
+      return -1;
+  }
+
   /* Check if entire mhit can be read -- that way we won't have to
    * check for read errors every time we access a single byte */
 
@@ -1464,21 +1735,8 @@ static glong get_mhit (FImport *fimp, glong seek)
   mhod_nums = get32lint (cts, seek+12);
   CHECK_ERROR (fimp, -1);
 
-  track = itdb_track_new ();
 
-  /* size of the mhit header: For dbversion <= 0x0b (iTunes 4.7 and
-     earlier), the length is 0x9c. As of dbversion 0x0c and 0x0d
-     (iTunes 4.7.1 - iTunes 4.9), the size is 0xf4. */
-  if (header_len < 0x9c)
-  {
-      g_return_val_if_fail (cts->filename, FALSE);
-      g_set_error (&fimp->error,
-		   ITDB_FILE_ERROR,
-		   ITDB_FILE_ERROR_CORRUPT,
-		   _("mhit header length smaller than expected (%x < 0x9c) at offset %ld in file '%s'."),
-		   header_len, seek, cts->filename);
-      return -1;
-  }
+  track = itdb_track_new ();
 
   if (header_len >= 0x9c)
   {
@@ -1522,7 +1780,7 @@ static glong get_mhit (FImport *fimp, glong seek)
       track->artwork_size = get32lint (cts, seek+128);
       track->unk132 = get32lint (cts, seek+132);
       track->samplerate2 = get32lfloat (cts, seek+136);
-      track->unk140 = get32lint (cts, seek+140);
+      track->time_released = get32lint (cts, seek+140);
       track->unk144 = get32lint (cts, seek+144);
       track->unk148 = get32lint (cts, seek+148);
       track->unk152 = get32lint (cts, seek+152);
@@ -1553,62 +1811,6 @@ static glong get_mhit (FImport *fimp, glong seek)
   }
 
   track->transferred = TRUE;                   /* track is on iPod! */
-
-#if ITUNESDB_MHIT_DEBUG
-time_t time_mac_to_host (guint32 mactime);
-gchar *time_time_to_string (time_t time);
-#define printf_mhit(sk, str)  printf ("%3d: %d (%s)\n", sk, get32lint (file, seek+sk), str);
-#define printf_mhit_time(sk, str) { gchar *buf = time_time_to_string (itunesdb_time_mac_to_host (get32lint (file, seek+sk))); printf ("%3d: %s (%s)\n", sk, buf, str); g_free (buf); }
-  {
-      printf ("\nmhit: seek=%lu\n", seek);
-      printf_mhit (  4, "header size");
-      printf_mhit (  8, "mhit size");
-      printf_mhit ( 12, "nr of mhods");
-      printf_mhit ( 16, "iPod ID");
-      printf_mhit ( 20, "?");
-      printf_mhit ( 24, "?");
-      printf (" 28: %u (type)\n", get32lint (file, seek+28) & 0xffffff);
-      printf (" 28: %u (rating)\n", get32lint (file, seek+28) >> 24);
-      printf_mhit ( 32, "timestamp file");
-      printf_mhit_time ( 32, "timestamp file");
-      printf_mhit ( 36, "size");
-      printf_mhit ( 40, "tracklen (ms)");
-      printf_mhit ( 44, "track_nr");
-      printf_mhit ( 48, "total tracks");
-      printf_mhit ( 52, "year");
-      printf_mhit ( 56, "bitrate");
-      printf_mhit ( 60, "sample rate");
-      printf (" 60: %u (sample rate LSB)\n", get32lint (file, seek+60) & 0xffff);
-      printf (" 60: %u (sample rate HSB)\n", (get32lint (file, seek+60) >> 16));
-      printf_mhit ( 64, "?");
-      printf_mhit ( 68, "?");
-      printf_mhit ( 72, "?");
-      printf_mhit ( 76, "?");
-      printf_mhit ( 80, "playcount");
-      printf_mhit ( 84, "?");
-      printf_mhit ( 88, "last played");
-      printf_mhit_time ( 88, "last played");
-      printf_mhit ( 92, "CD");
-      printf_mhit ( 96, "total CDs");
-      printf_mhit (100, "?");
-      printf_mhit (104, "?");
-      printf_mhit_time (104, "?");
-      printf_mhit (108, "?");
-      printf_mhit (112, "?");
-      printf_mhit (116, "?");
-      printf_mhit (120, "?");
-      printf_mhit (124, "?");
-      printf_mhit (128, "?");
-      printf_mhit (132, "?");
-      printf_mhit (136, "?");
-      printf_mhit (140, "?");
-      printf_mhit (144, "?");
-      printf_mhit (148, "?");
-      printf_mhit (152, "?");
-  }
-#undef printf_mhit_time
-#undef printf_mhit
-#endif
 
   seek += get32lint (cts, seek+4);             /* 1st mhod starts here! */
   CHECK_ERROR (fimp, -1);
@@ -1664,7 +1866,30 @@ gchar *time_time_to_string (time_t time);
 	      track->subtitle = entry_utf8;
 	      break;
 	  default: /* unknown entry -- discard */
+	      g_warning ("Unknown string mhod type %d at %lx inside mhit starting at %lx\n",
+			 type, seek, mhit_seek);
 	      g_free (entry_utf8);
+	      break;
+	  }
+      }
+      else
+      {
+	  switch (type)
+	  {
+	  case MHOD_ID_CHAPTERDATA:
+	      /* we just read the entire chapterdata info until we
+		 have a better way to parse and represent it */
+	      track->chapterdata_raw = get_mhod (cts, seek, &zip, &type);
+	      if (track->chapterdata_raw)
+	      {
+		  track->chapterdata_raw_length =
+		      zip - get32lint (cts, seek+4);
+	      }
+	      break;
+	  default:
+/*
+	  printf ("found mhod type %d at %lx inside mhit starting at %lx\n",
+	  type, seek, mhit_seek);*/
 	      break;
 	  }
       }
@@ -1839,161 +2064,6 @@ static gboolean read_OTG_playlists (FImport *fimp)
     }
     g_free (dirname);
     return TRUE;
-}
-
-
-/* convenience function: set error for zero length hunk */
-static void set_error_zero_length_hunk (GError **error, glong seek,
-					gchar *filename)
-{
-    g_set_error (error,
-		 ITDB_FILE_ERROR,
-		 ITDB_FILE_ERROR_CORRUPT,
-		 _("iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."),
-		 seek, filename);
-}
-
-/* convenience function: set error for missing hunk */
-static void set_error_a_not_found_in_b (GError **error,
-					const gchar *a,
-					const gchar *b,
-					glong mhsd_seek)
-{
-    g_set_error (error,
-		 ITDB_FILE_ERROR,
-		 ITDB_FILE_ERROR_CORRUPT,
-		 _("iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."),
-		 a, b, mhsd_seek);
-}
-
-
-/* finds next occurence of section @a in section b (@b_seek) starting
-   at @start_seek
-*/
-/* Return value:
-   -1 and cts->error not set: section @a could not be found
-   -1 and cts->error set: some error occured
-   >=0: start of next occurence of section @a
-*/
-static glong find_next_a_in_b (FContents *cts,
-			       const gchar *a,
-			       glong b_seek, glong start_seek)
-{
-    glong b_len;
-    glong offset, len;
-
-    g_return_val_if_fail (a, -1);
-    g_return_val_if_fail (cts, -1);
-    g_return_val_if_fail (strlen (a) == 4, -1);
-    g_return_val_if_fail (b_seek>=0, -1);
-    g_return_val_if_fail (start_seek >= b_seek, -1);
-
-/*     printf ("%s: b_seek: %lx, start_seek: %lx\n", a, b_seek, start_seek); */
-
-    b_len = get32lint (cts, b_seek+8);
-    if (cts->error) return -1;
-
-    offset = start_seek - b_seek;
-    len = 0;
-    do
-    {   /* skip headers inside the b hunk (b_len) until we find header
-	   @a */
-	len = get32lint (cts, b_seek+offset+4);
-	if (cts->error) return -1;
-	if (len == 0)
-	{   /* This needs to be checked, otherwise we might hang */
-	    set_error_zero_length_hunk (&cts->error, b_seek+offset,
-					cts->filename);
-	    return -1;
-	}
-	offset += len;
-/* 	printf ("offset: %lx, b_len: %lx, bseek+offset: %lx\n",  */
-/* 		offset, b_len, b_seek+offset); */
-    } while ((offset < b_len-4) && 
-	     !cmp_n_bytes_seek (cts, a, b_seek+offset, 4));
-    if (cts->error) return -1;
-
-    if (offset >= b_len)	return -1;
-
-/*     printf ("%s found at %lx\n", a, b_seek+offset); */
-
-    return b_seek+offset;
-}
-
-
-
-
-/* return the position of mhsd with type @type */
-/* Return value:
-     -1 if mhsd cannot be found. cts->error will not be set
-
-     0 and cts->error is set if some other error occurs.
-     Since the mhsd can never be at position 0 (a mhbd must be there),
-     a return value of 0 always indicates an error.
-*/
-static glong find_mhsd (FContents *cts, guint32 type)
-{
-    guint32 i, len, mhsd_num;
-    glong seek;
-
-    if (!cmp_n_bytes_seek (cts, "mhbd", 0, 4))
-    {
-	if (!cts->error)
-	{   /* set error */
-	    g_set_error (&cts->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_CORRUPT,
-			 _("Not a iTunesDB: '%s' (missing mhdb header)."),
-			 cts->filename);
-	}
-	return 0;
-    }
-    len = get32lint (cts, 4);
-    if (cts->error) return 0;
-    /* all the headers I know are 0x68 long -- if this one is longer
-       we can could simply ignore the additional information */
-    /* Since 'we' (parse_fimp()) only need data from the first 32
-       bytes, don't complain unless it's smaller than that */
-    if (len < 32)
-    {
-	g_set_error (&cts->error,
-		     ITDB_FILE_ERROR,
-		     ITDB_FILE_ERROR_CORRUPT,
-		     _("iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). Aborting."),
-		     cts->filename, len);
-	return FALSE;
-    }
-
-    mhsd_num = get32lint (cts, 20);
-    if (cts->error) return 0;
-
-    seek = 0;
-    for (i=0; i<mhsd_num; ++i)
-    {
-	guint32 mhsd_type;
-
-	seek += len;
-	if (!cmp_n_bytes_seek (cts, "mhsd", seek, 4))
-	{
-	    if (!cts->error)
-	    {   /* set error */
-		g_set_error (&cts->error,
-			     ITDB_FILE_ERROR,
-			     ITDB_FILE_ERROR_CORRUPT,
-			     _("iTunesDB '%s' corrupt: mhsd expected at %ld."),
-			     cts->filename, seek);
-	    }
-	    return 0;
-	}
-	len = get32lint (cts, seek+8);
-	if (cts->error) return 0;
-	
-	mhsd_type = get32lint (cts, seek+12);
-	if (cts->error) return 0;
-
-	if (mhsd_type == type) return seek;
-    }
-    return -1;
 }
 
 
@@ -2326,6 +2396,17 @@ static void put_data (WContents *cts, gchar *data, gulong len)
 }
 
 
+/* Write @string without trailing Null to end of @cts. Will always be
+ * successful because glib terminates when out of memory */
+static void put_string (WContents *cts, gchar *string)
+{
+    g_return_if_fail (cts);
+    g_return_if_fail (string);
+
+    put_data (cts, string, strlen(string));
+}
+
+
 /* Write 1-byte integer @n to @cts */
 static void put8int (WContents *cts, guint8 n)
 {
@@ -2476,7 +2557,7 @@ static void put32_n0 (WContents *cts, gulong n)
 
 
 /* Write out the mhbd header. Size will be written later */
-static void mk_mhbd (FExport *fexp)
+static void mk_mhbd (FExport *fexp, guint32 children)
 {
   WContents *cts;
 
@@ -2486,7 +2567,7 @@ static void mk_mhbd (FExport *fexp)
 
   cts = fexp->itunesdb;
 
-  put_data (cts, "mhbd", 4);
+  put_string (cts, "mhbd");
   put32lint (cts, 104); /* header size */
   put32lint (cts, -1);  /* size of whole mhdb -- fill in later */
   put32lint (cts, 1);   /* ? */
@@ -2499,7 +2580,7 @@ static void mk_mhbd (FExport *fexp)
                      0x0d: iTunes 4.9 */
   fexp->itdb->version = 0x0d;
   put32lint (cts, fexp->itdb->version);
-  put32lint (cts, 2);   /* 2 children (track list and playlist list) */
+  put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
   put32lint (cts, 2);   /* ? */
   put32_n0 (cts, 17);   /* dummy space */
@@ -2523,7 +2604,7 @@ static void mk_mhsd (FExport *fexp, guint32 type)
 
   cts = fexp->itunesdb;
 
-  put_data (cts, "mhsd", 4);
+  put_string (cts, "mhsd");
   put32lint (cts, 96);   /* Headersize */
   put32lint (cts, -1);   /* size of whole mhsd -- fill in later */
   put32lint (cts, type); /* type: 1 = track, 2 = playlist */
@@ -2542,7 +2623,7 @@ static void mk_mhlt (FExport *fexp, guint32 num)
 
   cts = fexp->itunesdb;
 
-  put_data (cts, "mhlt", 4);
+  put_string (cts, "mhlt");
   put32lint (cts, 92);       /* Headersize */
   put32lint (cts, num);      /* tracks in this itunesdb */
   put32_n0 (cts, 20);        /* dummy space */
@@ -2555,7 +2636,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   g_return_if_fail (cts);
   g_return_if_fail (track);
 
-  put_data (cts, "mhit", 4);
+  put_string (cts, "mhit");
   put32lint (cts, 0xf4);  /* header size */
   put32lint (cts, -1);   /* size of whole mhit -- fill in later */
   put32lint (cts, -1);   /* nr of mhods in this mhit -- later   */
@@ -2598,7 +2679,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->artwork_size);
   put32lint (cts, track->unk132);
   put32lfloat (cts, track->samplerate2);
-  put32lint (cts, track->unk140);
+  put32lint (cts, track->time_released);
   put32lint (cts, track->unk144);
   put32lint (cts, track->unk148);
   put32lint (cts, track->unk152);
@@ -2671,7 +2752,7 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
 						    NULL, NULL, NULL);
 	  guint32 len = utf16_strlen (entry_utf16);
 	  fixup_little_utf16 (entry_utf16);
-	  put_data (cts, "mhod", 4);  /* header                     */
+	  put_string (cts, "mhod");   /* header                     */
 	  put32lint (cts, 24);        /* size of header             */
 	  put32lint (cts, 2*len+40);  /* size of header + body      */
 	  put32lint (cts, type);      /* type of the mhod           */
@@ -2689,16 +2770,16 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
       g_return_if_fail (data);
       {
 	  guint32 len = strlen ((gchar *)data);
-	  put_data (cts, "mhod", 4);  /* header                     */
+	  put_string (cts, "mhod");   /* header                     */
 	  put32lint (cts, 24);        /* size of header             */
 	  put32lint (cts, 24+len);    /* size of header + data      */
 	  put32lint (cts, type);      /* type of the mhod           */
 	  put32_n0 (cts, 2);          /* unknown                    */
-	  put_data (cts, (gchar *)data, len); /* the string         */
+	  put_string (cts, (gchar *)data); /* the string         */
       }
       break;
   case MHOD_ID_PLAYLIST:
-      put_data (cts, "mhod", 4);  /* header                     */
+      put_string (cts, "mhod");   /* header                     */
       put32lint (cts, 24);        /* size of header             */
       put32lint (cts, 44);        /* size of header + body      */
       put32lint (cts, type);      /* type of the entry          */
@@ -2707,11 +2788,24 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
       put32lint (cts, (guint32)data);/* position of track in playlist */
       put32_n0 (cts, 4);             /* unknown                    */
       break;
+  case MHOD_ID_CHAPTERDATA:
+      g_return_if_fail (data);
+      {
+	  Itdb_Track *track = data;
+	  put_string (cts, "mhod");   /* header                     */
+	  put32lint (cts, 24);        /* size of header             */
+	  put32lint (cts, 24+track->chapterdata_raw_length); /*size */
+	  put32lint (cts, type);      /* type of the entry          */
+	  put32_n0 (cts, 2);          /* unknown                    */
+	  put_data (cts, track->chapterdata_raw,
+		    track->chapterdata_raw_length);
+      }
+      break;
   case MHOD_ID_SPLPREF:
       g_return_if_fail (data);
       {
 	  SPLPref *splp = data;
-	  put_data (cts, "mhod", 4); /* header                 */
+	  put_string (cts, "mhod");  /* header                 */
 	  put32lint (cts, 24);       /* size of header         */
 	  put32lint (cts, 96);       /* size of header + body  */
 	  put32lint (cts, type);     /* type of the entry      */
@@ -2743,7 +2837,7 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
 	  GList *gl;
 	  gint numrules = g_list_length (splrs->rules);
 
-	  put_data (cts, "mhod", 4); /* header                   */
+	  put_string (cts, "mhod");  /* header                   */
 	  put32lint (cts, 24);       /* size of header           */
 	  put32lint (cts, -1);       /* total length, fix later  */
 	  put32lint (cts, type);     /* type of the entry        */
@@ -2751,7 +2845,7 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
 	  /* end of header, start of data */
 	  /* For some reason this is the only part of the iTunesDB
 	     that uses big endian */
-	  put_data (cts, "SLst", 4);      /* header               */
+	  put_string (cts, "SLst");       /* header               */
 	  put32bint (cts, splrs->unk004); /* unknown              */
 	  put32bint (cts, numrules);
 	  put32bint (cts, splrs->match_operator);
@@ -2799,7 +2893,7 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
 	  fix_header (cts, header_seek);
       }
       break;
-  case MHOD_ID_MHYP:
+  case MHOD_ID_LIBPLAYLISTINDEX:
       g_warning (_("Cannot write mhod of type %d\n"), type);
       break;
   }
@@ -2816,7 +2910,7 @@ static void mk_mhlp (FExport *fexp)
 
   cts = fexp->itunesdb;
 
-  put_data (cts, "mhlp", 4);       /* header                   */
+  put_string (cts, "mhlp");        /* header                   */
   put32lint (cts, 92);             /* size of header           */
   /* playlists on iPod (including main!) */
   put32lint (cts, g_list_length (fexp->itdb->playlists));
@@ -2842,7 +2936,7 @@ static void mk_long_mhod_id_playlist (FExport *fexp, Itdb_Playlist *pl)
 
   cts = fexp->itunesdb;
 
-  put_data (cts, "mhod", 4);         /* header                   */
+  put_string (cts, "mhod");          /* header                   */
   put32lint (cts, 0x18);             /* size of header  ?        */
   put32lint (cts, 0x0288);           /* size of header + body    */
   put32lint (cts, MHOD_ID_PLAYLIST); /* type of the entry        */
@@ -2878,7 +2972,13 @@ static void mk_long_mhod_id_playlist (FExport *fexp, Itdb_Playlist *pl)
 
 /* Header for new PL item */
 /* @pos: position in playlist */
-static void mk_mhip (FExport *fexp, guint32 pos, guint32 id)
+static void mk_mhip (FExport *fexp,
+		     guint32 childcount,
+		     guint32 podcastgroupflag,
+		     guint32 podcastgroupid,
+		     guint32 trackid,
+		     guint32 timestamp,
+		     guint32 podcastgroupref)
 {
   WContents *cts;
 
@@ -2887,20 +2987,22 @@ static void mk_mhip (FExport *fexp, guint32 pos, guint32 id)
 
   cts = fexp->itunesdb;
 
-  put_data (cts, "mhip", 4);
+  put_string (cts, "mhip");
   put32lint (cts, 76);                              /*  4 */
   put32lint (cts, -1);  /* fill in later */         /*  8 */
-  put32lint (cts, 1);   /* number of children */    /* 12 */
-  put32lint (cts, 0);   /* unknown */               /* 16 */
-  put32lint (cts, 0);   /* unknown */               /* 20 */
-  put32lint (cts, id);  /* id */                    /* 24 */
-  put32_n0 (cts, 12);                               /* 28 */
+  put32lint (cts, childcount);                      /* 12 */
+  put32lint (cts, podcastgroupflag);                /* 16 */
+  put32lint (cts, podcastgroupid);                  /* 20 */
+  put32lint (cts, trackid);                         /* 24 */
+  put32lint (cts, timestamp);                       /* 28 */
+  put32lint (cts, podcastgroupref);                 /* 32 */
+  put32_n0 (cts, 10);                               /* 36 */
 }
 
 
 /* Write first mhsd hunk. Return FALSE in case of error and set
  * fexp->error */
-static gboolean write_mhsd_one(FExport *fexp)
+static gboolean write_mhsd_tracks (FExport *fexp)
 {
     GList *gl;
     gulong mhsd_seek;
@@ -2920,15 +3022,11 @@ static gboolean write_mhsd_one(FExport *fexp)
     {
 	Itdb_Track *track = gl->data;
 	guint32 mhod_num = 0;
+
+	g_return_val_if_fail (track, FALSE);
+
 	gulong mhit_seek = cts->pos;
-	if (!track)
-	{
-	    g_set_error (&fexp->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_ITDB_CORRUPT,
-			 _("Database in memory corrupt (track pointer == NULL). Aborting export."));
-	    return FALSE;
-	}
+
 	mk_mhit (cts, track);
 	if (track->title && *track->title)
 	{
@@ -3000,6 +3098,11 @@ static gboolean write_mhsd_one(FExport *fexp)
 	    mk_mhod (cts, MHOD_ID_PODCASTRSS, track->podcastrss);
 	    ++mhod_num;
 	}
+	if (track->chapterdata_raw && track->chapterdata_raw_length)
+	{
+	    mk_mhod (cts, MHOD_ID_CHAPTERDATA, track);
+	    ++mhod_num;
+	}
         /* Fill in the missing items of the mhit header */
 	fix_mhit (cts, mhit_seek, mhod_num);
     }
@@ -3007,14 +3110,163 @@ static gboolean write_mhsd_one(FExport *fexp)
     return TRUE;
 }
 
-/* corresponds to mk_mhyp */
-/* Return FALSE in case of error and set fexp->error */
-static gboolean write_playlist(FExport *fexp, Itdb_Playlist *pl)
+
+/* write out the mhip/mhod pairs for playlist @pl. @mhyp_seek points
+   to the start of the corresponding mhyp, but is not used yet. */
+static gboolean write_playlist_mhips (FExport *fexp,
+				      Itdb_Playlist *pl,
+				      glong mhyp_seek)
 {
     GList *gl;
-    gulong mhyp_seek, mhip_seek;
-    guint32 i;
     WContents *cts;
+    guint32 i=0;
+    guint32 mhip_num;
+
+    g_return_val_if_fail (fexp, FALSE);
+    g_return_val_if_fail (fexp->itdb, FALSE);
+    g_return_val_if_fail (fexp->itunesdb, FALSE);
+    g_return_val_if_fail (pl, FALSE);
+
+    cts = fexp->itunesdb;
+
+    for (gl=pl->members; gl; gl=gl->next)
+    {
+	Itdb_Track *track = gl->data;
+	g_return_val_if_fail (track, FALSE);
+
+	glong mhip_seek = cts->pos;
+	mk_mhip (fexp, 1, 0, 0, track->id, 0, 0);
+	mk_mhod (cts, MHOD_ID_PLAYLIST, (void *)i);
+	/* note: with iTunes 4.9 the mhod is counted as a child to
+	   mhip, so we have put the total length of the mhip and mhod
+	   into the mhip header */
+	fix_header (cts, mhip_seek);
+	++i;
+    }
+
+    /* set number of mhips */
+    mhip_num = g_list_length (pl->members);
+    put32lint_seek (cts, mhip_num, mhyp_seek+16);
+
+    return TRUE;
+}
+
+
+/* write out the mhip/mhod pairs for the podcast playlist
+   @pl. @mhyp_seek points to the start of the corresponding mhyp, but
+   is not used yet. */
+static gboolean write_podcast_mhips (FExport *fexp,
+				     Itdb_Playlist *pl,
+				     glong mhyp_seek)
+{
+    auto void free_memberlist (gpointer data);
+    auto void write_one_podcast_group (gpointer key, gpointer value,
+				       gpointer userdata);
+    void free_memberlist (gpointer data)
+	{
+	    GList **memberlist = data;
+	    if (memberlist)
+	    {
+		g_list_free (*memberlist);
+		g_free (memberlist);
+	    }
+	}
+    auto void write_one_podcast_group (gpointer key, gpointer value,
+				       gpointer userdata)
+	{
+	    gchar *album = key;
+	    GList **memberlist = value;
+	    FExport *fexp = userdata;
+	    GList *gl;
+	    WContents *cts;
+	    glong mhip_seek;
+	    guint32 groupid;
+	    Itdb_iTunesDB *itdb;
+
+	    g_return_if_fail (album);
+	    g_return_if_fail (memberlist);
+	    g_return_if_fail (fexp);
+	    g_return_if_fail (fexp->itdb);
+	    g_return_if_fail (fexp->itunesdb);
+
+	    cts = fexp->itunesdb;
+	    itdb = fexp->itdb;
+	    mhip_seek = cts->pos;
+
+	    groupid = itdb->next_id++;
+	    mk_mhip (fexp, 1, 256, groupid, 0, 0, 0);
+	    mk_mhod (cts, MHOD_ID_TITLE, album);
+	    fix_header (cts, mhip_seek);
+
+	    /* write members */
+	    for (gl=*memberlist; gl; gl=gl->next)
+	    {
+		Itdb_Track *track = gl->data;
+		g_return_if_fail (track);
+		guint32 mhip_id;
+
+		mhip_seek = cts->pos;
+		mhip_id = itdb->next_id++;
+		mk_mhip (fexp, 1, 0, mhip_id, track->id, 0, groupid);
+		mk_mhod (cts, MHOD_ID_PLAYLIST, (void *)mhip_id);
+		fix_header (cts, mhip_seek);
+	    }
+	}
+    GList *gl;
+    WContents *cts;
+    guint32 mhip_num;
+    GHashTable *album_hash;
+
+    g_return_val_if_fail (fexp, FALSE);
+    g_return_val_if_fail (fexp->itdb, FALSE);
+    g_return_val_if_fail (fexp->itunesdb, FALSE);
+    g_return_val_if_fail (pl, FALSE);
+
+    cts = fexp->itunesdb;
+
+    /* Create a list wit all available album names because we have to
+       group the podcasts according to albums */
+
+    album_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+					NULL, free_memberlist);
+    for (gl=pl->members; gl; gl=gl->next)
+    {
+	GList **memberlist;
+	Itdb_Track *track = gl->data;
+	g_return_val_if_fail (track, FALSE);
+
+	memberlist = g_hash_table_lookup (album_hash, track->album);
+	if (!memberlist)
+	{
+	    memberlist = g_new0 (GList *, 1);
+	    g_hash_table_insert (album_hash, track->album, memberlist);
+	}
+	*memberlist = g_list_append (*memberlist, track);
+    }
+
+    g_hash_table_foreach (album_hash, write_one_podcast_group, fexp);
+
+    /* set number of mhips */
+    mhip_num = g_list_length (pl->members)+g_hash_table_size (album_hash);
+    put32lint_seek (cts, mhip_num, mhyp_seek+16);
+
+    g_hash_table_destroy (album_hash);
+
+    return TRUE;
+}
+
+
+
+/* corresponds to mk_mhyp */
+/* mhsd_type: 2: write normal playlists
+              3: write podcast playlist in special format */
+/* Return FALSE in case of error and set fexp->error */
+static gboolean write_playlist (FExport *fexp,
+				Itdb_Playlist *pl, guint32 mhsd_type)
+{
+    gulong mhyp_seek;
+    WContents *cts;
+    gboolean result = TRUE;
 
     g_return_val_if_fail (fexp, FALSE);
     g_return_val_if_fail (fexp->itdb, FALSE);
@@ -3028,7 +3280,7 @@ static gboolean write_playlist(FExport *fexp, Itdb_Playlist *pl)
   fprintf(stderr, "Playlist: %s (%d tracks)\n", pl->name, g_list_length (pl->members));
 #endif
 
-    put_data (cts, "mhyp", 4);    /* header                    */
+    put_string (cts, "mhyp");      /* header                    */
     put32lint (cts, 108);          /* length		        */
     put32lint (cts, -1);           /* size -> later             */
     if (pl->is_spl)
@@ -3036,12 +3288,16 @@ static gboolean write_playlist(FExport *fexp, Itdb_Playlist *pl)
     else
 	put32lint (cts, 2);        /* nr of mhods               */
     /* number of tracks in plist */
-    put32lint (cts, g_list_length (pl->members));
+    put32lint (cts, -1);           /* number of mhips -> later  */
     put32lint (cts, pl->type);     /* 1 = main, 0 = visible     */
     put32lint (cts, 0);            /* some timestamp            */
     put64lint (cts, pl->id);       /* 64 bit ID                 */
-    put32lint (cts, pl->unk036);
-    put32lint (cts, pl->unk040);
+    pl->mhodcount = 1;             /* we only write one mhod type < 50 */
+    put32lint (cts, pl->mhodcount);
+    pl->libmhodcount = 1;          /* we don't write mhod type 52, and
+				      "1" seems to be the default */
+    put16lint (cts, pl->libmhodcount);
+    put16lint (cts, pl->podcastflag);
     put32lint (cts, pl->sortorder);
     put32_n0 (cts, 15);            /* ?                         */
 
@@ -3054,37 +3310,24 @@ static gboolean write_playlist(FExport *fexp, Itdb_Playlist *pl)
 	mk_mhod (cts, MHOD_ID_SPLRULES, &pl->splrules);
     }
 
-    /* write hard-coded tracks */
-    i=0;
-    for (gl=pl->members; gl; gl=gl->next)
+    if ((pl->podcastflag == ITDB_PL_FLAG_PODCAST) &&
+	(mhsd_type == 3))
     {
-	Itdb_Track *track = gl->data;
-	if (!track)
-	{
-	    g_set_error (&fexp->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_ITDB_CORRUPT,
-			 _("Database in memory corrupt (track pointer == NULL). Aborting export."));
-	    return FALSE;
-	}
-	mhip_seek = cts->pos;
-	mk_mhip (fexp, i, track->id);
-	mk_mhod (cts, MHOD_ID_PLAYLIST, (void *)i);
-	/* note: with iTunes 4.9 the mhod is counted as a child to
-	   mhip, so we fill have put the total length of the mhip and
-	   mhod into the mhip header */
-	fix_header (cts, mhip_seek);
-	++i;
+	/* write special podcast playlist */
+	result = write_podcast_mhips (fexp, pl, mhyp_seek);
+    }
+    else
+    {   /* write standard playlist hard-coded tracks */
+	result = write_playlist_mhips (fexp, pl, mhyp_seek);
     }
     fix_header (cts, mhyp_seek);
-    return TRUE;
+    return result;
 }
-
 
 
 /* Expects the master playlist to be the first in the list */
 /* Return FALSE in case of error and set fexp->error */
-static gboolean write_mhsd_two(FExport *fexp)
+static gboolean write_mhsd_playlists (FExport *fexp, guint32 mhsd_type)
 {
     GList *gl;
     glong mhsd_seek;
@@ -3093,24 +3336,19 @@ static gboolean write_mhsd_two(FExport *fexp)
     g_return_val_if_fail (fexp, FALSE);
     g_return_val_if_fail (fexp->itdb, FALSE);
     g_return_val_if_fail (fexp->itunesdb, FALSE);
+    g_return_val_if_fail ((mhsd_type == 2) || (mhsd_type == 3), FALSE);
 
     cts = fexp->itunesdb;
     mhsd_seek = cts->pos;      /* get position of mhsd header */
-    mk_mhsd (fexp, 2);         /* write header: type 2: playlists  */
+    mk_mhsd (fexp, mhsd_type); /* write header */
     /* write header with nr. of playlists */
     mk_mhlp (fexp);
     for(gl=fexp->itdb->playlists; gl; gl=gl->next)
     {
 	Itdb_Playlist *pl = gl->data;
-	if (!pl)
-	{
-	    g_set_error (&fexp->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_ITDB_CORRUPT,
-			 _("Database in memory corrupt (playlist pointer == NULL). Aborting export."));
-	    return FALSE;
-	}
-	write_playlist (fexp, pl);
+	g_return_val_if_fail (pl, FALSE);
+
+	write_playlist (fexp, pl, mhsd_type);
 	if (fexp->error)  return FALSE;
     }
     fix_header (cts, mhsd_seek);
@@ -3201,14 +3439,24 @@ static void reassign_ids (Itdb_iTunesDB *itdb)
 
     g_return_if_fail (itdb);
 
-    /* copy mpl->members to itdb->tracks to make sure they are in the
-       same order (otherwise On-The-Go Playlists will not show the
-       correct content) */
+    /* Arrange itdb->tracks in the same order as mpl->members
+       (otherwise On-The-Go Playlists will not show the correct
+       content. Unfortunately we cannot just copy mpl->members to
+       itdb->tracks because podcasts do not show up in the MPL. */
+
     mpl = itdb_playlist_mpl (itdb);
     g_return_if_fail (mpl);
-    g_return_if_fail (g_list_length (mpl->members) == g_list_length (itdb->tracks));
-    g_list_free (itdb->tracks);
-    itdb->tracks = g_list_copy (mpl->members);
+
+    for (gl=g_list_last(mpl->members); gl; gl=gl->prev)
+    {
+	Itdb_Track *track = gl->data;
+	g_return_if_fail (track);
+	g_return_if_fail (g_list_find (itdb->tracks, track));
+
+	/* move this track to the beginning of itdb_tracks */
+	itdb->tracks = g_list_remove (itdb->tracks, track);
+	itdb->tracks = g_list_prepend (itdb->tracks, track);
+    }
 
     /* assign unique IDs */
     for (gl=itdb->tracks; gl; gl=gl->next)
@@ -3217,6 +3465,8 @@ static void reassign_ids (Itdb_iTunesDB *itdb)
 	g_return_if_fail (track);
 	track->id = id++;
     }
+
+    itdb->next_id = id;
 }
 
 
@@ -3243,12 +3493,16 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
     fexp->itunesdb = wcontents_new (filename);
     cts = fexp->itunesdb;
 
-    mk_mhbd (fexp);
-    if (write_mhsd_one(fexp))
-    {   /* write playlists mhsd */
-	if (write_mhsd_two(fexp))
-	{
-	    fix_header (cts, mhbd_seek);
+    mk_mhbd (fexp, 3);   /* three mhsds */
+    /* write tracklist */
+    if (write_mhsd_tracks (fexp))
+    {   /* write special podcast version mhsd */
+	if (write_mhsd_playlists (fexp, 3))
+	{   /* write standard playlist mhsd */
+	    if (write_mhsd_playlists (fexp, 2))
+	    {
+		fix_header (cts, mhbd_seek);
+	    }
 	}
     }
     if (!fexp->error)

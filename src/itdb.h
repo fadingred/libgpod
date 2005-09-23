@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-19 22:52:40 jcs>
+/* Time-stamp: <2005-09-24 01:48:50 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -53,6 +53,12 @@ enum ItdbPlType { /* types for playlist->type */
 				    not visible in iPod */
 };
 
+enum ItdbPlFlag { /* types for playlist->podcastflag */
+    ITDB_PL_FLAG_NORM = 0,       /* normal playlist, visible under
+				    'Playlists  */
+    ITDB_PL_FLAG_PODCAST = 1     /* special podcast playlist visible
+				    under 'Music' */
+};
 
 
 /* Most of the knowledge about smart playlists has been provided by
@@ -348,6 +354,7 @@ typedef struct
     gint   musicdirs;   /* number of /iPod_Control/Music/F.. dirs */
     guint32 version;
     guint64 id;
+    guint32 next_id;    /* strictly internal during itdb write */
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
@@ -362,14 +369,30 @@ typedef struct
 {
     Itdb_iTunesDB *itdb;  /* pointer to iTunesDB (for convenience) */
     gchar *name;          /* name of playlist in UTF8              */
-    guint32 type;         /* PL_TYPE_MPL: master play list         */
+    guint32 type;         /* ITDB_PL_TYPE_NORM/_MPL                */
     gint  num;            /* number of tracks in playlist          */
     GList *members;       /* tracks in playlist (Track *)          */
     gboolean is_spl;      /* smart playlist?                       */
     guint32 timestamp;    /* some timestamp                        */
     guint64 id;           /* playlist ID                           */
-    guint32 unk036, unk040;
+    guint32 mhodcount;    /* This appears to be the number of string
+			     MHODs (type < 50) associated with this
+			     playlist (typically 0x01). Doesn't seem
+			     to be signficant unless you include Type
+			     52 MHODs. libgpod sets this to 1 when
+			     syncing */
+    guint16 libmhodcount; /* The number of Type 52 MHODs associated
+			     with this playlist. If you don't create
+			     Type 52 MHODs, this can be
+			     zero. Otherwise, if you have Type 52
+			     MHODs associated with this playlist and
+			     set this to zero, no songs appear on the
+			     iPod. jcsjcs: with iTunes 4.9 this seems
+			     to be set to 1 even without any Type 52
+			     MHODs present. libgpod sets this to 1
+			     when syncing */
     guint32 sortorder;    /* How to sort playlist -- see below     */
+    guint32 podcastflag;  /* ITDB_PL_FLAG_NORM/_PODCAST            */
     SPLPref splpref;      /* smart playlist prefs                  */
     SPLRules splrules;    /* rules for smart playlists             */
     /* below is for use by application */
@@ -538,9 +561,11 @@ typedef struct
 			 (like WAVE format), 0x1 for Audible. itdb
 			 will try to set this when adding a new track */
   guint32 unk132;     /* unknown */
-  guint32 unk140;     /*  date/time added to music store? definitely a
-			  timestamp, always appears to be a time of
-			  0700 GMT */
+  guint32 time_released;/* date/time added to music store? definitely a
+			 timestamp, always appears to be a time of
+			 0700 GMT. For podcasts: release date as
+			 displayed next to the title in the Podcast
+			 playlist  */
   guint32 unk144;     /* unknown, but MP3 songs appear to be always
 			 0x0000000c or 0x0100000c (if played one or
 			 more times in iTunes), AAC songs are always
@@ -578,6 +603,14 @@ typedef struct
 			  or 0x1. */
   guint32 unk208, unk212, unk216, unk220, unk224;
   guint32 unk228, unk232, unk236, unk240;
+
+    /* Chapter data: defines where the chapter stops are in the track,
+       as well as what info should be displayed for each section of
+       the track. Until it can be parsed and interpreted, the
+       chapterdata will just be read as a block and written back on
+       sync. This will be changed at a later time */
+  void *chapterdata_raw;
+  guint32 chapterdata_raw_length;
 
   /* This is for Cover Art support */
   GList *thumbnails;

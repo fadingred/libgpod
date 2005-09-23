@@ -1,18 +1,29 @@
-2005-09-22  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2005-09-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
-	* added python bindings provided by Nicholas Piper
-	<nick at nickpiper co uk>
+	* bindings/: added python bindings provided by Nicholas Piper
+	  <nick at nickpiper co uk>
+
+	* itdb.h: added enum ItdbPlFlag and Itdb_Playlist->podcastflag
+	  field.
+
+	* itdb.h/itdb_itunesdb.c: added time_released field
+
+	* itdb_itunesdb.c: rewrote write_playlist() for easier
+	  maintenance. 
+
+	* itdb_itunesdb.c: read/write support for podcast playlists
+	  including chapterdata (but only in raw format)
 
 2005-09-22  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* applied Christophe Fergeau's patch which adds cover art writing
-	support to libgpod -> bump to version 104
+	  support to libgpod -> bump to version 104
 
 2005-09-21  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_itunesdb.c: streamline parse_fimp() for more
-	flexibility. Please report if formerly readable iTunesDB cannot be
-	read any more :-/
+	  flexibility. Please report if formerly readable iTunesDB cannot
+	  be read any more :-/
 
 2005-09-20  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

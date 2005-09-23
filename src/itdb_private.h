@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-19 21:30:34 jcs>
+/* Time-stamp: <2005-09-23 23:53:25 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -53,6 +53,7 @@ typedef struct
     Itdb_iTunesDB *itdb;
     FContents *itunesdb;
     GList *pos_glist;    /* temporary list to store position indicators */
+    gint32 pos_len;      /* current length of above list */
     GList *playcounts;   /* contents of Play Counts file */
     GTree *idtree;       /* temporary tree with track id tree */
     GError *error;       /* where to report errors to */
