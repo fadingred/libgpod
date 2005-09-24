@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-19 17:50:14 jcs>
+/* Time-stamp: <2005-09-24 12:21:06 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -166,15 +166,21 @@ void itdb_track_free (Itdb_Track *track)
 {
     g_return_if_fail (track);
 
-    g_free (track->album);
-    g_free (track->artist);
     g_free (track->title);
+    g_free (track->artist);
+    g_free (track->album);
     g_free (track->genre);
-    g_free (track->comment);
     g_free (track->composer);
+    g_free (track->comment);
     g_free (track->filetype);
     g_free (track->grouping);
+    g_free (track->category);
+    g_free (track->description);
+    g_free (track->podcasturl);
+    g_free (track->podcastrss);
+    g_free (track->subtitle);
     g_free (track->ipod_path);
+    g_free (track->chapterdata_raw);
     itdb_track_free_generated_thumbnails (track);
     g_free (track->orig_image_filename);
     if (track->userdata && track->userdata_destroy)
@@ -215,7 +221,6 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
     Itdb_Track *tr_dup;
 
     g_return_val_if_fail (tr, NULL);
-    g_return_val_if_fail (!tr->userdata || tr->userdata_duplicate, NULL);
 
     tr_dup = g_new0 (Itdb_Track, 1);
     memcpy (tr_dup, tr, sizeof (Itdb_Track));
@@ -224,18 +229,31 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
     tr_dup->itdb = NULL;
 
     /* copy strings */
-    tr_dup->album = g_strdup (tr->album);
-    tr_dup->artist = g_strdup (tr->artist);
     tr_dup->title = g_strdup (tr->title);
+    tr_dup->artist = g_strdup (tr->artist);
+    tr_dup->album = g_strdup (tr->album);
     tr_dup->genre = g_strdup (tr->genre);
-    tr_dup->comment = g_strdup (tr->comment);
     tr_dup->composer = g_strdup (tr->composer);
+    tr_dup->comment = g_strdup (tr->comment);
     tr_dup->filetype = g_strdup (tr->filetype);
     tr_dup->grouping = g_strdup (tr->grouping);
+    tr_dup->category = g_strdup (tr->category);
+    tr_dup->description = g_strdup (tr->description);
+    tr_dup->podcasturl = g_strdup (tr->podcasturl);
+    tr_dup->podcastrss = g_strdup (tr->podcastrss);
+    tr_dup->subtitle = g_strdup (tr->subtitle);
     tr_dup->ipod_path = g_strdup (tr->ipod_path);
 
+    /* Copy chapterdata */
+    if (tr->chapterdata_raw)
+    {
+	tr_dup->chapterdata_raw = g_new (gchar, tr->chapterdata_raw_length);
+	memcpy (tr_dup->chapterdata_raw, tr->chapterdata_raw,
+		tr->chapterdata_raw_length);
+    }
+
     /* Copy userdata */
-    if (tr->userdata)
+    if (tr->userdata && tr->userdata_duplicate)
 	tr_dup->userdata = tr->userdata_duplicate (tr->userdata);
 
     return tr_dup;

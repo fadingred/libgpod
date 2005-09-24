@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-24 01:56:22 jcs>
+/* Time-stamp: <2005-09-24 13:25:33 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -843,12 +843,11 @@ void itdb_free (Itdb_iTunesDB *itdb)
     }
 }
 
-/* Free the memory taken by @itdb. */
+/* Duplicate @itdb */
+/* FIXME: not implemented yet */
 Itdb_iTunesDB *itdb_duplicate (Itdb_iTunesDB *itdb)
 {
     g_return_val_if_fail (itdb, NULL);
-    g_return_val_if_fail (!itdb->userdata ||
-			  itdb->userdata_duplicate, NULL);
     /* FIXME: not yet implemented */
     g_return_val_if_reached (NULL);
 }
@@ -1550,6 +1549,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   /* Some Playlists have added 256 to their type -- I don't know what
      it's for, so we just ignore it for now -> & 0xff */
   plitem->type = get32lint (cts, mhyp_seek+20) & 0xff;
+  plitem->timestamp = get32lint (cts, mhyp_seek+24);
   plitem->id = get64lint (cts, mhyp_seek+28);
   plitem->mhodcount = get32lint (cts, mhyp_seek+36);
   plitem->libmhodcount = get16lint (cts, mhyp_seek+40);
@@ -1639,11 +1639,11 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   if (!plitem->name)
   {   /* we did not read a valid mhod TITLE header -> */
       /* we simply make up our own name */
-      if (plitem->type == ITDB_PL_TYPE_MPL)
+      if (itdb_playlist_is_mpl (plitem))
 	  plitem->name = _("Master-PL");
       else
       {
-	  if (plitem->podcastflag == ITDB_PL_FLAG_PODCAST)
+	  if (itdb_playlist_is_podcasts (plitem))
 	      plitem->name = _("Podcasts");
 	  else
 	      plitem->name = _("Playlist");
@@ -3290,7 +3290,7 @@ static gboolean write_playlist (FExport *fexp,
     /* number of tracks in plist */
     put32lint (cts, -1);           /* number of mhips -> later  */
     put32lint (cts, pl->type);     /* 1 = main, 0 = visible     */
-    put32lint (cts, 0);            /* some timestamp            */
+    put32lint (cts, pl->timestamp);/* some timestamp            */
     put64lint (cts, pl->id);       /* 64 bit ID                 */
     pl->mhodcount = 1;             /* we only write one mhod type < 50 */
     put32lint (cts, pl->mhodcount);
@@ -3310,8 +3310,7 @@ static gboolean write_playlist (FExport *fexp,
 	mk_mhod (cts, MHOD_ID_SPLRULES, &pl->splrules);
     }
 
-    if ((pl->podcastflag == ITDB_PL_FLAG_PODCAST) &&
-	(mhsd_type == 3))
+    if (itdb_playlist_is_podcasts(pl) && (mhsd_type == 3))
     {
 	/* write special podcast playlist */
 	result = write_podcast_mhips (fexp, pl, mhyp_seek);

@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-19 22:54:16 jcs>
+/* Time-stamp: <2005-09-24 13:25:33 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -938,7 +938,6 @@ Itdb_Playlist *itdb_playlist_duplicate (Itdb_Playlist *pl)
     GList *gl;
 
     g_return_val_if_fail (pl, NULL);
-    g_return_val_if_fail (!pl->userdata || pl->userdata_duplicate, NULL);
 
     pl_dup = g_new0 (Itdb_Playlist, 1);
     memcpy (pl_dup, pl, sizeof (Itdb_Playlist));
@@ -968,7 +967,7 @@ Itdb_Playlist *itdb_playlist_duplicate (Itdb_Playlist *pl)
     pl_dup->id = 0;
 
     /* Copy userdata */
-    if (pl->userdata)
+    if (pl->userdata && pl->userdata_duplicate)
 	pl_dup->userdata = pl->userdata_duplicate (pl->userdata);
 
     return pl_dup;
@@ -1017,6 +1016,8 @@ Itdb_Playlist *itdb_playlist_new (const gchar *title, gboolean spl)
     pl->type = ITDB_PL_TYPE_NORM;
     pl->name = g_strdup (title);
     pl->sortorder = ITDB_PSO_MANUAL;
+
+    pl->timestamp = itdb_time_get_mac_time ();
 
     pl->is_spl = spl;
     if (spl)
@@ -1088,6 +1089,7 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
 	pl->id = id;
     }
     if (pl->sortorder == 0)  pl->sortorder = ITDB_PSO_MANUAL;
+    if (pl->timestamp == 0)  pl->timestamp = itdb_time_get_mac_time ();
     if (pos == -1)  itdb->playlists = g_list_append (itdb->playlists, pl);
     else  itdb->playlists = g_list_insert (itdb->playlists, pl, pos);
 }
@@ -1228,6 +1230,24 @@ Itdb_Playlist *itdb_playlist_by_name (Itdb_iTunesDB *itdb, gchar *name)
 }
 
 
+/* check if playlist is master playlist */
+gboolean itdb_playlist_is_mpl (Itdb_Playlist *pl)
+{
+    g_return_val_if_fail (pl, FALSE);
+
+    return (pl->type == ITDB_PL_TYPE_MPL);
+}
+
+
+/* check if playlist is podcasts playlist */
+gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl)
+{
+    g_return_val_if_fail (pl, FALSE);
+
+    return (pl->podcastflag == ITDB_PL_FLAG_PODCASTS);
+}
+
+
 /* return the master playlist of @itdb */
 Itdb_Playlist *itdb_playlist_mpl (Itdb_iTunesDB *itdb)
 {
@@ -1239,10 +1259,30 @@ Itdb_Playlist *itdb_playlist_mpl (Itdb_iTunesDB *itdb)
     g_return_val_if_fail (pl, NULL);
 
     /* mpl is guaranteed to be at first position... */
-    g_return_val_if_fail (pl->type == ITDB_PL_TYPE_MPL, NULL);
+    g_return_val_if_fail (itdb_playlist_is_mpl (pl), NULL);
 
     return pl;
 }
+
+
+/* return the podcasts playlist of @itdb, if available */
+Itdb_Playlist *itdb_playlist_podcasts (Itdb_iTunesDB *itdb)
+{
+    GList *gl;
+
+    g_return_val_if_fail (itdb, NULL);
+
+    for (gl=itdb->playlists; gl; gl=gl->next)
+    {
+	Itdb_Playlist *pl = gl->data;
+	g_return_val_if_fail (pl, NULL);
+
+	if (itdb_playlist_is_podcasts (pl))    return pl;
+    }
+
+    return NULL;
+}
+
 
 
 /* checks if @track is in playlist @pl. TRUE, if yes, FALSE

@@ -1,3 +1,16 @@
+2005-09-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * itdb.h/itdb_playlist.c: new functions: itdb_playlist_is_mpl()
+	  and itdb_playlist_is_podcasts()
+
+	* itdb_track.c: update itdb_track_duplicate()
+
+	* itdb_itunesdb.c: read/write timestamp in playlists. Set
+	  timestamp if previously unset.
+
+	* itdb_playlist.c: set timestamp when creating playlist, set
+	  timestamp when adding playlist and no timestamp was set.
+
 2005-09-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* bindings/: added python bindings provided by Nicholas Piper
