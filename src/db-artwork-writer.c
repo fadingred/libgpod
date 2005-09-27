@@ -730,11 +730,18 @@ ipod_write_artwork_db (Itdb_iTunesDB *db, const char *mount_point)
 	 * 'artwork_size' fields, as well as the 2 Itdb_Image fields
 	 */
 	itdb_write_ithumb_files (db, mount_point);
-	g_print ("%s\n", G_GNUC_FUNCTION);
 	/* Now we can update the ArtworkDB file */
 	id_max = ipod_artwork_db_set_ids (db);
 
+	/* FIXME: need to create the file if it doesn't exist */
 	filename = ipod_db_get_artwork_db_path (mount_point);
+	if (filename == NULL) {
+		/* FIXME: the iTunesDB will be inconsistent wrt artwork_count
+		 * it might be better to 0 out this field in all tracks
+		 * when we encounter an error
+		 */
+		return -1;
+	}
 	buf = ipod_buffer_new (filename);
 	if (buf == NULL) {
 		g_print ("Couldn't create %s\n", filename);

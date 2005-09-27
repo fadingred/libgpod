@@ -352,7 +352,11 @@ ipod_parse_artwork_db (Itdb_iTunesDB *db)
 	DBParseContext *ctx;
 	char *filename;
 
+	ctx = NULL;
 	filename = ipod_db_get_artwork_db_path (db->mountpoint);
+	if (filename == NULL) {
+		goto error;
+	}	
 	ctx = db_parse_context_new_from_file (filename);	
 	g_free (filename);
 	if (ctx == NULL) {

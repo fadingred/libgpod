@@ -3022,10 +3022,10 @@ static gboolean write_mhsd_tracks (FExport *fexp)
     {
 	Itdb_Track *track = gl->data;
 	guint32 mhod_num = 0;
+	gulong mhit_seek = cts->pos;
 
 	g_return_val_if_fail (track, FALSE);
 
-	gulong mhit_seek = cts->pos;
 
 	mk_mhit (cts, track);
 	if (track->title && *track->title)
@@ -3132,9 +3132,10 @@ static gboolean write_playlist_mhips (FExport *fexp,
     for (gl=pl->members; gl; gl=gl->next)
     {
 	Itdb_Track *track = gl->data;
+	glong mhip_seek = cts->pos;
+
 	g_return_val_if_fail (track, FALSE);
 
-	glong mhip_seek = cts->pos;
 	mk_mhip (fexp, 1, 0, 0, track->id, 0, 0);
 	mk_mhod (cts, MHOD_ID_PLAYLIST, (void *)i);
 	/* note: with iTunes 4.9 the mhod is counted as a child to
@@ -3202,8 +3203,9 @@ static gboolean write_podcast_mhips (FExport *fexp,
 	    for (gl=*memberlist; gl; gl=gl->next)
 	    {
 		Itdb_Track *track = gl->data;
-		g_return_if_fail (track);
 		guint32 mhip_id;
+
+		g_return_if_fail (track);
 
 		mhip_seek = cts->pos;
 		mhip_id = itdb->next_id++;

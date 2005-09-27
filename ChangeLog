@@ -1,3 +1,13 @@
+2005-09-27  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_itunesdb.c: (write_mhsd_tracks), (write_playlist_mhips),
+	(write_podcast_mhips): move variable declaration before code to fix 
+	compilation
+	* src/db-artwork-parser.c: (ipod_parse_artwork_db):
+	* src/db-artwork-writer.c: (ipod_write_artwork_db):
+	* src/ithumb-writer.c: (ithumb_writer_new): added some sanity checks
+	to detect better when the iPod doesn't have any artwork data
+
 2005-09-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * itdb.h/itdb_playlist.c: new functions: itdb_playlist_is_mpl()

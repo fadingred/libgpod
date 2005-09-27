@@ -208,6 +208,11 @@ ithumb_writer_new (const char *mount_point, enum ItdbImageType type,
 		return NULL;
 	}
 	filename = ipod_image_get_ithmb_filename (mount_point, correlation_id);
+	if (filename == NULL) {
+		g_hash_table_destroy (writer->cache);
+		g_free (writer);
+		return NULL;
+	}
 	writer->f = fopen (filename, "w");
 	if (writer->f == NULL) {
 		g_print ("Error opening %s: %s\n", filename, strerror (errno));
