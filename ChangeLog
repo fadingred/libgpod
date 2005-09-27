@@ -1,3 +1,11 @@
+2005-09-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * itdb.h, itdb_itunesdb.c, itdb_private.h: moved next_id from
+	  Itdb_iTunesDB to FExport.
+
+	* bindings/phython/examples/tag-genrr-from-audioscrobber.py: added
+	  (thanks to Nicholas Piper)
+
 2005-09-27  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: (write_mhsd_tracks), (write_playlist_mhips),
@@ -20,6 +28,8 @@
 
 	* itdb_playlist.c: set timestamp when creating playlist, set
 	  timestamp when adding playlist and no timestamp was set.
+
+	* Release of version 0.1.6
 
 2005-09-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

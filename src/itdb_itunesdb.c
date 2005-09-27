@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-24 13:25:33 jcs>
+/* Time-stamp: <2005-09-26 22:40:51 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -3194,7 +3194,7 @@ static gboolean write_podcast_mhips (FExport *fexp,
 	    itdb = fexp->itdb;
 	    mhip_seek = cts->pos;
 
-	    groupid = itdb->next_id++;
+	    groupid = fexp->next_id++;
 	    mk_mhip (fexp, 1, 256, groupid, 0, 0, 0);
 	    mk_mhod (cts, MHOD_ID_TITLE, album);
 	    fix_header (cts, mhip_seek);
@@ -3208,7 +3208,7 @@ static gboolean write_podcast_mhips (FExport *fexp,
 		g_return_if_fail (track);
 
 		mhip_seek = cts->pos;
-		mhip_id = itdb->next_id++;
+		mhip_id = fexp->next_id++;
 		mk_mhip (fexp, 1, 0, mhip_id, track->id, 0, groupid);
 		mk_mhod (cts, MHOD_ID_PLAYLIST, (void *)mhip_id);
 		fix_header (cts, mhip_seek);
@@ -3432,12 +3432,14 @@ static void wcontents_free (WContents *cts)
 
 /* reassign the iPod IDs and make sure the itdb->tracks are in the
    same order as the mpl */
-static void reassign_ids (Itdb_iTunesDB *itdb)
+static void reassign_ids (FExport *fexp)
 {
-    guint32 id = 52;
     GList *gl;
+    Itdb_iTunesDB *itdb;
     Itdb_Playlist *mpl;
 
+    g_return_if_fail (fexp);
+    itdb = fexp->itdb;
     g_return_if_fail (itdb);
 
     /* Arrange itdb->tracks in the same order as mpl->members
@@ -3459,15 +3461,15 @@ static void reassign_ids (Itdb_iTunesDB *itdb)
 	itdb->tracks = g_list_prepend (itdb->tracks, track);
     }
 
+    fexp->next_id = 52;
+
     /* assign unique IDs */
     for (gl=itdb->tracks; gl; gl=gl->next)
     {
 	Itdb_Track *track = gl->data;
 	g_return_if_fail (track);
-	track->id = id++;
+	track->id = fexp->next_id++;
     }
-
-    itdb->next_id = id;
 }
 
 
@@ -3487,12 +3489,12 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 
     if (!filename) filename = itdb->filename;
 
-    reassign_ids (itdb);
-
     fexp = g_new0 (FExport, 1);
     fexp->itdb = itdb;
     fexp->itunesdb = wcontents_new (filename);
     cts = fexp->itunesdb;
+
+    reassign_ids (fexp);
 
     mk_mhbd (fexp, 3);   /* three mhsds */
     /* write tracklist */
@@ -3800,12 +3802,12 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
     g_return_val_if_fail (itdb, FALSE);
     g_return_val_if_fail (filename, FALSE);
 
-    reassign_ids (itdb);
-
     fexp = g_new0 (FExport, 1);
     fexp->itdb = itdb;
     fexp->itunesdb = wcontents_new (filename);
     cts = fexp->itunesdb;
+
+    reassign_ids (fexp);
 
     put24bint (cts, itdb_tracks_number (itdb));
     put24bint (cts, 0x010600);

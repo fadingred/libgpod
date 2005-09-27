@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-24 12:59:15 jcs>
+/* Time-stamp: <2005-09-26 22:36:42 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -356,7 +356,6 @@ typedef struct
     gint   musicdirs;   /* number of /iPod_Control/Music/F.. dirs */
     guint32 version;
     guint64 id;
-    guint32 next_id;    /* strictly internal during itdb write */
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;

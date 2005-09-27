@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-23 23:53:25 jcs>
+/* Time-stamp: <2005-09-26 22:40:20 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -96,6 +96,7 @@ typedef struct
 {
     Itdb_iTunesDB *itdb;
     WContents *itunesdb;
+    guint32 next_id;     /* next free ID to use       */
     GError *error;       /* where to report errors to */
 } FExport;
 
