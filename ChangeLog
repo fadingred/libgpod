@@ -1,5 +1,9 @@
 2005-09-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* .cvsignore: added reasonable defaults in ./ ./src/ ./tests ./po
+
+	* po/Makefile.in.in: removed, as it should be created by configure
+
         * itdb.h, itdb_itunesdb.c, itdb_private.h: moved next_id from
 	  Itdb_iTunesDB to FExport.
 

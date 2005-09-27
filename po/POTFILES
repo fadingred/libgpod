@@ -1,0 +1,6 @@
+	../src/itdb.h \
+	../src/itdb_itunesdb.c \
+	../src/itdb_playlist.c \
+	../src/itdb_private.h \
+	../src/itdb_track.c \
+	../tests/itdb_main.c
