@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-24 12:21:06 jcs>
+/* Time-stamp: <2005-09-29 00:01:38 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -215,6 +215,30 @@ void itdb_track_unlink (Itdb_Track *track)
     track->itdb = NULL;
 }
 
+static GList *dup_thumbnails (GList *thumbnails)
+{
+    GList *it;
+    GList *result;
+    
+    result = NULL;
+    for (it = thumbnails; it != NULL; it = it->next)
+    {
+	Itdb_Image *new_image;
+	Itdb_Image *image;
+
+	image = (Itdb_Image *)it->data;
+	g_return_val_if_fail (image, NULL);
+
+	new_image = g_new0 (Itdb_Image, 1);
+	memcpy (new_image, image, sizeof (Itdb_Image));
+	new_image->filename = g_strdup (image->filename);
+	
+	result = g_list_prepend (result, new_image);
+    }
+
+    return g_list_reverse (result);
+}
+
 /* Duplicate an existing track */
 Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
 {
@@ -251,6 +275,10 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
 	memcpy (tr_dup->chapterdata_raw, tr->chapterdata_raw,
 		tr->chapterdata_raw_length);
     }
+
+    /* Copy thumbnail data */
+    tr_dup->orig_image_filename = g_strdup (tr->orig_image_filename);
+    tr_dup->thumbnails = dup_thumbnails (tr->thumbnails);
 
     /* Copy userdata */
     if (tr->userdata && tr->userdata_duplicate)

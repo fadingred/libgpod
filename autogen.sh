@@ -15,8 +15,8 @@ set -e
 
 # Refresh GNU autotools toolchain.
 echo Cleaning autotools files...
-find -type d -name autom4te.cache -print0 | xargs -0 rm -rf \;
-find -type f \( -name missing -o -name install-sh -o -name mkinstalldirs \
+find . -type d -name autom4te.cache -print0 | xargs -0 rm -rf \;
+find . -type f \( -name missing -o -name install-sh -o -name mkinstalldirs \
 	-o -name depcomp -o -name ltmain.sh -o -name configure \
 	-o -name config.sub -o -name config.guess \
 	-o -name Makefile.in \) -print0 | xargs -0 rm -f
@@ -40,7 +40,7 @@ test -d debian && {
 	[ "$1" == "updateexec" ] && {
 		echo Generating list of executable files...
 		rm -f debian/executable.files
-		find -type f -perm +111 ! -name '.*' -fprint debian/executable.files
+		find . -type f -perm +111 ! -name '.*' -fprint debian/executable.files
 	}
 
 	# Remove any files in upstream tarball that we don't have in the Debian

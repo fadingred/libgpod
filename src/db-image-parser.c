@@ -159,13 +159,16 @@ ipod_image_new_from_mhni (MhniHeader *mhni, const char *mount_point)
 	img->width = (GINT_FROM_LE (mhni->image_dimensions) & 0xffff0000) >> 16;
 	img->height = (GINT_FROM_LE (mhni->image_dimensions) & 0x0000ffff);
 
-	if (mhni->correlation_id == IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID) {
+	switch (mhni->correlation_id) {
+	case IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID:
+	case IPOD_NANO_THUMBNAIL_FULL_SIZE_CORRELATION_ID:
 		img->type = ITDB_IMAGE_FULL_SCREEN;
-	} else if (mhni->correlation_id == IPOD_THUMBNAIL_NOW_PLAYING_CORRELATION_ID)
-	{
+		break;
+	case IPOD_THUMBNAIL_NOW_PLAYING_CORRELATION_ID:
+	case IPOD_NANO_THUMBNAIL_NOW_PLAYING_CORRELATION_ID:
 		img->type = ITDB_IMAGE_NOW_PLAYING;
-			
-	} else {
+		break;
+	default:
 		g_print ("Unrecognized image size: %08x\n", 
 			 GINT_FROM_LE (mhni->image_dimensions));
 		g_free (img);

@@ -38,10 +38,12 @@ ipod_image_to_gdk_pixbuf (Itdb_Image *image)
 	guchar *pixels;
 	int row_stride;
 
+	printf ("width: %d height: %d\n", image->width, image->height);
+
 	if (image->type == ITDB_IMAGE_FULL_SCREEN) {
-		row_stride = 140;
+		row_stride = 100;
 	} else if (image->type == ITDB_IMAGE_NOW_PLAYING) {
-		row_stride = 56;
+		row_stride = 42;
 	} else {
 		return NULL;
 	}
@@ -83,6 +85,8 @@ save_song_thumbnails (Itdb_Track *song)
 		gchar *filename;
 
 		image = (Itdb_Image *)it->data;
+		g_return_if_fail (image);
+
 		filename = NULL;
 		if (image->type == ITDB_IMAGE_FULL_SCREEN) {
 			filename = g_strdup_printf ("/tmp/fullsize%016llx.png",
