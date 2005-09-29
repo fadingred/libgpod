@@ -2,7 +2,7 @@ lib_LTLIBRARIES = libgpod.la
 if HAVE_GDKPIXBUF
 ARTWORKDB_WRITER_FILES=	db-artwork-writer.c ithumb-writer.c
 else
-ARTWORKDB_WRITER_FILES=
+ARTWORKDB_WRITER_FILES= db-artwork-writer-dummy.c
 endif
 
 libgpod_la_SOURCES = \

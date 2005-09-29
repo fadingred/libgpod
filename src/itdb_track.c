@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-29 00:01:38 jcs>
+/* Time-stamp: <2005-09-29 21:02:05 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -26,6 +26,8 @@
 |
 |  $Id$
 */
+
+#include <config.h>
 
 #include "itdb_private.h"
 #include <string.h>
@@ -229,7 +231,7 @@ static GList *dup_thumbnails (GList *thumbnails)
 	image = (Itdb_Image *)it->data;
 	g_return_val_if_fail (image, NULL);
 
-	new_image = g_new0 (Itdb_Image, 1);
+	new_image = g_new (Itdb_Image, 1);
 	memcpy (new_image, image, sizeof (Itdb_Image));
 	new_image->filename = g_strdup (image->filename);
 	
@@ -246,7 +248,7 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
 
     g_return_val_if_fail (tr, NULL);
 
-    tr_dup = g_new0 (Itdb_Track, 1);
+    tr_dup = g_new (Itdb_Track, 1);
     memcpy (tr_dup, tr, sizeof (Itdb_Track));
 
     /* clear itdb pointer */
@@ -368,6 +370,8 @@ itdb_track_remove_thumbnail (Itdb_Track *song)
 }
 
 
+#ifdef HAVE_GDKPIXBUF
+/* This operation doesn't make sense when we can't save thumbnail files */
 int 
 itdb_track_set_thumbnail (Itdb_Track *song, const char *filename)
 {
@@ -384,3 +388,10 @@ itdb_track_set_thumbnail (Itdb_Track *song, const char *filename)
 
     return 0;
 }
+#else
+int 
+itdb_track_set_thumbnail (Itdb_Track *song, const char *filename)
+{
+    return -1;
+}
+#endif

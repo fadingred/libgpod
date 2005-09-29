@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-24 13:25:33 jcs>
+/* Time-stamp: <2005-09-29 21:04:45 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -939,7 +939,7 @@ Itdb_Playlist *itdb_playlist_duplicate (Itdb_Playlist *pl)
 
     g_return_val_if_fail (pl, NULL);
 
-    pl_dup = g_new0 (Itdb_Playlist, 1);
+    pl_dup = g_new (Itdb_Playlist, 1);
     memcpy (pl_dup, pl, sizeof (Itdb_Playlist));
     /* clear list heads */
     pl_dup->members = NULL;

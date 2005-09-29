@@ -59,6 +59,9 @@ AC_SUBST(LIBGPOD_LIBS)
 
 PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-2.0, have_gdkpixbuf=yes, have_gdkpibux=no)
 AM_CONDITIONAL(HAVE_GDKPIXBUF, test x"$have_gdkpixbuf" = xyes)
+if test x"have_gdkpixbuf" = xyes; then
+   AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF,1, [Whether gdk-pixbuf is installed, ArtworkDB writing support will be disabled if it can't be found])
+fi
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)
 
