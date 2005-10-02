@@ -38,7 +38,8 @@ ipod_image_to_gdk_pixbuf (Itdb_Image *image)
 	guchar *pixels;
 	int row_stride;
 
-	printf ("width: %d height: %d\n", image->width, image->height);
+	printf ("width: %d height: %d size: %d\n",
+		image->width, image->height, image->size);
 
 	if (image->type == ITDB_IMAGE_FULL_SCREEN) {
 		row_stride = 100;
