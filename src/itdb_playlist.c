@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-29 21:04:45 jcs>
+/* Time-stamp: <2005-10-02 18:56:09 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1235,7 +1235,7 @@ gboolean itdb_playlist_is_mpl (Itdb_Playlist *pl)
 {
     g_return_val_if_fail (pl, FALSE);
 
-    return (pl->type == ITDB_PL_TYPE_MPL);
+    return ((pl->type & 0xff) == ITDB_PL_TYPE_MPL);
 }
 
 
@@ -1245,6 +1245,24 @@ gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl)
     g_return_val_if_fail (pl, FALSE);
 
     return (pl->podcastflag == ITDB_PL_FLAG_PODCASTS);
+}
+
+
+/* set playlist to MPL */
+void itdb_playlist_set_mpl (Itdb_Playlist *pl)
+{
+    g_return_if_fail (pl);
+
+    pl->type = ITDB_PL_TYPE_MPL;
+}
+
+
+/* set playlist to Podcasts */
+void itdb_playlist_set_podcasts (Itdb_Playlist *pl)
+{
+    g_return_if_fail (pl);
+
+    pl->podcastflag = ITDB_PL_FLAG_PODCASTS;
 }
 
 

@@ -41,13 +41,39 @@ ipod_image_to_gdk_pixbuf (Itdb_Image *image)
 	printf ("width: %d height: %d size: %d\n",
 		image->width, image->height, image->size);
 
-	if (image->type == ITDB_IMAGE_FULL_SCREEN) {
-		row_stride = 100;
-	} else if (image->type == ITDB_IMAGE_NOW_PLAYING) {
-		row_stride = 42;
-	} else {
-		return NULL;
+/*
+description     photo: size width  nano: size width
+====================  ===== =====       ===== =====
+artwork big           39200   140       20000   100
+artwork small          6272    56        3528    42
+photo full-screen         ?     ?       46464   176
+photo thumbnail           ?     ?        3108    42
+*/
+
+	switch (image->size)
+	{
+	case 39200: /* ITDB_IMAGE_FULL_SCREEN */
+	    row_stride = 140;
+	    break;
+
+	case 46464: /* iPod nano photo database full screen */
+	    row_stride = 176;
+	    break;
+
+	case 6272: /* ITDB_IMAGE_NOW_PLAYING */
+	    row_stride = 56;
+	    break;
+
+	case 3108: /* iPod nano photo database thumbnails */
+/*	    if (width  > 42) width  = 42;
+	    if (height > 37) height = 37; ??? */
+	    row_stride = 42;
+	    break;
+
+	default:
+	    return NULL;
 	}
+
 
 	pixels = itdb_image_get_rgb_data (image);
 	if (pixels == NULL) {
@@ -56,7 +82,6 @@ ipod_image_to_gdk_pixbuf (Itdb_Image *image)
 
 	result = gdk_pixbuf_new_from_data (pixels, GDK_COLORSPACE_RGB, FALSE,
 					   8, image->width, image->height,
-					   /*image->width * 3, */
 					   row_stride * 3,
 					   (GdkPixbufDestroyNotify)g_free,
 					   NULL);

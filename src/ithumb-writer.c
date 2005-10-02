@@ -22,9 +22,13 @@
  *
  */
 
+#include <config.h>
 #include "itdb.h"
-#include "itdb_private.h"
 #include "db-image-parser.h"
+
+#ifdef HAVE_GDKPIXBUF
+
+#include "itdb_private.h"
 
 #include <errno.h>
 #include <locale.h>
@@ -241,7 +245,7 @@ itdb_write_ithumb_files (Itdb_iTunesDB *db, const char *mount_point)
 	GList *it;
 	iThumbWriter *fullsize_writer;
 	iThumbWriter *nowplaying_writer;
-	g_print ("%s\n", G_GNUC_FUNCTION);
+/*	g_print ("%s\n", G_GNUC_FUNCTION);*/
 
 	fullsize_writer = ithumb_writer_new (mount_point,
 					     ITDB_IMAGE_FULL_SCREEN,
@@ -291,3 +295,10 @@ itdb_write_ithumb_files (Itdb_iTunesDB *db, const char *mount_point)
 
 	return 0;
 }
+#else
+G_GNUC_INTERNAL int
+itdb_write_ithumb_files (Itdb_iTunesDB *db, const char *mount_point) 
+{
+    return -1;
+}
+#endif

@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-26 22:36:42 jcs>
+/* Time-stamp: <2005-10-02 18:56:10 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -46,22 +46,6 @@
 
 /* one star is how much (track->rating) */
 #define ITDB_RATING_STEP 20
-
-/* always use itdb_playlist_is_mpl() to check for MPL! */
-enum ItdbPlType { /* types for playlist->type */
-    ITDB_PL_TYPE_NORM = 0,       /* normal playlist, visible in iPod */
-    ITDB_PL_TYPE_MPL = 1         /* master playlist, contains all tracks,
-				    not visible in iPod */
-};
-
-/* always use itdb_playlists_is_podcasts() to check for podcasts PL */
-enum ItdbPlFlag { /* types for playlist->podcastflag */
-    ITDB_PL_FLAG_NORM = 0,       /* normal playlist, visible under
-				    'Playlists  */
-    ITDB_PL_FLAG_PODCASTS = 1    /* special podcast playlist visible
-				    under 'Music' */
-};
-
 
 /* Most of the knowledge about smart playlists has been provided by
    Samuel "Otto" Wood (sam dot wood at gmail dot com) who let me dig
@@ -700,15 +684,21 @@ void itdb_playlist_add_track (Itdb_Playlist *pl,
 Itdb_Playlist *itdb_playlist_by_id (Itdb_iTunesDB *itdb, guint64 id);
 Itdb_Playlist *itdb_playlist_by_nr (Itdb_iTunesDB *itdb, guint32 num);
 Itdb_Playlist *itdb_playlist_by_name (Itdb_iTunesDB *itdb, gchar *name);
-gboolean itdb_playlist_is_mpl (Itdb_Playlist *pl);
-gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl);
-Itdb_Playlist *itdb_playlist_mpl (Itdb_iTunesDB *itdb);
-Itdb_Playlist *itdb_playlist_podcasts (Itdb_iTunesDB *itdb);
 gboolean itdb_playlist_contains_track (Itdb_Playlist *pl, Itdb_Track *track);
 guint32 itdb_playlist_contain_track_number (Itdb_Track *tr);
 void itdb_playlist_remove_track (Itdb_Playlist *pl, Itdb_Track *track);
 guint32 itdb_playlist_tracks_number (Itdb_Playlist *pl);
 void itdb_playlist_randomize (Itdb_Playlist *pl);
+
+/* playlist functions for master playlist */
+Itdb_Playlist *itdb_playlist_mpl (Itdb_iTunesDB *itdb);
+gboolean itdb_playlist_is_mpl (Itdb_Playlist *pl);
+void itdb_playlist_set_mpl (Itdb_Playlist *pl);
+
+/* playlist functions for podcast playlist */
+Itdb_Playlist *itdb_playlist_podcasts (Itdb_iTunesDB *itdb);
+gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl);
+void itdb_playlist_set_podcasts (Itdb_Playlist *pl);
 
 /* smart playlist functions */
 SPLFieldType itdb_splr_get_field_type (const SPLRule *splr);

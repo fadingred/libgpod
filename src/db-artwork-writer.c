@@ -23,9 +23,12 @@
  */
 
 #include <config.h>
+#include "itdb.h"
+#include "db-artwork-parser.h"
+
+#if HAVE_GDKPIXBUF
 
 #include "db-artwork-debug.h"
-#include "db-artwork-parser.h"
 #include "db-itunes-parser.h"
 #include "db-image-parser.h"
 
@@ -774,3 +777,10 @@ ipod_write_artwork_db (Itdb_iTunesDB *db, const char *mount_point)
 	g_free (filename);
 	return 0;
 }
+#else
+int
+ipod_write_artwork_db (Itdb_iTunesDB *db, const char *mount_point)
+{
+    return -1;
+}
+#endif

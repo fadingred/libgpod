@@ -13,7 +13,7 @@ AM_CONFIG_HEADER(config.h)
 #
 LIBGPOD_MAJOR_VERSION=0
 LIBGPOD_MINOR_VERSION=1
-LIBGPOD_MICRO_VERSION=6
+LIBGPOD_MICRO_VERSION=7
 LIBGPOD_INTERFACE_AGE=0
 # If you need a modifier for the version number. 
 # Normally empty, but can be used to make "fixup" releases.
@@ -57,10 +57,14 @@ LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
 AC_SUBST(LIBGPOD_CFLAGS)
 AC_SUBST(LIBGPOD_LIBS)
 
+dnl **************************************************
+dnl * GDKPIXBUF is optional
+dnl **************************************************
+AH_TEMPLATE([HAVE_GDKPIXBUF], [Whether gdk-pixbuf is installed, ArtworkDB writing support will be disabled if it can't be found])
 PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-2.0, have_gdkpixbuf=yes, have_gdkpibux=no)
 AM_CONDITIONAL(HAVE_GDKPIXBUF, test x"$have_gdkpixbuf" = xyes)
-if test x"have_gdkpixbuf" = xyes; then
-   AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF,1, [Whether gdk-pixbuf is installed, ArtworkDB writing support will be disabled if it can't be found])
+if test x"$have_gdkpixbuf" = xyes; then
+   AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF, 1)
 fi
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)

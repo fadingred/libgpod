@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-26 22:40:20 jcs>
+/* Time-stamp: <2005-10-02 18:34:56 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -35,6 +35,22 @@
 #endif
 
 #include "itdb.h"
+
+/* always use itdb_playlist_is_mpl() to check for MPL! */
+enum ItdbPlType { /* types for playlist->type */
+    ITDB_PL_TYPE_NORM = 0,       /* normal playlist, visible in iPod */
+    ITDB_PL_TYPE_MPL = 1         /* master playlist, contains all tracks,
+				    not visible in iPod */
+};
+
+/* always use itdb_playlists_is_podcasts() to check for podcasts PL */
+enum ItdbPlFlag { /* types for playlist->podcastflag */
+    ITDB_PL_FLAG_NORM = 0,       /* normal playlist, visible under
+				    'Playlists  */
+    ITDB_PL_FLAG_PODCASTS = 1    /* special podcast playlist visible
+				    under 'Music' */
+};
+
 
 /* keeps the contents of one disk file (read) */
 typedef struct

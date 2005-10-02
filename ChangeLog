@@ -1,3 +1,26 @@
+2005-10-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* Makefile.am: added bindings/... to EXTRA_DIST
+
+	* src/itdb.h, src/itdb_playlist.h, src/itdb_private.h: made enum
+	  ItdbPlType and enum ItdbPlFlag private and introduced
+	  itdb_playlist_set_mpl/_podcast() in addition to the existing
+	  itdb_playlist_is_mpl/_podcast() which make the public enums
+	  unecessary.
+
+	* bumped to version 107
+
+	* src/ithumb-writer.c: itdb_write_ithumb_files (): commented out
+	  g_print() statement as this produced an empty line in gtkpod's
+	  warning window.
+
+	* src/Makefile.am: GDKPIXPUF dependency solved inside source files
+	  -- db-artwork-writer-dummy.c no longer required. Now compiles
+	  with and without gdkpixbuf.
+
+	* configure.ac: fixed error in AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF). 
+	* tests/test-covers.c: attached Flavio Stanchina size-patch
+
 2005-09-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* applied Chrisophe's patch to make libgdk optional

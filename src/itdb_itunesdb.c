@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-26 22:40:51 jcs>
+/* Time-stamp: <2005-10-02 20:14:55 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -3565,8 +3565,11 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, const gchar *mp, GError **error)
      * Errors happening during that operation are considered non fatal since
      * they shouldn't corrupt the main database.
      */
+
+#if HAVE_GDKPIXBUF
     ipod_write_artwork_db (itdb, mp);
-    
+#endif
+
     itunes_path = itdb_resolve_path (mp, db);
     
     if(!itunes_path)

@@ -1,9 +1,4 @@
 lib_LTLIBRARIES = libgpod.la
-if HAVE_GDKPIXBUF
-ARTWORKDB_WRITER_FILES=	db-artwork-writer.c ithumb-writer.c
-else
-ARTWORKDB_WRITER_FILES= db-artwork-writer-dummy.c
-endif
 
 libgpod_la_SOURCES = \
 	itdb.h           \
@@ -19,7 +14,8 @@ libgpod_la_SOURCES = \
 	db-artwork-debug.h  \
 	db-image-parser.c   \
 	db-image-parser.h   \
-	$(ARTWORKDB_WRITER_FILES)
+	db-artwork-writer.c \
+	ithumb-writer.c
 
 
 libgpod_la_headers = itdb.h
