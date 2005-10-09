@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-02 20:14:55 jcs>
+/* Time-stamp: <2005-10-09 22:09:01 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -8,7 +8,7 @@
 |
 |  Much of the code in this file has originally been ported from the
 |  perl script "mktunes.pl" (part of the gnupod-tools collection)
-|  written by Adrian Ulrich <pab at blinkenlights.ch>.
+|  written by Adrian Ulrich <pab at blinkenlights.ch>:
 |
 |  gnupod-tools: http://www.blinkenlights.ch/cgi-bin/fm.pl?get=ipod
 |

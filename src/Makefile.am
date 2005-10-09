@@ -15,11 +15,15 @@ libgpod_la_SOURCES = \
 	db-image-parser.c   \
 	db-image-parser.h   \
 	db-artwork-writer.c \
-	ithumb-writer.c
+	ithumb-writer.c \
+	ipod-device.c \
+	ipod-device.h \
+	hal-common.c \
+	hal-common.h
 
 
-libgpod_la_headers = itdb.h
-libgpod_la_noinst_headers = itdb_private.h
+libgpod_la_headers = itdb.h ipod-device.h
+libgpod_la_noinst_headers = itdb_private.h hal-common.h
 libgpod_la_LDFLAGS = -version-info $(LIBGPOD_CURRENT):$(LIBGPOD_REVISION):$(LIBGPOD_AGE) \
         -no-undefined
 

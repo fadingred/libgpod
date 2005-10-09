@@ -52,7 +52,7 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_INTLTOOL([0.21])
 
-PKG_CHECK_MODULES(LIBGPOD, glib-2.0)
+PKG_CHECK_MODULES(LIBGPOD, glib-2.0 gobject-2.0)
 LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
 AC_SUBST(LIBGPOD_CFLAGS)
 AC_SUBST(LIBGPOD_LIBS)
@@ -68,6 +68,12 @@ if test x"$have_gdkpixbuf" = xyes; then
 fi
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)
+
+dnl **************************************************
+dnl * hal is optional
+dnl **************************************************
+
+AC_CHECK_LIB([hal], [libhal_device_get_property_uint64])
 
 dnl **************************************************
 dnl * internationalization support

@@ -34,6 +34,8 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb) {
 
 typedef char gchar;
 typedef int gboolean;
+typedef int gint32;
+typedef unsigned int guint32;
 
 PyObject* sw_get_tracks(Itdb_iTunesDB *itdb);
 PyObject* sw_get_playlists(Itdb_iTunesDB *itdb);

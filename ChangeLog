@@ -1,3 +1,19 @@
+2005-10-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* bindings/python/gpod.i: applied Kelvin Lawson's patch to query
+	  integers.
+
+	* src/ipod-device.[ch],hal-common.[ch],Makefile.am: code ported
+	  from libipoddevice to retrieve information about the iPod
+	  without libhal dependence.
+
+	* tests/test-ipod-device.c: small script to show how to to query
+	  the iPod for information.
+
+	* tests/Makefile.am: initialize <LIBS> with better default
+
+	* configure.ac: add dependency for libgobject
+
 2005-10-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* Makefile.am: added bindings/... to EXTRA_DIST

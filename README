@@ -19,3 +19,59 @@ access the CVS server. The module to download is called 'libgpod'. The
 package released on sourceforge is simply there to raise awareness and
 hopefully have some package maintainers pick up the library.
 ----------------------------------------------------------------------
+
+Note about photo databases:
+
+First thing, there are 2 different artwork databases on the iPod
+Photo/Color, the ArtworkDB file which stores information about cover art
+(thumbnails) for the songs stored on the iPod, and the Photo Database
+which is used to store random photos not associated with songs on the
+iPod. 
+
+The main target I had in mind when writing artwork support was cover art
+thumbnails for songs. The parsing code should be reusable for generic
+Photo Database support, but there are probably some tweaks to do, and
+some stuff isn't handled, for example Photo Albums (roughtly equivalent
+to a playlist) which aren't used in the ArtworkDB (they are only
+useful/meaningful in the Photo Database)
+
+Even though the cover art data is stored in a separate file (ArtworkDB),
+it's intrisically linked with a song in the iTunesDB files through the
+'dbid' 64 bit field in the mhit iTunesDB records (it's meant to be
+displayed along when the song is being played, so it makes sense to
+associate them).
+
+What ipod_parse_photo_db is to parse this ArtworkDB file to gather info
+about the song thumbnails. It then fills the 'thumbnails' field in
+Itdb_Track which is a list of Itdb_Image. The Itdb_Image structure
+contains a few basic information about the image (I'll let you check its
+definition in itdb.h for more details), but it doesn't store the pixel
+data since this is stored separately, and I feared loading all the cover
+thumbnails automatically would be too memory hungry. So an
+itdb_image_get_rgb_data function is provided to trigger the load of the
+pixel data when it's useful.
+
+The 2 test programs I added are meant to be small samples of how this
+stuff works, one of them parses the ArtworkDB and outputs all the
+thumbnails it finds in /tmp as .png files, the other one is used to
+randomly associate images as thumbnails to all songs in the database,
+it's meant to show how to write thumbnails. If you add support for that
+to gtkpod, be aware that currently adding cover thumbnails to a few
+songs on an iPod which already has cover thumbnails assigned to some
+other songs is not something that is tranparently handled, ie you'll
+need to add code either to libgpod or to gtkpod to make that work
+properly.
+
+As for Photo Database handling (which is not dealt with currently), I
+agree it doesn't make sense to associate its parsing with an
+Itdb_ItunesDB object, and that a 'parallel' api mimicking somewhat the
+Track/Playlist stuff with Photo/Album entities would need to be
+designed, but I didn't work on that since, and I probably won't short
+term.
+
+People wanting more info can find lots of details on
+http://ipodlinux.org/ITunesDB#Artwork_Database
+
+I hope that's helpful,
+
+Christophe
