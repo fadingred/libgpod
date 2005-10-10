@@ -328,7 +328,6 @@ write_mhni (Itdb_Image *image, iPodBuffer *buffer)
 	unsigned int total_bytes;
 	int bytes_written;
 	iPodBuffer *sub_buffer;
-	unsigned int dim;
 
 	if (image == NULL) {
 		return -1;
@@ -351,12 +350,10 @@ write_mhni (Itdb_Image *image, iPodBuffer *buffer)
 		mhni->correlation_id = GINT_TO_LE (IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID);
 		break;
 	}
-	dim = image->width & 0xffff;
-	dim <<= 16;
-	dim |= image->height & 0xffff;
-	mhni->image_dimensions = GINT_TO_LE (dim);
-	mhni->image_size = GINT_TO_LE (image->size);
-	mhni->ithmb_offset = GINT_TO_LE (image->offset);
+	mhni->image_width  = GINT16_TO_LE (image->width);
+	mhni->image_height = GINT16_TO_LE (image->height);
+	mhni->image_size   = GINT32_TO_LE (image->size);
+	mhni->ithmb_offset = GINT32_TO_LE (image->offset);
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {

@@ -61,12 +61,15 @@ typedef struct _MhliHeader MhliHeader;
 typedef struct _MhiiHeader MhiiHeader;
 typedef struct _MhniHeader MhniHeader;
 typedef struct _MhlaHeader MhlaHeader;
+typedef struct _MhbaHeader MhbaHeader;
 typedef struct _MhlfHeader MhlfHeader;
 typedef struct _MhifHeader MhifHeader;
+typedef struct _MhiaHeader MhiaHeader;
 
 typedef struct _MhitHeader471 MhitHeader471;
 /* MHOD typedef mess */
 typedef struct _MhodHeaderString MhodHeaderString;
+typedef struct _MhodHeaderArtworkType1 MhodHeaderArtworkType1;
 typedef struct _MhodHeaderArtworkType3 MhodHeaderArtworkType3;
 typedef struct _MhodHeaderSmartPlaylistData MhodHeaderSmartPlaylistData;
 typedef struct _MhodHeaderSmartPlaylistRuleString MhodHeaderSmartPlaylistRuleString; 
@@ -311,8 +314,32 @@ struct _MhodHeaderString {
 	gint32 unknown2;
 	gint32 position;
 	gint32 string_len;
-	gint32 encoding;
+	gint32 unknown3; /* It was thought that this was string encoding:
+			  * 0 == UTF-16, 1 == UTF-8, however, recent iTunesDB
+			  * files have had this set to 1 even with UTF-16 strings.
+			  * Therefore this is definitely incorrect, and the
+			  * correct meaning has not yet been discovered yet. */
 	gint32 unknown4;
+	unsigned char string[];
+};
+
+enum MhodArtworkType {
+	MHOD_ARTWORK_TYPE_ALBUM_NAME = 1, /* string:    album name (in the Photo Database) */
+	MHOD_ARTWORK_TYPE_THUMBNAIL  = 2, /* container: thumbnail image */
+	MHOD_ARTWORK_TYPE_FILE_NAME  = 3, /* string:    file name */
+	MHOD_ARTWORK_TYPE_IMAGE      = 5  /* container: full resolution image (in the Photo Database) */
+};
+
+struct _MhodHeaderArtworkType1 {
+	unsigned char header_id[4];
+	gint32 header_len;
+	gint32 total_len;
+	gint32 type; /* low 3 bytes are type (always 1); high byte is padding length (0-3) */
+	gint32 unknown1;
+	gint32 unknown2;
+	gint32 string_len;
+	gint32 unknown3; /* might be the string encoding */
+	gint32 unknown4; /* always zero? */
 	unsigned char string[];
 };
 
@@ -507,7 +534,8 @@ struct _MhniHeader {
 	gint32 ithmb_offset;
 	gint32 image_size;
 	gint32 unknown3;
-	gint32 image_dimensions;
+	gint16 image_height;
+	gint16 image_width;
 	unsigned char padding[];
 };
 
@@ -515,6 +543,21 @@ struct _MhlaHeader {
 	unsigned char header_id[4];
 	gint32 header_len;
 	gint32 num_children;
+	unsigned char padding[];
+};
+
+struct _MhbaHeader {
+	unsigned char header_id[4];
+	gint32 header_len;
+	gint32 total_len;
+	gint32 num_mhods; /* number of Data Objects in the List, probably always 1 */
+	gint32 num_mhias; /* number of pictures in the album */
+	gint32 playlist_id; /* starts out at $64 and increments by 1 */
+	gint32 unknown2; /* unknown, seems to be always 0 */
+	gint32 unknown3; /* unknown, but is 0x10000 for the Photo Library and 0x60000 for normal albums
+			  * (maybe not a 4 byte field?) */
+	gint32 unknown[7]; /* more zeroes */
+	gint32 prev_playlist_id; /* the id of the previous playlist */
 	unsigned char padding[];
 };
 
@@ -535,6 +578,15 @@ struct _MhifHeader {
 	unsigned char padding[];
 };
 
+struct _MhiaHeader {
+	unsigned char header_id[4];
+	gint32 header_len;
+	gint32 total_len; /* probably the size of the header and all child records;
+			   * as there aren't any child records this is equal to header length */
+	gint32 unknown1; /* seems to be zero */
+	gint32 image_id; /* the id of the mhii record this mhia refers to */
+	unsigned char padding[];
+};
 
 
 #endif /* PARSE_DB_H */

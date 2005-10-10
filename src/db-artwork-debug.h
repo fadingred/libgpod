@@ -30,6 +30,8 @@
 
 #ifdef DEBUG_ARTWORKDB
 extern G_GNUC_INTERNAL void dump_mhif (MhifHeader *mhif);
+extern G_GNUC_INTERNAL void dump_mhia (MhiaHeader *mhia);
+extern G_GNUC_INTERNAL void dump_mhod_type_1 (MhodHeaderArtworkType1 *mhod);
 extern G_GNUC_INTERNAL void dump_mhod_type_3 (MhodHeaderArtworkType3 *mhod);
 extern G_GNUC_INTERNAL void dump_mhni (MhniHeader *mhni);
 extern G_GNUC_INTERNAL void dump_mhod (MhodHeader *mhod);
@@ -37,8 +39,11 @@ extern G_GNUC_INTERNAL void dump_mhii (MhiiHeader *mhii);
 extern G_GNUC_INTERNAL void dump_mhl (MhlHeader *mhl, const char *id);
 extern G_GNUC_INTERNAL void dump_mhsd (MhsdHeader *mhsd);
 extern G_GNUC_INTERNAL void dump_mhfd (MhfdHeader *mhfd);
+extern G_GNUC_INTERNAL void dump_mhba (MhbaHeader *mhba);
 #else 
 #define dump_mhif(x)
+#define dump_mhia(x)
+#define dump_mhod_type_1(x)
 #define dump_mhod_type_3(x)
 #define dump_mhni(x)
 #define dump_mhod(x)
@@ -46,6 +51,7 @@ extern G_GNUC_INTERNAL void dump_mhfd (MhfdHeader *mhfd);
 #define dump_mhl(x,y)
 #define dump_mhsd(x)
 #define dump_mhfd(x)
+#define dump_mhba(x)
 #endif
 
 #endif

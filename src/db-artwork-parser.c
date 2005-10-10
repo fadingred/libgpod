@@ -64,6 +64,20 @@ parse_mhif (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 	return 0;
 }
 
+static int
+parse_mhia (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
+{
+	MhiaHeader *mhia;
+
+	mhia = db_parse_context_get_m_header (ctx, MhiaHeader, "mhia");
+	if (mhia == NULL) {
+		return -1;
+	}
+	dump_mhia (mhia);
+	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhia->total_len));
+	return 0;
+}
+
 #ifdef DEBUG_ARTWORKDB
 static int
 parse_mhod_3 (DBParseContext *ctx, GError *error)
@@ -81,11 +95,11 @@ parse_mhod_3 (DBParseContext *ctx, GError *error)
 		return -1;
 	}
 	mhod3 = (MhodHeaderArtworkType3*)mhod;
-	dump_mhod_type_3 (mhod3);
-	if ((GINT_FROM_LE (mhod3->type) & 0xff) != MHOD_TYPE_ALBUM) {
+	if ((GINT_FROM_LE (mhod3->type) & 0x00FFFFFF) != MHOD_ARTWORK_TYPE_FILE_NAME) {
 		return -1;
 	}
 
+	dump_mhod_type_3 (mhod3);
 	return 0;
 }
 #endif
@@ -111,6 +125,9 @@ parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 
 		/* No information useful to us in mhod type 3, do not parse
 		 * it in non-debug mode 
+		 * FIXME: really? it contains the thumbnail file name!
+		 * we infer it from the correlation id, but is this
+		 * always The Right Thing to do?
 		 */
 		mhod_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
 		if (mhod_ctx == NULL) {
@@ -133,24 +150,35 @@ parse_mhod (DBParseContext *ctx, iPodSong *song, GError *error)
 {
 	MhodHeader *mhod;
 	DBParseContext *mhni_ctx;
+	int type;
 
 	mhod = db_parse_context_get_m_header (ctx, MhodHeader, "mhod");
 	if (mhod == NULL) {
 		return -1;
 	}
 	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhod->total_len));
-	dump_mhod (mhod);
 
-	if (GINT_FROM_LE (mhod->type) != MHOD_TYPE_LOCATION) {
-		return -1;
-	}
+	/* The MHODs found in the ArtworkDB and Photo Database files are
+	 * significantly different than those found in the iTunesDB.
+	 * For example, the "type" is split like this:
+	 * - low 3 bytes are actual type;
+	 * - high byte is padding length of string (0-3).
+	 */
+	type = GINT_FROM_LE (mhod->type) & 0x00FFFFFF;
+	if (type == MHOD_ARTWORK_TYPE_ALBUM_NAME)
+		dump_mhod_type_1 ((MhodHeaderArtworkType1 *)mhod);
+	else
+		dump_mhod (mhod);
 
-	mhni_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
-	if (mhni_ctx == NULL) {
-		return -1;
+	/* if this is a container... */
+	if (type == MHOD_ARTWORK_TYPE_THUMBNAIL) {
+		mhni_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
+		if (mhni_ctx == NULL) {
+			return -1;
+		}
+		parse_mhni (mhni_ctx, song, NULL);
+		g_free (mhni_ctx);
 	}
-	parse_mhni (mhni_ctx, song, NULL);
-	g_free (mhni_ctx);
 
 	return 0;
 }
@@ -198,6 +226,47 @@ parse_mhii (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 		cur_offset += mhod_ctx->total_len;
 		g_free (mhod_ctx);
 		mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
+	}
+
+	return 0;
+}
+
+
+static int
+parse_mhba (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
+{
+	MhbaHeader *mhba;
+	DBParseContext *mhod_ctx;
+	DBParseContext *mhia_ctx;
+	int num_children;
+	off_t cur_offset;
+
+	mhba = db_parse_context_get_m_header (ctx, MhbaHeader, "mhba");
+	if (mhba == NULL) {
+		return -1;
+	}
+	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhba->total_len));
+
+	dump_mhba (mhba);
+
+	cur_offset = ctx->header_len;
+	mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
+	num_children = GINT_FROM_LE (mhba->num_mhods);
+	while ((num_children > 0) && (mhod_ctx != NULL)) {
+		parse_mhod (mhod_ctx, NULL, NULL);
+		num_children--;
+		cur_offset += mhod_ctx->total_len;
+		g_free (mhod_ctx);
+		mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
+	}
+	mhia_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
+	num_children = GINT_FROM_LE (mhba->num_mhias);
+	while ((num_children > 0) && (mhia_ctx != NULL)) {
+		parse_mhia (mhia_ctx, db, NULL);
+		num_children--;
+		cur_offset += mhia_ctx->total_len;
+		g_free (mhia_ctx);
+		mhia_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	}
 
 	return 0;
@@ -265,7 +334,7 @@ parse_mhsd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 	case MHSD_ALBUM_LIST: {
 		DBParseContext *mhla_context;
 		mhla_context = db_parse_context_get_next_child (ctx);
-		parse_mhl (mhla_context, db, NULL, "mhla", NULL);
+		parse_mhl (mhla_context, db, NULL, "mhla", parse_mhba);
 		g_free (mhla_context);
 		break;
 	}
@@ -304,6 +373,10 @@ parse_mhfd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 	dump_mhfd (mhfd);
 	cur_pos = ctx->header_len;
 
+	/* The mhfd record always has 3 mhsd children, so it's hardcoded here.
+	 * It could be replaced with a loop using the nb_children field from
+	 * the mhfd record. [explanation by Christophe]
+	 */
 	mhsd_context = db_parse_context_get_sub_context (ctx, cur_pos);
 	if (mhsd_context == NULL) {
 		return -1;

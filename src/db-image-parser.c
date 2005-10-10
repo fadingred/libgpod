@@ -154,10 +154,10 @@ ipod_image_new_from_mhni (MhniHeader *mhni, const char *mount_point)
 	}
 	img->filename = ipod_image_get_ithmb_filename (mount_point,
 						       GINT_FROM_LE (mhni->correlation_id));
-	img->size = GINT_FROM_LE (mhni->image_size);
-	img->offset = GINT_FROM_LE (mhni->ithmb_offset);
-	img->width = (GINT_FROM_LE (mhni->image_dimensions) & 0xffff0000) >> 16;
-	img->height = (GINT_FROM_LE (mhni->image_dimensions) & 0x0000ffff);
+	img->size   = GINT32_FROM_LE (mhni->image_size);
+	img->offset = GINT32_FROM_LE (mhni->ithmb_offset);
+	img->width  = GINT16_FROM_LE (mhni->image_width);
+	img->height = GINT16_FROM_LE (mhni->image_height);
 
 	switch (mhni->correlation_id) {
 	case IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID:
@@ -169,8 +169,8 @@ ipod_image_new_from_mhni (MhniHeader *mhni, const char *mount_point)
 		img->type = ITDB_IMAGE_NOW_PLAYING;
 		break;
 	default:
-		g_print ("Unrecognized image size: %08x\n", 
-			 GINT_FROM_LE (mhni->image_dimensions));
+		g_print ("Unrecognized image size: %ux%u\n",
+			 img->width, img->height);
 		g_free (img);
 		return NULL;
 	}
