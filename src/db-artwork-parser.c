@@ -31,6 +31,7 @@
 
 typedef int (*ParseListItem)(DBParseContext *ctx, Itdb_iTunesDB *db, GError *error);
 
+#ifndef DEBUG_ARTWORKDB
 static Itdb_Track *
 get_song_by_dbid (Itdb_iTunesDB *db, guint64 id)
 {
@@ -46,6 +47,7 @@ get_song_by_dbid (Itdb_iTunesDB *db, guint64 id)
 	}
 	return NULL;
 }
+#endif
 
 
 static int
@@ -92,7 +94,9 @@ static int
 parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 {
 	MhniHeader *mhni;
+#ifndef DEBUG_ARTWORKDB
 	Itdb_Image *thumb;
+#endif
 
 	mhni = db_parse_context_get_m_header (ctx, MhniHeader, "mhni");
 	if (mhni == NULL) {
