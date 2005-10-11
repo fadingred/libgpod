@@ -1,3 +1,8 @@
+2005-10-11  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_itunesdb.c: (get_mhip): added missing parameter to
+	a g_warning call, this broke compilation on FC4
+
 2005-10-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* bindings/python/gpod.i: applied Kelvin Lawson's patch to query

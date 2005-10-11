@@ -1467,7 +1467,7 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	    if (mhod_len == -1)
 	    {
 		g_warning (_("Number of MHODs in mhip at %ld inconsistent in file '%s'."),
-			   mhip_seek);
+			   mhip_seek, cts->filename);
 		break;
 	    }
 	    mhod_seek += mhod_len;
