@@ -7,6 +7,8 @@
 	  dbid if not set (thanks to Guilherme Salgado for pointing this
 	  out)
 
+	* tests/.cvsignore: updated
+
 2005-10-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* bindings/python/gpod.i: applied Kelvin Lawson's patch to query
