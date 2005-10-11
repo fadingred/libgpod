@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-09-29 21:02:05 jcs>
+/* Time-stamp: <2005-10-12 01:04:36 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -61,6 +61,9 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
     gchar *mp4_desc[] = {"AAC", "MP4", "aac", "mp4", NULL};
     gchar *audible_subdesc[] = {"Audible", "audible", "Book", "book", NULL};
     gchar *wav_desc[] = {"WAV", "wav", NULL};
+
+    g_return_if_fail (tr);
+    g_return_if_fail (tr->itdb);
 
     /* The exact meaning of unk126 is unknown, but always seems to be
        0xffff for MP3/AAC songs, 0x0 for uncompressed songs (like WAVE
@@ -125,6 +128,27 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
        floating point number.  It's uncertain why this is here.  itdb
        will set this when adding a track */
     tr->samplerate2 = tr->samplerate;
+
+    /* set unique ID when not yet set */
+    if (tr->dbid == 0)
+    {
+	GRand *grand = g_rand_new ();
+	GList *gl;
+	guint64 id;
+	do
+	{
+	    id = ((guint64)g_rand_int (grand) << 32) |
+		((guint64)g_rand_int (grand));
+	    /* check if id is really unique */
+	    for (gl=tr->itdb->tracks; id && gl; gl=gl->next)
+	    {
+		Itdb_Track *g_tr = gl->data;
+		g_return_if_fail (g_tr);
+		if (id == g_tr->dbid)  id = 0;
+	    }
+	} while (id == 0);
+	tr->dbid = id;
+    }
     if (tr->dbid2 == 0)  tr->dbid2 = tr->dbid;
 }
     

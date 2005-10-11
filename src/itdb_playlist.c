@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-02 18:56:09 jcs>
+/* Time-stamp: <2005-10-12 01:04:25 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1076,7 +1076,7 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
 	{
 	    id = ((guint64)g_rand_int (grand) << 32) |
 		((guint64)g_rand_int (grand));
-	    /* check if id is really random (with 100 playlists the
+	    /* check if id is really unique (with 100 playlists the
 	     * chance to create a duplicate is 1 in
 	     * 184,467,440,737,095,516.16) */
 	    for (gl=itdb->playlists; id && gl; gl=gl->next)
