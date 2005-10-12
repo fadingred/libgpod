@@ -1,3 +1,10 @@
+2005-10-12  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.ac:
+	* src/Makefile.am:
+	* tests/Makefile.am: fix compilation when hal is available, needs to
+	be tested on systems without hal
+
 2005-10-11  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: (get_mhip): added missing parameter to

@@ -54,8 +54,6 @@ AC_PROG_INTLTOOL([0.21])
 
 PKG_CHECK_MODULES(LIBGPOD, glib-2.0 gobject-2.0)
 LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
-AC_SUBST(LIBGPOD_CFLAGS)
-AC_SUBST(LIBGPOD_LIBS)
 
 dnl **************************************************
 dnl * GDKPIXBUF is optional
@@ -66,14 +64,20 @@ AM_CONDITIONAL(HAVE_GDKPIXBUF, test x"$have_gdkpixbuf" = xyes)
 if test x"$have_gdkpixbuf" = xyes; then
    AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF, 1)
 fi
-AC_SUBST(GDKPIXBUF_CFLAGS)
-AC_SUBST(GDKPIXBUF_LIBS)
+LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $GDKPIXBUF_CFLAGS"
+LIBGPOD_LIBS="$LIBGPOD_LIBS $GDKPIXBUF_LIBS"
 
 dnl **************************************************
 dnl * hal is optional
 dnl **************************************************
 
-AC_CHECK_LIB([hal], [libhal_device_get_property_uint64])
+PKG_CHECK_MODULES(HAL, hal >= 0.5.2 hal < 0.6, enable_hal05=yes, enable_hal05=no)
+if test x$enable_hal05 != xyes; then
+   AC_DEFINE_UNQUOTED(HAVE_HAL, 1, [Whether HAL is available or not])
+fi
+LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $HAL_CFLAGS"
+LIBGPOD_LIBS="$LIBGPOD_LIBS $HAL_LIBS"
+
 
 dnl **************************************************
 dnl * internationalization support
@@ -132,6 +136,8 @@ fi
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
+AC_SUBST(LIBGPOD_CFLAGS)
+AC_SUBST(LIBGPOD_LIBS)
 
 AC_OUTPUT([
 Makefile

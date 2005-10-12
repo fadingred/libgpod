@@ -30,5 +30,5 @@ libgpod_la_LDFLAGS = -version-info $(LIBGPOD_CURRENT):$(LIBGPOD_REVISION):$(LIBG
 libgpodincludedir = $(includedir)/gpod-1.0/gpod
 libgpodinclude_HEADERS = $(libgpod_la_headers)
 
-INCLUDES=$(LIBGPOD_CFLAGS) $(GDKPIXBUF_CFLAGS)
-LIBS=$(LIBGPOD_LIBS) $(GDKPIXBUF_LIBS) 
+INCLUDES=$(LIBGPOD_CFLAGS)
+LIBS=$(LIBGPOD_LIBS)
