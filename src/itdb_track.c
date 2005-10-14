@@ -132,13 +132,12 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
     /* set unique ID when not yet set */
     if (tr->dbid == 0)
     {
-	GRand *grand = g_rand_new ();
 	GList *gl;
 	guint64 id;
 	do
 	{
-	    id = ((guint64)g_rand_int (grand) << 32) |
-		((guint64)g_rand_int (grand));
+	    id = ((guint64)g_random_int () << 32) |
+		((guint64)g_random_int ());
 	    /* check if id is really unique */
 	    for (gl=tr->itdb->tracks; id && gl; gl=gl->next)
 	    {

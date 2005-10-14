@@ -1069,13 +1069,12 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
     /* set unique ID when not yet set */
     if (pl->id == 0)
     {
-	GRand *grand = g_rand_new ();
 	GList *gl;
 	guint64 id;
 	do
 	{
-	    id = ((guint64)g_rand_int (grand) << 32) |
-		((guint64)g_rand_int (grand));
+	    id = ((guint64)g_random_int () << 32) |
+		((guint64)g_random_int ());
 	    /* check if id is really unique (with 100 playlists the
 	     * chance to create a duplicate is 1 in
 	     * 184,467,440,737,095,516.16) */
