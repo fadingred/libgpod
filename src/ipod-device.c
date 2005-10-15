@@ -1733,9 +1733,9 @@ ipod_device_debug(IpodDevice *device)
 	g_printf("   Serial Number:    %s\n", serial_number);
 	g_printf("   Firmware Version: %s\n", firmware_version);
 	g_printf("Volume Info\n");
-	g_printf("   Volume Size:      %lld\n", volume_size);
-	g_printf("   Volume Used:      %lld\n", volume_used);
-	g_printf("   Available         %lld\n", volume_available);
+	g_printf("   Volume Size:      %lld\n", (long long int)volume_size);
+	g_printf("   Volume Used:      %lld\n", (long long int)volume_used);
+	g_printf("   Available         %lld\n", (long long int)volume_available);
 	g_printf("   UUID:             %s\n", volume_uuid);
 	g_printf("   Label             %s\n", volume_label);
 	g_printf("User-Provided Info\n");

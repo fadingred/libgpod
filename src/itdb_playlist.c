@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-12 01:04:25 jcs>
+/* Time-stamp: <2005-10-15 22:28:58 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -853,7 +853,7 @@ void itdb_splr_validate (SPLRule *splr)
 
 
 /* Free memory of SPLRule @splr */
-static void itdb_splr_free (SPLRule *splr)
+void itdb_splr_free (SPLRule *splr)
 {
     if (splr)
     {
@@ -1044,8 +1044,7 @@ void itdb_playlist_free (Itdb_Playlist *pl)
 
     g_free (pl->name);
     g_list_free (pl->members);
-    g_list_foreach (pl->splrules.rules,
-		    (GFunc)(itdb_splr_free), NULL);
+    g_list_foreach (pl->splrules.rules, (GFunc)(itdb_splr_free), NULL);
     g_list_free (pl->splrules.rules);
     if (pl->userdata && pl->userdata_destroy)
 	(*pl->userdata_destroy) (pl->userdata);

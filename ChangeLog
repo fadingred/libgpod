@@ -1,3 +1,10 @@
+2005-10-15  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c,itdb_private.h: fixes for 64 bit systems
+	* src/ipod-device.c: fixes for 64 bit systems (patch provided by
+	  Bodo Bauer)
+	* TROUBLESHOOTING: hint for 64 bit compilation
+
 2005-10-12  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac:

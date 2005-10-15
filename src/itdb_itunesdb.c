@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-09 22:09:01 jcs>
+/* Time-stamp: <2005-10-15 23:47:29 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -170,6 +170,24 @@ enum MHOD_ID {
   MHOD_ID_LIBPLAYLISTINDEX = 52,  /* Library Playlist Index */
   MHOD_ID_PLAYLIST = 100
 };
+
+
+struct _MHODData
+{
+    gboolean valid;
+    gint32 type;
+    union
+    {
+	gint32 track_pos;
+	gchar *string;
+	gchar *chapterdata_raw;
+	Itdb_Track *chapterdata_track; /* for writing chapterdata */
+	SPLPref *splpref;
+	SPLRules *splrules;
+    } data;
+};
+
+typedef struct _MHODData MHODData;
 
 
 /* ID for error domain */
@@ -923,40 +941,45 @@ static gint32 get_mhod_type (FContents *cts, glong seek, guint32 *ml)
     return type;
 }
 
-/* Returns a pointer to the data contained in the mhod at position
-   @seek. This can be a simple string or something more complicated as
-   in the case for SPLPREF or SPLRULES. *ml is set to the total length
-   of the mhod (-1 in case of an error), *mty is set to the type of
-   the mhod.
-   On error NULL is returned and cts->error is set appropriately. */
-static void *get_mhod (FContents *cts, gulong mhod_seek,
-		       guint32 *ml, gint32 *mty)
+/* Returns the contents of the mhod at position @mhod_seek. This can
+   be a simple string or something more complicated as in the case for
+   SPLPREF OR SPLRULES.
+
+   *mhod_len is set to the total length of the mhod (-1 in case an
+   *error occured).
+
+   MHODData.valid is set to FALSE in case of any error. cts->error
+   will be set accordingly.
+
+   MHODData.type is set to the type of the mhod. The data (or a
+   pointer to the data) will be stored in
+   .playlist_id/.string/.chapterdata/.splp/.splrs
+*/
+
+static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 {
   gunichar2 *entry_utf16 = NULL;
-  SPLPref *splp = NULL;
-  guint8 limitsort_opposite;
-  void *result = NULL;
+  MHODData result;
   gint32 xl;
   guint32 mhod_len;
   gint32 header_length;
   gulong seek;
 
-  g_return_val_if_fail (ml, NULL);
-  g_return_val_if_fail (mty, NULL);
-  g_return_val_if_fail (cts, NULL);
+  result.valid = FALSE;
+
+  g_return_val_if_fail (ml, result);
+  *ml = -1;
+
+  g_return_val_if_fail (cts, result);
+  g_return_val_if_fail (!cts->error, result);
 
 #if ITUNESDB_DEBUG
   fprintf(stderr, "get_mhod seek: %ld\n", mhod_seek);
 #endif
 
-  g_return_val_if_fail (cts, NULL);
+  result.type = get_mhod_type (cts, mhod_seek, &mhod_len);
 
-  *ml = -1;
-
-  g_return_val_if_fail (!cts->error, NULL);
-
-  *mty = get_mhod_type (cts, mhod_seek, &mhod_len);
-  if (*mty == -1)
+  if (mhod_len == -1)
   {
       if (!cts->error)
       {   /* set error */
@@ -966,25 +989,25 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
 		       _("iTunesDB corrupt: no MHOD at offset %ld in file '%s'."),
 		       mhod_seek, cts->filename);
       }
-      return NULL;
+      return result;
   }
   header_length = get32lint (cts, mhod_seek+4); /* header length  */
-  if (cts->error) return NULL;
+  if (cts->error) return result;
 
   seek = mhod_seek + header_length;
 
 #if ITUNESDB_DEBUG
-  fprintf(stderr, "ml: %x mty: %x\n", *ml, *mty);
+  fprintf(stderr, "ml: %x type: %x\n", *ml, result.type);
 #endif
 
-  switch ((enum MHOD_ID)*mty)
+  switch ((enum MHOD_ID)result.type)
   {
   case MHOD_ID_LIBPLAYLISTINDEX:
       /* this is not yet supported */
   case MHOD_ID_PLAYLIST:
       /* return the position indicator */
-      result = (void *)get32lint (cts, mhod_seek+24);
-      if (cts->error) return NULL;
+      result.data.track_pos = get32lint (cts, mhod_seek+24);
+      if (cts->error) return result;  /* *ml==-1, result.valid==FALSE */
       break;
   case MHOD_ID_TITLE:
   case MHOD_ID_PATH:
@@ -999,64 +1022,58 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
   case MHOD_ID_DESCRIPTION:
   case MHOD_ID_SUBTITLE:
       xl = get32lint (cts, seek+4);   /* length of string */
-      if (cts->error) return NULL;
+      if (cts->error) return result;  /* *ml==-1, result.valid==FALSE */
       entry_utf16 = g_new0 (gunichar2, (xl+2)/2);
       if (seek_get_n_bytes (cts, (gchar *)entry_utf16, seek+16, xl))
       {
 	  fixup_little_utf16 (entry_utf16);
-	  result = g_utf16_to_utf8 (entry_utf16, -1, NULL, NULL, NULL);
+	  result.data.string = g_utf16_to_utf8 (entry_utf16, -1,
+					   NULL, NULL, NULL);
+	  g_free (entry_utf16);
       }
       else
       {   /* error */
-	  result = NULL;
+	  g_free (entry_utf16);
+	  return result;  /* *ml==-1, result.valid==FALSE */
       }
-      g_free (entry_utf16);
       break;
   case MHOD_ID_PODCASTURL:
   case MHOD_ID_PODCASTRSS:
       /* length of string */
       xl = mhod_len - header_length;
-      if (cts->error) return NULL;
-      result = g_new0 (gchar, xl+1);
-      if (!seek_get_n_bytes (cts, (gchar *)result, seek, xl))
+      if (cts->error) return result;  /* *ml==-1, result.valid==FALSE */
+      result.data.string = g_new0 (gchar, xl+1);
+      if (!seek_get_n_bytes (cts, result.data.string, seek, xl))
       {
-	  g_free (result);
-	  result = NULL;
+	  g_free (result.data.string);
+	  return result;  /* *ml==-1, result.valid==FALSE */
       }
       break;
   case MHOD_ID_CHAPTERDATA: 
       /* we'll just copy the entire data section */
       xl = mhod_len - header_length;
-      result = g_new0 (gchar, xl);
-      if (!seek_get_n_bytes (cts, result, seek, xl))
+      result.data.chapterdata_raw = g_new0 (gchar, xl);
+      if (!seek_get_n_bytes (cts, result.data.chapterdata_raw, seek, xl))
       {
-	  g_free (result);
-	  result = NULL;
+	  g_free (result.data.chapterdata_raw);
+	  return result;  /* *ml==-1, result.valid==FALSE */
       }
       break;
   case MHOD_ID_SPLPREF:  /* Settings for smart playlist */
-      splp = g_new0 (SPLPref, 1);
-      splp->liveupdate = get8int (cts, seek);
-      if (cts->error) return NULL;
-      splp->checkrules = get8int (cts, seek+1);
-      if (cts->error) return NULL;
-      splp->checklimits = get8int (cts, seek+2);
-      if (cts->error) return NULL;
-      splp->limittype = get8int (cts, seek+3);
-      if (cts->error) return NULL;
-      splp->limitsort = get8int (cts, seek+4);
-      if (cts->error) return NULL;
-      splp->limitvalue = get32lint (cts, seek+8);
-      if (cts->error) return NULL;
-      splp->matchcheckedonly = get8int (cts, seek+12);
-      if (cts->error) return NULL;
-      limitsort_opposite = get8int (cts, seek+13);
-      if (cts->error) return NULL;
-      /* if the opposite flag is on, set limitsort's high bit -- see
-	 note in itunesdb.h for more info */
-      if (limitsort_opposite)
-	  splp->limitsort |= 0x80000000;
-      result = splp;
+      if (!check_seek (cts, seek, 14))
+	  return result;  /* *ml==-1, result.valid==FALSE */
+      result.data.splpref = g_new0 (SPLPref, 1);
+      result.data.splpref->liveupdate = get8int (cts, seek);
+      result.data.splpref->checkrules = get8int (cts, seek+1);
+      result.data.splpref->checklimits = get8int (cts, seek+2);
+      result.data.splpref->limittype = get8int (cts, seek+3);
+      result.data.splpref->limitsort = get8int (cts, seek+4);
+      result.data.splpref->limitvalue = get32lint (cts, seek+8);
+      result.data.splpref->matchcheckedonly = get8int (cts, seek+12);
+      /* if the opposite flag is on (seek+13), set limitsort's high
+	 bit -- see note in itunesdb.h for more info */
+      if (get8int (cts, seek+13))
+	  result.data.splpref->limitsort |= 0x80000000;
       break;
   case MHOD_ID_SPLRULES:  /* Rules for smart playlist */
       if (cmp_n_bytes_seek (cts, "SLst", seek, 4))
@@ -1066,26 +1083,26 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
 	     strings */
 	  gint i;
 	  guint32 numrules;
-	  SPLRules *splrs = g_new0 (SPLRules, 1);
-	  splrs->unk004 = get32bint (cts, seek+4);
-	  if (cts->error) return NULL;
+	  if (!check_seek (cts, seek, 136))
+	      return result;  /* *ml==-1, result.valid==FALSE */
+	  result.data.splrules = g_new0 (SPLRules, 1);
+	  result.data.splrules->unk004 = get32bint (cts, seek+4);
 	  numrules = get32bint (cts, seek+8);
-	  if (cts->error) return NULL;
-	  splrs->match_operator = get32bint (cts, seek+12);
-	  if (cts->error) return NULL;
+	  result.data.splrules->match_operator = get32bint (cts, seek+12);
 	  seek += 136;  /* I can't find this value stored in the
 			   iTunesDB :-( */
 	  for (i=0; i<numrules; ++i)
 	  {
 	      guint32 length;
 	      SPLRule *splr = g_new0 (SPLRule, 1);
+	      result.data.splrules->rules = g_list_append (
+		  result.data.splrules->rules, splr);
+	      if (!check_seek (cts, seek, 56))
+		  goto splrules_error;
 	      splr->field = get32bint (cts, seek);
-	      if (cts->error) return NULL;
 	      splr->action = get32bint (cts, seek+4);
-	      if (cts->error) return NULL;
 	      seek += 52;
 	      length = get32bint (cts, seek);
-	      if (cts->error) return NULL;
 	      if (itdb_spl_action_known (splr->action))
 	      {
 		  gint ft = itdb_splr_get_field_type (splr);
@@ -1097,8 +1114,7 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
 					     seek+4, length))
 		      {
 			  g_free (string_utf16);
-			  g_free (splr);
-			  return NULL;
+			  goto splrules_error;
 		      }
 		      fixup_big_utf16 (string_utf16);
 		      splr->string = g_utf16_to_utf8 (
@@ -1111,57 +1127,56 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
 		      {
 			  g_warning (_("Length of smart playlist rule field (%d) not as expected. Trying to continue anyhow.\n"), length);
 		      }
+		      if (!check_seek (cts, seek, 72))
+			  goto splrules_error;
 		      splr->fromvalue = get64bint (cts, seek+4);
-		      if (cts->error) return NULL;
 		      splr->fromdate = get64bint (cts, seek+12);
-		      if (cts->error) return NULL;
 		      splr->fromunits = get64bint (cts, seek+20);
-		      if (cts->error) return NULL;
 		      splr->tovalue = get64bint (cts, seek+28);
-		      if (cts->error) return NULL;
 		      splr->todate = get64bint (cts, seek+36);
-		      if (cts->error) return NULL;
 		      splr->tounits = get64bint (cts, seek+44);
-		      if (cts->error) return NULL;
 		      /* SPLFIELD_PLAYLIST seem to use these unknowns*/
 		      splr->unk052 = get32bint (cts, seek+52);
-		      if (cts->error) return NULL;
 		      splr->unk056 = get32bint (cts, seek+56);
-		      if (cts->error) return NULL;
 		      splr->unk060 = get32bint (cts, seek+60);
-		      if (cts->error) return NULL;
 		      splr->unk064 = get32bint (cts, seek+64);
-		      if (cts->error) return NULL;
 		      splr->unk068 = get32bint (cts, seek+68);
-		      if (cts->error) return NULL;
 		  }  
 		  seek += length+4;
 	      }
 	      else
 	      {
-		  g_free (splr);
-		  splr = NULL;
-	      }
-	      if (splr)
-	      {
-		  splrs->rules = g_list_append (splrs->rules, splr);
+		  goto splrules_error;
 	      }
 	  }
-	  result = splrs;
       }
       else
       {
 	  if (!cts->error)
-	      g_warning (_("Did not find SLst hunk as expected. Trying to continue.\n"));
-	  else
-	      return NULL;
+	  {   /* set error */
+	      g_set_error (&cts->error,
+			   ITDB_FILE_ERROR,
+			   ITDB_FILE_ERROR_CORRUPT,
+			   _("iTunesDB corrupt: no SLst at offset %ld in file '%s'."),
+			   seek, cts->filename);
+	  }
+	  return result;  /* *ml==-1, result.valid==FALSE */
       }
       break;
+    splrules_error:
+      g_list_foreach (result.data.splrules->rules,
+		      (GFunc)(itdb_splr_free), NULL);
+      g_list_free (result.data.splrules->rules);
+      g_free (result.data.splrules);
+      return result;  /* *ml==-1, result.valid==FALSE */
   default:
-      g_warning (_("Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n\n"), *mty);
-      break;
+      g_warning (_("Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n\n"), result.type);
+      *ml = mhod_len;
+      return result;
   }
+
   *ml = mhod_len;
+  result.valid = TRUE;
   return result;
 }
 
@@ -1173,6 +1188,7 @@ static void *get_mhod (FContents *cts, gulong mhod_seek,
 static gchar *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *mty)
 {
     gchar *result = NULL;
+    MHODData mhoddata;
 
     *mty = get_mhod_type (cts, seek, ml);
     if (cts->error) return NULL;
@@ -1193,7 +1209,9 @@ static gchar *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *
     case MHOD_ID_PODCASTURL:
     case MHOD_ID_PODCASTRSS:
     case MHOD_ID_SUBTITLE:
-	result = get_mhod (cts, seek, ml, mty);
+	mhoddata = get_mhod (cts, seek, ml);
+	if ((*ml != -1) && mhoddata.valid)
+	    result = mhoddata.data.string;
 	break;
     case MHOD_ID_SPLPREF:
     case MHOD_ID_SPLRULES:
@@ -1386,13 +1404,13 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
     auto gint pos_comp (gpointer a, gpointer b);
     gint pos_comp (gpointer a, gpointer b)
 	{
-	    return ((gint)a - (gint)b);
+	    return (GPOINTER_TO_UINT(a) - GPOINTER_TO_UINT(b));
 	}
     FContents *cts;
     guint32 mhip_hlen, mhip_len, mhod_num, mhod_seek;
     Itdb_Track *tr;
     gint32 i, pos=-1;
-    guint32 posid;
+    guint32 posid = -1;
     gint32 mhod_type;
     guint32 trackid;
 
@@ -1443,8 +1461,10 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	CHECK_ERROR (fimp, -1);
 	if (mhod_type == MHOD_ID_PLAYLIST)
 	{
-	    posid = (guint32)get_mhod (cts, mhod_seek,
-				       &mhod_len, &mhod_type);
+	    MHODData mhod;
+	    mhod = get_mhod (cts, mhod_seek, &mhod_len);
+	    if (mhod.valid)
+		posid = mhod.data.track_pos;
 	    CHECK_ERROR (fimp, -1);
 	    /* The posids don't have to be in numeric order, but our
 	       database depends on the playlist members being sorted
@@ -1452,7 +1472,7 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	       playlist. Therefore we need to find out at which
 	       position to insert the track */
 	    fimp->pos_glist = g_list_insert_sorted (
-		fimp->pos_glist, (gpointer)posid,
+		fimp->pos_glist, GUINT_TO_POINTER(posid),
 		(GCompareFunc)pos_comp);
 	    pos = g_list_index (fimp->pos_glist, (gpointer)posid);
 	    /* for speedup: pos==-1 is appending at the end */
@@ -1557,10 +1577,8 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 
   for (i=0; i < mhod_num; ++i)
   {
-      gchar *plname_utf8_maybe;
-      SPLPref *splpref = NULL;
-      SPLRules *splrules = NULL;
       gint32 type;
+      MHODData mhod;
 
       type = get_mhod_type (cts, mhod_seek, &header_len);
       CHECK_ERROR (fimp, -1);
@@ -1572,35 +1590,38 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	      /* here we could do something about the playlist settings */
 	      break;
 	  case MHOD_ID_TITLE:
-	      plname_utf8_maybe = get_mhod (cts, mhod_seek, &header_len, &type);
+	      mhod = get_mhod (cts, mhod_seek, &header_len);
 	      CHECK_ERROR (fimp, -1);
-	      if (plname_utf8_maybe)
+	      if (mhod.valid && mhod.data.string)
 	      {
 		  /* sometimes there seem to be two mhod TITLE headers */
 		  g_free (plitem->name);
-		  plitem->name = plname_utf8_maybe;
+		  plitem->name = mhod.data.string;
+		  mhod.valid = FALSE;
 	      }
 	      break;
 	  case MHOD_ID_SPLPREF:
-	      splpref = get_mhod (cts, mhod_seek, &header_len, &type);
+	      mhod = get_mhod (cts, mhod_seek, &header_len);
 	      CHECK_ERROR (fimp, -1);
-	      if (splpref)
+	      if (mhod.valid && mhod.data.splpref)
 	      {
 		  plitem->is_spl = TRUE;
-		  memcpy (&plitem->splpref, splpref, sizeof (SPLPref));
-		  g_free (splpref);
-		  splpref = NULL;
+		  memcpy (&plitem->splpref, mhod.data.splpref,
+			  sizeof (SPLPref));
+		  g_free (mhod.data.splpref);
+		  mhod.valid = FALSE;
 	      }
 	      break;
 	  case MHOD_ID_SPLRULES:
-	      splrules = get_mhod (cts, mhod_seek, &header_len, &type);
+	      mhod = get_mhod (cts, mhod_seek, &header_len);
 	      CHECK_ERROR (fimp, -1);
-	      if (splrules)
+	      if (mhod.valid && mhod.data.splrules)
 	      {
 		  plitem->is_spl = TRUE;
-		  memcpy (&plitem->splrules, splrules, sizeof (SPLRules));
-		  g_free (splrules);
-		  splrules = NULL;
+		  memcpy (&plitem->splrules, mhod.data.splrules,
+			  sizeof (SPLRules));
+		  g_free (mhod.data.splrules);
+		  mhod.valid = FALSE;
 	      }
 	      break;
 	  case MHOD_ID_PATH:
@@ -1871,16 +1892,19 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       }
       else
       {
+	  MHODData mhod;
 	  switch (type)
 	  {
 	  case MHOD_ID_CHAPTERDATA:
 	      /* we just read the entire chapterdata info until we
 		 have a better way to parse and represent it */
-	      track->chapterdata_raw = get_mhod (cts, seek, &zip, &type);
-	      if (track->chapterdata_raw)
+	      mhod = get_mhod (cts, seek, &zip);
+	      if (mhod.valid && mhod.data.chapterdata_raw)
 	      {
+		  track->chapterdata_raw = mhod.data.chapterdata_raw;
 		  track->chapterdata_raw_length =
 		      zip - get32lint (cts, seek+4);
+		  mhod.valid = FALSE;
 	      }
 	      break;
 	  default:
@@ -2724,11 +2748,12 @@ static void fix_mhit (WContents *cts, gulong mhit_seek, guint32 mhod_num)
            position indicator for MHOD_ID_PLAYLIST
            SPLPref for MHOD_ID_SPLPREF
 	   SPLRules for MHOD_ID_SPLRULES */
-static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
+static void mk_mhod (WContents *cts, MHODData *mhod)
 {
   g_return_if_fail (cts);
+  g_return_if_fail (mhod->valid);
 
-  switch (type)
+  switch ((enum MHOD_ID)mhod->type)
   {
   case MHOD_ID_TITLE:
   case MHOD_ID_PATH:
@@ -2742,17 +2767,17 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
   case MHOD_ID_GROUPING:
   case MHOD_ID_DESCRIPTION:
   case MHOD_ID_SUBTITLE:
-      g_return_if_fail (data);
+      g_return_if_fail (mhod->data.string);
       {
 	  /* convert to utf16  */
-	  gunichar2 *entry_utf16 = g_utf8_to_utf16 ((gchar *)data, -1,
+	  gunichar2 *entry_utf16 = g_utf8_to_utf16 (mhod->data.string, -1,
 						    NULL, NULL, NULL);
 	  guint32 len = utf16_strlen (entry_utf16);
 	  fixup_little_utf16 (entry_utf16);
 	  put_string (cts, "mhod");   /* header                     */
 	  put32lint (cts, 24);        /* size of header             */
 	  put32lint (cts, 2*len+40);  /* size of header + body      */
-	  put32lint (cts, type);      /* type of the mhod           */
+	  put32lint (cts, mhod->type); /* type of the mhod           */
 	  put32_n0 (cts, 2);          /* unknown                    */
 	  /* end of header, start of data */
 	  put32lint (cts, 1);         /* always 1 for these MHOD_IDs*/
@@ -2764,91 +2789,87 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
       break;
   case MHOD_ID_PODCASTURL:
   case MHOD_ID_PODCASTRSS:
-      g_return_if_fail (data);
+      g_return_if_fail (mhod->data.string);
       {
-	  guint32 len = strlen ((gchar *)data);
+	  guint32 len = strlen (mhod->data.string);
 	  put_string (cts, "mhod");   /* header                     */
 	  put32lint (cts, 24);        /* size of header             */
 	  put32lint (cts, 24+len);    /* size of header + data      */
-	  put32lint (cts, type);      /* type of the mhod           */
+	  put32lint (cts, mhod->type); /* type of the mhod           */
 	  put32_n0 (cts, 2);          /* unknown                    */
-	  put_string (cts, (gchar *)data); /* the string         */
+	  put_string (cts, mhod->data.string); /* the string         */
       }
       break;
   case MHOD_ID_PLAYLIST:
       put_string (cts, "mhod");   /* header                     */
       put32lint (cts, 24);        /* size of header             */
       put32lint (cts, 44);        /* size of header + body      */
-      put32lint (cts, type);      /* type of the entry          */
+      put32lint (cts, mhod->type); /* type of the entry          */
       put32_n0 (cts, 2);          /* unknown                    */
       /* end of header, start of data */
-      put32lint (cts, (guint32)data);/* position of track in playlist */
+      put32lint (cts, mhod->data.track_pos);/* position of track in playlist */
       put32_n0 (cts, 4);             /* unknown                    */
       break;
   case MHOD_ID_CHAPTERDATA:
-      g_return_if_fail (data);
+      g_return_if_fail (mhod->data.chapterdata_track);
       {
-	  Itdb_Track *track = data;
+	  Itdb_Track *track = mhod->data.chapterdata_track;
 	  put_string (cts, "mhod");   /* header                     */
 	  put32lint (cts, 24);        /* size of header             */
 	  put32lint (cts, 24+track->chapterdata_raw_length); /*size */
-	  put32lint (cts, type);      /* type of the entry          */
+	  put32lint (cts, mhod->type); /* type of the entry          */
 	  put32_n0 (cts, 2);          /* unknown                    */
 	  put_data (cts, track->chapterdata_raw,
 		    track->chapterdata_raw_length);
       }
       break;
   case MHOD_ID_SPLPREF:
-      g_return_if_fail (data);
-      {
-	  SPLPref *splp = data;
-	  put_string (cts, "mhod");  /* header                 */
-	  put32lint (cts, 24);       /* size of header         */
-	  put32lint (cts, 96);       /* size of header + body  */
-	  put32lint (cts, type);     /* type of the entry      */
-	  put32_n0 (cts, 2);           /* unknown                */
-	  /* end of header, start of data */
-	  put8int (cts, splp->liveupdate);
-	  put8int (cts, splp->checkrules? 1:0);
-	  put8int (cts, splp->checklimits);
-	  put8int (cts, splp->limittype);
-	  put8int (cts, splp->limitsort & 0xff);
-	  put8int (cts, 0);          /* unknown                */
-	  put8int (cts, 0);          /* unknown                */
-	  put8int (cts, 0);          /* unknown                */
-	  put32lint (cts, splp->limitvalue);
-	  put8int (cts, splp->matchcheckedonly);
-	  /* for the following see note at definitions of limitsort
-	     types in itunesdb.h */
-	  put8int (cts, (splp->limitsort & 0x80000000) ? 1:0);
-	  put8int (cts, 0);          /* unknown                */
-	  put8int (cts, 0);          /* unknown                */
-	  put32_n0 (cts, 14);          /* unknown                */
-      }
+      g_return_if_fail (mhod->data.splpref);
+      put_string (cts, "mhod");  /* header                 */
+      put32lint (cts, 24);       /* size of header         */
+      put32lint (cts, 96);       /* size of header + body  */
+      put32lint (cts, mhod->type);/* type of the entry      */
+      put32_n0 (cts, 2);         /* unknown                */
+      /* end of header, start of data */
+      put8int (cts, mhod->data.splpref->liveupdate);
+      put8int (cts, mhod->data.splpref->checkrules? 1:0);
+      put8int (cts, mhod->data.splpref->checklimits);
+      put8int (cts, mhod->data.splpref->limittype);
+      put8int (cts, mhod->data.splpref->limitsort & 0xff);
+      put8int (cts, 0);          /* unknown                */
+      put8int (cts, 0);          /* unknown                */
+      put8int (cts, 0);          /* unknown                */
+      put32lint (cts, mhod->data.splpref->limitvalue);
+      put8int (cts, mhod->data.splpref->matchcheckedonly);
+      /* for the following see note at definitions of limitsort
+	 types in itunesdb.h */
+      put8int (cts, (mhod->data.splpref->limitsort & 0x80000000) ? 1:0);
+      put8int (cts, 0);          /* unknown                */
+      put8int (cts, 0);          /* unknown                */
+      put32_n0 (cts, 14);        /* unknown                */
       break;
   case MHOD_ID_SPLRULES:
-      g_return_if_fail (data);
+      g_return_if_fail (mhod->data.splrules);
       {
-	  SPLRules *splrs = data;
 	  gulong header_seek = cts->pos; /* needed to fix length */
 	  GList *gl;
-	  gint numrules = g_list_length (splrs->rules);
+	  gint numrules = g_list_length (mhod->data.splrules->rules);
 
 	  put_string (cts, "mhod");  /* header                   */
 	  put32lint (cts, 24);       /* size of header           */
 	  put32lint (cts, -1);       /* total length, fix later  */
-	  put32lint (cts, type);     /* type of the entry        */
-	  put32_n0 (cts, 2);           /* unknown                  */
+	  put32lint (cts, mhod->type);/* type of the entry        */
+	  put32_n0 (cts, 2);         /* unknown                  */
 	  /* end of header, start of data */
 	  /* For some reason this is the only part of the iTunesDB
 	     that uses big endian */
-	  put_string (cts, "SLst");       /* header               */
-	  put32bint (cts, splrs->unk004); /* unknown              */
+	  put_string (cts, "SLst");  /* header                   */
+	  put32bint (cts, mhod->data.splrules->unk004); /* unknown*/
 	  put32bint (cts, numrules);
-	  put32bint (cts, splrs->match_operator);
-	  put32_n0 (cts, 30);              /* unknown              */
+	  put32bint (cts, mhod->data.splrules->match_operator);
+	  put32_n0 (cts, 30);            /* unknown              */
 	  /* end of header, now follow the rules */
-	  for (gl=splrs->rules; gl; gl=gl->next)
+	  for (gl=mhod->data.splrules->rules; gl; gl=gl->next)
 	  {
 	      SPLRule *splr = gl->data;
 	      gint ft;
@@ -2891,7 +2912,7 @@ static void mk_mhod (WContents *cts, enum MHOD_ID type, void *data)
       }
       break;
   case MHOD_ID_LIBPLAYLISTINDEX:
-      g_warning (_("Cannot write mhod of type %d\n"), type);
+      g_warning (_("Cannot write mhod of type %d\n"), mhod->type);
       break;
   }
 }
@@ -3020,84 +3041,116 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	Itdb_Track *track = gl->data;
 	guint32 mhod_num = 0;
 	gulong mhit_seek = cts->pos;
+	MHODData mhod;
 
 	g_return_val_if_fail (track, FALSE);
 
+	mhod.valid = TRUE;
 
 	mk_mhit (cts, track);
 	if (track->title && *track->title)
 	{
-	    mk_mhod (cts, MHOD_ID_TITLE, track->title);
+	    mhod.type = MHOD_ID_TITLE;
+	    mhod.data.string = track->title;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->ipod_path && *track->ipod_path)
 	{
-	    mk_mhod (cts, MHOD_ID_PATH, track->ipod_path);
+	    mhod.type = MHOD_ID_PATH;
+	    mhod.data.string = track->ipod_path;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->album && *track->album)
 	{
-	    mk_mhod (cts, MHOD_ID_ALBUM, track->album);
+	    mhod.type = MHOD_ID_ALBUM;
+	    mhod.data.string = track->album;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->artist && *track->artist)
 	{
-	    mk_mhod (cts, MHOD_ID_ARTIST, track->artist);
+	    mhod.type = MHOD_ID_ARTIST;
+	    mhod.data.string = track->artist;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->genre && *track->genre)
 	{
-	    mk_mhod (cts, MHOD_ID_GENRE, track->genre);
+	    mhod.type = MHOD_ID_GENRE;
+	    mhod.data.string = track->genre;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->filetype && *track->filetype)
 	{
-	    mk_mhod (cts, MHOD_ID_FILETYPE, track->filetype);
+	    mhod.type = MHOD_ID_FILETYPE;
+	    mhod.data.string = track->filetype;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->comment && *track->comment)
 	{
-	    mk_mhod (cts, MHOD_ID_COMMENT, track->comment);
+	    mhod.type = MHOD_ID_COMMENT;
+	    mhod.data.string = track->comment;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->category && *track->category)
 	{
-	    mk_mhod (cts, MHOD_ID_CATEGORY, track->category);
+	    mhod.type = MHOD_ID_CATEGORY;
+	    mhod.data.string = track->category;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->composer && *track->composer)
 	{
-	    mk_mhod (cts, MHOD_ID_COMPOSER, track->composer);
+	    mhod.type = MHOD_ID_COMPOSER;
+	    mhod.data.string = track->composer;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->grouping && *track->grouping)
 	{
-	    mk_mhod (cts, MHOD_ID_GROUPING, track->grouping);
+	    mhod.type = MHOD_ID_GROUPING;
+	    mhod.data.string = track->grouping;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->description && *track->description)
 	{
-	    mk_mhod (cts, MHOD_ID_DESCRIPTION, track->description);
+	    mhod.type = MHOD_ID_DESCRIPTION;
+	    mhod.data.string = track->description;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->subtitle && *track->subtitle)
 	{
-	    mk_mhod (cts, MHOD_ID_SUBTITLE, track->subtitle);
+	    mhod.type = MHOD_ID_SUBTITLE;
+	    mhod.data.string = track->subtitle;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->podcasturl && *track->podcasturl)
 	{
-	    mk_mhod (cts, MHOD_ID_PODCASTURL, track->podcasturl);
+	    mhod.type = MHOD_ID_PODCASTURL;
+	    mhod.data.string = track->podcasturl;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->podcastrss && *track->podcastrss)
 	{
-	    mk_mhod (cts, MHOD_ID_PODCASTRSS, track->podcastrss);
+	    mhod.type = MHOD_ID_PODCASTRSS;
+	    mhod.data.string = track->podcastrss;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
 	if (track->chapterdata_raw && track->chapterdata_raw_length)
 	{
-	    mk_mhod (cts, MHOD_ID_CHAPTERDATA, track);
+	    mhod.type = MHOD_ID_CHAPTERDATA;
+	    mhod.data.chapterdata_track = track;
+	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}
         /* Fill in the missing items of the mhit header */
@@ -3130,11 +3183,15 @@ static gboolean write_playlist_mhips (FExport *fexp,
     {
 	Itdb_Track *track = gl->data;
 	glong mhip_seek = cts->pos;
+	MHODData mhod;
 
 	g_return_val_if_fail (track, FALSE);
 
 	mk_mhip (fexp, 1, 0, 0, track->id, 0, 0);
-	mk_mhod (cts, MHOD_ID_PLAYLIST, (void *)i);
+	mhod.valid = TRUE;
+	mhod.type = MHOD_ID_PLAYLIST;
+	mhod.data.track_pos = i;
+	mk_mhod (cts, &mhod);
 	/* note: with iTunes 4.9 the mhod is counted as a child to
 	   mhip, so we have put the total length of the mhip and mhod
 	   into the mhip header */
@@ -3180,6 +3237,7 @@ static gboolean write_podcast_mhips (FExport *fexp,
 	    glong mhip_seek;
 	    guint32 groupid;
 	    Itdb_iTunesDB *itdb;
+	    MHODData mhod;
 
 	    g_return_if_fail (album);
 	    g_return_if_fail (memberlist);
@@ -3193,7 +3251,11 @@ static gboolean write_podcast_mhips (FExport *fexp,
 
 	    groupid = fexp->next_id++;
 	    mk_mhip (fexp, 1, 256, groupid, 0, 0, 0);
-	    mk_mhod (cts, MHOD_ID_TITLE, album);
+
+	    mhod.valid = TRUE;
+	    mhod.type = MHOD_ID_TITLE;
+	    mhod.data.string = album;
+	    mk_mhod (cts, &mhod);
 	    fix_header (cts, mhip_seek);
 
 	    /* write members */
@@ -3207,7 +3269,9 @@ static gboolean write_podcast_mhips (FExport *fexp,
 		mhip_seek = cts->pos;
 		mhip_id = fexp->next_id++;
 		mk_mhip (fexp, 1, 0, mhip_id, track->id, 0, groupid);
-		mk_mhod (cts, MHOD_ID_PLAYLIST, (void *)mhip_id);
+		mhod.type = MHOD_ID_PLAYLIST;
+		mhod.data.track_pos = mhip_id;
+		mk_mhod (cts, &mhod);
 		fix_header (cts, mhip_seek);
 	    }
 	}
@@ -3266,6 +3330,7 @@ static gboolean write_playlist (FExport *fexp,
     gulong mhyp_seek;
     WContents *cts;
     gboolean result = TRUE;
+    MHODData mhod;
 
     g_return_val_if_fail (fexp, FALSE);
     g_return_val_if_fail (fexp->itdb, FALSE);
@@ -3300,13 +3365,21 @@ static gboolean write_playlist (FExport *fexp,
     put32lint (cts, pl->sortorder);
     put32_n0 (cts, 15);            /* ?                         */
 
-    mk_mhod (cts, MHOD_ID_TITLE, pl->name);
+    mhod.valid = TRUE;
+    mhod.type = MHOD_ID_TITLE;
+    mhod.data.string = pl->name;
+    mk_mhod (cts, &mhod);
     mk_long_mhod_id_playlist (fexp, pl);
 
     if (pl->is_spl)
     {  /* write the smart rules */
-	mk_mhod (cts, MHOD_ID_SPLPREF, &pl->splpref);
-	mk_mhod (cts, MHOD_ID_SPLRULES, &pl->splrules);
+	mhod.type = MHOD_ID_SPLPREF;
+	mhod.data.splpref = &pl->splpref;
+	mk_mhod (cts, &mhod);
+
+	mhod.type = MHOD_ID_SPLRULES;
+	mhod.data.splrules = &pl->splrules;
+	mk_mhod (cts, &mhod);
     }
 
     if (itdb_playlist_is_podcasts(pl) && (mhsd_type == 3))

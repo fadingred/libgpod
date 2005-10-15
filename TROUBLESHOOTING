@@ -13,7 +13,7 @@ package. On Debian
 will do that for you.
 
 
-
+------------------------------------------------------------
 * If you get an error stating
 
 "checking for XML::Parser... configure: error: XML::Parser perl module is required for intltool"
@@ -23,3 +23,12 @@ you need to install the libxml-parser package. On Debian
 "apt-get install libxml-parser-perl"
 
 will do that for you.
+
+
+------------------------------------------------------------
+* When compiling for AMD64 bit add the following options when calling
+  ./autogen.sh (or ./configure):
+
+./autogen.sh --prefix=/opt/gnome --enable-libsuffix=64 --libdir=/opt/gnome/lib64
+
+You may have to adjust --libdir according to your system.

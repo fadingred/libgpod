@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-02 18:34:56 jcs>
+/* Time-stamp: <2005-10-15 22:14:26 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -118,5 +118,6 @@ typedef struct
 
 
 G_GNUC_INTERNAL gboolean itdb_spl_action_known (SPLAction action);
+G_GNUC_INTERNAL void itdb_splr_free (SPLRule *splr);
 
 #endif
