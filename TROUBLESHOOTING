@@ -26,9 +26,15 @@ will do that for you.
 
 
 ------------------------------------------------------------
-* When compiling for AMD64 bit add the following options when calling
-  ./autogen.sh (or ./configure):
+* Compiling for 64bit systems
 
-./autogen.sh --prefix=/opt/gnome --enable-libsuffix=64 --libdir=/opt/gnome/lib64
+The current automake/autobuild setup doesn't set the correct
+installation path on 64bit systems. To work around this issue and to
+get the libraries installed in the correct locations you need to
+pecify a couple extra parameters to autoge .sh (or configure). If your
+installation prefix is '/opt/gnome' use the following:
 
-You may have to adjust --libdir according to your system.
+./autogen.sh --prefix=/opt/gnome --enable-libsuffix=64 --libdir=/opt/gnome/lib6
+
+
+If you use a diferent prefix, replace '/opt/gnome' accordingly.
