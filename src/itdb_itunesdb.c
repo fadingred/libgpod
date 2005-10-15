@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-15 23:47:29 jcs>
+/* Time-stamp: <2005-10-16 01:28:35 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1410,7 +1410,6 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
     guint32 mhip_hlen, mhip_len, mhod_num, mhod_seek;
     Itdb_Track *tr;
     gint32 i, pos=-1;
-    guint32 posid = -1;
     gint32 mhod_type;
     guint32 trackid;
 
@@ -1463,20 +1462,25 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	{
 	    MHODData mhod;
 	    mhod = get_mhod (cts, mhod_seek, &mhod_len);
-	    if (mhod.valid)
-		posid = mhod.data.track_pos;
 	    CHECK_ERROR (fimp, -1);
-	    /* The posids don't have to be in numeric order, but our
-	       database depends on the playlist members being sorted
-	       according to the order they appear in the
-	       playlist. Therefore we need to find out at which
-	       position to insert the track */
-	    fimp->pos_glist = g_list_insert_sorted (
-		fimp->pos_glist, GUINT_TO_POINTER(posid),
-		(GCompareFunc)pos_comp);
-	    pos = g_list_index (fimp->pos_glist, (gpointer)posid);
-	    /* for speedup: pos==-1 is appending at the end */
-	    if (pos == fimp->pos_len)   pos = -1;
+	    pos = -1;
+	    if (mhod.valid)
+	    {
+		/* The posids don't have to be in numeric order, but our
+		   database depends on the playlist members being sorted
+		   according to the order they appear in the
+		   playlist. Therefore we need to find out at which
+		   position to insert the track */
+		fimp->pos_glist = g_list_insert_sorted (
+		    fimp->pos_glist,
+		    GUINT_TO_POINTER(mhod.data.track_pos),
+		    (GCompareFunc)pos_comp);
+		pos = g_list_index (
+		    fimp->pos_glist,
+		    GUINT_TO_POINTER(mhod.data.track_pos));
+		/* for speedup: pos==-1 is appending at the end */
+		if (pos == fimp->pos_len)   pos = -1;
+	    }
 	    break;
 	}
 	else
