@@ -83,7 +83,7 @@ get_pixel_data (Itdb_Image *image)
 
 	res = fseek (f, image->offset, SEEK_SET);
 	if (res != 0) {
-		g_print ("Seek to %lu failed on %s: %s\n",
+		g_print ("Seek to %d failed on %s: %s\n",
 			 image->offset, image->filename, strerror (errno));
 		goto end;
 	}
@@ -154,8 +154,8 @@ ipod_image_new_from_mhni (MhniHeader *mhni, const char *mount_point)
 	}
 	img->filename = ipod_image_get_ithmb_filename (mount_point,
 						       GINT_FROM_LE (mhni->correlation_id));
-	img->size   = GINT32_FROM_LE (mhni->image_size);
-	img->offset = GINT32_FROM_LE (mhni->ithmb_offset);
+	img->size   = GUINT32_FROM_LE (mhni->image_size);
+	img->offset = GUINT32_FROM_LE (mhni->ithmb_offset);
 	img->width  = GINT16_FROM_LE (mhni->image_width);
 	img->height = GINT16_FROM_LE (mhni->image_height);
 

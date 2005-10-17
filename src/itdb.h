@@ -320,10 +320,10 @@ enum ItdbImageType {
 struct _Itdb_Image {
 	enum ItdbImageType type;
   	char *filename;
-	off_t offset;
-	size_t size;
-	unsigned int width;
-	unsigned int height;
+	guint32 offset;
+	guint32 size;
+	gint16 width;
+	gint16 height;
 };
 
 typedef struct _Itdb_Image Itdb_Image;

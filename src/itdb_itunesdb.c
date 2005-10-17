@@ -966,7 +966,7 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
   gulong seek;
 
   result.valid = FALSE;
-
+  result.type = -1;
   g_return_val_if_fail (ml, result);
   *ml = -1;
 
