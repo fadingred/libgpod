@@ -1,5 +1,5 @@
-Possible errors:
-----------------
+Possible problems:
+------------------
 
 * If you get an error stating
 
@@ -14,6 +14,7 @@ will do that for you.
 
 
 ------------------------------------------------------------
+
 * If you get an error stating
 
 "checking for XML::Parser... configure: error: XML::Parser perl module is required for intltool"
@@ -26,6 +27,24 @@ will do that for you.
 
 
 ------------------------------------------------------------
+
+* "/bin/sh: ../mkinstalldirs: No such file or directory"
+
+If you get this error, you are probably using automake >= 1.8.
+Automake 1.8 does no longer install the mkinstalldirs file, and
+gettext 0.14.4 does still depend on it...
+
+Do a 'locate gettext/mkinstalldirs' and copy it over, then run
+./autogen.sh again for good measure.
+
+------------------------------------------------------------
+
+* "config.status: error: cannot find input file: po/Makefile.in.in"
+
+Upgrade intltool. 0.33 seems to work.
+
+------------------------------------------------------------
+
 * Compiling for 64bit systems
 
 The current automake/autobuild setup doesn't set the correct
@@ -36,5 +55,7 @@ installation prefix is '/opt/gnome' use the following:
 
 ./autogen.sh --prefix=/opt/gnome --enable-libsuffix=64 --libdir=/opt/gnome/lib6
 
-
 If you use a diferent prefix, replace '/opt/gnome' accordingly.
+
+Can someone send a patch how to automate all this?
+(gtkpod-devel@lists.sourceforge.net)
