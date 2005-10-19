@@ -44,7 +44,8 @@ if [ ! -f $srcdir/mkinstalldirs ]; then
     echo '******* WARNING *******'
     echo ./mkinstalldirs does not exist. If \'make install\' or \'make dist\' fails
     echo because of this, copy it from somewhere else AND RUN ./autogen.sh AGAIN.
-    echo The gettext package on your system should contain a copy.
-    echo You can determine its location with \'locate gettext/mkinstalldirs\'. 
+    echo The automake and/or gettext package on your system should contain a copy.
+    echo You can determine its location with \'locate gettext/mkinstalldirs\' or
+    echo \'locate mkinstalldirs \|grep automake\'.
 fi
 exit 0
