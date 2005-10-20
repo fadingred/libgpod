@@ -115,10 +115,10 @@ save_song_thumbnails (Itdb_Track *song)
 
 		filename = NULL;
 		if (image->type == ITDB_IMAGE_FULL_SCREEN) {
-			filename = g_strdup_printf ("/tmp/fullsize%016llx.png",
+			filename = g_strdup_printf ("/tmp/fullsize%016"G_GINT64_MODIFIER"x.png",
 						    song->dbid);
 		} else if (image->type == ITDB_IMAGE_NOW_PLAYING) {
-			filename = g_strdup_printf ("/tmp/nowplaying%016llx.png", 
+			filename = g_strdup_printf ("/tmp/nowplaying%016"G_GINT64_MODIFIER"x.png", 
 						    song->dbid);
 		}
 		if (filename != NULL) {

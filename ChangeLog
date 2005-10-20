@@ -1,3 +1,7 @@
+2005-10-20  Christophe Fergeau  <teuf@gnome.org>
+
+	* tests/test-covers.c: (save_song_thumbnails): fix warning on amd64
+
 2005-10-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* configure.ac: print warning and hint if ./mkinstalldirs is not
