@@ -716,7 +716,7 @@ ipod_artwork_db_set_ids (Itdb_iTunesDB *db)
 }
 
 int
-ipod_write_artwork_db (Itdb_iTunesDB *db, const char *mount_point)
+ipod_write_artwork_db (Itdb_iTunesDB *db)
 {
 	iPodBuffer *buf;
 	int bytes_written;
@@ -729,12 +729,12 @@ ipod_write_artwork_db (Itdb_iTunesDB *db, const char *mount_point)
 	 * the database appropriately (ie set the 'artwork_count' and 
 	 * 'artwork_size' fields, as well as the 2 Itdb_Image fields
 	 */
-	itdb_write_ithumb_files (db, mount_point);
+	itdb_write_ithumb_files (db, db->mountpoint);
 	/* Now we can update the ArtworkDB file */
 	id_max = ipod_artwork_db_set_ids (db);
 
 	/* FIXME: need to create the file if it doesn't exist */
-	filename = ipod_db_get_artwork_db_path (mount_point);
+	filename = ipod_db_get_artwork_db_path (db->mountpoint);
 	if (filename == NULL) {
 		/* FIXME: the iTunesDB will be inconsistent wrt artwork_count
 		 * it might be better to 0 out this field in all tracks
@@ -776,7 +776,7 @@ ipod_write_artwork_db (Itdb_iTunesDB *db, const char *mount_point)
 }
 #else
 int
-ipod_write_artwork_db (Itdb_iTunesDB *db, const char *mount_point)
+ipod_write_artwork_db (Itdb_iTunesDB *db)
 {
     return -1;
 }

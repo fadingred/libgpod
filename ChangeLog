@@ -1,3 +1,7 @@
+2005-10-24  Christophe Fergeau  <teuf@gnome.org>
+
+	* (itdb_write): remove mountpoint as parameter as not used.
+
 2005-10-20  Christophe Fergeau  <teuf@gnome.org>
 
 	* tests/test-covers.c: (save_song_thumbnails): fix warning on amd64

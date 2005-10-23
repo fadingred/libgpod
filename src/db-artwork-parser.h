@@ -38,8 +38,7 @@
 
 G_GNUC_INTERNAL int ipod_parse_photo_db (const char *filename);
 G_GNUC_INTERNAL int ipod_parse_artwork_db (Itdb_iTunesDB *db);
-G_GNUC_INTERNAL int ipod_write_artwork_db (Itdb_iTunesDB *db, 
-					   const char *mount_point);
+G_GNUC_INTERNAL int ipod_write_artwork_db (Itdb_iTunesDB *db);
 
 G_GNUC_INTERNAL char *ipod_db_get_artwork_db_path (const char *mount_point);
 #endif

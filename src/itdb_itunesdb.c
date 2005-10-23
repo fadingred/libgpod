@@ -3619,19 +3619,15 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 
    Returns TRUE on success, FALSE on error, in which case @error is
    set accordingly.
-
-   @mp must point to the mount point of the iPod, e.g. "/mnt/ipod" and
-   be in local encoding. If mp==NULL, itdb->mountpoint is tried. */
-gboolean itdb_write (Itdb_iTunesDB *itdb, const gchar *mp, GError **error)
+*/
+gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 {
     gchar *itunes_filename, *itunes_path;
     const gchar *db[] = {"iPod_Control","iTunes",NULL};
     gboolean result = FALSE;
 
     g_return_val_if_fail (itdb, FALSE);
-    g_return_val_if_fail (mp || itdb->mountpoint, FALSE);
-
-    if (!mp) mp = itdb->mountpoint;
+    g_return_val_if_fail (itdb->mountpoint, FALSE);
 
     /* First, let's try to write the .ithmb files containing the artwork data
      * since this operation modifies the 'artwork_count' and 'artwork_size' 
@@ -3639,16 +3635,16 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, const gchar *mp, GError **error)
      * Errors happening during that operation are considered non fatal since
      * they shouldn't corrupt the main database.
      */
-
 #if HAVE_GDKPIXBUF
-    ipod_write_artwork_db (itdb, mp);
+    ipod_write_artwork_db (itdb);
 #endif
 
-    itunes_path = itdb_resolve_path (mp, db);
+    itunes_path = itdb_resolve_path (itdb->mountpoint, db);
     
     if(!itunes_path)
     {
-	gchar *str = g_build_filename (mp, db[0], db[1], db[2], NULL);
+	gchar *str = g_build_filename (itdb->mountpoint, 
+				       db[0], db[1], db[2], NULL);
 	g_set_error (error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_NOTFOUND,
@@ -3666,14 +3662,7 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, const gchar *mp, GError **error)
     g_free(itunes_path);
 
     if (result == TRUE)
-	result = itdb_rename_files (mp, error);
-
-    if (result == TRUE)
-    {
-	gchar *mnp = g_strdup (mp);
-	g_free (itdb->mountpoint);
-	itdb->mountpoint = mnp;
-    }
+	result = itdb_rename_files (itdb->mountpoint, error);
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */

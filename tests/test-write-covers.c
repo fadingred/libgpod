@@ -117,7 +117,7 @@ main (int argc, char **argv)
 		itdb_track_set_thumbnail (song, coverpath);
 		}*/
 
-	itdb_write (db, NULL, NULL);
+	itdb_write (db, NULL);
 	itdb_free (db);
 	g_list_foreach (covers, (GFunc)g_free, NULL);
 	g_list_free (covers);
