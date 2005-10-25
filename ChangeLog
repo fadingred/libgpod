@@ -1,3 +1,11 @@
+2005-10-25  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb_itunesdb.c (itdb_parse): added comment, check for itdb
+	  before calling ipod_pars_artwork_db()
+
+	* db-artwork_parser.c (ipod_parse_artwork_db): added assertion
+          to avoid segfault if called NULL parameter.
+
 2005-10-24  Christophe Fergeau  <teuf@gnome.org>
 
 	* (itdb_write): remove mountpoint as parameter as not used.
