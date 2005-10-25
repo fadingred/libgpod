@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-25 23:49:43 jcs>
+/* Time-stamp: <2005-10-26 01:00:07 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1406,12 +1406,14 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	{
 	    return (GPOINTER_TO_UINT(a) - GPOINTER_TO_UINT(b));
 	}
+    gboolean first_entry = TRUE;
     FContents *cts;
     guint32 mhip_hlen, mhip_len, mhod_num, mhod_seek;
     Itdb_Track *tr;
     gint32 i, pos=-1;
     gint32 mhod_type;
     guint32 trackid;
+
 
     g_return_val_if_fail (fimp, -1);
     g_return_val_if_fail (plitem, -1);
@@ -1464,7 +1466,7 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	    mhod = get_mhod (cts, mhod_seek, &mhod_len);
 	    CHECK_ERROR (fimp, -1);
 	    pos = -1;
-	    if (mhod.valid)
+	    if (mhod.valid && first_entry)
 	    {
 		/* The posids don't have to be in numeric order, but our
 		   database depends on the playlist members being sorted
@@ -1480,8 +1482,11 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 		    GUINT_TO_POINTER(mhod.data.track_pos));
 		/* for speedup: pos==-1 is appending at the end */
 		if (pos == fimp->pos_len)   pos = -1;
+		/* don't call this section more than once (it never
+		   should happen except in the case of corrupted
+		   iTunesDBs...) */
+		first_entry = FALSE;
 	    }
-	    break;
 	}
 	else
 	{
@@ -1491,8 +1496,8 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 			   mhip_seek, cts->filename);
 		break;
 	    }
-	    mhod_seek += mhod_len;
 	}
+	mhod_seek += mhod_len;
     }
 
     tr = itdb_track_id_tree_by_id (fimp->idtree, trackid);
@@ -1509,7 +1514,14 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	}
     }
 
-    return mhip_seek+mhip_len;
+    /* Up to iTunesd V4.7 or so the mhip_len was set incorrectly
+       (mhip_len == mhip_hlen). In that case we need to find the seek
+       to the next mhip by going through all mhods.
+    */
+    if ((mhip_len == mhip_hlen) && (mhod_num > 0))
+	return mhod_seek;
+    else
+	return mhip_seek+mhip_len;
 }
 
 

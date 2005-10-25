@@ -6,6 +6,9 @@
 	* db-artwork_parser.c (ipod_parse_artwork_db): added assertion
           to avoid segfault if called NULL parameter.
 
+	* itdb_itunesdb.c (get_mhip): fixed handling for iTunesDB
+          versions 4.7 and smaller.
+
 2005-10-24  Christophe Fergeau  <teuf@gnome.org>
 
 	* (itdb_write): remove mountpoint as parameter as not used.
