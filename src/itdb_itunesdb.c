@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-26 01:00:07 jcs>
+/* Time-stamp: <2005-11-01 08:55:02 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -126,7 +126,7 @@
 #define ITUNESDB_DEBUG 0
 #define ITUNESDB_MHIT_DEBUG 0
 
-#define ITUNESDB_COPYBLK 262144      /* blocksize for cp () */
+#define ITUNESDB_COPYBLK (1024*1024*4)      /* blocksize for cp () */
 
 
 /* Note: some of the comments for the MHOD_IDs are copied verbatim
@@ -411,12 +411,12 @@ static guint8 get8int (FContents *cts, glong seek)
    encoding. On error the GError in @cts is set. */
 static guint16 get16lint (FContents *cts, glong seek)
 {
-    guint32 n=0;
+    guint16 n=0;
 
     if (check_seek (cts, seek, 2))
     {
 	g_return_val_if_fail (cts->contents, 0);
-	memcpy (&n, &cts->contents[seek], 4);
+	memcpy (&n, &cts->contents[seek], 2);
 #       if (G_BYTE_ORDER == G_BIG_ENDIAN)
 	  n = GUINT16_SWAP_LE_BE (n);
 #       endif

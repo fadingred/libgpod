@@ -1,3 +1,8 @@
+2005-11-01  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb_itunesdb.c (get16lint): fixed bug affecting big endian
+          systems. Thanks to Martin Aumueller for spotting this.
+
 2005-10-25  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_itunesdb.c (itdb_parse): added comment, check for itdb
