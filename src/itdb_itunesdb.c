@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-01 08:55:02 jcs>
+/* Time-stamp: <2005-11-01 22:18:16 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -417,9 +417,7 @@ static guint16 get16lint (FContents *cts, glong seek)
     {
 	g_return_val_if_fail (cts->contents, 0);
 	memcpy (&n, &cts->contents[seek], 2);
-#       if (G_BYTE_ORDER == G_BIG_ENDIAN)
-	  n = GUINT16_SWAP_LE_BE (n);
-#       endif
+	n = GUINT16_FROM_LE (n);
     }
     return n;
 }
@@ -450,9 +448,7 @@ static guint32 get32lint (FContents *cts, glong seek)
     {
 	g_return_val_if_fail (cts->contents, 0);
 	memcpy (&n, &cts->contents[seek], 4);
-#       if (G_BYTE_ORDER == G_BIG_ENDIAN)
-	  n = GUINT32_SWAP_LE_BE (n);
-#       endif
+	n = GUINT32_FROM_LE (n);
     }
     return n;
 }
@@ -484,9 +480,7 @@ static guint32 get32bint (FContents *cts, glong seek)
     {
 	g_return_val_if_fail (cts->contents, 0);
 	memcpy (&n, &cts->contents[seek], 4);
-#       if (G_BYTE_ORDER == G_LITTLE_ENDIAN)
-	  n = GUINT32_SWAP_LE_BE (n);
-#       endif
+	n = GUINT32_FROM_BE (n);
     }
     return n;
 }
@@ -501,9 +495,7 @@ static guint64 get64lint (FContents *cts, glong seek)
     {
 	g_return_val_if_fail (cts->contents, 0);
 	memcpy (&n, &cts->contents[seek], 8);
-#       if (G_BYTE_ORDER == G_BIG_ENDIAN)
-	  n = GUINT64_SWAP_LE_BE (n);
-#       endif
+	n = GUINT64_FROM_LE (n);
     }
     return n;
 }
@@ -519,9 +511,7 @@ static guint64 get64bint (FContents *cts, glong seek)
     {
 	g_return_val_if_fail (cts->contents, 0);
 	memcpy (&n, &cts->contents[seek], 8);
-#       if (G_BYTE_ORDER == G_LITTLE_ENDIAN)
-	  n = GUINT64_SWAP_LE_BE (n);
-#       endif
+	n = GUINT64_FROM_BE (n);
     }
     return n;
 }
@@ -2464,9 +2454,7 @@ static void put8int (WContents *cts, guint8 n)
 /* Write 2-byte integer @n to @cts in little endian order. */
 static void put16lint (WContents *cts, guint16 n)
 {
-#   if (G_BYTE_ORDER == G_BIG_ENDIAN)
-    n = GUINT16_SWAP_LE_BE (n);
-#   endif
+    n = GUINT16_TO_LE (n);
     put_data (cts, (gchar *)&n, 2);
 }
 
@@ -2474,9 +2462,7 @@ static void put16lint (WContents *cts, guint16 n)
 /* Write 4-byte integer @n to @cts in little endian order. */
 static void put32lint (WContents *cts, guint32 n)
 {
-#   if (G_BYTE_ORDER == G_BIG_ENDIAN)
-    n = GUINT32_SWAP_LE_BE (n);
-#   endif
+    n = GUINT32_TO_LE (n);
     put_data (cts, (gchar *)&n, 4);
 }
 
@@ -2528,9 +2514,7 @@ static void put24bint (WContents *cts, guint32 n)
    endian order. */
 static void put32lint_seek (WContents *cts, guint32 n, gulong seek)
 {
-#   if (G_BYTE_ORDER == G_BIG_ENDIAN)
-    n = GUINT32_SWAP_LE_BE (n);
-#   endif
+    n = GUINT32_TO_LE (n);
     put_data_seek (cts, (gchar *)&n, 4, seek);
 }
 
@@ -2538,9 +2522,7 @@ static void put32lint_seek (WContents *cts, guint32 n, gulong seek)
 /* Write 8-byte integer @n to @cts in big little order. */
 static void put64lint (WContents *cts, guint64 n)
 {
-#   if (G_BYTE_ORDER == G_BIG_ENDIAN)
-    n = GUINT64_SWAP_LE_BE (n);
-#   endif
+    n = GUINT64_TO_LE (n);
     put_data (cts, (gchar *)&n, 8);
 }
 
@@ -2548,9 +2530,7 @@ static void put64lint (WContents *cts, guint64 n)
 /* Write 4-byte integer @n to @cts in big endian order. */
 static void put32bint (WContents *cts, guint32 n)
 {
-#   if (G_BYTE_ORDER == G_LITTLE_ENDIAN)
-    n = GUINT32_SWAP_LE_BE (n);
-#   endif
+    n = GUINT32_TO_BE (n);
     put_data (cts, (gchar *)&n, 4);
 }
 
@@ -2558,9 +2538,7 @@ static void put32bint (WContents *cts, guint32 n)
 /* Write 8-byte integer @n to cts in big endian order. */
 static void put64bint (WContents *cts, guint64 n)
 {
-#   if (G_BYTE_ORDER == G_LITTLE_ENDIAN)
-    n = GUINT64_SWAP_LE_BE (n);
-#   endif
+    n = GUINT64_TO_BE (n);
     put_data (cts, (gchar *)&n, 8);
 }
 
@@ -2570,9 +2548,7 @@ static void put64bint (WContents *cts, guint64 n)
    order. */
 static void put32bint_seek (WContents *cts, guint32 n, gulong seek)
 {
-#   if (G_BYTE_ORDER == G_LITTLE_ENDIAN)
-    n = GUINT32_SWAP_LE_BE (n);
-#   endif
+    n = GUINT32_TO_BE (n);
     put_data_seek (cts, (gchar *)&n, 4, seek);
 }
 
@@ -2580,9 +2556,7 @@ static void put32bint_seek (WContents *cts, guint32 n, gulong seek)
    order. */
 static void put64bint_seek (WContents *cts, guint64 n, gulong seek)
 {
-#   if (G_BYTE_ORDER == G_LITTLE_ENDIAN)
-    n = GUINT64_SWAP_LE_BE (n);
-#   endif
+    n = GUINT64_TO_BE (n);
     put_data_seek (cts, (gchar *)&n, 8, seek);
 }
 #endif
