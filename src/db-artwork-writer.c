@@ -74,6 +74,7 @@ ipod_buffer_destroy (iPodBuffer *buffer)
 	g_free (buffer);
 }
 
+
 static void *
 ipod_buffer_get_pointer (iPodBuffer *buffer) 
 {
@@ -102,6 +103,32 @@ ipod_buffer_grow_file (struct iPodMmapBuffer *mmap_buf, off_t new_size)
 	return 0;
 }
 
+
+static void * 
+ipod_buffer_grow_mapping (iPodBuffer *buffer, size_t size)
+{
+	void *new_address;
+#ifdef HAVE_MREMAP
+	
+	new_address = mremap (buffer->mmap->mmap_area, buffer->mmap->size,
+			      buffer->mmap->size + size, 0);
+#else
+	munmap (buffer->mmap->mmap_area, buffer->mmap->size);
+	new_address = mmap (buffer->mmap->mmap_area, buffer->mmap->size + size,
+			    PROT_READ | PROT_WRITE, MAP_SHARED, 
+			    buffer->mmap->fd, 0);
+#endif
+	/* Don't allow libc to move the current mapping since this would
+	 * force us to be very careful wrt pointers in the rest of the code
+	 */
+	if (new_address != buffer->mmap->mmap_area) {
+		return MAP_FAILED;
+	}
+
+	return new_address;
+}
+
+
 static int
 ipod_buffer_maybe_grow (iPodBuffer *buffer, off_t offset)
 {
@@ -111,15 +138,12 @@ ipod_buffer_maybe_grow (iPodBuffer *buffer, off_t offset)
 		return 0;
 	}
 
-	/* Don't allow libc to move the current mapping since this would
-	 * force us to be very careful wrt pointers in the rest of the code
-	 */
-	new_address = mremap (buffer->mmap->mmap_area, buffer->mmap->size,
-			      buffer->mmap->size + IPOD_MMAP_SIZE, 0);
+	new_address = ipod_buffer_grow_mapping (buffer, IPOD_MMAP_SIZE);
 	if (new_address == MAP_FAILED) {
-		g_print ("Failed to mremap buffer: %s\n", strerror (errno));
+		g_print ("Failed to mremap buffer\n");
 		return -1;
 	}
+
 	if (ipod_buffer_grow_file (buffer->mmap, 
 				   buffer->mmap->size + IPOD_MMAP_SIZE) != 0) {
 		return -1;

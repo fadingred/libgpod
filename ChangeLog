@@ -1,5 +1,12 @@
 2005-11-02  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac:
+	* src/db-artwork-writer.c: (ipod_buffer_grow_mapping),
+	(ipod_buffer_maybe_grow): added fallback code for systems not having
+	mremap (pretty much all non-linux systems actually)
+
+2005-11-02  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/db-artwork-writer.c: (ipod_buffer_destroy):
 	* src/itdb_track.c: (itdb_track_set_defaults): applied patch from 
 	Uwe Hermann <uwe@hermann-uwe.de> to add video support to libgpod,
