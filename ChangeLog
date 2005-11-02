@@ -1,3 +1,10 @@
+2005-11-02  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/db-artwork-writer.c: (ipod_buffer_destroy):
+	* src/itdb_track.c: (itdb_track_set_defaults): applied patch from 
+	Uwe Hermann <uwe@hermann-uwe.de> to add video support to libgpod,
+	removed spurious g_print
+
 2005-11-01  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_itunesdb.c (get16lint): fixed bug affecting big endian

@@ -61,6 +61,7 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
     gchar *mp4_desc[] = {"AAC", "MP4", "aac", "mp4", NULL};
     gchar *audible_subdesc[] = {"Audible", "audible", "Book", "book", NULL};
     gchar *wav_desc[] = {"WAV", "wav", NULL};
+    gchar *m4v_desc[] = {"M4V", "MP4", "MP4V", "m4v", "mp4", "mp4v", NULL};
 
     g_return_if_fail (tr);
     g_return_if_fail (tr->itdb);
@@ -122,6 +123,20 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	else
 	{
 	    tr->unk144 = 0x00;  /* default value */
+	}
+    }
+    /* The unk208 field seems to denote whether the file is a video or not.
+       It seems that it must be set to 0x00000002 for video files. */
+    if (tr->unk208 == 0)
+    {
+	if (haystack (tr->filetype, m4v_desc))
+	{
+	    /* set type to video (0x00000002) */
+	    tr->unk208 = 0x00000002;
+	}
+	else
+	{
+	    tr->unk208 = 0x00;  /* default value */
 	}
     }
     /* The sample rate of the song expressed as an IEEE 32 bit

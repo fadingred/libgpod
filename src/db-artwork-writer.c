@@ -69,7 +69,6 @@ ipod_buffer_destroy (iPodBuffer *buffer)
 {
 	buffer->mmap->ref_count--;
 	if (buffer->mmap->ref_count == 0) {
-		g_print ("Destroying mmap buffer\n");
 		ipod_mmap_buffer_destroy (buffer->mmap);
 	}
 	g_free (buffer);
