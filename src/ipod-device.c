@@ -1437,7 +1437,7 @@ ipod_device_run_command(IpodDevice *device, const char *command,
 /* PUBLIC METHODS */
 
 IpodDevice *
-ipod_device_new(gchar *hal_volume_id)
+ipod_device_new(const gchar *hal_volume_id)
 {
 	IpodDevice *device = g_object_new(TYPE_IPOD_DEVICE, 
 		"hal-volume-id", hal_volume_id, NULL);

@@ -170,7 +170,7 @@ enum {
 };
 
 GType itdb_device_get_type(void);
-IpodDevice *itdb_device_new(gchar *mount_point);
+IpodDevice *itdb_device_new(const gchar *mount_point);
 gboolean itdb_device_rescan_disk(IpodDevice *device);
 guint itdb_device_eject(IpodDevice *device, GError **error);
 guint itdb_device_reboot(IpodDevice *device, GError **error_out);

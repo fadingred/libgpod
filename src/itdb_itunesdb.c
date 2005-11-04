@@ -845,6 +845,9 @@ void itdb_free (Itdb_iTunesDB *itdb)
 	g_list_free (itdb->tracks);
 	g_free (itdb->filename);
 	g_free (itdb->mountpoint);
+	if (itdb->device != NULL) {
+	    g_object_unref (G_OBJECT (itdb->device));
+	}
 	if (itdb->userdata && itdb->userdata_destroy)
 	    (*itdb->userdata_destroy) (itdb->userdata);
 	g_free (itdb);
@@ -2299,7 +2302,7 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 	itdb = itdb_parse_file (filename, error);
 	if (itdb)
 	{
-	    itdb->mountpoint = g_strdup (mp);
+	    itdb_set_mountpoint (itdb, mp);
 
 	    /* We don't test the return value of ipod_parse_artwork_db
 	     * since the database content will be consistent even if
@@ -3824,11 +3827,9 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb,
     if (result == TRUE)
 	result = itdb_rename_files (mp, error);
 
-    if (result == TRUE)
+    if ((result == TRUE) && (mp != itdb->mountpoint))
     {
-	gchar *mnp = g_strdup (mp);
-	g_free (itdb->mountpoint);
-	itdb->mountpoint = mnp;
+	itdb_set_mountpoint (itdb, mp);
     }
 
     /* make sure all buffers are flushed as some people tend to
@@ -4083,6 +4084,10 @@ void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp)
 
     g_free (itdb->mountpoint);
     itdb->mountpoint = g_strdup (mp);
+    if (itdb->device != NULL) {
+	g_object_unref (G_OBJECT (itdb->device));
+    }
+    itdb->device = itdb_device_new (mp);
     itdb->musicdirs = 0;
 }
 

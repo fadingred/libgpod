@@ -40,6 +40,8 @@
 #  include <config.h>
 #endif
 
+#include "ipod-device.h"
+
 #include <sys/types.h>
 #include <time.h>
 #include <glib.h>
@@ -337,6 +339,7 @@ typedef struct
     GList *playlists;
     gchar *filename;    /* filename of iTunesDB */
     gchar *mountpoint;  /* mountpoint of iPod (if available) */
+    IpodDevice *device;
     gint   musicdirs;   /* number of /iPod_Control/Music/F.. dirs */
     guint32 version;
     guint64 id;
