@@ -24,6 +24,9 @@ find . -type f \( -name missing -o -name install-sh -o -name mkinstalldirs \
 echo Running autoreconf...
 autoreconf --force --install
 
+echo Running glib-gettextize
+glib-gettextize --force --copy
+
 echo "Running intltoolize"
 intltoolize --copy --force --automake
 
@@ -40,12 +43,4 @@ else
   echo Skipping configure process.
 fi
 
-if [ ! -f $srcdir/mkinstalldirs ]; then
-    echo '******* WARNING *******'
-    echo ./mkinstalldirs does not exist. If \'make install\' or \'make dist\' fails
-    echo because of this, copy it from somewhere else AND RUN ./autogen.sh AGAIN.
-    echo The automake and/or gettext package on your system should contain a copy.
-    echo You can determine its location with \'locate gettext/mkinstalldirs\' or
-    echo \'locate mkinstalldirs \|grep automake\'.
-fi
 exit 0
