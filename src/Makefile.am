@@ -14,6 +14,7 @@ libgpod_la_SOURCES = \
 	db-artwork-debug.h  \
 	db-image-parser.c   \
 	db-image-parser.h   \
+	db-itunes-parser.h  \
 	db-artwork-writer.c \
 	ithumb-writer.c \
 	ipod-device.c \

@@ -1,5 +1,10 @@
 2005-11-04  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/Makefile.am: db-itunes-parser.h was missing from the source file
+	list, this made "make dist" generate uncompilable tarballs
+
+2005-11-04  Christophe Fergeau  <teuf@gnome.org>
+
 	* autogen.sh: add missing call to glib-gettextize, this has the nice
 	side-effect of adding mkinstalldirs if automake didn't copy it for us.
 
