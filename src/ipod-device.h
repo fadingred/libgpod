@@ -112,7 +112,8 @@ enum {
 	FIRST_GENERATION,
 	SECOND_GENERATION,
 	THIRD_GENERATION,
-	FOURTH_GENERATION
+	FOURTH_GENERATION,
+	FIFTH_GENERATION
 };
 
 enum {
@@ -129,7 +130,9 @@ enum {
 	MODEL_TYPE_MINI_GOLD,
 	MODEL_TYPE_SHUFFLE,
 	MODEL_TYPE_NANO_WHITE,
-	MODEL_TYPE_NANO_BLACK
+	MODEL_TYPE_NANO_BLACK,
+	MODEL_TYPE_VIDEO_WHITE,
+	MODEL_TYPE_VIDEO_BLACK
 };
 
 enum {
@@ -162,12 +165,31 @@ enum {
 	PROP_FIRMWARE_VERSION,
 	PROP_VOLUME_UUID,
 	PROP_VOLUME_LABEL,
-	PROP_CAN_WRITE
+	PROP_CAN_WRITE,
+	PROP_ARTWORK_FORMAT
 };
 
 enum {
 	ERROR_SAVE
 };
+
+enum { 
+	IPOD_COVER_SMALL,
+	IPOD_COVER_LARGE,
+	IPOD_PHOTO_SMALL,
+	IPOD_PHOTO_LARGE,
+	IPOD_PHOTO_FULL_SCREEN,
+	IPOD_PHOTO_TV_SCREEN
+};
+
+
+typedef struct {
+	gint  type;
+	gint16 width;
+	gint16 height;
+	gint16 correlation_id;
+} IpodArtworkFormat;
+
 
 GType itdb_device_get_type(void);
 IpodDevice *itdb_device_new(const gchar *mount_point);

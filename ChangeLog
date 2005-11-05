@@ -1,3 +1,11 @@
+2005-11-05  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/ipod-device.c: (ipod_device_get_property),
+	(ipod_device_class_init):
+	* src/ipod-device.h: sync with libipoddevice CVS to get information
+	about artwork formats supported by the various iPod models
+	
+
 2005-11-04  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/ipod-device.c: (ipod_device_new):

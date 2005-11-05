@@ -94,6 +94,7 @@ typedef struct _IpodModel {
 	guint generation;
 } IpodModel;
 
+
 static const IpodModel ipod_model_table [] = {
 	/* Handle idiots who hose their iPod file system, or 
 	   lucky people with iPods we don't yet know about*/
@@ -156,11 +157,17 @@ static const IpodModel ipod_model_table [] = {
 	{"9724", GB / 2, MODEL_TYPE_SHUFFLE,     FOURTH_GENERATION},
 	{"9725", GB,     MODEL_TYPE_SHUFFLE,     FOURTH_GENERATION},
 	
-	/* Nano / Fourth Generation */
-	{"A004", GB * 2, MODEL_TYPE_NANO_WHITE,  FOURTH_GENERATION},
-	{"A099", GB * 2, MODEL_TYPE_NANO_BLACK,  FOURTH_GENERATION},
-	{"A005", GB * 4, MODEL_TYPE_NANO_WHITE,  FOURTH_GENERATION},
-	{"A107", GB * 4, MODEL_TYPE_NANO_BLACK,  FOURTH_GENERATION},
+	/* Nano / Fifth Generation */
+	{"A004", GB * 2, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},
+	{"A099", GB * 2, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION},
+	{"A005", GB * 4, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},
+	{"A107", GB * 4, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION},
+
+	/* Video / Fifth Generation */
+	{"A002", GB * 30, MODEL_TYPE_VIDEO_WHITE, FIFTH_GENERATION},
+	{"A146", GB * 30, MODEL_TYPE_VIDEO_BLACK, FIFTH_GENERATION},
+	{"A003", GB * 60, MODEL_TYPE_VIDEO_WHITE, FIFTH_GENERATION},
+	{"A147", GB * 60, MODEL_TYPE_VIDEO_BLACK, FIFTH_GENERATION},
 	
 	/* HP iPods, need contributions for this table */
 	{"E436", 40 * GB, MODEL_TYPE_REGULAR, FOURTH_GENERATION},
@@ -183,8 +190,59 @@ static const gchar *ipod_model_name_table [] = {
 	"Shuffle",
 	"Nano (White)",
 	"Nano (Black)",
+	"Video (White)",
+	"Video (Black)",
 	NULL
 };
+
+static const IpodArtworkFormat ipod_color_artwork_info[] = {
+	{IPOD_COVER_SMALL,        56,  56, 1017},
+	{IPOD_COVER_LARGE,       140, 140, 1016},
+	{IPOD_PHOTO_SMALL,        42,  30, 1009},
+	{IPOD_PHOTO_LARGE,       130,  88, 1015},
+	{IPOD_PHOTO_FULL_SCREEN, 220, 176, 1013},
+	{IPOD_PHOTO_TV_SCREEN,   720, 480, 1019},
+	{-1,                      -1,  -1,   -1}
+};
+
+static const IpodArtworkFormat ipod_nano_artwork_info[] = {
+	{IPOD_COVER_SMALL,        42,  42, 1031},
+	{IPOD_COVER_LARGE,       100, 100, 1027},
+	{IPOD_PHOTO_LARGE,        42,  37, 1032},
+	{IPOD_PHOTO_FULL_SCREEN, 176, 132, 1023},
+	{-1,                      -1,  -1,   -1}
+};
+
+static const IpodArtworkFormat ipod_video_artwork_info[] = {
+	{IPOD_COVER_SMALL,       100, 100, 1028},
+	{IPOD_COVER_LARGE,       200, 200, 1029},
+	{IPOD_PHOTO_SMALL,        50,  41, 1036},
+	{IPOD_PHOTO_LARGE,       130,  88, 1015},
+	{IPOD_PHOTO_FULL_SCREEN, 320, 240, 1024},
+	{IPOD_PHOTO_TV_SCREEN,   720, 480, 1019},
+	{-1,                      -1,  -1,   -1}
+};
+
+/* This will be indexed using a value from the MODEL_TYPE enum */
+static const IpodArtworkFormat *ipod_artwork_info_table[] = {
+        NULL,                    /* Invalid       */
+	NULL,                    /* Unknown       */
+	ipod_color_artwork_info, /* Color         */
+	ipod_color_artwork_info, /* Color U2      */
+	NULL,                    /* Grayscale     */ 
+	NULL,                    /* Grayscale U2  */
+	NULL,                    /* Mini (Silver) */
+	NULL,                    /* Mini (Blue)   */
+	NULL,                    /* Mini (Pink)   */
+	NULL,                    /* Mini (Green)  */
+	NULL,                    /* Mini (Gold)   */
+	NULL,                    /* Shuffle       */
+	ipod_nano_artwork_info,  /* Nano (White)  */
+	ipod_nano_artwork_info,  /* Nano (Black)  */
+	ipod_video_artwork_info, /* Video (White) */
+	ipod_video_artwork_info  /* Video (Black) */
+};
+
 
 #define g_free_if_not_null(o) \
     if(o != NULL) {           \
@@ -457,6 +515,11 @@ ipod_device_get_property(GObject *object, guint prop_id,
 		case PROP_CAN_WRITE:
 			g_value_set_boolean(value, device->priv->can_write);
 			break;
+     	        case PROP_ARTWORK_FORMAT:
+			g_value_set_pointer(value, 
+				(gpointer)ipod_artwork_info_table[ipod_model_table[
+					device->priv->model_index].model_type]);
+			break;
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 			break;
@@ -551,7 +614,8 @@ ipod_device_class_init(IpodDeviceClass *klass)
 	GParamSpec *can_write_param;
 	GParamSpec *device_generation_param;
 	GParamSpec *advertised_capacity_param;
-	
+	GParamSpec *artwork_format_param;
+
 	GObjectClass *class = G_OBJECT_CLASS(klass);
 
 	parent_class = g_type_class_peek_parent(klass);
@@ -645,6 +709,9 @@ ipod_device_class_init(IpodDeviceClass *klass)
 		"Generation", "Generation of the iPod",
 		0, G_MAXUINT, 0, G_PARAM_READABLE);
 
+	artwork_format_param = g_param_spec_pointer("artwork-formats",
+		"Artwork Format", "Support Artwork Formats", G_PARAM_READABLE);
+
 	class->set_property = ipod_device_set_property;
 	class->get_property = ipod_device_get_property;	
 	g_object_class_install_property(class, PROP_HAL_CONTEXT,
@@ -713,6 +780,10 @@ ipod_device_class_init(IpodDeviceClass *klass)
 
 	g_object_class_install_property(class, PROP_ADVERTISED_CAPACITY,
 		advertised_capacity_param);
+	
+	g_object_class_install_property(class, PROP_ARTWORK_FORMAT,
+		artwork_format_param);
+		
 }
 
 static void
