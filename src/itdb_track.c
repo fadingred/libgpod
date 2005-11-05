@@ -33,6 +33,19 @@
 #include <string.h>
 #include <glib/gstdio.h>
 
+static gboolean is_video_ipod (IpodDevice *ipod) 
+{
+	guint model;
+
+	if (ipod == NULL) {
+		return FALSE;
+	}
+	g_object_get (G_OBJECT (ipod), "device-model", &model, NULL);
+	return ((model == MODEL_TYPE_VIDEO_WHITE) 
+		|| (model == MODEL_TYPE_VIDEO_BLACK));
+}
+
+
 /* Generate a new Itdb_Track structure */
 Itdb_Track *itdb_track_new (void)
 {
@@ -125,10 +138,12 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	    tr->unk144 = 0x00;  /* default value */
 	}
     }
-    /* The unk208 field seems to denote whether the file is a video or not.
-       It seems that it must be set to 0x00000002 for video files. */
-    if (tr->unk208 == 0)
-    {
+    if (is_video_ipod (tr->itdb->device)) {
+	/* The unk208 field seems to denote whether the file is a video or not.
+	   It seems that it must be set to 0x00000002 for video files. */
+	/* Only doing that for iPod videos since it remains to be proven that
+	 * setting unk208 to non-0 doesn't upset older ipod models
+	 */
 	if (haystack (tr->filetype, m4v_desc))
 	{
 	    /* set type to video (0x00000002) */
@@ -136,7 +151,8 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	}
 	else
 	{
-	    tr->unk208 = 0x00;  /* default value */
+	    /* set type to audio */
+	    tr->unk208 = 0x00000001;
 	}
     }
     /* The sample rate of the song expressed as an IEEE 32 bit

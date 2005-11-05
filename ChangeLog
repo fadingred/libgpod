@@ -1,5 +1,11 @@
 2005-11-05  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_track.c: (is_video_ipod), (itdb_track_set_defaults): deal
+	with unk208 differently on iPod video (it's used to indicate if the
+	current track must be shown in the video or audio menu or both)
+
+2005-11-05  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/ipod-device.c: (ipod_device_get_property),
 	(ipod_device_class_init):
 	* src/ipod-device.h: sync with libipoddevice CVS to get information
