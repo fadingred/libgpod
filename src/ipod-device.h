@@ -201,4 +201,6 @@ gboolean itdb_device_save(IpodDevice *device, GError **error);
 GList *itdb_device_list_devices(void);
 GList *itdb_device_list_device_udis(void);
 
+G_END_DECLS
+
 #endif /* IPOD_DEVICE_H */

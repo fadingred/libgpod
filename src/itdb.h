@@ -46,6 +46,8 @@
 #include <time.h>
 #include <glib.h>
 
+G_BEGIN_DECLS
+
 /* one star is how much (track->rating) */
 #define ITDB_RATING_STEP 20
 
@@ -726,5 +728,7 @@ void itdb_track_free_generated_thumbnails (Itdb_Track *track);
 guint64 itdb_time_get_mac_time (void);
 time_t itdb_time_mac_to_host (guint64 mactime);
 guint64 itdb_time_host_to_mac (time_t time);
+
+G_END_DECLS
 
 #endif

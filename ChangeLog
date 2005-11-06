@@ -1,3 +1,8 @@
+2005-11-06  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/ipod-device.h:
+	* src/itdb.h: added missing G_BEGIN_DECLS and G_END_DECLS
+
 2005-11-05  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_track.c: (is_video_ipod), (itdb_track_set_defaults): deal
