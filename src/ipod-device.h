@@ -17,7 +17,7 @@
 |
 |  The following changes were done:
 |
-|  - libhal becomes optional (see #if HAVE_LIBHAL sections)
+|  - libhal becomes optional (see #ifdef HAVE_LIBHAL sections)
 |  - publicly available functions were renamed from ipod_device_...()
 |    to itdb_device_...()
 |
