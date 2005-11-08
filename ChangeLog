@@ -1,5 +1,10 @@
 2005-11-08  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac: fixed hal detection, stole a bit more autoconf-fu from 
+	libipoddevice so that ipod-device.c compiles when hal is detected
+
+2005-11-08  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/hal-common.c:
 	* src/hal-common.h: more #if => #ifdef changes
 

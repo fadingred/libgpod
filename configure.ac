@@ -72,12 +72,31 @@ dnl **************************************************
 dnl * hal is optional
 dnl **************************************************
 
-PKG_CHECK_MODULES(HAL, hal >= 0.5.2 hal < 0.6, enable_hal05=yes, enable_hal05=no)
-if test x$enable_hal05 != xyes; then
-   AC_DEFINE_UNQUOTED(HAVE_HAL, 1, [Whether HAL is available or not])
+PKG_CHECK_MODULES(HAL, dbus-1 dbus-glib-1 hal >= 0.5.2 hal < 0.6, enable_hal05=yes, enable_hal05=no)
+if test x$enable_hal05 == xyes; then
+   AC_DEFINE_UNQUOTED(HAVE_LIBHAL, 1, [Whether HAL is available or not])
 fi
 LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $HAL_CFLAGS"
 LIBGPOD_LIBS="$LIBGPOD_LIBS $HAL_LIBS"
+
+dnl **************************************************
+dnl * necessary for the HAL libipoddevice code
+dnl **************************************************
+AC_PATH_PROG(EJECT_PATH, eject, eject)
+AC_PATH_PROG(UNMOUNT_PATH, pumount, no)
+
+if test "x$UNMOUNT_PATH" = "xno"; then
+	AC_PATH_PROG(UNMOUNT_PATH_ALT, umount, umount)
+	UNMOUNT_PATH=$UNMOUNT_PATH_ALT
+fi
+  
+AC_ARG_WITH(eject-command, AC_HELP_STRING(--with-eject-command], [Command to invoke in order to eject a device]), 
+              eject_command="$withval", eject_command="${EJECT_PATH} %d")
+AC_DEFINE_UNQUOTED([EJECT_COMMAND], ["${eject_command}"], [eject command])
+
+AC_ARG_WITH(unmount-command, AC_HELP_STRING(--with-unmount-command], [Command to invoke in order to unmount a device]), 
+              unmount_command="$withval", unmount_command="${UNMOUNT_PATH} %d")
+AC_DEFINE_UNQUOTED([UNMOUNT_COMMAND], ["${unmount_command}"], [unmount command])
 
 
 dnl **************************************************
