@@ -68,8 +68,6 @@
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib.h>
 
-static GMainContext *ipod_device_global_main_context = NULL;
-
 dbus_bool_t hal_mainloop_integration(LibHalContext *ctx, DBusError *error);
 void ipod_device_set_global_main_context(GMainContext *ctx);
 

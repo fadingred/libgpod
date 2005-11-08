@@ -1,3 +1,12 @@
+2005-11-08  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/hal-common.c:
+	* src/hal-common.h:
+	* src/ipod-device.c: (ipod_device_set_property),
+	(ipod_device_hal_initialize), (ipod_device_detect_volume_info),
+	(ipod_device_new), (ipod_device_eject): sync with libipoddevice CVS,
+	use #ifdef HAVE_LIBHAL instead of #if HAVE_LIBHAL
+
 2005-11-06  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/ipod-device.h:

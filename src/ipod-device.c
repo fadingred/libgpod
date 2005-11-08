@@ -555,7 +555,7 @@ ipod_device_set_property(GObject *object, guint prop_id,
 			} else {
 				str = volumes[0];
 			}
-#if HAVE_LIBHAL
+#ifdef HAVE_LIBHAL
 			g_free_if_not_null(device->priv->hal_volume_id);
 			device->priv->hal_volume_id = g_strdup(str);
 #else
@@ -848,7 +848,7 @@ ipod_device_finalize(GObject *object)
 LibHalContext *
 ipod_device_hal_initialize()
 {
-#if HAVE_LIBHAL
+#ifdef HAVE_LIBHAL
 	LibHalContext *hal_context;
 	DBusError error;
 	DBusConnection *dbus_connection;
@@ -1205,7 +1205,7 @@ ipod_device_restore_reboot_preferences(IpodDevice *device)
 gboolean
 ipod_device_detect_volume_info(IpodDevice *device)
 {
-#if HAVE_LIBHAL
+#ifdef HAVE_LIBHAL
 	LibHalContext *hal_context;
 	gchar **volumes;
 	gchar *hd_mount_point, *hd_device_path;
@@ -1434,7 +1434,7 @@ ipod_device_has_open_fd(IpodDevice *device)
 	return FALSE;
 }
 
-#if HAVE_LIBHAL
+#ifdef HAVE_LIBHAL
 /* modded from g-v-m */
 static int
 ipod_device_run_command(IpodDevice *device, const char *command, 
@@ -1513,6 +1513,13 @@ ipod_device_new(const gchar *hal_volume_id)
 	IpodDevice *device = g_object_new(TYPE_IPOD_DEVICE, 
 		"hal-volume-id", hal_volume_id, NULL);
 
+	if (device == NULL) {
+		/* This can happen if one forgot to call g_type_init before
+		 * calling ipod_device_new
+		 */
+		return NULL;
+	}
+	
 	if(!device->priv->is_ipod) {
 		g_object_unref(device);
 		return NULL;
@@ -1532,7 +1539,7 @@ ipod_device_rescan_disk(IpodDevice *device)
 guint
 ipod_device_eject(IpodDevice *device, GError **error_out)
 {
-#if HAVE_LIBHAL	
+#ifdef HAVE_LIBHAL	
 	gint exit_status;
 	GError *error = NULL;
 
