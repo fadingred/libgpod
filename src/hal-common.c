@@ -17,7 +17,7 @@
 |
 |  The following changes were done:
 |
-|  - libhal becomes optional (see #if HAVE_LIBHAL sections)
+|  - libhal becomes optional (see #ifdef HAVE_LIBHAL sections)
 |  - provide some dummy libhal functions to make libhal-independence
 |    of ipod-device.c easier.
 |
@@ -58,7 +58,7 @@
 
 #include "hal-common.h"
 
-#if HAVE_LIBHAL
+#ifdef HAVE_LIBHAL
 
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib.h>

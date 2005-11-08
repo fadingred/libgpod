@@ -1,5 +1,10 @@
 2005-11-08  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/hal-common.c:
+	* src/hal-common.h: more #if => #ifdef changes
+
+2005-11-08  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/ipod-device.c:
 	* src/ipod-device.h: update comments to reflect the fact we are using
 	#ifdef HAVE_LIBHAL instead of #if HAVE_LIBHAL now

@@ -62,7 +62,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#if HAVE_LIBHAL
+#ifdef HAVE_LIBHAL
 
 #include <libhal.h>
 #include <dbus/dbus.h>
