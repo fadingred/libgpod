@@ -1,3 +1,14 @@
+2005-11-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c: (itdb_set_mountpoint) do not call
+	  itdb_device_new() with NULL pointer (no mountpoint == local
+	  repository) to avoid critical warning.
+
+2005-11-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h src/itdb_itunesdb.c: change API for
+	  itdb_shuffle_write() to be identical to itdb_itunesdb_write()
+
 2005-11-08  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac: fixed hal detection, stole a bit more autoconf-fu from 

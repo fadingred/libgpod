@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-01 22:18:16 jcs>
+/* Time-stamp: <2005-11-11 22:44:42 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -3787,27 +3787,25 @@ All integers in the iTunesSD file are in BIG endian form...
    Returns TRUE on success, FALSE on error, in which case @error is
    set accordingly.
 
-   @mp must point to the mount point of the iPod, e.g. "/mnt/ipod" and
-   be in local encoding. If mp==NULL, itdb->mountpoint is tried. */
+   itdb->mountpoint must point to the mount point of the iPod,
+   e.g. "/mnt/ipod" and be in local encoding. */
 
 
-gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb,
-			     const gchar *mp, GError **error)
+gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error)
 {
     gchar *itunes_filename, *itunes_path;
     const gchar *db[] = {"iPod_Control","iTunes",NULL};
     gboolean result = FALSE;
 
     g_return_val_if_fail (itdb, FALSE);
-    g_return_val_if_fail (mp || itdb->mountpoint, FALSE);
+    g_return_val_if_fail (itdb->mountpoint, FALSE);
 
-    if (!mp) mp = itdb->mountpoint;
-
-    itunes_path = itdb_resolve_path (mp, db);
+    itunes_path = itdb_resolve_path (itdb->mountpoint, db);
     
     if(!itunes_path)
     {
-	gchar *str = g_build_filename (mp, db[0], db[1], db[2], NULL);
+	gchar *str = g_build_filename (itdb->mountpoint,
+				       db[0], db[1], db[2], NULL);
 	g_set_error (error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_NOTFOUND,
@@ -3825,12 +3823,7 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb,
     g_free(itunes_path);
 
     if (result == TRUE)
-	result = itdb_rename_files (mp, error);
-
-    if ((result == TRUE) && (mp != itdb->mountpoint))
-    {
-	itdb_set_mountpoint (itdb, mp);
-    }
+	result = itdb_rename_files (itdb->mountpoint, error);
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
@@ -4084,10 +4077,13 @@ void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp)
 
     g_free (itdb->mountpoint);
     itdb->mountpoint = g_strdup (mp);
-    if (itdb->device != NULL) {
+    if (itdb->device)
+    {
 	g_object_unref (G_OBJECT (itdb->device));
+	itdb->device = NULL;
     }
-    itdb->device = itdb_device_new (mp);
+    if (mp)
+	itdb->device = itdb_device_new (mp);
     itdb->musicdirs = 0;
 }
 

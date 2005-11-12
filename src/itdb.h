@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-02 18:56:10 jcs>
+/* Time-stamp: <2005-11-10 00:10:05 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -638,8 +638,7 @@ Itdb_iTunesDB *itdb_parse_file (const gchar *filename, GError **error);
 gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error);
 gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 			  GError **error);
-gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb,
-			     const gchar *mp, GError **error);
+gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error);
 gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 				  const gchar *filename, GError **error);
 Itdb_iTunesDB *itdb_new (void);
