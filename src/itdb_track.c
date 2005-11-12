@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-12 01:04:36 jcs>
+/* Time-stamp: <2005-11-12 22:57:11 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -138,21 +138,27 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	    tr->unk144 = 0x00;  /* default value */
 	}
     }
-    if (is_video_ipod (tr->itdb->device)) {
-	/* The unk208 field seems to denote whether the file is a video or not.
-	   It seems that it must be set to 0x00000002 for video files. */
-	/* Only doing that for iPod videos since it remains to be proven that
-	 * setting unk208 to non-0 doesn't upset older ipod models
+    if (is_video_ipod (tr->itdb->device))
+    {
+	/* The unk208 field seems to denote whether the file is a
+	   video or not.  It seems that it must be set to 0x00000002
+	   for video files. */
+	/* Only doing that for iPod videos since it remains to be
+	 * proven that setting unk208 to non-0 doesn't upset older
+	 * ipod models
 	 */
-	if (haystack (tr->filetype, m4v_desc))
+	if (tr->unk208 == 0)
 	{
-	    /* set type to video (0x00000002) */
-	    tr->unk208 = 0x00000002;
-	}
-	else
-	{
-	    /* set type to audio */
-	    tr->unk208 = 0x00000001;
+	    if (haystack (tr->filetype, m4v_desc))
+	    {
+		/* set type to video (0x00000002) */
+		tr->unk208 = 0x00000002;
+	    }
+	    else
+	    {
+		/* set type to audio */
+		tr->unk208 = 0x00000001;
+	    }
 	}
     }
     /* The sample rate of the song expressed as an IEEE 32 bit

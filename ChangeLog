@@ -1,3 +1,8 @@
+2005-11-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_track.c: (itdb_track_set_defaults) only change unk208
+	(audio/video) if not already set to non-zero.
+
 2005-11-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c: (itdb_set_mountpoint) do not call
