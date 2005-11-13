@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-13 14:11:49 jcs>
+/* Time-stamp: <2005-11-13 14:58:17 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1816,7 +1816,10 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
   {
       track->unk156 = get32lint (cts, seek+156);
       track->unk160 = get32lint (cts, seek+160);
-      track->unk164 = get32lint (cts, seek+164);
+      track->flag1 = get8int (cts, seek+164);
+      track->flag2 = get8int (cts, seek+165);
+      track->flag3 = get8int (cts, seek+166);
+      track->flag4 = get8int (cts, seek+167);
       track->dbid2 = get64lint (cts, seek+168);
       track->unk176 = get32lint (cts, seek+176);
       track->unk180 = get32lint (cts, seek+180);
@@ -2716,7 +2719,10 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   /* since iTunesDB version 0x0c */
   put32lint (cts, track->unk156);
   put32lint (cts, track->unk160);
-  put32lint (cts, track->unk164);
+  put8int (cts, track->flag1);
+  put8int (cts, track->flag2);
+  put8int (cts, track->flag3);
+  put8int (cts, track->flag4);
   put64lint (cts, track->dbid2);
   put32lint (cts, track->unk176);
   put32lint (cts, track->unk180);

@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-13 14:11:50 jcs>
+/* Time-stamp: <2005-11-13 14:58:18 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -570,17 +570,21 @@ typedef struct
 			 (always 0x01010100?), zero otherwise */
   guint32 unk152;     /* unknown */
   guint32 unk156, unk160;
-  guint32 unk164;     /* unknown (0x02?) in dbversion 0x0d, for
-			 podcasts this seems to be set to
-			 0x01010102. The 0x10000 bit seems to control
-			 whether or not iTunes remembers the last
-			 played position of this song. This will work
-			 on any song, not just podcasts.
-			 Assumption:
-			 Audiobooks also get this bit set by
-			 default. Assumption2: This is really four
-			 single byte flags, perhaps? Might want to try
-			 find various examples and compare them. */
+  guint8 flag1;       /* basically unknown. set to 0x02 for
+		       * podcasts, 0x00 otherwise. */
+  guint8 flag2;       /* "Skip when shuffling" when set to 0x01, set
+			 to 0x00 otherwise. .m4b and .aa files always
+			 seem to be skipped when shuffling, however */
+  guint8 flag3;       /* "Remember playback position" when set to
+			 0x01, set to 0x00 otherwise. .m4b and .aa
+			 files always seem to remember the playback
+			 position, however. */
+  guint8 flag4;       /* Used for podcasts, 0x00 otherwise.  If set to
+			 0x01 the "Now Playing" page will show
+			 Title/Album, when set to 0x00 it will also
+			 show the Artist. When set to 0x02 a sub-page
+			 (middle button) with further information
+			 about the track will be shown. */
   guint64 dbid2;      /* not clear. if not set, itdb will set this to
 			 the same value as dbid when adding a track */
   guint32 unk176;     /* unknown - added in dbversion 0x0c, first

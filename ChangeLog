@@ -4,6 +4,9 @@
 	  the old rating to app_rating. Not sure what it's for, but iTunes
 	  seem to do it.
 
+	* src/itdb_itunesdb.c:
+	* src/itdb.h: split unk164 into flag1, flag2, flag3, and flag4.
+
 2005-11-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_track.c: (itdb_track_set_defaults) only change unk208
