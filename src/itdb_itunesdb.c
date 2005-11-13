@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-11 22:44:42 jcs>
+/* Time-stamp: <2005-11-13 14:11:49 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1930,8 +1930,14 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
   if (playcount)
   {
       if (playcount->rating != NO_PLAYCOUNT)
-	  track->rating = playcount->rating;
-	  
+      {
+	  if (track->rating != playcount->rating)
+	  {
+	      /* backup original rating to app_rating */
+	      track->app_rating = track->rating;
+	      track->rating = playcount->rating;
+	  }
+      }
       if (playcount->time_played)
 	  track->time_played = playcount->time_played;
 

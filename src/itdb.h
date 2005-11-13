@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-10 00:10:05 jcs>
+/* Time-stamp: <2005-11-13 14:11:50 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -510,7 +510,11 @@ typedef struct
   guint32 recent_playcount;  /* times track was played since last sync */
   gboolean transferred;      /* has file been transferred to iPod?  */
   gint16 BPM;                /* supposed to vary the playback speed */
-  guint8  app_rating;        /* star rating set by appl. (not iPod) */
+  guint8  app_rating;        /* star rating set by appl. (not
+			      * iPod). If the rating set on the iPod
+			        and the rating field above differ, the
+				original rating is copied here and the
+				new rating is stored above. */
   guint16 type;              /* CBR MP3s are type 0x100, VBR MP3s are
 			        type 0x101, AAC are type 0x0 */
   guint8  compilation;
