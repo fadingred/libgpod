@@ -902,7 +902,11 @@ guint32 itdb_tracks_number_nontransferred (Itdb_iTunesDB *itdb)
    values */
 Itdb_iTunesDB *itdb_new (void)
 {
-    Itdb_iTunesDB *itdb = g_new0 (Itdb_iTunesDB, 1);
+    static GOnce g_type_init_once = G_ONCE_INIT;
+    Itdb_iTunesDB *itdb;
+
+    g_once (&g_type_init_once, (GThreadFunc)g_type_init, NULL);
+    itdb = g_new0 (Itdb_iTunesDB, 1);
     itdb->version = 0x09;
     itdb->id = ((guint64)g_random_int () << 32) |
 	((guint64)g_random_int ());
