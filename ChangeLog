@@ -1,9 +1,14 @@
+2005-11-13  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * configure.ac: check for version 2.4 of glib -- now we need to
+	  make sure that libgpod actually works with 2.4...
+
 2005-11-15  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: (itdb_new): initialise glib type system before
 	calling ipod_device_new (which creates a gobject)
 
-2005-11-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2005-11-13  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c: when new rating is set on the iPod, backup
 	  the old rating to app_rating. Not sure what it's for, but iTunes

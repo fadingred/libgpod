@@ -53,7 +53,7 @@ AC_PROG_MAKE_SET
 AC_PROG_INTLTOOL([0.21])
 AC_CHECK_FUNCS(mremap)
 
-PKG_CHECK_MODULES(LIBGPOD, glib-2.0 gobject-2.0)
+PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.4.0 gobject-2.0)
 LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
 
 dnl **************************************************
