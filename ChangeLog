@@ -5,6 +5,9 @@
 
 	* itdb_playlist.c: added itdb_spl_update_live() for convenience
 
+	* itdb_itunesdb.c: (itdb_rename_files) also remove "iTunesShuffle"
+	  as this file might confuse iPod Shuffles.
+	
 2005-11-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * configure.ac: check for version 2.4 of glib -- now we need to

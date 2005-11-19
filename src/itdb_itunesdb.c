@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-13 14:58:17 jcs>
+/* Time-stamp: <2005-11-19 17:05:44 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -3997,10 +3997,12 @@ gboolean itdb_rename_files (const gchar *mp, GError **error)
     const gchar *db_itd[] =  {"iPod_Control", "iTunes", NULL};
     const gchar *db_plc_o[] = {"Play Counts", NULL};
     const gchar *db_otg[] = {"OTGPlaylistInfo", NULL};
+    const gchar *db_shu[] = {"iTunesShuffle", NULL};
     gchar *itunesdir;
     gchar *plcname_o;
     gchar *plcname_n;
     gchar *otgname;
+    gchar *shuname;
     gboolean result = TRUE;
 
     itunesdir = itdb_resolve_path (mp, db_itd);
@@ -4022,6 +4024,7 @@ gboolean itdb_rename_files (const gchar *mp, GError **error)
     plcname_n = g_build_filename (itunesdir, 
 					 "Play Counts.bak", NULL);
     otgname = itdb_resolve_path (itunesdir, db_otg);
+    shuname = itdb_resolve_path (itunesdir, db_shu);
 
     /* rename "Play Counts" to "Play Counts.bak" */
     if (plcname_o)
@@ -4055,9 +4058,27 @@ gboolean itdb_rename_files (const gchar *mp, GError **error)
 	}
     }
 
+    /* remove some Shuffle files */
+    if (shuname)
+    {
+	if (unlink (shuname) == -1)
+	{
+	    if (error && !*error)
+	    {   /* don't overwrite previous error */
+	    g_set_error (error,
+			 G_FILE_ERROR,
+			 g_file_error_from_errno (errno),
+			 _("Error removing '%s' (%s)."),
+			 shuname, g_strerror (errno));
+	    }
+	    result = FALSE;
+	}
+    }
+
     g_free (plcname_o);
     g_free (plcname_n);
     g_free (otgname);
+    g_free (shuname);
     g_free (itunesdir);
 
     return result;
