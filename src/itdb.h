@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-13 14:58:18 jcs>
+/* Time-stamp: <2005-11-19 15:41:45 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -47,6 +47,12 @@
 #include <glib.h>
 
 G_BEGIN_DECLS
+
+/* G_GNUC_INTERNAL is defined in glib 2.6 */
+#ifndef G_GNUC_INTERNAL
+#define G_GNUC_INTERNAL
+#endif 
+
 
 /* one star is how much (track->rating) */
 #define ITDB_RATING_STEP 20
@@ -721,8 +727,8 @@ SPLRule *itdb_splr_new (void);
 void itdb_splr_add (Itdb_Playlist *pl, SPLRule *splr, gint pos);
 SPLRule *itdb_splr_add_new (Itdb_Playlist *pl, gint pos);
 void itdb_spl_copy_rules (Itdb_Playlist *dest, Itdb_Playlist *src);
-gboolean itdb_splr_eval (Itdb_iTunesDB *itdb, SPLRule *splr, Itdb_Track *track);
-void itdb_spl_update (Itdb_iTunesDB *itdb, Itdb_Playlist *spl);
+gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track);
+void itdb_spl_update (Itdb_Playlist *spl);
 void itdb_spl_update_all (Itdb_iTunesDB *itdb);
 
 /* thumbnails functions */

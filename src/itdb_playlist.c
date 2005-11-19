@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-16 01:30:04 jcs>
+/* Time-stamp: <2005-11-19 15:43:07 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -269,7 +269,8 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
 
 
 /* function to evaluate a rule's truth against a track */
-gboolean itdb_splr_eval (Itdb_iTunesDB *itdb, SPLRule *splr, Itdb_Track *track)
+/* track->itdb must be set. */
+gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track)
 {
     SPLFieldType ft;
     SPLActionType at;
@@ -281,8 +282,9 @@ gboolean itdb_splr_eval (Itdb_iTunesDB *itdb, SPLRule *splr, Itdb_Track *track)
     time_t t;
     guint64 mactime;
 
-    g_return_val_if_fail (splr != NULL, FALSE);
-    g_return_val_if_fail (track != NULL, FALSE);
+    g_return_val_if_fail (splr, FALSE);
+    g_return_val_if_fail (track, FALSE);
+    g_return_val_if_fail (track->itdb, FALSE);
 
     ft = itdb_splr_get_field_type (splr);
     at = itdb_splr_get_action_type (splr);
@@ -359,7 +361,7 @@ gboolean itdb_splr_eval (Itdb_iTunesDB *itdb, SPLRule *splr, Itdb_Track *track)
 	datecomp = track->time_played;
 	break;
     case SPLFIELD_PLAYLIST:
-	playcomp = itdb_playlist_by_id (itdb, splr->fromvalue);
+	playcomp = itdb_playlist_by_id (track->itdb, splr->fromvalue);
 	break;
     default: /* unknown field type */
 	g_return_val_if_fail (FALSE, FALSE);
@@ -573,13 +575,16 @@ void itdb_playlist_randomize (Itdb_Playlist *pl)
 }
 
 
-void itdb_spl_update (Itdb_iTunesDB *itdb, Itdb_Playlist *spl)
+void itdb_spl_update (Itdb_Playlist *spl)
 {
     GList *gl;
+    Itdb_iTunesDB *itdb;
     GList *sel_tracks = NULL;
 
     g_return_if_fail (spl);
-    g_return_if_fail (itdb);
+    g_return_if_fail (spl->itdb);
+
+    itdb = spl->itdb;
 
     /* we only can populate smart playlists */
     if (!spl->is_spl) return;
@@ -614,7 +619,7 @@ void itdb_spl_update (Itdb_iTunesDB *itdb, Itdb_Playlist *spl)
 	    for (gl=spl->splrules.rules; gl; gl=gl->next)
 	    {
 		SPLRule* splr = gl->data;
-		gboolean ruletruth = itdb_splr_eval (itdb, splr, t);
+		gboolean ruletruth = itdb_splr_eval (splr, t);
 		if (spl->splrules.match_operator == SPLMATCH_AND)
 		{
 		    if (!ruletruth)
@@ -786,7 +791,7 @@ void itdb_spl_update_all (Itdb_iTunesDB *itdb)
     void spl_update (Itdb_Playlist *playlist, Itdb_iTunesDB *itdb)
     {
 	g_return_if_fail (playlist);
-	itdb_spl_update (itdb, playlist);
+	itdb_spl_update (playlist);
     }
 
     g_return_if_fail (itdb);
