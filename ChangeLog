@@ -3,6 +3,8 @@
 	* itdb_playlist.c: simplified API for itdb_spl_update() and
 	  itdb_splr_eval()
 
+	* itdb_playlist.c: added itdb_spl_update_live() for convenience
+
 2005-11-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * configure.ac: check for version 2.4 of glib -- now we need to

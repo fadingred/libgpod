@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-19 15:43:07 jcs>
+/* Time-stamp: <2005-11-19 16:24:56 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -787,8 +787,8 @@ void itdb_spl_update (Itdb_Playlist *spl)
 /* update all smart playlists */
 void itdb_spl_update_all (Itdb_iTunesDB *itdb)
 {
-    auto void spl_update (Itdb_Playlist *playlist, Itdb_iTunesDB *itdb);
-    void spl_update (Itdb_Playlist *playlist, Itdb_iTunesDB *itdb)
+    auto void spl_update (Itdb_Playlist *playlist, gpointer data);
+    void spl_update (Itdb_Playlist *playlist, gpointer data)
     {
 	g_return_if_fail (playlist);
 	itdb_spl_update (playlist);
@@ -796,9 +796,25 @@ void itdb_spl_update_all (Itdb_iTunesDB *itdb)
 
     g_return_if_fail (itdb);
 
-    g_list_foreach (itdb->playlists, (GFunc)spl_update, itdb);
+    g_list_foreach (itdb->playlists, (GFunc)spl_update, NULL);
 }
 
+
+/* update all smart playlists with 'live updating' set*/
+void itdb_spl_update_live (Itdb_iTunesDB *itdb)
+{
+    auto void spl_update (Itdb_Playlist *playlist, gpointer data);
+    void spl_update (Itdb_Playlist *playlist, gpointer data)
+    {
+	g_return_if_fail (playlist);
+	if (playlist->is_spl && playlist->splpref.liveupdate)
+	    itdb_spl_update (playlist);
+    }
+
+    g_return_if_fail (itdb);
+
+    g_list_foreach (itdb->playlists, (GFunc)spl_update, NULL);
+}
 
 
 /* end of code based on Samuel Wood's work */

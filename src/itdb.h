@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-19 15:41:45 jcs>
+/* Time-stamp: <2005-11-19 16:26:13 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -730,6 +730,7 @@ void itdb_spl_copy_rules (Itdb_Playlist *dest, Itdb_Playlist *src);
 gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track);
 void itdb_spl_update (Itdb_Playlist *spl);
 void itdb_spl_update_all (Itdb_iTunesDB *itdb);
+void itdb_spl_update_live (Itdb_iTunesDB *itdb);
 
 /* thumbnails functions */
 unsigned char *itdb_image_get_rgb_data (Itdb_Image *image);
