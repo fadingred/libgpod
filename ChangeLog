@@ -1,5 +1,10 @@
 2005-11-21  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/ipod-device.c: fix g_mkdir_with_parents use (don't use it with
+	glib 2.8, and mark it static)
+
+2005-11-21  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/db-artwork-writer.c: (write_mhod_type_3):
 	* src/db-parse-context.c:
 	* src/ipod-device.c:

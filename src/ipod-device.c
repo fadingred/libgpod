@@ -268,7 +268,7 @@ static gchar *sysinfo_arr_get_dup(gchar *arr[], const gchar *key)
 }
 
 
-#if ((GTK_MAJOR_VERSION <= 2) && (GTK_MINOR_VERSION < 8))
+#if ((GLIB_MAJOR_VERSION <= 2) && (GLIB_MINOR_VERSION < 8))
 /**
  * g_mkdir_with_parents:
  * @pathname: a pathname in the GLib file name encoding
@@ -282,10 +282,7 @@ static gchar *sysinfo_arr_get_dup(gchar *arr[], const gchar *key)
  *
  * Since: 2.8  (copied from GLIB version 2.8 - JCS)
  */
-int
-g_mkdir_with_parents (const gchar *pathname,
-		      int          mode);
-int
+static int
 g_mkdir_with_parents (const gchar *pathname,
 		      int          mode)
 {
