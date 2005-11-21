@@ -65,8 +65,6 @@
 #define ipod_device_list_devices itdb_device_list_devices
 #define ipod_device_list_device_udis itdb_device_list_device_udis
 
-
-
 #ifdef HAVE_CONFIG_H
 #  include "config.h"
 #endif

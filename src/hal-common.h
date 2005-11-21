@@ -73,22 +73,22 @@ void ipod_device_set_global_main_context(GMainContext *ctx);
 
 #else
 typedef void LibHalContext;
-gchar **libhal_manager_find_device_string_match (LibHalContext *hal_ctx,
-						 const gchar *dev,
-						 const gchar *str,
-						 gint *vol_count,
-						 void *error);
-void libhal_free_string_array (gchar **volumes);
-gboolean libhal_device_property_exists (LibHalContext *hal_ctx,
-					const gchar *vol,
-					const gchar *prop,
-					void *error);
-gboolean libhal_device_get_property_bool (LibHalContext *hal_ctx,
-					  const gchar *vol,
-					  const gchar *prop,
-					  void *error);
-void libhal_ctx_shutdown (LibHalContext *hal_ctx, void *error);
-void libhal_ctx_free (LibHalContext *hal_ctx);
+G_GNUC_INTERNAL gchar **libhal_manager_find_device_string_match (LibHalContext *hal_ctx,
+								 const gchar *dev,
+								 const gchar *str,
+								 gint *vol_count,
+								 void *error);
+G_GNUC_INTERNAL void libhal_free_string_array (gchar **volumes);
+G_GNUC_INTERNAL gboolean libhal_device_property_exists (LibHalContext *hal_ctx,
+							const gchar *vol,
+							const gchar *prop,
+							void *error);
+G_GNUC_INTERNAL gboolean libhal_device_get_property_bool (LibHalContext *hal_ctx,
+							  const gchar *vol,
+							  const gchar *prop,
+							  void *error);
+G_GNUC_INTERNAL void libhal_ctx_shutdown (LibHalContext *hal_ctx, void *error);
+G_GNUC_INTERNAL void libhal_ctx_free (LibHalContext *hal_ctx);
 #endif
 
 

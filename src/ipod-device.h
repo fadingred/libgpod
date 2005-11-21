@@ -77,16 +77,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
-
-#if HAVE_LIBHAL
-#  include <libhal.h>
-#  include <dbus/dbus.h>
-#  include <dbus/dbus-glib.h>
-#endif
-
 G_BEGIN_DECLS
 
 #define TYPE_IPOD_DEVICE         (ipod_device_get_type ())

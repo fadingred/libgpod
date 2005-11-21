@@ -1,3 +1,11 @@
+2005-11-21  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/hal-common.h: mark hal stubs (for when hal isn't available) as 
+	G_GNUC_INTERNAL to avoid namespace clashes
+	* src/ipod-device.c:
+	* src/ipod-device.h: move hal header inclusion in the .c instead of
+	having it in the .h
+
 2005-11-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_playlist.c: simplified API for itdb_spl_update() and
