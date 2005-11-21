@@ -347,21 +347,21 @@ static void ipod_device_class_init(IpodDeviceClass *klass);
 static void ipod_device_init(IpodDevice *sp);
 static void ipod_device_finalize(GObject *object);
 
-gchar *ipod_device_read_device_info_string(FILE *fd);
-void ipod_device_write_device_info_string(gchar *str, FILE *fd);
+static gchar *ipod_device_read_device_info_string(FILE *fd);
+static void ipod_device_write_device_info_string(gchar *str, FILE *fd);
 	
-gboolean ipod_device_reload(IpodDevice *device);
-void ipod_device_construct_paths(IpodDevice *device);
-gboolean ipod_device_info_load(IpodDevice *device);
-guint ipod_device_detect_model(IpodDevice *device);
-gboolean ipod_device_detect_volume_info(IpodDevice *device);
-LibHalContext *ipod_device_hal_initialize(void);
-void ipod_device_detect_volume_used(IpodDevice *device);
-guint64 ipod_device_dir_size(const gchar *path);
-gboolean ipod_device_has_open_fd(IpodDevice *device);
-gboolean ipod_device_read_sysinfo(IpodDevice *device);
-gboolean ipod_device_detect_writeable(IpodDevice *device);
-void ipod_device_restore_reboot_preferences(IpodDevice *device);
+static gboolean ipod_device_reload(IpodDevice *device);
+static void ipod_device_construct_paths(IpodDevice *device);
+static gboolean ipod_device_info_load(IpodDevice *device);
+static guint ipod_device_detect_model(IpodDevice *device);
+static gboolean ipod_device_detect_volume_info(IpodDevice *device);
+static LibHalContext *ipod_device_hal_initialize(void);
+static void ipod_device_detect_volume_used(IpodDevice *device);
+static guint64 ipod_device_dir_size(const gchar *path);
+static gboolean ipod_device_has_open_fd(IpodDevice *device);
+static gboolean ipod_device_read_sysinfo(IpodDevice *device);
+static gboolean ipod_device_detect_writeable(IpodDevice *device);
+static void ipod_device_restore_reboot_preferences(IpodDevice *device);
 	
 struct IpodDevicePrivate {
 	LibHalContext *hal_context;
@@ -1109,9 +1109,7 @@ ipod_device_detect_writeable(IpodDevice *device)
 	return device->priv->can_write;
 }
 
-gint
-ipod_device_get_model_index_from_table(const gchar *_model_num);
-gint
+static gint
 ipod_device_get_model_index_from_table(const gchar *_model_num)
 {
 	gint i;
@@ -1332,9 +1330,7 @@ ipod_device_detect_volume_used(IpodDevice *device)
 		device->priv->volume_used;
 }
 
-void 
-_ipod_device_dir_size(const gchar *path, guint64 *total_size);
-void 
+static void 
 _ipod_device_dir_size(const gchar *path, guint64 *total_size)
 {
 	GDir *dir;
@@ -1619,9 +1615,7 @@ ipod_device_reboot(IpodDevice *device, GError **error_out)
 	return EJECT_ERROR;
 }
 
-GList *
-_ipod_device_list_devices(gboolean create_device);
-GList *
+static GList *
 _ipod_device_list_devices(gboolean create_device)
 {
 	LibHalContext *hal_context;

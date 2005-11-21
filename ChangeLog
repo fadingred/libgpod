@@ -1,5 +1,10 @@
 2005-11-21  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/hal-common.c:
+	* src/ipod-device.c: marked some functions as static
+
+2005-11-21  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/ipod-device.c: fix g_mkdir_with_parents use (don't use it with
 	glib 2.8, and mark it static)
 

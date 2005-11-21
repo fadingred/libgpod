@@ -58,36 +58,7 @@
 
 #include "hal-common.h"
 
-#ifdef HAVE_LIBHAL
-
-#include <dbus/dbus.h>
-#include <dbus/dbus-glib.h>
-#include <dbus/dbus-glib-lowlevel.h>
-
-static GMainContext *ipod_device_global_main_context = NULL;
-
-dbus_bool_t 
-hal_mainloop_integration(LibHalContext *ctx, DBusError *error)
-{
-	DBusConnection *dbus_connection;
-	
-	dbus_connection = dbus_bus_get(DBUS_BUS_SYSTEM, error);
-	
-	if(dbus_error_is_set(error))
-		return FALSE;
-	
-	dbus_connection_setup_with_g_main(dbus_connection, 
-		ipod_device_global_main_context);
-	libhal_ctx_set_dbus_connection(ctx, dbus_connection);
-	
-	return TRUE;
-}
-
-void ipod_device_set_global_main_context(GMainContext *ctx)
-{
-	ipod_device_global_main_context = ctx;
-}
-#else
+#ifndef HAVE_LIBHAL
 gchar **libhal_manager_find_device_string_match (LibHalContext *hal_ctx,
 						 const gchar *type,
 						 const gchar *str,
