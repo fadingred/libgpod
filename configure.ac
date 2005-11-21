@@ -12,8 +12,8 @@ AM_CONFIG_HEADER(config.h)
 # set LIBGPOD_BINARY_AGE and LIBGPOD_INTERFACE_AGE to 0.
 #
 LIBGPOD_MAJOR_VERSION=0
-LIBGPOD_MINOR_VERSION=1
-LIBGPOD_MICRO_VERSION=8
+LIBGPOD_MINOR_VERSION=2
+LIBGPOD_MICRO_VERSION=0
 LIBGPOD_INTERFACE_AGE=0
 # If you need a modifier for the version number. 
 # Normally empty, but can be used to make "fixup" releases.

@@ -1,5 +1,15 @@
 2005-11-21  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac: set version number to 0.2.0
+	* src/Makefile.am: added glib-compat.h
+
+2005-11-21  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.ac:
+	* src/Makefile.am:
+
+2005-11-21  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/glib-compat.h: added a missing helper file for glib 2.4
 	compilation
 

@@ -20,7 +20,8 @@ libgpod_la_SOURCES = \
 	ipod-device.c \
 	ipod-device.h \
 	hal-common.c \
-	hal-common.h
+	hal-common.h \
+	glib-compat.h
 
 
 libgpod_la_headers = itdb.h ipod-device.h
