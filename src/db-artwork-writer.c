@@ -314,6 +314,10 @@ write_mhod_type_3 (enum iPodThumbnailType type, iPodBuffer *buffer)
 		break;
 	default:
 		g_assert_not_reached ();
+		/* Set filename to NULL to shut gcc up when compiling with 
+		 * glib 2.4
+		 */
+		filename = NULL;
 	}
 
 	len = strlen (filename);

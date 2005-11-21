@@ -33,7 +33,7 @@
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-
+#include "glib-compat.h"
 #include "itdb.h"
 
 /* always use itdb_playlist_is_mpl() to check for MPL! */

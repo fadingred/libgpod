@@ -31,7 +31,6 @@
 
 #include "itdb_private.h"
 #include <string.h>
-#include <glib/gstdio.h>
 
 static gboolean is_video_ipod (IpodDevice *ipod) 
 {

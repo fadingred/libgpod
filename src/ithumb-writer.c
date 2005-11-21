@@ -141,8 +141,8 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 		return NULL;
 	}
 
-	thumb = gdk_pixbuf_new_from_file_at_scale (filename, writer->size, -1,
-						   TRUE, NULL);
+	thumb = gdk_pixbuf_new_from_file_at_size (filename, writer->size, 
+						  writer->size, NULL);
 	if (thumb == NULL) {
 		g_free (image);
 		return NULL;
@@ -150,9 +150,10 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 	g_object_get (G_OBJECT (thumb), "height", &image->height, NULL);
 	if (image->height > writer->size) {
 		g_object_unref (thumb);
-		thumb = gdk_pixbuf_new_from_file_at_scale (filename, 
-							   -1, writer->size,
-							   TRUE, NULL);
+		thumb = gdk_pixbuf_new_from_file_at_size (filename, 
+							  writer->size,
+							  writer->size,
+							  NULL);
 		if (thumb == NULL) {
 			g_free (image);
 			return NULL;

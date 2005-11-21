@@ -32,7 +32,7 @@
 #include <unistd.h>
 
 #include <glib.h>
-
+#include "glib-compat.h"
 #include "db-parse-context.h"
 #include "db-itunes-parser.h"
 

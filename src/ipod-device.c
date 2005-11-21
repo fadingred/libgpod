@@ -68,6 +68,7 @@
 #ifdef HAVE_CONFIG_H
 #  include "config.h"
 #endif
+#include "glib-compat.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -78,7 +79,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#include <glib/gstdio.h>
 
 #include "hal-common.h"
 #include "ipod-device.h"
