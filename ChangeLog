@@ -1,5 +1,9 @@
 2005-11-21  Christophe Fergeau  <teuf@gnome.org>
 
+	* COPYING: libgpod really is LGPL
+
+2005-11-21  Christophe Fergeau  <teuf@gnome.org>
+
 	* configure.ac: set version number to 0.2.0
 	* src/Makefile.am: added glib-compat.h
 
