@@ -1,5 +1,18 @@
 2005-11-21  Christophe Fergeau  <teuf@gnome.org>
 
+	* autogen.sh:
+	* gnome-autogen.sh: use autogen.sh script from gnome-common since the
+	custom libgpod one keep having issues (this doesn't add a dependency
+	on gnome-common since I imported the necessary script to our CVS)
+
+2005-11-21  Christophe Fergeau  <teuf@gnome.org>
+
+	* INSTALL:
+	* autogen.sh:
+	* gnome-autogen.sh:
+
+2005-11-21  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/hal-common.h: mark hal stubs (for when hal isn't available) as 
 	G_GNUC_INTERNAL to avoid namespace clashes
 	* src/ipod-device.c:
