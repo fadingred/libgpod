@@ -1,5 +1,10 @@
 2005-11-21  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/glib-compat.h: added a missing helper file for glib 2.4
+	compilation
+
+2005-11-21  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/hal-common.c:
 	* src/ipod-device.c: marked some functions as static
 
