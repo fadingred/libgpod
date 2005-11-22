@@ -12,9 +12,10 @@
 #endif
 
 /* g_stat */
+#include <stdio.h>
+#include<unistd.h>
 #include<sys/types.h>
 #include<sys/stat.h>
-#include<unistd.h>
 #define g_stat stat
 #define g_mkdir mkdir
 #define g_rename rename

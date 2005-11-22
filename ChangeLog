@@ -1,3 +1,7 @@
+2005-11-22  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/glib-compat.h: include stdio.h in the glib 2.4 compat code
+
 2005-11-21  Christophe Fergeau  <teuf@gnome.org>
 
 	* COPYING: libgpod really is LGPL
