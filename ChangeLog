@@ -1,5 +1,9 @@
 2005-11-22  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/ipod-device.c: fix compilation issue when hal isn't available
+
+2005-11-22  Christophe Fergeau  <teuf@gnome.org>
+
 	* configure.ac: fix .so versioning
 
 2005-11-22  Christophe Fergeau  <teuf@gnome.org>

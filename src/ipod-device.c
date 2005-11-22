@@ -358,7 +358,6 @@ static gboolean ipod_device_detect_volume_info(IpodDevice *device);
 static LibHalContext *ipod_device_hal_initialize(void);
 static void ipod_device_detect_volume_used(IpodDevice *device);
 static guint64 ipod_device_dir_size(const gchar *path);
-static gboolean ipod_device_has_open_fd(IpodDevice *device);
 static gboolean ipod_device_read_sysinfo(IpodDevice *device);
 static gboolean ipod_device_detect_writeable(IpodDevice *device);
 static void ipod_device_restore_reboot_preferences(IpodDevice *device);
@@ -1367,7 +1366,8 @@ ipod_device_dir_size(const gchar *path)
 	return retsize;
 }
 
-gboolean 
+#ifdef HAVE_LIBHAL
+static gboolean 
 ipod_device_has_open_fd(IpodDevice *device)
 {
 	GDir *dir, *fddir;
@@ -1425,7 +1425,6 @@ ipod_device_has_open_fd(IpodDevice *device)
 	return FALSE;
 }
 
-#ifdef HAVE_LIBHAL
 /* modded from g-v-m */
 static int
 ipod_device_run_command(IpodDevice *device, const char *command, 
