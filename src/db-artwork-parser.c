@@ -78,9 +78,28 @@ parse_mhia (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 	return 0;
 }
 
-#ifdef DEBUG_ARTWORKDB
+static char *
+get_utf16_string (void* buffer, gint length)
+{
+	char *result;
+	gunichar2 *tmp;
+	int i;
+	/* Byte-swap the utf16 characters if necessary (I'm relying
+	 * on gcc to optimize most of this code away on LE platforms)
+	 */
+	tmp = g_memdup (buffer, length);
+	for (i = 0; i < length/2; i++) {
+		tmp[i] = GINT16_FROM_LE (tmp[i]);
+	}
+	result = g_utf16_to_utf8 (tmp, length/2, NULL, NULL, NULL);
+	g_free (tmp);
+
+	return result;
+	
+}
+
 static int
-parse_mhod_3 (DBParseContext *ctx, GError *error)
+parse_mhod_3 (DBParseContext *ctx, Itdb_Image *image, GError *error)
 {
 	MhodHeader *mhod;
 	MhodHeaderArtworkType3 *mhod3;
@@ -98,50 +117,37 @@ parse_mhod_3 (DBParseContext *ctx, GError *error)
 	if ((GINT_FROM_LE (mhod3->type) & 0x00FFFFFF) != MHOD_ARTWORK_TYPE_FILE_NAME) {
 		return -1;
 	}
-
+	image->filename = get_utf16_string (mhod3->string, mhod3->string_len);
 	dump_mhod_type_3 (mhod3);
 	return 0;
 }
-#endif
 
 static int
 parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 {
 	MhniHeader *mhni;
-#ifndef DEBUG_ARTWORKDB
+	DBParseContext *mhod_ctx; 
 	Itdb_Image *thumb;
-#endif
 
 	mhni = db_parse_context_get_m_header (ctx, MhniHeader, "mhni");
 	if (mhni == NULL) {
 		return -1;
 	}
 	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhni->total_len));
-
 	dump_mhni (mhni);
-#ifdef DEBUG_ARTWORKDB
-	{
-		DBParseContext *mhod_ctx; 
 
-		/* No information useful to us in mhod type 3, do not parse
-		 * it in non-debug mode 
-		 * FIXME: really? it contains the thumbnail file name!
-		 * we infer it from the correlation id, but is this
-		 * always The Right Thing to do?
-		 */
-		mhod_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
-		if (mhod_ctx == NULL) {
-			return -1;
-		}
-		parse_mhod_3 (mhod_ctx, NULL);
-		g_free (mhod_ctx);
-	}
-#else
-	thumb = ipod_image_new_from_mhni (mhni, song->itdb->mountpoint);
+	thumb = ipod_image_new_from_mhni (mhni, song->itdb);
 	if (thumb != NULL) {
 		song->thumbnails = g_list_append (song->thumbnails, thumb);
 	}
-#endif
+
+	mhod_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
+	if (mhod_ctx == NULL) {
+	  return -1;
+	}
+	parse_mhod_3 (mhod_ctx, thumb, error);
+	g_free (mhod_ctx);
+
 	return 0;
 }
 
@@ -422,6 +428,30 @@ ipod_db_get_photo_db_path (const char *mount_point)
 				  
 }
 
+static gboolean
+ipod_supports_cover_art (IpodDevice *ipod)
+{
+	const IpodArtworkFormat *formats;
+
+	if (ipod == NULL) {
+		return FALSE;
+	}
+
+	g_object_get (G_OBJECT (ipod), "artwork-formats", &formats, NULL);
+	if (formats == NULL) {
+		return FALSE;
+	}
+	
+	while (formats->type != -1) {
+		if ((formats->type == IPOD_COVER_SMALL) 
+		    || (formats->type == IPOD_COVER_LARGE)) {
+			return TRUE;
+		}
+		formats++;
+	}
+
+	return FALSE;
+}
 
 int
 ipod_parse_artwork_db (Itdb_iTunesDB *db)
@@ -431,6 +461,9 @@ ipod_parse_artwork_db (Itdb_iTunesDB *db)
 
 	g_return_val_if_fail (db, -1);
 
+	if (!ipod_supports_cover_art (db->device)) {
+		return -1;
+	}
 	ctx = NULL;
 	filename = ipod_db_get_artwork_db_path (db->mountpoint);
 	if (filename == NULL) {

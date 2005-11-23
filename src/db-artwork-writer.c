@@ -240,6 +240,33 @@ enum iPodThumbnailType {
 
 #define RETURN_SIZE_FOR(id, size) if (strncmp (id, header_id, 4) == 0) return (size)
 
+
+static const IpodArtworkFormat *
+get_artwork_info (IpodDevice *ipod, int image_type)
+{
+	const IpodArtworkFormat *formats;
+	
+	if (ipod == NULL) {
+		return NULL;
+	}
+
+	g_object_get (G_OBJECT (ipod), "artwork-formats", &formats, NULL);
+	if (formats == NULL) {
+		return NULL;
+	}
+	
+	while ((formats->type != -1) && (formats->type != image_type)) {
+		formats++;
+	}
+
+	if (formats->type == -1) {
+		return NULL;
+	}
+
+	return formats;
+}
+
+
 /* Returns the "real" size for a header, ie the size iTunes uses for it 
  * (padding included)
  */
@@ -280,21 +307,23 @@ init_header (iPodBuffer *buffer, gchar header_id[4], guint header_len)
 	return mh;
 }
 
+
 static int 
-write_mhod_type_3 (enum iPodThumbnailType type, iPodBuffer *buffer)
+write_mhod_type_3 (Itdb_Image *image, iPodBuffer *buffer)
 {
 	MhodHeaderArtworkType3 *mhod;
 	unsigned int total_bytes;
-	char *filename;
 	int len;
 	gunichar2 *utf16;
 	int i;
+
+	g_assert (image->filename != NULL);
+
 	mhod = (MhodHeaderArtworkType3 *)init_header (buffer, "mhod", 
 						      sizeof (MhodHeaderArtworkType3));
 	if (mhod == NULL) {
 		return -1;
 	}
-	
 	total_bytes = sizeof (MhodHeaderArtworkType3);
 	mhod->total_len = GINT_TO_LE (total_bytes);
 	/* Modify header length, since iTunes only puts the length of 
@@ -303,35 +332,17 @@ write_mhod_type_3 (enum iPodThumbnailType type, iPodBuffer *buffer)
 	mhod->header_len = GINT_TO_LE (sizeof (MhodHeader));
 	mhod->type = GINT_TO_LE (3);
 	mhod->mhod_version = GINT_TO_LE (2);
-	switch (type) {
-	case ITDB_IMAGE_FULL_SCREEN: 
-		filename = g_strdup_printf (":F%04u_1.ithmb",
-					    IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID);
-		break;
-	case ITDB_IMAGE_NOW_PLAYING: 
-		filename = g_strdup_printf (":F%04u_1.ithmb",
-					    IPOD_THUMBNAIL_NOW_PLAYING_CORRELATION_ID);
-		break;
-	default:
-		g_assert_not_reached ();
-		/* Set filename to NULL to shut gcc up when compiling with 
-		 * glib 2.4
-		 */
-		filename = NULL;
-	}
 
-	len = strlen (filename);
+	len = strlen (image->filename);
 
 	/* number of bytes of the string encoded in UTF-16 */
 	mhod->string_len = GINT_TO_LE (2*len);
 
 	/* Make sure we have enough free space to write the string */
 	if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len) != 0) {
-		g_free (filename);
 		return  -1;
 	}
-	utf16 = g_utf8_to_utf16 (filename, -1, NULL, NULL, NULL);
-	g_free (filename);
+	utf16 = g_utf8_to_utf16 (image->filename, -1, NULL, NULL, NULL);
 	if (utf16 == NULL) {		
 		return -1;
 	}
@@ -349,7 +360,7 @@ write_mhod_type_3 (enum iPodThumbnailType type, iPodBuffer *buffer)
 }
 
 static int 
-write_mhni (Itdb_Image *image, iPodBuffer *buffer)
+write_mhni (Itdb_Image *image, int correlation_id, iPodBuffer *buffer)
 {
 	MhniHeader *mhni;
 	unsigned int total_bytes;
@@ -368,15 +379,7 @@ write_mhni (Itdb_Image *image, iPodBuffer *buffer)
 	total_bytes = GINT_FROM_LE (mhni->header_len);
 	mhni->total_len = GINT_TO_LE (total_bytes);
 
-
-	switch (image->type) {
-	case ITDB_IMAGE_NOW_PLAYING:
-		mhni->correlation_id = GINT_TO_LE (IPOD_THUMBNAIL_NOW_PLAYING_CORRELATION_ID);
-		break;
-	case ITDB_IMAGE_FULL_SCREEN:
-		mhni->correlation_id = GINT_TO_LE (IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID);
-		break;
-	}
+	mhni->correlation_id = GINT_TO_LE (correlation_id);
 	mhni->image_width  = GINT16_TO_LE (image->width);
 	mhni->image_height = GINT16_TO_LE (image->height);
 	mhni->image_size   = GINT32_TO_LE (image->size);
@@ -386,7 +389,7 @@ write_mhni (Itdb_Image *image, iPodBuffer *buffer)
 	if (sub_buffer == NULL) {
 		return  -1;
 	}
-	bytes_written = write_mhod_type_3 (image->type, sub_buffer);
+	bytes_written = write_mhod_type_3 (image, sub_buffer);
 	ipod_buffer_destroy (sub_buffer);
 	if (bytes_written == -1) {
 		return -1;
@@ -404,7 +407,7 @@ write_mhni (Itdb_Image *image, iPodBuffer *buffer)
 }
 
 static int
-write_mhod (Itdb_Image *image, iPodBuffer *buffer)
+write_mhod (Itdb_Image *image, int correlation_id, iPodBuffer *buffer)
 {
 	MhodHeader *mhod;
 	unsigned int total_bytes;
@@ -427,7 +430,7 @@ write_mhod (Itdb_Image *image, iPodBuffer *buffer)
 	if (sub_buffer == NULL) {
 		return -1;
 	}
-	bytes_written = write_mhni (image, sub_buffer);
+	bytes_written = write_mhni (image, correlation_id, sub_buffer);
 	ipod_buffer_destroy (sub_buffer);
 	if (bytes_written == -1) {
 		return -1;
@@ -465,7 +468,8 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 	for (it = song->thumbnails; it != NULL; it = it->next) {
 		iPodBuffer *sub_buffer;
 		Itdb_Image *thumb;
-		
+		const IpodArtworkFormat *img_info;
+
 		mhii->num_children = GINT_TO_LE (num_children);
 		mhii->total_len = GINT_TO_LE (total_bytes);
 		sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
@@ -473,7 +477,12 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 			return -1;
 		}
 		thumb = (Itdb_Image *)it->data;
-		bytes_written = write_mhod (thumb, sub_buffer);
+		img_info = get_artwork_info (song->itdb->device, thumb->type);
+		if (img_info == NULL) {
+			return -1;
+		}
+		bytes_written = write_mhod (thumb, img_info->correlation_id, 
+					    sub_buffer);
 		ipod_buffer_destroy (sub_buffer);
 		if (bytes_written == -1) {
 			return -1;
@@ -548,26 +557,27 @@ write_mhla (Itdb_iTunesDB *db, iPodBuffer *buffer)
 	return GINT_FROM_LE (mhla->header_len);
 }
 
+
+
 static int
 write_mhif (Itdb_iTunesDB *db, iPodBuffer *buffer, enum iPodThumbnailType type)
 {
 	MhifHeader *mhif;
-
+	const IpodArtworkFormat *img_info;
+	
 	mhif = (MhifHeader *)init_header (buffer, "mhif", sizeof (MhifHeader));
 	if (mhif == NULL) {
 		return -1;
 	}
 	mhif->total_len = mhif->header_len;
-	switch (type) {
-	case ITDB_IMAGE_FULL_SCREEN:
-		mhif->correlation_id = GINT_TO_LE (IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID);
-		mhif->image_size = GINT_TO_LE (IPOD_THUMBNAIL_FULL_SIZE_SIZE);
-		break;
-	case ITDB_IMAGE_NOW_PLAYING:
-		mhif->correlation_id = GINT_TO_LE (IPOD_THUMBNAIL_NOW_PLAYING_CORRELATION_ID);
-		mhif->image_size = GINT_TO_LE (IPOD_THUMBNAIL_NOW_PLAYING_SIZE);
-		break;
+	
+	img_info = get_artwork_info (db->device, type);
+	if (img_info == NULL) {
+		return -1;
 	}
+
+	mhif->correlation_id = GINT_TO_LE (img_info->correlation_id);
+	mhif->image_size = GINT_TO_LE (img_info->height * img_info->width * 2);
 
 	dump_mhif (mhif);
 	

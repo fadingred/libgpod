@@ -309,10 +309,6 @@ typedef struct SPLRules
     GList *rules;
 } SPLRules;
 
-enum ItdbImageType {
-	ITDB_IMAGE_FULL_SCREEN,
-	ITDB_IMAGE_NOW_PLAYING
-};
 
 
 /* This structure can represent two slightly different images:
@@ -328,7 +324,7 @@ enum ItdbImageType {
  *     on the iPod
  */
 struct _Itdb_Image {
-	enum ItdbImageType type;
+	int type;
   	char *filename;
 	guint32 offset;
 	guint32 size;

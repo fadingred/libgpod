@@ -1,5 +1,24 @@
 2005-11-23  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/db-artwork-debug.c: (get_utf16_string):
+	* src/db-artwork-parser.c: (get_utf16_string), (parse_mhod_3),
+	(parse_mhni), (ipod_supports_cover_art), (ipod_parse_artwork_db):
+	* src/db-artwork-parser.h:
+	* src/db-artwork-writer.c: (get_artwork_info), (write_mhod_type_3),
+	(write_mhni), (write_mhod), (write_mhii), (write_mhif):
+	* src/db-image-parser.c: (unpack_RGB_565),
+	(image_type_from_corr_id), (ipod_image_new_from_mhni):
+	* src/db-image-parser.h:
+	* src/itdb.h:
+	* src/ithumb-writer.c: (pack_RGB_565),
+	(ithumb_writer_write_thumbnail), (ipod_image_get_ithmb_filename),
+	(ithumb_writer_new), (ithumb_writer_free), (write_thumbnail),
+	(itdb_write_ithumb_files):
+	* tests/test-covers.c: (save_song_thumbnails): rework artwork code in 
+	an attempt to properly support artwork on all the iPod models
+
+2005-11-23  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/hal-common.c:
 	* tests/test-covers.c: (ipod_image_to_gdk_pixbuf): more glib 2.4
 	changes

@@ -65,8 +65,7 @@ get_utf16_string (void* buffer, gint length)
 	result = g_utf16_to_utf8 (tmp, length/2, NULL, NULL, NULL);
 	g_free (tmp);
 
-	return result;
-	
+	return result;	
 }
 
 G_GNUC_INTERNAL void

@@ -47,9 +47,9 @@ unpack_RGB_565 (gushort *pixels, unsigned int bytes_len)
 
 		cur_pixel = GINT16_FROM_LE (pixels[i]);
 		/* Unpack pixels */
-		result[3*i] = (pixels[i] & RED_MASK) >> RED_SHIFT;
-		result[3*i+1] = (pixels[i] & GREEN_MASK) >> GREEN_SHIFT;
-		result[3*i+2] = (pixels[i] & BLUE_MASK) >> BLUE_SHIFT;
+		result[3*i] = (cur_pixel & RED_MASK) >> RED_SHIFT;
+		result[3*i+1] = (cur_pixel & GREEN_MASK) >> GREEN_SHIFT;
+		result[3*i+2] = (cur_pixel & BLUE_MASK) >> BLUE_SHIFT;
 		
 		/* Normalize color values so that they use a [0..255] range */
 		result[3*i] <<= (8 - RED_BITS);
@@ -131,46 +131,48 @@ itdb_image_get_rgb_data (Itdb_Image *image)
 	*/
 }
 
-G_GNUC_INTERNAL char *
-ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id) 
+static int
+image_type_from_corr_id (IpodDevice *ipod, int corr_id)
 {
-	char *paths[] = {"iPod_Control", "Artwork", NULL, NULL};
-	char *filename;
+	const IpodArtworkFormat *formats;
 
-	paths[2] = g_strdup_printf ("F%04u_1.ithmb", correlation_id);
-	filename = itdb_resolve_path (mount_point, (const char **)paths);
-	g_free (paths[2]);
-	return filename;
+	if (ipod == NULL) {
+		return -1;
+	}
+
+	g_object_get (G_OBJECT (ipod), "artwork-formats", &formats, NULL);
+	if (formats == NULL) {
+		return -1;
+	}
+	
+	while (formats->type != -1) {
+		if (formats->correlation_id == corr_id) {
+			return formats->type;
+		}
+		formats++;
+	}
+
+	return -1;
 }
 
 G_GNUC_INTERNAL Itdb_Image *
-ipod_image_new_from_mhni (MhniHeader *mhni, const char *mount_point)
+ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_iTunesDB *db)
 {
-	Itdb_Image *img;
 
+	Itdb_Image *img;
 	img = g_new0 (Itdb_Image, 1);
 	if (img == NULL) {
 		return NULL;
 	}
-	img->filename = ipod_image_get_ithmb_filename (mount_point,
-						       GINT_FROM_LE (mhni->correlation_id));
 	img->size   = GUINT32_FROM_LE (mhni->image_size);
 	img->offset = GUINT32_FROM_LE (mhni->ithmb_offset);
 	img->width  = GINT16_FROM_LE (mhni->image_width);
 	img->height = GINT16_FROM_LE (mhni->image_height);
 
-	switch (mhni->correlation_id) {
-	case IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID:
-	case IPOD_NANO_THUMBNAIL_FULL_SIZE_CORRELATION_ID:
-		img->type = ITDB_IMAGE_FULL_SCREEN;
-		break;
-	case IPOD_THUMBNAIL_NOW_PLAYING_CORRELATION_ID:
-	case IPOD_NANO_THUMBNAIL_NOW_PLAYING_CORRELATION_ID:
-		img->type = ITDB_IMAGE_NOW_PLAYING;
-		break;
-	default:
-		g_print ("Unrecognized image size: %ux%u\n",
-			 img->width, img->height);
+	img->type = image_type_from_corr_id (db->device, mhni->correlation_id);
+	if ((img->type != IPOD_COVER_SMALL) && (img->type != IPOD_COVER_LARGE)) {
+		g_warning ("Unexpected cover type in mhni: %ux%u (%d)\n", 
+			   img->width, img->height, mhni->correlation_id);
 		g_free (img);
 		return NULL;
 	}

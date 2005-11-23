@@ -41,9 +41,7 @@
 #define BLUE_MASK (((1 << BLUE_BITS)-1) << BLUE_SHIFT)
 
 G_GNUC_INTERNAL Itdb_Image *ipod_image_new_from_mhni (MhniHeader *mhni, 
-						      const char *mount_point);
-G_GNUC_INTERNAL char *ipod_image_get_ithmb_filename (const char *mount_point, 
-						     gint correlation_id);
+						      Itdb_iTunesDB *db);
 
 G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_iTunesDB *db, 
 					     const char *mount_point);

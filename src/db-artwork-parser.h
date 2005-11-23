@@ -30,12 +30,6 @@
 
 #define iPodSong Itdb_Track
 
-#define IPOD_THUMBNAIL_FULL_SIZE_CORRELATION_ID 1016
-#define IPOD_THUMBNAIL_NOW_PLAYING_CORRELATION_ID 1017
-#define IPOD_NANO_THUMBNAIL_FULL_SIZE_CORRELATION_ID 1027
-#define IPOD_NANO_THUMBNAIL_NOW_PLAYING_CORRELATION_ID 1031
-
-
 G_GNUC_INTERNAL int ipod_parse_photo_db (const char *filename);
 G_GNUC_INTERNAL int ipod_parse_artwork_db (Itdb_iTunesDB *db);
 G_GNUC_INTERNAL int ipod_write_artwork_db (Itdb_iTunesDB *db);
