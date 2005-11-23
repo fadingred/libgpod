@@ -1,5 +1,11 @@
 2005-11-23  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac: bumped version number
+
+==== libgpod 0.2.0 ====
+
+2005-11-23  Christophe Fergeau  <teuf@gnome.org>
+
 	* configure.ac: set version number to 0.2.0
 
 2005-11-22  Christophe Fergeau  <teuf@gnome.org>
