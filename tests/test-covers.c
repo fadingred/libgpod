@@ -38,8 +38,8 @@ ipod_image_to_gdk_pixbuf (Itdb_Image *image)
 	guchar *pixels;
 	int row_stride;
 
-	printf ("width: %d height: %d size: %d\n",
-		image->width, image->height, image->size);
+	g_print ("width: %d height: %d size: %d\n",
+		 image->width, image->height, image->size);
 
 /*
 description     photo: size width  nano: size width

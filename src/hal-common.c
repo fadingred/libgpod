@@ -57,6 +57,7 @@
 #endif
 
 #include "hal-common.h"
+#include "itdb_private.h"
 
 #ifndef HAVE_LIBHAL
 gchar **libhal_manager_find_device_string_match (LibHalContext *hal_ctx,
