@@ -31,70 +31,13 @@
 #include <locale.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-static GdkPixbuf *
-ipod_image_to_gdk_pixbuf (Itdb_Image *image)
-{
-	GdkPixbuf *result;
-	guchar *pixels;
-	int row_stride;
-
-	g_print ("width: %d height: %d size: %d\n",
-		 image->width, image->height, image->size);
-
-/*
-description     photo: size width  nano: size width
-====================  ===== =====       ===== =====
-artwork big           39200   140       20000   100
-artwork small          6272    56        3528    42
-photo full-screen         ?     ?       46464   176
-photo thumbnail           ?     ?        3108    42
-*/
-
-	switch (image->size)
-	{
-	case 39200: /* ITDB_IMAGE_FULL_SCREEN */
-	    row_stride = 140;
-	    break;
-
-	case 46464: /* iPod nano photo database full screen */
-	    row_stride = 176;
-	    break;
-
-	case 6272: /* ITDB_IMAGE_NOW_PLAYING */
-	    row_stride = 56;
-	    break;
-
-	case 3108: /* iPod nano photo database thumbnails */
-/*	    if (width  > 42) width  = 42;
-	    if (height > 37) height = 37; ??? */
-	    row_stride = 42;
-	    break;
-
-	default:
-	    return NULL;
-	}
-
-
-	pixels = itdb_image_get_rgb_data (image);
-	if (pixels == NULL) {
-		return NULL;
-	}
-
-	result = gdk_pixbuf_new_from_data (pixels, GDK_COLORSPACE_RGB, FALSE,
-					   8, image->width, image->height,
-					   row_stride * 3,
-					   (GdkPixbufDestroyNotify)g_free,
-					   NULL);
-	return result;
-}
-
 
 static void
-save_itdb_image (Itdb_Image *image, const char *filename)
+save_itdb_image (Itdb_iTunesDB *itdb, Itdb_Image *image, const char *filename)
 {
 	GdkPixbuf *thumb;
 	
-	thumb = ipod_image_to_gdk_pixbuf (image);
+	thumb = itdb_image_get_gdk_pixbuf (itdb, image);
 	if (thumb != NULL) {
 		gdk_pixbuf_save (thumb, filename, "png", NULL, NULL);
 		gdk_pixbuf_unref (thumb);
@@ -114,12 +57,12 @@ save_song_thumbnails (Itdb_Track *song)
 		g_return_if_fail (image);
 
 		filename = NULL;
-		filename = g_strdup_printf ("/tmp/%s-%s-%s-%d-%016"G_GINT64_MODIFIER"x.png",
+		filename = g_strdup_printf ("%s-%s-%s-%d-%016"G_GINT64_MODIFIER"x.png",
 					    song->artist, song->album, 
 					    song->title, image->type, 
 					    song->dbid);
 		if (filename != NULL) {
-			save_itdb_image (image, filename);
+			save_itdb_image (song->itdb, image, filename);
 			g_free (filename);
 		}
 	}

@@ -31,6 +31,10 @@
 
 #include "db-artwork-parser.h"
 #include "db-image-parser.h"
+#if HAVE_GDKPIXBUF
+#include <gdk-pixbuf/gdk-pixbuf.h>
+#endif
+#include <glib/gi18n-lib.h>
 
 static unsigned char *
 unpack_RGB_565 (gushort *pixels, unsigned int bytes_len)
@@ -123,13 +127,58 @@ itdb_image_get_rgb_data (Itdb_Image *image)
 
 	return pixels;
 
-	/*	return  gdk_pixbuf_new_from_data (pixels, GDK_COLORSPACE_RGB, FALSE,
-					  8, image->width, image->height, 
-					  image->width * 3, 
-					  (GdkPixbufDestroyNotify)g_free, 
-					  NULL);
-	*/
 }
+
+/* Convert the pixeldata in @image to a GdkPixbuf.
+   Since we want to have gdk-pixbuf dependency optional, a generic
+   gpointer is returned which you have to cast to (GdkPixbuf *)
+   yourself. If gdk-pixbuf is not installed the NULL pointer is
+   returned.
+   The returned GdkPixbuf must be freed with gdk_pixbuf_unref() after
+   use. */
+gpointer
+itdb_image_get_gdk_pixbuf (Itdb_iTunesDB *itdb, Itdb_Image *image)
+{
+#if HAVE_GDKPIXBUF
+    GdkPixbuf *result;
+    guchar *pixels;
+    const IpodArtworkFormat *img_info;
+
+    g_return_val_if_fail (itdb, NULL);
+    g_return_val_if_fail (image, NULL);
+
+    pixels = itdb_image_get_rgb_data (image);
+    if (pixels == NULL)
+    {
+	return NULL;
+    }
+
+    img_info = ipod_get_artwork_info_from_type (itdb->device,
+						image->type);
+
+    if (img_info == NULL)
+    {
+	g_print (_("Unable to obtain image info on image (type: %d, filename: '%s'\n)"), image->type, image->filename);
+	g_free (pixels);
+	return NULL;
+    }
+
+    result = gdk_pixbuf_new_from_data (pixels, GDK_COLORSPACE_RGB, FALSE,
+				       8, image->width, image->height,
+				       img_info->width*3,
+				       (GdkPixbufDestroyNotify)g_free,
+				       NULL);
+
+    /* !! do not g_free(pixels) here: it will be freed when doing a
+     * gdk_pixbuf_unref() on the GdkPixbuf !! */
+
+    return result;
+#else
+    return NULL;
+#endif
+}
+
+
 
 static int
 image_type_from_corr_id (IpodDevice *ipod, int corr_id)
@@ -153,6 +202,32 @@ image_type_from_corr_id (IpodDevice *ipod, int corr_id)
 	}
 
 	return -1;
+}
+
+
+G_GNUC_INTERNAL const IpodArtworkFormat *
+ipod_get_artwork_info_from_type (IpodDevice *ipod, int image_type)
+{
+	const IpodArtworkFormat *formats;
+	
+	if (ipod == NULL) {
+		return NULL;
+	}
+
+	g_object_get (G_OBJECT (ipod), "artwork-formats", &formats, NULL);
+	if (formats == NULL) {
+		return NULL;
+	}
+	
+	while ((formats->type != -1) && (formats->type != image_type)) {
+		formats++;
+	}
+
+	if (formats->type == -1) {
+		return NULL;
+	}
+
+	return formats;
 }
 
 G_GNUC_INTERNAL Itdb_Image *

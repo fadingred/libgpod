@@ -46,5 +46,7 @@ G_GNUC_INTERNAL Itdb_Image *ipod_image_new_from_mhni (MhniHeader *mhni,
 G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_iTunesDB *db, 
 					     const char *mount_point);
 
+G_GNUC_INTERNAL const IpodArtworkFormat *ipod_get_artwork_info_from_type (
+    IpodDevice *ipod, int image_type);
 
 #endif

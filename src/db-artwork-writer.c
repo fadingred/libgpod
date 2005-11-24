@@ -241,31 +241,6 @@ enum iPodThumbnailType {
 #define RETURN_SIZE_FOR(id, size) if (strncmp (id, header_id, 4) == 0) return (size)
 
 
-static const IpodArtworkFormat *
-get_artwork_info (IpodDevice *ipod, int image_type)
-{
-	const IpodArtworkFormat *formats;
-	
-	if (ipod == NULL) {
-		return NULL;
-	}
-
-	g_object_get (G_OBJECT (ipod), "artwork-formats", &formats, NULL);
-	if (formats == NULL) {
-		return NULL;
-	}
-	
-	while ((formats->type != -1) && (formats->type != image_type)) {
-		formats++;
-	}
-
-	if (formats->type == -1) {
-		return NULL;
-	}
-
-	return formats;
-}
-
 
 /* Returns the "real" size for a header, ie the size iTunes uses for it 
  * (padding included)
@@ -477,7 +452,8 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 			return -1;
 		}
 		thumb = (Itdb_Image *)it->data;
-		img_info = get_artwork_info (song->itdb->device, thumb->type);
+		img_info = ipod_get_artwork_info_from_type (
+		    song->itdb->device, thumb->type);
 		if (img_info == NULL) {
 			return -1;
 		}
@@ -571,7 +547,7 @@ write_mhif (Itdb_iTunesDB *db, iPodBuffer *buffer, enum iPodThumbnailType type)
 	}
 	mhif->total_len = mhif->header_len;
 	
-	img_info = get_artwork_info (db->device, type);
+	img_info = ipod_get_artwork_info_from_type (db->device, type);
 	if (img_info == NULL) {
 		return -1;
 	}

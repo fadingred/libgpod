@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-19 16:26:13 jcs>
+/* Time-stamp: <2005-11-24 21:34:51 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -312,16 +312,17 @@ typedef struct SPLRules
 
 
 /* This structure can represent two slightly different images:
- *   - an image before it's transferred to the iPod (it will then be scaled
- *     as necessary to generate the 2 thumbnails needed by the iPod), 
- *     for such images, filename points to a 'real' image file, offset is
- *     not significant, size, width and height may or may not be set
- *     and id corresponds to the image id to write in mhii records of the 
- *     photo database
- * 
- *   - a thumbnail (big or small) stored on a database in the iPod.
- *     For such images, id isn't significant, filename point to a .ithmb file
- *     on the iPod
+
+   - an image before it's transferred to the iPod (it will then be
+     scaled as necessary to generate the 2 thumbnails needed by the
+     iPod), for such images, filename points to a 'real' image file,
+     offset is not significant, size, width and height may or may not
+     be set and id corresponds to the image id to write in mhii
+     records of the photo database
+ 
+   - a thumbnail (big or small) stored on a database in the iPod.  For
+     such images, id isn't significant, filename point to a .ithmb
+     file on the iPod
  */
 struct _Itdb_Image {
 	int type;
@@ -733,7 +734,9 @@ unsigned char *itdb_image_get_rgb_data (Itdb_Image *image);
 int itdb_track_set_thumbnail (Itdb_Track *song, const char *filename);
 void itdb_track_remove_thumbnail (Itdb_Track *song);
 void itdb_track_free_generated_thumbnails (Itdb_Track *track);
-
+/* the following funciton returns a pointer to a GdkPixbuf if
+   gdk-pixbuf is installed -- a NULL pointer otherwise. */
+gpointer itdb_image_get_gdk_pixbuf (Itdb_iTunesDB *itdb, Itdb_Image *image);
 /* time functions */
 guint64 itdb_time_get_mac_time (void);
 time_t itdb_time_mac_to_host (guint64 mactime);

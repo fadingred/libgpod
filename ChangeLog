@@ -1,5 +1,11 @@
 2005-11-23  Christophe Fergeau  <teuf@gnome.org>
 
+	* overall changes to support itdb_image_get_gdk_pixbuf(). Run
+	"tests/test-thumbnails <ipod_mount> to copy all thumbnails into
+	the current directory.
+
+2005-11-23  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/db-artwork-debug.c: (get_utf16_string):
 	* src/db-artwork-parser.c: (get_utf16_string), (parse_mhod_3),
 	(parse_mhni), (ipod_supports_cover_art), (ipod_parse_artwork_db):
