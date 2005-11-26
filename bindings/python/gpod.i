@@ -20,6 +20,17 @@ PyObject* sw_get_tracks(Itdb_iTunesDB *itdb) {
   return list;
  }
 
+PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl) {
+  PyObject    *list;
+  gint        i;
+  GList       *l;
+  list = PyList_New(g_list_length(pl->members));
+  for (l = pl->members, i = 0; l; l = l->next, ++i) {
+    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data), SWIGTYPE_p_Itdb_Track, 0));
+  }
+  return list;
+ }
+
 PyObject* sw_get_playlists(Itdb_iTunesDB *itdb) {
   PyObject    *list;
   gint        i;
@@ -37,6 +48,10 @@ typedef int gboolean;
 typedef int gint32;
 typedef unsigned int guint32;
 
+#define G_BEGIN_DECLS
+#define G_END_DECLS
+
 PyObject* sw_get_tracks(Itdb_iTunesDB *itdb);
 PyObject* sw_get_playlists(Itdb_iTunesDB *itdb);
+PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl);
 %include "../../src/itdb.h"

@@ -8,8 +8,9 @@ ipod_mount = '/mnt/ipod'
 
 remove_track = "The Dancer"
 
-#dbname = os.path.join(os.environ['HOME'],".gtkpod/iTunesDB")
-dbname = os.path.join(ipod_mount,"iPod_Control/iTunes/iTunesDB")
+dbname = os.path.join(os.environ['HOME'],".gtkpod/iTunesDB")
+#dbname = os.path.join(os.environ['HOME'],".gtkpod/local_0.itdb")
+#dbname = os.path.join(ipod_mount,"iPod_Control/iTunes/iTunesDB")
 
 itdb = gpod.itdb_parse_file(dbname, None)
 if not itdb:
@@ -17,6 +18,11 @@ if not itdb:
     sys.exit(2)
 itdb.mountpoint = ipod_mount
 
+for playlist in gpod.sw_get_playlists(itdb):
+    print playlist.name
+    print gpod.itdb_playlist_tracks_number(playlist)
+    for track in gpod.sw_get_playlist_tracks(playlist):
+        print track.title
     
 for track in gpod.sw_get_tracks(itdb):
     lists = []
