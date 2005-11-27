@@ -68,7 +68,11 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb) {
  }
 %}
 
+# be nicer to decode these utf8 strings into Unicode objects in the C
+# layer. Here we are leaving it to the Python side, and just giving
+# them utf8 encoded Strings.
 typedef char gchar;
+
 typedef int gboolean;
 typedef int gint32;
 typedef unsigned int guint32;
