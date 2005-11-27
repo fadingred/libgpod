@@ -34,21 +34,26 @@ ipod_mount = '/mnt/ipod'
 
 remove_track = "The Dancer"
 
-dbname = os.path.join(os.environ['HOME'],".gtkpod/iTunesDB")
+#dbname = os.path.join(os.environ['HOME'],".gtkpod/iTunesDB")
 #dbname = os.path.join(os.environ['HOME'],".gtkpod/local_0.itdb")
-#dbname = os.path.join(ipod_mount,"iPod_Control/iTunes/iTunesDB")
+dbname = os.path.join(ipod_mount,"iPod_Control/iTunes/iTunesDB")
 
-itdb = gpod.itdb_parse_file(dbname, None)
+#itdb = gpod.itdb_parse_file(dbname, None)
+# the image related functions require us to use parse and give it the
+# mount point; and they won't work without an actual ipod.
+itdb = gpod.itdb_parse(ipod_mount, None)
 if not itdb:
     print "Failed to read %s" % dbname
     sys.exit(2)
 itdb.mountpoint = ipod_mount
 
-for playlist in gpod.sw_get_playlists(itdb):
-    print playlist.name
-    print gpod.itdb_playlist_tracks_number(playlist)
-    for track in gpod.sw_get_playlist_tracks(playlist):
-        print track.title
+if False:
+    for playlist in gpod.sw_get_playlists(itdb):
+        print playlist.name
+        print type(playlist.name)
+        print gpod.itdb_playlist_tracks_number(playlist)
+        for track in gpod.sw_get_playlist_tracks(playlist):
+            print track.title
     
 for track in gpod.sw_get_tracks(itdb):
     lists = []
@@ -56,21 +61,30 @@ for track in gpod.sw_get_tracks(itdb):
         if gpod.itdb_playlist_contains_track(playlist, track):
             lists.append(playlist)
 
-    print "%-25s %-20s %-20s %-30s %s" % (track.title,
-                                          track.album,
-                                          track.artist,
-                                          gpod.itdb_filename_on_ipod(track),
-                                          repr(",".join([l.name for l in lists])))
+    if track.artist == "Placebo":
+        print u"%-25s %-20s %-20s %-30s %s" % (track.title,
+                                               track.album,
+                                               track.artist,
+                                               gpod.itdb_filename_on_ipod(track),
+                                               repr(u",".join([l.name for l in lists])))
+
+        if gpod.itdb_track_set_thumbnail(track,"/tmp/placebo.jpg") != 0:
+            print "Failed to save image thumbnail"
+        print track.orig_image_filename
 
     if track.title == remove_track:
         print "Removing track.."
         print "..disk"
         os.unlink(gpod.itdb_filename_on_ipod(track))
         for l in lists:
-            print "..playlist %s" % l.name
+            print u"..playlist %s" % l.name
             gpod.itdb_playlist_remove_track(l, track)
         print "..db"
         gpod.itdb_track_unlink(track)
         print "Track removed."
 
-gpod.itdb_write_file(itdb, dbname, None)
+gpod.itdb_write(itdb, None)
+print "Saved db"
+
+
+
