@@ -71,6 +71,10 @@ pack_RGB_565 (GdkPixbuf *pixbuf, int dst_width, int dst_height)
 		      "height", &height, "width", &width,
 		      "pixels", &pixels, NULL);
 	g_return_val_if_fail ((width <= dst_width) && (height <= dst_height), NULL);
+	/* dst_width and dst_height come from a width/height database 
+	 * hardcoded in libipoddevice code, so dst_width * dst_height * 2 can't
+	 * overflow, even on an iPod containing malicious data
+	 */
 	result = g_malloc0 (dst_width * dst_height * 2);
 
 	for (h = 0; h < height; h++) {
@@ -350,6 +354,10 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
     /* Sort the list of thumbs according to img->offset */
     thumbs = g_list_sort (thumbs, offset_sort);
 
+    /* size is either a value coming from a hardcoded const array from 
+     * libipoddevice, or a guint32 read from an iPod file, so no overflow
+     * can occur here
+     */
     buf = g_malloc (size);
 
     for (i=0; i<tn_num; ++i)

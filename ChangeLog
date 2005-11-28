@@ -1,3 +1,12 @@
+2005-11-28  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_artwork.c: (unpack_RGB_565), (get_pixel_data):
+	* src/itdb_itunesdb.c: (get_mhod):
+	* src/ithumb-writer.c: (pack_RGB_565),
+	(ithumb_rearrange_thumbnail_file): added some paranoia checks before
+	doing some mallocs to prevent potential int overflows in some mallocs
+	which could be triggered by using forged iTunesDB files
+
 2005-11-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	New API for thumbnail support: see src/itdb.h for details.

@@ -217,6 +217,7 @@ unpack_RGB_565 (guint16 *pixels, guint bytes_len)
 	guchar *result;
 	guint i;
 
+	g_assert (bytes_len < 2*(G_MAXUINT/3));
 	result = g_malloc ((bytes_len/2) * 3);
 	if (result == NULL) {
 		return NULL;
@@ -251,6 +252,9 @@ get_pixel_data (IpodDevice *device, Itdb_Thumb *thumb)
 	g_return_val_if_fail (thumb, NULL);
 	g_return_val_if_fail (thumb->filename, NULL);
 
+	/* thumb->size is read as a guint32 from the iPod, so no overflow
+	 * can occur here
+	 */
 	result = g_malloc (thumb->size);
 
 	filename = itdb_thumb_get_filename (device, thumb);

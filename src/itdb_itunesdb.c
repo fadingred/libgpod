@@ -1020,6 +1020,7 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
   case MHOD_ID_SUBTITLE:
       xl = get32lint (cts, seek+4);   /* length of string */
       if (cts->error) return result;  /* *ml==-1, result.valid==FALSE */
+      g_assert (xl < G_MAXUINT - 2);
       entry_utf16 = g_new0 (gunichar2, (xl+2)/2);
       if (seek_get_n_bytes (cts, (gchar *)entry_utf16, seek+16, xl))
       {
@@ -1039,6 +1040,7 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
       /* length of string */
       xl = mhod_len - header_length;
       if (cts->error) return result;  /* *ml==-1, result.valid==FALSE */
+      g_assert (xl < G_MAXUINT - 1);
       result.data.string = g_new0 (gchar, xl+1);
       if (!seek_get_n_bytes (cts, result.data.string, seek, xl))
       {
@@ -1100,6 +1102,7 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 	      splr->action = get32bint (cts, seek+4);
 	      seek += 52;
 	      length = get32bint (cts, seek);
+	      g_assert (length < G_MAXUINT-2);
 	      if (itdb_spl_action_known (splr->action))
 	      {
 		  gint ft = itdb_splr_get_field_type (splr);
