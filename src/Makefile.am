@@ -2,6 +2,7 @@ lib_LTLIBRARIES = libgpod.la
 
 libgpod_la_SOURCES = \
 	itdb.h           \
+	itdb_artwork.c   \
 	itdb_itunesdb.c  \
 	itdb_playlist.c  \
 	itdb_private.h   \

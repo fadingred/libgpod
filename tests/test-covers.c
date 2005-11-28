@@ -33,14 +33,14 @@
 
 
 static void
-save_itdb_image (Itdb_iTunesDB *itdb, Itdb_Image *image, const char *filename)
+save_itdb_thumb (Itdb_iTunesDB *itdb, Itdb_Thumb *thumb, const char *filename)
 {
-	GdkPixbuf *thumb;
+	GdkPixbuf *pixbuf;
 	
-	thumb = itdb_image_get_gdk_pixbuf (itdb, image);
-	if (thumb != NULL) {
-		gdk_pixbuf_save (thumb, filename, "png", NULL, NULL);
-		gdk_pixbuf_unref (thumb);
+	pixbuf = itdb_thumb_get_gdk_pixbuf (itdb->device, thumb);
+	if (pixbuf != NULL) {
+		gdk_pixbuf_save (pixbuf, filename, "png", NULL, NULL);
+		gdk_pixbuf_unref (pixbuf);
 /*		g_print ("Saved %s\n", filename); */
 	}
 }
@@ -49,20 +49,20 @@ save_song_thumbnails (Itdb_Track *song)
 {
 	GList *it;
 	
-	for (it = song->thumbnails; it != NULL; it = it->next) {
-		Itdb_Image *image;
+	for (it = song->artwork->thumbnails; it != NULL; it = it->next) {
+		Itdb_Thumb *thumb;
 		gchar *filename;
 
-		image = (Itdb_Image *)it->data;
-		g_return_if_fail (image);
+		thumb = (Itdb_Thumb *)it->data;
+		g_return_if_fail (thumb);
 
 		filename = NULL;
 		filename = g_strdup_printf ("%s-%s-%s-%d-%016"G_GINT64_MODIFIER"x.png",
 					    song->artist, song->album, 
-					    song->title, image->type, 
+					    song->title, thumb->type, 
 					    song->dbid);
 		if (filename != NULL) {
-			save_itdb_image (song->itdb, image, filename);
+			save_itdb_thumb (song->itdb, thumb, filename);
 			g_free (filename);
 		}
 	}

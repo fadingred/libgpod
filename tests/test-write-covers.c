@@ -97,11 +97,11 @@ main (int argc, char **argv)
 		const char *coverpath;
 
 		song = (Itdb_Track*)it->data;
-		itdb_track_remove_thumbnail (song);
+		itdb_artwork_remove_thumbnails (song->artwork);
 
 		coverpath = g_list_nth_data (covers, 
 					     g_random_int_range (0, nb_covers));
-		itdb_track_set_thumbnail (song, coverpath);
+		itdb_track_set_thumbnails (song, coverpath);
 /*		g_print ("%s - %s - %s gets %s\n",  
 		song->artist, song->album, song->title, coverpath);*/
 

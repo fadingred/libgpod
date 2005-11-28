@@ -1,3 +1,32 @@
+2005-11-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	New API for thumbnail support: see src/itdb.h for details.
+
+	* src/itdb.h: Introduced Itdb_Artwork and ItdbThumbType and
+	changed Itdb_Image to Itdb_Thumb throughout the source.
+
+	* src/itdb_artwork.c: new file as backend for Itdb_Artwork support
+	(new, free, duplicate, get_thumb_by_type, add_thumbnail,
+	remove_thumbnail, remove_thumbnails), as well as for the
+	Itdb_Thumb support (new, free, duplicate, get_gdk_pixbuf,
+	get_filename)
+
+	* src/itdb_track.c: new functions for artwork support
+	(set_thumbnails, remove_thumbnails)
+
+	* src/ithumb-writer.c: added support to write thumbnails in
+	addition to existing thumbnails
+
+	* src/db-artwork-parcer.c: (mhod3_get_ithmb_filename)
+
+	* src/itdb_itunesdb.c: (update_artwork_info)
+
+	* tests/test-covers.c: updated to new API.
+
+	* tests/test-write-covers.c: updated to new API.
+
+	Known issues: iTunes wipes off our thumbnails.
+	
 2005-11-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* overall changes to support itdb_image_get_gdk_pixbuf(). Run

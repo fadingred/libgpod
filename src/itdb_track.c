@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-12 22:57:11 jcs>
+/* Time-stamp: <2005-11-28 22:31:30 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -50,6 +50,8 @@ Itdb_Track *itdb_track_new (void)
 {
     Itdb_Track *track = g_new0 (Itdb_Track, 1);
 
+    track->artwork = itdb_artwork_new ();
+
     track->visible = 1;
     return track;
 }
@@ -79,7 +81,7 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
     g_return_if_fail (tr->itdb);
 
     /* The exact meaning of unk126 is unknown, but always seems to be
-       0xffff for MP3/AAC songs, 0x0 for uncompressed songs (like WAVE
+       0xffff for MP3/AAC tracks, 0x0 for uncompressed tracks (like WAVE
        format), 0x1 for Audible. */
     if (tr->unk126 == 0)
     {
@@ -107,9 +109,9 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	    tr->unk126 = 0x00;  /* default value */
 	}
     }
-    /* The exact meaning of unk144 is unknown, but MP3 songs appear to
+    /* The exact meaning of unk144 is unknown, but MP3 tracks appear to
        be always 0x0000000c or 0x0100000c (if played one or more times
-       in iTunes), AAC songs are always 0x01000033, Audible files are
+       in iTunes), AAC tracks are always 0x01000033, Audible files are
        0x01000029, WAV files are 0x0. */
     if (tr->unk144 == 0)
     {
@@ -160,7 +162,7 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	    }
 	}
     }
-    /* The sample rate of the song expressed as an IEEE 32 bit
+    /* The sample rate of the track expressed as an IEEE 32 bit
        floating point number.  It's uncertain why this is here.  itdb
        will set this when adding a track */
     tr->samplerate2 = tr->samplerate;
@@ -206,22 +208,6 @@ void itdb_track_add (Itdb_iTunesDB *itdb, Itdb_Track *track, gint32 pos)
     else  itdb->tracks = g_list_insert (itdb->tracks, track, pos);
 }
 
-void
-itdb_track_free_generated_thumbnails (Itdb_Track *track)
-{
-    GList *it;
-
-    for (it = track->thumbnails; it != NULL; it = it->next) {
-	Itdb_Image *image;
-
-	image = (Itdb_Image *)it->data;
-	g_free (image->filename);
-	g_free (image);
-    }
-    g_list_free (track->thumbnails);
-    track->thumbnails = NULL;
-}
-
 /* Free the memory taken by @track */
 void itdb_track_free (Itdb_Track *track)
 {
@@ -242,8 +228,8 @@ void itdb_track_free (Itdb_Track *track)
     g_free (track->subtitle);
     g_free (track->ipod_path);
     g_free (track->chapterdata_raw);
-    itdb_track_free_generated_thumbnails (track);
-    g_free (track->orig_image_filename);
+    itdb_artwork_remove_thumbnails (track->artwork);
+    g_free (track->artwork);
     if (track->userdata && track->userdata_destroy)
 	(*track->userdata_destroy) (track->userdata);
     g_free (track);
@@ -274,30 +260,6 @@ void itdb_track_unlink (Itdb_Track *track)
 
     itdb->tracks = g_list_remove (itdb->tracks, track);
     track->itdb = NULL;
-}
-
-static GList *dup_thumbnails (GList *thumbnails)
-{
-    GList *it;
-    GList *result;
-    
-    result = NULL;
-    for (it = thumbnails; it != NULL; it = it->next)
-    {
-	Itdb_Image *new_image;
-	Itdb_Image *image;
-
-	image = (Itdb_Image *)it->data;
-	g_return_val_if_fail (image, NULL);
-
-	new_image = g_new (Itdb_Image, 1);
-	memcpy (new_image, image, sizeof (Itdb_Image));
-	new_image->filename = g_strdup (image->filename);
-	
-	result = g_list_prepend (result, new_image);
-    }
-
-    return g_list_reverse (result);
 }
 
 /* Duplicate an existing track */
@@ -338,8 +300,7 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
     }
 
     /* Copy thumbnail data */
-    tr_dup->orig_image_filename = g_strdup (tr->orig_image_filename);
-    tr_dup->thumbnails = dup_thumbnails (tr->thumbnails);
+    tr_dup->artwork = itdb_artwork_duplicate (tr->artwork);
 
     /* Copy userdata */
     if (tr->userdata && tr->userdata_duplicate)
@@ -348,6 +309,35 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
     return tr_dup;
 }
 
+
+gboolean itdb_track_set_thumbnails (Itdb_Track *track,
+				    const gchar *filename)
+{
+    gboolean result;
+
+    g_return_val_if_fail (track, FALSE);
+    g_return_val_if_fail (filename, FALSE);
+
+    itdb_artwork_remove_thumbnails (track->artwork);
+    result = itdb_artwork_add_thumbnail (track->artwork,
+					 ITDB_THUMB_COVER_SMALL,
+					 filename);
+    if (result == TRUE)
+	result = itdb_artwork_add_thumbnail (track->artwork,
+					     ITDB_THUMB_COVER_LARGE,
+					     filename);
+    if (result == FALSE)
+	itdb_artwork_remove_thumbnails (track->artwork);
+
+    return result;
+}
+
+
+void itdb_track_remove_thumbnails (Itdb_Track *track)
+{
+    g_return_if_fail (track);
+    itdb_artwork_remove_thumbnails (track->artwork);
+}
 
 
 /* Returns the track with the ID @id or NULL if the ID cannot be
@@ -419,38 +409,4 @@ Itdb_Track *itdb_track_id_tree_by_id (GTree *idtree, guint32 id)
     return (Itdb_Track *)g_tree_lookup (idtree, &id);
 }
 
-void
-itdb_track_remove_thumbnail (Itdb_Track *song)
-{
-    itdb_track_free_generated_thumbnails (song);
-    g_free (song->orig_image_filename);
-    song->orig_image_filename = NULL;
-    song->image_id = 0;
-}
 
-
-#ifdef HAVE_GDKPIXBUF
-/* This operation doesn't make sense when we can't save thumbnail files */
-int 
-itdb_track_set_thumbnail (Itdb_Track *song, const char *filename)
-{
-    struct stat statbuf;
-
-    g_return_val_if_fail (song != NULL, -1);
-
-    if (g_stat  (filename, &statbuf) != 0) {
-	return -1;
-    }
-    itdb_track_remove_thumbnail (song);
-    song->artwork_size = statbuf.st_size;
-    song->orig_image_filename = g_strdup (filename);
-
-    return 0;
-}
-#else
-int 
-itdb_track_set_thumbnail (Itdb_Track *song, const char *filename)
-{
-    return -1;
-}
-#endif

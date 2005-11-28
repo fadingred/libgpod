@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-24 21:34:51 jcs>
+/* Time-stamp: <2005-11-29 00:56:25 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -53,9 +53,78 @@ G_BEGIN_DECLS
 #define G_GNUC_INTERNAL
 #endif 
 
+typedef void (* ItdbUserDataDestroyFunc) (gpointer userdata);
+typedef gpointer (* ItdbUserDataDuplicateFunc) (gpointer userdata);
 
-/* one star is how much (track->rating) */
-#define ITDB_RATING_STEP 20
+typedef struct _Itdb_Artwork Itdb_Artwork;
+typedef struct _Itdb_Thumb Itdb_Thumb;
+typedef struct _SPLPref SPLPref;
+typedef struct _SPLRule SPLRule;
+typedef struct _SPLRules SPLRules;
+typedef struct _Itdb_iTunesDB Itdb_iTunesDB;
+typedef struct _Itdb_Playlist Itdb_Playlist;
+typedef struct _Itdb_Track Itdb_Track;
+
+
+/* ------------------------------------------------------------ *\
+ *
+ * Thumbnail-relevant definitions
+ *
+\* ------------------------------------------------------------ */
+
+/* Types of thumbnails in Itdb_Image */
+typedef enum { 
+    ITDB_THUMB_COVER_SMALL,
+    ITDB_THUMB_COVER_LARGE,
+    ITDB_THUMB_PHOTO_SMALL,
+    ITDB_THUMB_PHOTO_LARGE,
+    ITDB_THUMB_PHOTO_FULL_SCREEN,
+    ITDB_THUMB_PHOTO_TV_SCREEN
+} ItdbThumbType;
+
+
+/* The Itdb_Thumb structure can represent two slightly different
+   thumbnails:
+
+   - a thumbnail before it's transferred to the iPod.
+
+     offset and size are 0
+
+     width and height, if unequal 0, will indicate the size on the
+     iPod. width and height are set the first time a pixbuf is
+     requested for this thumbnail.
+
+     type is set according to the type this thumbnail represents
+
+     filename point to a 'real' image file.
+ 
+   - a thumbnail (big or small) stored on a database in the iPod.  In
+     these cases, id corresponds to the ID originally used in the
+     database, filename points to a .ithmb file on the iPod
+ */
+struct _Itdb_Thumb {
+    ItdbThumbType type;
+    gchar *filename;
+    guint32 offset;
+    guint32 size;
+    gint16 width;
+    gint16 height;
+};
+
+struct _Itdb_Artwork {
+    GList *thumbnails;    /* list of Itdb_Thumbs */
+    guint32 artwork_size; /* Size in bytes of the original source image */
+    guint id;             /* some kind of ID, starting with
+			   * 0x40... libgpod will set this on sync. */
+};
+
+
+/* ------------------------------------------------------------ *\
+ *
+ * Smart Playlists (Rules)
+ *
+\* ------------------------------------------------------------ */
+
 
 /* Most of the knowledge about smart playlists has been provided by
    Samuel "Otto" Wood (sam dot wood at gmail dot com) who let me dig
@@ -258,7 +327,7 @@ typedef enum {
 /* Maximum string length that iTunes writes to the database */
 #define SPL_MAXSTRINGLENGTH 255
 
-typedef struct SPLPref
+struct _SPLPref
 {
     guint8  liveupdate;        /* "live Updating" check box */
     guint8  checkrules;        /* "Match X of the following
@@ -270,9 +339,9 @@ typedef struct SPLPref
 				  type" */
     guint8  matchcheckedonly;  /* "Match only checked songs" check
 				  box */
-} SPLPref;
+};
 
-typedef struct SPLRule
+struct _SPLRule
 {
     guint32 field;
     guint32 action;
@@ -298,47 +367,29 @@ typedef struct SPLRule
     guint32 unk060;
     guint32 unk064;
     guint32 unk068;
-} SPLRule;
+};
 
 
-typedef struct SPLRules
+struct _SPLRules
 {
     guint32 unk004;
     guint32 match_operator;  /* "All" (logical AND): SPLMATCH_AND,
 				"Any" (logical OR): SPLMATCH_OR */
     GList *rules;
-} SPLRules;
-
-
-
-/* This structure can represent two slightly different images:
-
-   - an image before it's transferred to the iPod (it will then be
-     scaled as necessary to generate the 2 thumbnails needed by the
-     iPod), for such images, filename points to a 'real' image file,
-     offset is not significant, size, width and height may or may not
-     be set and id corresponds to the image id to write in mhii
-     records of the photo database
- 
-   - a thumbnail (big or small) stored on a database in the iPod.  For
-     such images, id isn't significant, filename point to a .ithmb
-     file on the iPod
- */
-struct _Itdb_Image {
-	int type;
-  	char *filename;
-	guint32 offset;
-	guint32 size;
-	gint16 width;
-	gint16 height;
 };
 
-typedef struct _Itdb_Image Itdb_Image;
 
-typedef void (* ItdbUserDataDestroyFunc) (gpointer userdata);
-typedef gpointer (* ItdbUserDataDuplicateFunc) (gpointer userdata);
 
-typedef struct
+/* ------------------------------------------------------------ *\
+ *
+ * iTunesDB, Playlists, Tracks
+ *
+\* ------------------------------------------------------------ */
+
+/* one star is how much (track->rating) */
+#define ITDB_RATING_STEP 20
+
+struct _Itdb_iTunesDB
 {
     GList *tracks;
     GList *playlists;
@@ -355,10 +406,10 @@ typedef struct
     ItdbUserDataDuplicateFunc userdata_duplicate;
     /* function called to free userdata */
     ItdbUserDataDestroyFunc userdata_destroy;
-} Itdb_iTunesDB;
+};
 
 
-typedef struct
+struct _Itdb_Playlist
 {
     Itdb_iTunesDB *itdb;  /* pointer to iTunesDB (for convenience) */
     gchar *name;          /* name of playlist in UTF8              */
@@ -395,7 +446,7 @@ typedef struct
     ItdbUserDataDuplicateFunc userdata_duplicate;
     /* function called to free userdata */
     ItdbUserDataDestroyFunc userdata_destroy;
-} Itdb_Playlist;
+};
 
 
 /*
@@ -468,7 +519,7 @@ typedef enum
    http://ipodlinux.org/ITunesDB. 
    http://ipodlinux.org/ITunesDB is the best source for information
    about the iTunesDB and related files. */
-typedef struct
+struct _Itdb_Track
 {
   Itdb_iTunesDB *itdb;       /* pointer to iTunesDB (for convenience) */
   gchar   *title;            /* title (utf8)           */
@@ -539,13 +590,15 @@ typedef struct
                                 0x4d503320 -> 0x4d = 'M', 0x50 = 'P',
                                 0x33 = '3', 0x20 = <space>. (always
                                 left set to 0 by itdb)*/
-  guint16 artwork_count;     /*  The number of album artwork items
-				 associated with this song. */
+  guint16 artwork_count;     /* The number of album artwork items
+				associated with this song. libgpod
+				updates this value when syncing */
   guint32 artwork_size;      /* The total size of artwork (in bytes)
 				attached to this song, when it is
 				converted to JPEG format. Observed in
 				iPodDB version 0x0b and with an iPod
-				Photo. */
+				Photo. libgpod updates this value when
+				syncing */
   float samplerate2;         /* The sample rate of the song expressed
 				as an IEEE 32 bit floating point
 				number.  It's uncertain why this is
@@ -614,9 +667,7 @@ typedef struct
   guint32 chapterdata_raw_length;
 
   /* This is for Cover Art support */
-  GList *thumbnails;
-  unsigned int image_id;
-  char *orig_image_filename;
+  struct _Itdb_Artwork *artwork;
 
   /* below is for use by application */
   guint64 usertype;
@@ -625,11 +676,16 @@ typedef struct
   ItdbUserDataDuplicateFunc userdata_duplicate;
   /* function called to free userdata */
   ItdbUserDataDestroyFunc userdata_destroy;
-} Itdb_Track;
+};
 /* (gtkpod note: don't forget to add fields read from the file to
  * copy_new_info() in file.c!) */
 
-/* Error codes */
+
+/* ------------------------------------------------------------ *\
+ *
+ * Error codes
+ *
+\* ------------------------------------------------------------ */
 typedef enum
 {
     ITDB_FILE_ERROR_SEEK,      /* file corrupt: illegal seek occured */
@@ -639,9 +695,17 @@ typedef enum
     ITDB_FILE_ERROR_ITDB_CORRUPT /* iTunesDB in memory corrupt */
 } ItdbFileError;
 
+
 /* Error domain */
 #define ITDB_FILE_ERROR itdb_file_error_quark ()
 GQuark     itdb_file_error_quark      (void);
+
+
+/* ------------------------------------------------------------ *\
+ *
+ * Public functions
+ *
+\* ------------------------------------------------------------ */
 
 /* functions for reading/writing database, general itdb functions */
 Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error);
@@ -710,7 +774,7 @@ Itdb_Playlist *itdb_playlist_mpl (Itdb_iTunesDB *itdb);
 gboolean itdb_playlist_is_mpl (Itdb_Playlist *pl);
 void itdb_playlist_set_mpl (Itdb_Playlist *pl);
 
-/* playlist functions for podcast playlist */
+/* playlist functions for podcasts playlist */
 Itdb_Playlist *itdb_playlist_podcasts (Itdb_iTunesDB *itdb);
 gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl);
 void itdb_playlist_set_podcasts (Itdb_Playlist *pl);
@@ -730,13 +794,33 @@ void itdb_spl_update_all (Itdb_iTunesDB *itdb);
 void itdb_spl_update_live (Itdb_iTunesDB *itdb);
 
 /* thumbnails functions */
-unsigned char *itdb_image_get_rgb_data (Itdb_Image *image);
-int itdb_track_set_thumbnail (Itdb_Track *song, const char *filename);
-void itdb_track_remove_thumbnail (Itdb_Track *song);
-void itdb_track_free_generated_thumbnails (Itdb_Track *track);
+/* itdb_track_... */
+gboolean itdb_track_set_thumbnails (Itdb_Track *track,
+				    const gchar *filename);
+void itdb_track_remove_thumbnails (Itdb_Track *track);
+/* itdb_artwork_... */
+Itdb_Artwork *itdb_artwork_new (void);
+Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork);
+void itdb_artwork_free (Itdb_Artwork *artwork);
+Itdb_Thumb *itdb_artwork_get_thumb_by_type (Itdb_Artwork *artwork,
+					    ItdbThumbType type);
+gboolean itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
+				     ItdbThumbType type,
+				     const gchar *filename);
+void itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork,
+				    Itdb_Thumb *thumb);
+void itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork);
+/* itdb_thumb_... */
 /* the following funciton returns a pointer to a GdkPixbuf if
    gdk-pixbuf is installed -- a NULL pointer otherwise. */
-gpointer itdb_image_get_gdk_pixbuf (Itdb_iTunesDB *itdb, Itdb_Image *image);
+gpointer itdb_thumb_get_gdk_pixbuf (IpodDevice *device,
+				    Itdb_Thumb *thumb);
+Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb);
+void itdb_thumb_free (Itdb_Thumb *thumb);
+Itdb_Thumb *itdb_thumb_new (void);
+gchar *itdb_thumb_get_filename (IpodDevice *device, Itdb_Thumb *thumb);
+
+
 /* time functions */
 guint64 itdb_time_get_mac_time (void);
 time_t itdb_time_mac_to_host (guint64 mactime);

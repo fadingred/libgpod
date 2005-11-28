@@ -31,154 +31,7 @@
 
 #include "db-artwork-parser.h"
 #include "db-image-parser.h"
-#if HAVE_GDKPIXBUF
-#include <gdk-pixbuf/gdk-pixbuf.h>
-#endif
 #include <glib/gi18n-lib.h>
-
-static unsigned char *
-unpack_RGB_565 (gushort *pixels, unsigned int bytes_len)
-{
-	unsigned char *result;
-	unsigned int i;
-
-	result = g_malloc ((bytes_len/2) * 3);
-	if (result == NULL) {
-		return NULL;
-	}
-	for (i = 0; i < bytes_len/2; i++) {
-		gushort cur_pixel;
-
-		cur_pixel = GINT16_FROM_LE (pixels[i]);
-		/* Unpack pixels */
-		result[3*i] = (cur_pixel & RED_MASK) >> RED_SHIFT;
-		result[3*i+1] = (cur_pixel & GREEN_MASK) >> GREEN_SHIFT;
-		result[3*i+2] = (cur_pixel & BLUE_MASK) >> BLUE_SHIFT;
-		
-		/* Normalize color values so that they use a [0..255] range */
-		result[3*i] <<= (8 - RED_BITS);
-		result[3*i+1] <<= (8 - GREEN_BITS);
-		result[3*i+2] <<= (8 - BLUE_BITS);
-	}
-
-	return result;
-}
-
-
-static unsigned char *
-get_pixel_data (Itdb_Image *image)
-{
-	unsigned char *result;
-	FILE *f;
-	int res;
-
-	f = NULL;
-	result = g_malloc (image->size);
-	if (result == NULL) {
-		return NULL;
-	}
-
-	f = fopen (image->filename, "r");
-	if (f == NULL) {
-		g_print ("Failed to open %s: %s\n", 
-			 image->filename, strerror (errno));
-		goto end;
-	}
-
-	res = fseek (f, image->offset, SEEK_SET);
-	if (res != 0) {
-		g_print ("Seek to %d failed on %s: %s\n",
-			 image->offset, image->filename, strerror (errno));
-		goto end;
-	}
-
-	res = fread (result, image->size, 1, f);
-	if (res != 1) {
-		g_print ("Failed to read %u bytes from %s: %s\n", 
-			 image->size, image->filename, strerror (errno));
-		goto end;
-	}
-	fclose (f);
-
-	return result;
-
- end:
-	if (f != NULL) {
-		fclose (f);
-	}
-	g_free (result);
-
-	return NULL;
-}
-
-unsigned char *
-itdb_image_get_rgb_data (Itdb_Image *image)
-{
-	void *pixels565;
-	void *pixels;
-
-	pixels565 = get_pixel_data (image);
-	if (pixels565 == NULL) {
-		return NULL;
-	}
-	
-	pixels = unpack_RGB_565 (pixels565, image->size);
-	g_free (pixels565);
-
-	return pixels;
-
-}
-
-/* Convert the pixeldata in @image to a GdkPixbuf.
-   Since we want to have gdk-pixbuf dependency optional, a generic
-   gpointer is returned which you have to cast to (GdkPixbuf *)
-   yourself. If gdk-pixbuf is not installed the NULL pointer is
-   returned.
-   The returned GdkPixbuf must be freed with gdk_pixbuf_unref() after
-   use. */
-gpointer
-itdb_image_get_gdk_pixbuf (Itdb_iTunesDB *itdb, Itdb_Image *image)
-{
-#if HAVE_GDKPIXBUF
-    GdkPixbuf *result;
-    guchar *pixels;
-    const IpodArtworkFormat *img_info;
-
-    g_return_val_if_fail (itdb, NULL);
-    g_return_val_if_fail (image, NULL);
-
-    pixels = itdb_image_get_rgb_data (image);
-    if (pixels == NULL)
-    {
-	return NULL;
-    }
-
-    img_info = ipod_get_artwork_info_from_type (itdb->device,
-						image->type);
-
-    if (img_info == NULL)
-    {
-	g_print (_("Unable to obtain image info on image (type: %d, filename: '%s'\n)"), image->type, image->filename);
-	g_free (pixels);
-	return NULL;
-    }
-
-    result = gdk_pixbuf_new_from_data (pixels, GDK_COLORSPACE_RGB, FALSE,
-				       8, image->width, image->height,
-				       img_info->width*3,
-				       (GdkPixbufDestroyNotify)g_free,
-				       NULL);
-
-    /* !! do not g_free(pixels) here: it will be freed when doing a
-     * gdk_pixbuf_unref() on the GdkPixbuf !! */
-
-    return result;
-#else
-    return NULL;
-#endif
-}
-
-
 
 static int
 image_type_from_corr_id (IpodDevice *ipod, int corr_id)
@@ -230,12 +83,12 @@ ipod_get_artwork_info_from_type (IpodDevice *ipod, int image_type)
 	return formats;
 }
 
-G_GNUC_INTERNAL Itdb_Image *
+G_GNUC_INTERNAL Itdb_Thumb *
 ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_iTunesDB *db)
 {
 
-	Itdb_Image *img;
-	img = g_new0 (Itdb_Image, 1);
+	Itdb_Thumb *img;
+	img = g_new0 (Itdb_Thumb, 1);
 	if (img == NULL) {
 		return NULL;
 	}
@@ -246,8 +99,8 @@ ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_iTunesDB *db)
 
 	img->type = image_type_from_corr_id (db->device, mhni->correlation_id);
 	if ((img->type != IPOD_COVER_SMALL) && (img->type != IPOD_COVER_LARGE)) {
-		g_warning ("Unexpected cover type in mhni: %ux%u (%d)\n", 
-			   img->width, img->height, mhni->correlation_id);
+		g_warning ("Unexpected cover type in mhni: type %d, size: %ux%u (%d), offset: %d\n", 
+			   img->type, img->width, img->height, mhni->correlation_id, img->offset);
 		g_free (img);
 		return NULL;
 	}

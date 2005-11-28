@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <stdio.h>
 #include <sys/types.h>
 
 #define IPOD_MMAP_SIZE 2 * 1024 * 1024
@@ -284,7 +285,7 @@ init_header (iPodBuffer *buffer, gchar header_id[4], guint header_len)
 
 
 static int 
-write_mhod_type_3 (Itdb_Image *image, iPodBuffer *buffer)
+write_mhod_type_3 (Itdb_Thumb *thumb, iPodBuffer *buffer)
 {
 	MhodHeaderArtworkType3 *mhod;
 	unsigned int total_bytes;
@@ -292,7 +293,7 @@ write_mhod_type_3 (Itdb_Image *image, iPodBuffer *buffer)
 	gunichar2 *utf16;
 	int i;
 
-	g_assert (image->filename != NULL);
+	g_assert (thumb->filename != NULL);
 
 	mhod = (MhodHeaderArtworkType3 *)init_header (buffer, "mhod", 
 						      sizeof (MhodHeaderArtworkType3));
@@ -308,7 +309,7 @@ write_mhod_type_3 (Itdb_Image *image, iPodBuffer *buffer)
 	mhod->type = GINT_TO_LE (3);
 	mhod->mhod_version = GINT_TO_LE (2);
 
-	len = strlen (image->filename);
+	len = strlen (thumb->filename);
 
 	/* number of bytes of the string encoded in UTF-16 */
 	mhod->string_len = GINT_TO_LE (2*len);
@@ -317,7 +318,7 @@ write_mhod_type_3 (Itdb_Image *image, iPodBuffer *buffer)
 	if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len) != 0) {
 		return  -1;
 	}
-	utf16 = g_utf8_to_utf16 (image->filename, -1, NULL, NULL, NULL);
+	utf16 = g_utf8_to_utf16 (thumb->filename, -1, NULL, NULL, NULL);
 	if (utf16 == NULL) {		
 		return -1;
 	}
@@ -335,14 +336,14 @@ write_mhod_type_3 (Itdb_Image *image, iPodBuffer *buffer)
 }
 
 static int 
-write_mhni (Itdb_Image *image, int correlation_id, iPodBuffer *buffer)
+write_mhni (Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
 {
 	MhniHeader *mhni;
 	unsigned int total_bytes;
 	int bytes_written;
 	iPodBuffer *sub_buffer;
 
-	if (image == NULL) {
+	if (thumb == NULL) {
 		return -1;
 	}
 
@@ -355,16 +356,16 @@ write_mhni (Itdb_Image *image, int correlation_id, iPodBuffer *buffer)
 	mhni->total_len = GINT_TO_LE (total_bytes);
 
 	mhni->correlation_id = GINT_TO_LE (correlation_id);
-	mhni->image_width  = GINT16_TO_LE (image->width);
-	mhni->image_height = GINT16_TO_LE (image->height);
-	mhni->image_size   = GINT32_TO_LE (image->size);
-	mhni->ithmb_offset = GINT32_TO_LE (image->offset);
+	mhni->image_width  = GINT16_TO_LE (thumb->width);
+	mhni->image_height = GINT16_TO_LE (thumb->height);
+	mhni->image_size   = GINT32_TO_LE (thumb->size);
+	mhni->ithmb_offset = GINT32_TO_LE (thumb->offset);
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {
 		return  -1;
 	}
-	bytes_written = write_mhod_type_3 (image, sub_buffer);
+	bytes_written = write_mhod_type_3 (thumb, sub_buffer);
 	ipod_buffer_destroy (sub_buffer);
 	if (bytes_written == -1) {
 		return -1;
@@ -382,14 +383,14 @@ write_mhni (Itdb_Image *image, int correlation_id, iPodBuffer *buffer)
 }
 
 static int
-write_mhod (Itdb_Image *image, int correlation_id, iPodBuffer *buffer)
+write_mhod (Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
 {
 	MhodHeader *mhod;
 	unsigned int total_bytes;
 	int bytes_written;
 	iPodBuffer *sub_buffer;
 
-	if (image == NULL) {
+	if (thumb == NULL) {
 		return -1;
 	}
 
@@ -405,7 +406,7 @@ write_mhod (Itdb_Image *image, int correlation_id, iPodBuffer *buffer)
 	if (sub_buffer == NULL) {
 		return -1;
 	}
-	bytes_written = write_mhni (image, correlation_id, sub_buffer);
+	bytes_written = write_mhni (thumb, correlation_id, sub_buffer);
 	ipod_buffer_destroy (sub_buffer);
 	if (bytes_written == -1) {
 		return -1;
@@ -433,16 +434,16 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 	}
 	total_bytes = GINT_FROM_LE (mhii->header_len);
 	mhii->song_id = GINT64_TO_LE (song->dbid);
-	mhii->image_id = GUINT_TO_LE (song->image_id);
+	mhii->image_id = GUINT_TO_LE (song->artwork->id);
 	/* Adding 1 to artwork_size since this is what iTunes 4.9 does (there
 	 * is a 1 difference between the artwork size in iTunesDB and the 
 	 * artwork size in ArtworkDB)
 	 */
 	mhii->orig_img_size = GINT_TO_LE (song->artwork_size)+1;
 	num_children = 0;
-	for (it = song->thumbnails; it != NULL; it = it->next) {
+	for (it = song->artwork->thumbnails; it != NULL; it = it->next) {
 		iPodBuffer *sub_buffer;
-		Itdb_Image *thumb;
+		Itdb_Thumb *thumb;
 		const IpodArtworkFormat *img_info;
 
 		mhii->num_children = GINT_TO_LE (num_children);
@@ -451,12 +452,15 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 		if (sub_buffer == NULL) {
 			return -1;
 		}
-		thumb = (Itdb_Image *)it->data;
+		thumb = (Itdb_Thumb *)it->data;
 		img_info = ipod_get_artwork_info_from_type (
 		    song->itdb->device, thumb->type);
 		if (img_info == NULL) {
 			return -1;
 		}
+/* printf("correlation id: %d, type: %d\n", */
+/*        img_info->correlation_id, thumb->type); */
+/* printf("title: %s\n", song->title); */
 		bytes_written = write_mhod (thumb, img_info->correlation_id, 
 					    sub_buffer);
 		ipod_buffer_destroy (sub_buffer);
@@ -496,7 +500,7 @@ write_mhli (Itdb_iTunesDB *db, iPodBuffer *buffer)
 		iPodBuffer *sub_buffer;
 
 		song = (Itdb_Track*)it->data;
-		if (song->image_id == 0) {
+		if (song->artwork->id == 0) {
 			continue;
 		}
 		sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
@@ -719,8 +723,8 @@ ipod_artwork_db_set_ids (Itdb_iTunesDB *db)
 		Itdb_Track *song;
 
 		song = (Itdb_Track *)it->data;
-		if (song->thumbnails != NULL) {
-			song->image_id = id;
+		if (song->artwork->thumbnails != NULL) {
+			song->artwork->id = id;
 			id++;
 		}
 	}
@@ -740,9 +744,9 @@ ipod_write_artwork_db (Itdb_iTunesDB *db)
 	/* First, let's write the .ithmb files, this will create the various 
 	 * thumbnails as well, and update the Itdb_Track items contained in
 	 * the database appropriately (ie set the 'artwork_count' and 
-	 * 'artwork_size' fields, as well as the 2 Itdb_Image fields
+	 * 'artwork_size' fields, as well as the 2 Itdb_Thumb fields
 	 */
-	itdb_write_ithumb_files (db, db->mountpoint);
+	itdb_write_ithumb_files (db);
 	/* Now we can update the ArtworkDB file */
 	id_max = ipod_artwork_db_set_ids (db);
 

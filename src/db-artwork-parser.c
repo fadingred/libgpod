@@ -108,28 +108,19 @@ static char *
 mhod3_get_ithmb_filename (MhodHeaderArtworkType3 *mhod3, 
 			  Itdb_iTunesDB *db) 
 {
-       char *paths[] = {"iPod_Control", "Artwork", NULL, NULL};
        char *filename;
-       char *result;
 
        g_assert (mhod3 != NULL);
        g_assert (db != NULL);
        
        filename = get_utf16_string (mhod3->string, mhod3->string_len);
-       if ((filename == NULL) || (strlen (filename) < 2)) {
-	       return NULL;
-       }
-       
-       paths[2] = filename+1;
-       result = itdb_resolve_path (db->mountpoint, (const char **)paths);
-       g_free (filename);
-       return result;
+       return filename;
 }
 
 
 static int
 parse_mhod_3 (DBParseContext *ctx, Itdb_iTunesDB *db, 
-	      Itdb_Image *image, GError *error)
+	      Itdb_Thumb *thumb, GError *error)
 {
 	MhodHeader *mhod;
 	MhodHeaderArtworkType3 *mhod3;
@@ -147,7 +138,7 @@ parse_mhod_3 (DBParseContext *ctx, Itdb_iTunesDB *db,
 	if ((GINT_FROM_LE (mhod3->type) & 0x00FFFFFF) != MHOD_ARTWORK_TYPE_FILE_NAME) {
 		return -1;
 	}
-	image->filename = mhod3_get_ithmb_filename (mhod3, db);
+	thumb->filename = mhod3_get_ithmb_filename (mhod3, db);
 	dump_mhod_type_3 (mhod3);
 	return 0;
 }
@@ -157,7 +148,7 @@ parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 {
 	MhniHeader *mhni;
 	DBParseContext *mhod_ctx; 
-	Itdb_Image *thumb;
+	Itdb_Thumb *thumb;
 
 	mhni = db_parse_context_get_m_header (ctx, MhniHeader, "mhni");
 	if (mhni == NULL) {
@@ -168,7 +159,8 @@ parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 
 	thumb = ipod_image_new_from_mhni (mhni, song->itdb);
 	if (thumb != NULL) {
-		song->thumbnails = g_list_append (song->thumbnails, thumb);
+		song->artwork->thumbnails =
+		    g_list_append (song->artwork->thumbnails, thumb);
 	}
 
 	mhod_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
@@ -249,8 +241,8 @@ parse_mhii (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 		g_warning ("iTunesDB and ArtworkDB artwork sizes don't match (%d %d)", song->artwork_size , GINT_FROM_LE (mhii->orig_img_size));
 	}
 
-	song->artwork_size = GINT_FROM_LE (mhii->orig_img_size)-1;
-	song->image_id = GINT_FROM_LE (mhii->image_id);
+	song->artwork->artwork_size = GINT_FROM_LE (mhii->orig_img_size)-1;
+	song->artwork->id = GINT_FROM_LE (mhii->image_id);
 #endif
 
 	cur_offset = ctx->header_len;
