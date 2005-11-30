@@ -158,10 +158,12 @@ parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 	dump_mhni (mhni);
 
 	thumb = ipod_image_new_from_mhni (mhni, song->itdb);
-	if (thumb != NULL) {
-		song->artwork->thumbnails =
-		    g_list_append (song->artwork->thumbnails, thumb);
+	if (thumb == NULL) {
+		return 0;
 	}
+
+	song->artwork->thumbnails =
+		g_list_append (song->artwork->thumbnails, thumb);
 
 	mhod_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
 	if (mhod_ctx == NULL) {

@@ -1,3 +1,8 @@
+2005-11-30  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/db-artwork-parser.c: (parse_mhni): don't crash if
+	ipod_image_new_from_mhni returns NULL
+
 2005-11-28  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_artwork.c: (unpack_RGB_565), (get_pixel_data):
