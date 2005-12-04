@@ -241,7 +241,7 @@ parse_mhii (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 	}
 
 	if ((song->artwork_size+song->artwork_count) !=
-	    GINT_FROM_LE (mhii->orig_img_size)-1) {
+	    GINT_FROM_LE (mhii->orig_img_size)) {
 		g_warning (_("iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)"), song->artwork_size, song->artwork_count, GINT_FROM_LE (mhii->orig_img_size));
 	}
 
