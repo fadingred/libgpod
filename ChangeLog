@@ -1,3 +1,8 @@
+2005-12-05  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-artwork-writer/parser.c: Create ArtworkDB when it does
+	  not exist.
+
 2005-11-30  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-parser.c: (parse_mhni): don't crash if

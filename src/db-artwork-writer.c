@@ -741,16 +741,13 @@ ipod_write_artwork_db (Itdb_iTunesDB *db)
 	char *filename;
 	int id_max;
 
-	/* First, let's write the .ithmb files, this will create the various 
-	 * thumbnails as well, and update the Itdb_Track items contained in
-	 * the database appropriately (ie set the 'artwork_count' and 
-	 * 'artwork_size' fields, as well as the 2 Itdb_Thumb fields
-	 */
+	/* First, let's write the .ithmb files, this will create the
+	 * various thumbnails as well */
+
 	itdb_write_ithumb_files (db);
 	/* Now we can update the ArtworkDB file */
 	id_max = ipod_artwork_db_set_ids (db);
 
-	/* FIXME: need to create the file if it doesn't exist */
 	filename = ipod_db_get_artwork_db_path (db->mountpoint);
 	if (filename == NULL) {
 		/* FIXME: the iTunesDB will be inconsistent wrt artwork_count

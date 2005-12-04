@@ -438,8 +438,24 @@ parse_mhfd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 G_GNUC_INTERNAL char *
 ipod_db_get_artwork_db_path (const char *mount_point)
 {
+        gchar *filename;
 	const char *paths[] = {"iPod_Control", "Artwork", "ArtworkDB", NULL};
-	return itdb_resolve_path (mount_point, paths);
+	filename = itdb_resolve_path (mount_point, paths);
+
+	/* itdb_resolve_path() only returns existing paths */
+	if (!filename)
+	{
+	    gchar *path;
+	    paths[2] = NULL;
+	    path = itdb_resolve_path (mount_point, (const char **)paths);
+	    if (path)
+	    {
+		filename = g_build_filename (path, "ArtworkDB", NULL);
+	    }
+	    g_free (path);
+	}
+
+	return filename;
 }
 
 
@@ -492,7 +508,11 @@ ipod_parse_artwork_db (Itdb_iTunesDB *db)
 	filename = ipod_db_get_artwork_db_path (db->mountpoint);
 	if (filename == NULL) {
 		goto error;
-	}	
+	}
+	if (!g_file_test (filename, G_FILE_TEST_EXISTS))
+	{
+		goto error;
+	}
 	ctx = db_parse_context_new_from_file (filename);	
 	g_free (filename);
 	if (ctx == NULL) {
