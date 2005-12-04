@@ -44,6 +44,7 @@
 struct _iThumbWriter {
 	off_t cur_offset;
 	FILE *f;
+        gchar *filename;
 	IpodArtworkFormat *img_info;
 	GHashTable *cache;
 };
@@ -102,12 +103,12 @@ pack_RGB_565 (GdkPixbuf *pixbuf, int dst_width, int dst_height)
 
 
 static char *
-ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id) 
+ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gint index) 
 {
 	char *paths[] = {"iPod_Control", "Artwork", NULL, NULL};
 	char *filename, *buf;
 
-	buf = g_strdup_printf ("F%04u_1.ithmb", correlation_id);
+	buf = g_strdup_printf ("F%04u_%d.ithmb", correlation_id, index);
 
 	paths[2] = buf;
 
@@ -242,7 +243,8 @@ ithumb_writer_new (const char *mount_point, const IpodArtworkFormat *info)
 					       g_free, NULL);
 
 	filename = ipod_image_get_ithmb_filename (mount_point, 
-						  info->correlation_id);
+						  info->correlation_id,
+						  1);
 	if (filename == NULL) {
 		g_hash_table_destroy (writer->cache);
 		g_free (writer->img_info);
@@ -259,7 +261,7 @@ ithumb_writer_new (const char *mount_point, const IpodArtworkFormat *info)
 		return NULL;
 	}
 	writer->cur_offset = ftell (writer->f);
-	g_free (filename);
+	writer->filename=filename;
 	
 	return writer;
 }
@@ -268,9 +270,14 @@ static void
 ithumb_writer_free (iThumbWriter *writer)
 {
 	g_return_if_fail (writer != NULL);
+	fclose (writer->f);
+	if (writer->cur_offset == 0)
+	{   /* Remove empty file */
+	    unlink (writer->filename);
+	}
 	g_hash_table_destroy (writer->cache);
 	g_free (writer->img_info);
-	fclose (writer->f);
+	g_free (writer->filename);
 	g_free (writer);
 }
 
@@ -282,17 +289,17 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
     auto gint offset_sort (gconstpointer a, gconstpointer b);
     gint offset_sort (gconstpointer a, gconstpointer b)
 	{
-	    return (((Itdb_Thumb *)a)->offset - 
-		    ((Itdb_Thumb *)b)->offset);
+	    return (-(((Itdb_Thumb *)a)->offset - 
+		    ((Itdb_Thumb *)b)->offset));
 	}
-    gchar *filename = _key;
+    const gchar *filename = _key;
     GList *thumbs = _thumbs;
     gboolean *result = _user_data;
     gint fd = -1;
     guint32 size = 0;
-    guint32 tnf_num, tn_num, i;
     GList *gl;
     struct stat statbuf;
+    guint32 offset;
     void *buf = NULL;
 
 /*     printf ("%s: %d\n", filename, g_list_length (thumbs)); */
@@ -300,6 +307,15 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
     /* check if an error occured */
     if (*result == FALSE)
 	goto out;
+
+    if (thumbs == NULL)
+    {   /* no thumbnails for this file --> remove altogether */
+	if (unlink (filename) == -1)
+	{
+	    *result = FALSE;
+	    goto out;
+	}
+    }
 
     /* check if all thumbnails have the same size */
     for (gl=thumbs; gl; gl=gl->next)
@@ -314,29 +330,26 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
 	    goto out;
 	}
     }
+    if (size == 0)
+    {
+	*result = FALSE;
+	goto out;
+    }
+
     /* OK, all thumbs are the same size @size, let's see how many
      * thumbnails are in the actual file */
-/*     printf ("  %d\n", size); */
     if (g_stat  (filename, &statbuf) != 0)
     {
 	*result = FALSE;
 	goto out;
     }
-    tnf_num = statbuf.st_size / size;
 
     /* check if the file size is a multiple of @size */
-    if (tnf_num*size != statbuf.st_size)
+    if (((guint32)(statbuf.st_size / size))*size != statbuf.st_size)
     {
 	*result = FALSE;
 	goto out;
     }
-
-    tn_num = g_list_length (thumbs);
-
-    /* We're finished if the number here and the number of thumbnails
-     * in our list is the same */
-    if (tn_num == tnf_num)
-	goto out;
 
     fd = open (filename, O_RDWR, 0);
     if (fd == -1)
@@ -345,34 +358,48 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
 	goto out;
     }
 
-    /* Performance note: for performance reaons the list should be
-       ordered in reverse order of offsets because of frequent use
-       g_list_last(), and instead of using g_list_nth_data() the list
-       should be crawled by element from the end -- I will do that
-       eventually unless someone beats me to it. */
-
-    /* Sort the list of thumbs according to img->offset */
-    thumbs = g_list_sort (thumbs, offset_sort);
-
     /* size is either a value coming from a hardcoded const array from 
      * libipoddevice, or a guint32 read from an iPod file, so no overflow
      * can occur here
      */
     buf = g_malloc (size);
 
-    for (i=0; i<tn_num; ++i)
+    /* Sort the list of thumbs in reverse order of img->offset */
+    thumbs = g_list_sort (thumbs, offset_sort);
+
+    gl = g_list_last (thumbs);
+
+    /* check each thumbnail slot */
+    for (offset=0; gl && (offset<statbuf.st_size); offset+=size)
     {
-	guint offset = i * size;
-	Itdb_Thumb *img = g_list_nth_data (thumbs, i);
-	if (offset != img->offset)
-	{   /* We found an open space -> copy the last element here */
-	    gl = g_list_last (thumbs);
-	    img = gl->data;
-	    thumbs = g_list_delete_link (thumbs, gl);
-	    thumbs = g_list_insert (thumbs, img, i);
+	Itdb_Thumb *thumb = gl->data;
+	g_return_val_if_fail (thumb, FALSE);
+
+	/* Try to find a thumbnail that uses this slot */
+	while ((gl != NULL) && (thumb->offset < offset))
+	{
+	    gl = gl->prev;
+	    if (gl)
+		thumb = gl->data;
+	    g_return_val_if_fail (thumb, FALSE);
+	}
+
+	if (!gl)
+	    break;  /* offset now indicates new length of file */
+
+	if (thumb->offset > offset)
+	{
+	    /* did not find a thumbnail with matching offset -> copy
+	       data from last slot (== first element) */
+	    GList *first_gl = g_list_first (thumbs);
+	    Itdb_Thumb *first_thumb = first_gl->data;
+	    guint32 first_offset;
+
+	    g_return_val_if_fail (first_thumb, FALSE);
+	    first_offset = first_thumb->offset;
 
 	    /* actually copy the data */
-	    if (lseek (fd, img->offset, SEEK_SET) != img->offset)
+	    if (lseek (fd, first_offset, SEEK_SET) != first_offset)
 	    {
 		*result = FALSE;
 		goto out;
@@ -393,19 +420,52 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
 		goto out;
 	    }
 
-	    img->offset = offset;
+	    /* Adjust offset of all thumbnails whose offset is
+	       first_offset. Since the list is sorted, they are all at
+	       the beginning of the list. */
+	    while (first_thumb->offset == first_offset)
+	    {
+		first_thumb->offset = offset;
+		/* There's a possibility that gl is the first
+		   element. In that case don't attempt to move it (it
+		   wouldn't work as intended because we access
+		   gl->next after removing it from the list) */
+		if (gl != first_gl)
+		{
+		    thumbs = g_list_delete_link (thumbs, first_gl);
+		    /* Insert /behind/ gl */
+		    thumbs = g_list_insert_before (thumbs,
+						   gl->next, first_thumb);
+		    first_gl = g_list_first (thumbs);
+		    first_thumb = first_gl->data;
+		    g_return_val_if_fail (first_thumb, FALSE);
+		}
+	    }
 	}
     }
-    /* truncate the file */
-    if (ftruncate (fd, tn_num*size) == -1)
-    {
-	*result = FALSE;
-	goto out;
+    /* offset corresponds to the new length of the file */
+    if (offset > 0)
+    {   /* Truncate */
+	if (ftruncate (fd, offset) == -1)
+	{
+	    *result = FALSE;
+	    goto out;
+	}
+    }
+    else
+    {   /* Remove file altogether */
+	close (fd);
+	fd = -1;
+	if (unlink (filename) == -1)
+	{
+	    *result = FALSE;
+	    goto out;
+	}
     }
 
   out:
     if (fd != -1) close (fd);
-    if (buf) g_free (buf);
+    g_free (buf);
     g_list_free (thumbs);
     return TRUE;
 }
@@ -435,6 +495,9 @@ ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
     GList *gl;
     GHashTable *filenamehash;
     gboolean result = TRUE;
+    GList *thumbs;
+    gint i;
+    gchar *filename;
 
     g_return_val_if_fail (itdb, FALSE);
     g_return_val_if_fail (info, FALSE);
@@ -457,9 +520,8 @@ ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
 						info->type);
 	if (thumb && thumb->filename && (thumb->size != 0))
 	{
-	    GList *thumbs;
-	    gchar *filename = itdb_thumb_get_filename (itdb->device,
-						       thumb);
+	    filename = itdb_thumb_get_filename (itdb->device,
+						thumb);
 	    if (filename)
 	    {
 		thumbs = g_hash_table_lookup (filenamehash, filename);
@@ -467,6 +529,25 @@ ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
 		g_hash_table_insert (filenamehash, filename, thumbs);
 	    }
 	}
+    }
+
+    /* Check for files present on the iPod but no longer referenced by
+       thumbs */
+
+    for (i=0; i<10; ++i)
+    {
+	filename = ipod_image_get_ithmb_filename (itdb->mountpoint,
+						  info->correlation_id,
+						  i);
+	if (g_file_test (filename, G_FILE_TEST_EXISTS))
+	{
+	    if (g_hash_table_lookup (filenamehash, filename) == NULL)
+	    {
+		g_hash_table_insert (filenamehash,
+				     g_strdup (filename), NULL);
+	    }
+	}
+	g_free (filename);
     }
 
     g_hash_table_foreach_remove (filenamehash,

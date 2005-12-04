@@ -7,6 +7,14 @@
 	  src/itdb_track.c, src/ithumb-writer.c: handle artwork size and
 	  count self-consistently.
 
+	* src/itdb_track.c: take care of artwork_size/_count a little
+	  better, take care of dbid2 a little better.
+
+	* src/ithumb-writer.c: new ithumb_rearrange_thumbnail_file()
+	  taking into account multiple references to the same slot.
+	  ithumb-writer now cleans up 0 Byte files.
+
+	
 2005-11-30  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-parser.c: (parse_mhni): don't crash if

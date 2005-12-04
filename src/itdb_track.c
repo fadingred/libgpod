@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-12-04 15:48:57 jcs>
+/* Time-stamp: <2005-12-04 19:10:42 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -185,6 +185,7 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	    }
 	} while (id == 0);
 	tr->dbid = id;
+	tr->dbid2= id;
     }
     if (tr->dbid2 == 0)  tr->dbid2 = tr->dbid;
 }
@@ -326,19 +327,24 @@ gboolean itdb_track_set_thumbnails (Itdb_Track *track,
 	result = itdb_artwork_add_thumbnail (track->artwork,
 					     ITDB_THUMB_COVER_LARGE,
 					     filename);
-    if (result == FALSE)
-	itdb_artwork_remove_thumbnails (track->artwork);
 
-    /* some black magic :-( */
-    /* track->artwork_size should actually be the total size of
-       artwork packed into MP3 tags. We don't write mp3 tags... */
-    track->artwork_size = track->artwork->artwork_size;
-    /* track->artwork_count should actually be the number of images
-       packed into MP3 tags. */
-    track->artwork_count = 1;
-    /* for some reason artwork->artwork_size is always
-       track->artwork_size + track->artwork_count */
-    track->artwork->artwork_size += track->artwork_count;
+    if (result == TRUE)
+    {
+	/* some black magic :-( */
+	/* track->artwork_size should actually be the total size of
+	   artwork packed into MP3 tags. We don't write mp3 tags... */
+	track->artwork_size = track->artwork->artwork_size;
+	/* track->artwork_count should actually be the number of
+	   images packed into MP3 tags. */
+	track->artwork_count = 1;
+	/* for some reason artwork->artwork_size is always
+	   track->artwork_size + track->artwork_count */
+	track->artwork->artwork_size += track->artwork_count;
+    }
+    else
+    {
+	itdb_artwork_remove_thumbnails (track->artwork);
+    }
 
     return result;
 }
