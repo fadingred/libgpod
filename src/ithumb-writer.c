@@ -535,7 +535,6 @@ itdb_write_ithumb_files (Itdb_iTunesDB *db)
 
 		track = it->data;
 		g_return_val_if_fail (track, -1);
-		track->artwork_count = 0;
 
 		g_list_foreach (writers, write_thumbnail, track->artwork);
 	}

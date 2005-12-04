@@ -3,6 +3,10 @@
 	* src/db-artwork-writer/parser.c: Create ArtworkDB when it does
 	  not exist.
 
+	* src/db-artwork-writer.c, src/itdb_itunesdb.c,
+	  src/itdb_track.c, src/ithumb-writer.c: handle artwork size and
+	  count self-consistently.
+
 2005-11-30  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-parser.c: (parse_mhni): don't crash if

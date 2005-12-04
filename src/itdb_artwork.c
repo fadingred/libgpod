@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-29 00:56:32 jcs>
+/* Time-stamp: <2005-12-04 15:56:23 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -83,9 +83,11 @@ Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork)
     g_return_val_if_fail (artwork, NULL);
 
     dup = itdb_artwork_new ();
+
+    memcpy (dup, artwork, sizeof (Itdb_Artwork));
+
     dup->thumbnails = dup_thumbnails (artwork->thumbnails);
-    dup->artwork_size = artwork->artwork_size;
-    dup->id = artwork->id;
+
     return dup;
 }
 

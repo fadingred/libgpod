@@ -435,11 +435,7 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 	total_bytes = GINT_FROM_LE (mhii->header_len);
 	mhii->song_id = GINT64_TO_LE (song->dbid);
 	mhii->image_id = GUINT_TO_LE (song->artwork->id);
-	/* Adding 1 to artwork_size since this is what iTunes 4.9 does (there
-	 * is a 1 difference between the artwork size in iTunesDB and the 
-	 * artwork size in ArtworkDB)
-	 */
-	mhii->orig_img_size = GINT_TO_LE (song->artwork_size)+1;
+	mhii->orig_img_size = GINT_TO_LE (song->artwork->artwork_size);
 	num_children = 0;
 	for (it = song->artwork->thumbnails; it != NULL; it = it->next) {
 		iPodBuffer *sub_buffer;

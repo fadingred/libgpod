@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-27 18:31:02 jcs>
+/* Time-stamp: <2005-12-01 22:11:33 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2670,25 +2670,6 @@ static void mk_mhlt (FExport *fexp, guint32 num)
 }
 
 
-static void update_artwork_info (Itdb_Track *track)
-{
-    GList *gl;
-
-    track->artwork_count = 0;
-    /* count the number of valid thumbnails */
-    for (gl=track->artwork->thumbnails; gl; gl=gl->next)
-    {
-	Itdb_Thumb *thumb = gl->data;
-	g_return_if_fail (thumb);
-	if (thumb->size != 0)  ++track->artwork_count;
-    }
-    if (track->artwork_count != 0)
-	track->artwork_size = track->artwork->artwork_size;
-    else
-	track->artwork_size = 0;
-}
-
-
 /* Write out the mhit header. Size will be written later */
 static void mk_mhit (WContents *cts, Itdb_Track *track)
 {
@@ -2733,7 +2714,6 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   else                  put8int (cts, 0);
   put8int (cts, track->app_rating);
   put16lint (cts, track->BPM);
-  update_artwork_info (track);
   put16lint (cts, track->artwork_count);
   put16lint (cts, track->unk126);
   put32lint (cts, track->artwork_size);

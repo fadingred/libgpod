@@ -34,6 +34,7 @@
 #include "db-image-parser.h"
 #include "db-itunes-parser.h"
 #include "db-parse-context.h"
+#include <glib/gi18n-lib.h>
 
 typedef int (*ParseListItem)(DBParseContext *ctx, Itdb_iTunesDB *db, GError *error);
 
@@ -239,8 +240,9 @@ parse_mhii (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 		return -1;
 	}
 
-	if (song->artwork_size != GINT_FROM_LE (mhii->orig_img_size)-1) {
-		g_warning ("iTunesDB and ArtworkDB artwork sizes don't match (%d %d)", song->artwork_size , GINT_FROM_LE (mhii->orig_img_size));
+	if ((song->artwork_size+song->artwork_count) !=
+	    GINT_FROM_LE (mhii->orig_img_size)-1) {
+		g_warning (_("iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)"), song->artwork_size, song->artwork_count, GINT_FROM_LE (mhii->orig_img_size));
 	}
 
 	song->artwork->artwork_size = GINT_FROM_LE (mhii->orig_img_size)-1;
@@ -376,7 +378,7 @@ parse_mhsd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 		break;
 	}
 	default:
-		g_warning ("Unexpected mhsd index: %d\n", 
+		g_warning (_("Unexpected mhsd index: %d\n"), 
 			   GINT_FROM_LE (mhsd->index));
 		return -1;
 		break;
