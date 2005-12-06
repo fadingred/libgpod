@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-12-04 15:56:23 jcs>
+/* Time-stamp: <2005-12-06 22:20:39 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -219,7 +219,7 @@ unpack_RGB_565 (guint16 *pixels, guint bytes_len)
 	guchar *result;
 	guint i;
 
-	g_assert (bytes_len < 2*(G_MAXUINT/3));
+	g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
 	result = g_malloc ((bytes_len/2) * 3);
 	if (result == NULL) {
 		return NULL;

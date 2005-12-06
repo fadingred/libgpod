@@ -401,7 +401,7 @@ parse_mhfd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 	}
 
 	/* Sanity check */
-	g_assert (GINT_FROM_LE (mhfd->total_len) == ctx->total_len);
+	g_return_val_if_fail (GINT_FROM_LE (mhfd->total_len) == ctx->total_len, -1);
 	dump_mhfd (mhfd);
 	cur_pos = ctx->header_len;
 

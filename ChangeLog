@@ -1,3 +1,17 @@
+2005-12-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c: change g_assert to g_return_if_fail (don't
+	  terminate the application just because the iTunesDB was
+	  manipulated).
+
+	* src/db-artwork-parser.c: change g_assert to g_return_if_fail
+	  (don't terminate the application just because the ArtworkDB was
+	  manipulated).
+
+	* src/itdb_artwork.c: change g_assert to g_return_if_fail
+	  (don't terminate the application just because the ithmb file was
+	  manipulated).
+	
 2005-12-05  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/db-artwork-writer/parser.c: Create ArtworkDB when it does
