@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-12-06 22:20:39 jcs>
+/* Time-stamp: <2005-12-10 00:03:26 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -213,6 +213,7 @@ gchar *itdb_thumb_get_filename (IpodDevice *device, Itdb_Thumb *thumb)
 }
 
 
+#if HAVE_GDKPIXBUF
 static guchar *
 unpack_RGB_565 (guint16 *pixels, guint bytes_len)
 {
@@ -327,6 +328,7 @@ itdb_thumb_get_rgb_data (IpodDevice *device, Itdb_Thumb *thumb)
 	return pixels;
 
 }
+#endif
 
 
 
