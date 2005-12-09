@@ -120,6 +120,15 @@ ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gin
 	    gchar *path;
 	    paths[2] = NULL;
 	    path = itdb_resolve_path (mount_point, (const char **)paths);
+	    if (path == NULL)
+	    {   /* attempt to create directory */
+		gchar *pth = g_build_filename (mount_point,
+					       paths[0], path[1], NULL);
+		mkdir (pth, 0777);
+		g_free (pth);
+		path = itdb_resolve_path (mount_point,
+					  (const char **)paths);
+	    }
 	    if (path)
 	    {
 		filename = g_build_filename (path, buf, NULL);

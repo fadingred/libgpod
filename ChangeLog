@@ -1,5 +1,10 @@
 2005-12-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* src/ithumb-writer.c: create Artwork directory when attempting to
+	  write to it.
+
+2005-12-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* src/itdb_itunesdb.c: change g_assert to g_return_if_fail (don't
 	  terminate the application just because the iTunesDB was
 	  manipulated).
