@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-10 01:23:29 jcs>
+/* Time-stamp: <2005-12-10 00:22:44 jcs>
 |
 |  Copyright (C) 2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -56,8 +56,8 @@
 #  include "config.h"
 #endif
 
-#include "hal-common.h"
 #include "itdb_private.h"
+#include "hal-common.h"
 
 #ifndef HAVE_LIBHAL
 gchar **libhal_manager_find_device_string_match (LibHalContext *hal_ctx,
