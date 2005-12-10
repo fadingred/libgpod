@@ -1,7 +1,17 @@
-2005-12-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2005-12-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/ithumb-writer.c: fixed typo leading to segfault.
+
+2005-12-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/ithumb-writer.c: create Artwork directory when attempting to
 	  write to it.
+
+	* src/itdb_artwork.c: fix compilation problem when gdkpixbuf is
+	  not present.
+
+	* src/hal-common.c: reverse order of include statements to fix
+	  compilation error on some systems.
 
 2005-12-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
