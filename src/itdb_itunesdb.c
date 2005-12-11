@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-12-06 22:20:40 jcs>
+/* Time-stamp: <2005-12-11 16:27:34 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -3582,7 +3582,12 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
     if (!filename) filename = itdb->filename;
 
 #if HAVE_GDKPIXBUF
-    ipod_write_artwork_db (itdb);
+    /* only write ArtworkDB if we deal with an iPod
+       FIXME: figure out a way to store the artwork data when storint
+       to local directories. At the moment it's the application's task
+       to handle this. */
+    if (itdb->device)
+	ipod_write_artwork_db (itdb);
 #endif
 
     fexp = g_new0 (FExport, 1);

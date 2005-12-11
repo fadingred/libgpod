@@ -1,3 +1,10 @@
+2005-12-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_artwork.c: (itdb_thumb_get_gdk_pixbuf) allow to get
+	  pixbuf even if no iPod is present if the thumbnail points to a
+	  local filename. This way artwork support is also possible on the
+	  'Local' repository in gtkpod (or any other application).
+
 2005-12-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/ithumb-writer.c: fixed typo leading to segfault.

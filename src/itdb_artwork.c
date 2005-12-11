@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-12-10 00:03:26 jcs>
+/* Time-stamp: <2005-12-11 16:27:33 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -343,33 +343,64 @@ gpointer
 itdb_thumb_get_gdk_pixbuf (IpodDevice *device, Itdb_Thumb *thumb)
 {
 #if HAVE_GDKPIXBUF
-    GdkPixbuf *pixbuf;
+    GdkPixbuf *pixbuf=NULL;
     guchar *pixels;
-    const IpodArtworkFormat *img_info;
+    const IpodArtworkFormat *img_info=NULL;
 
-    g_return_val_if_fail (device, NULL);
     g_return_val_if_fail (thumb, NULL);
 
-    img_info = ipod_get_artwork_info_from_type (device, thumb->type);
+    /* If we are dealing with an iPod (device != NULL), use default
+       image dimensions as used on the iPod in question.
 
-    if (img_info == NULL)
+       If we are not dealing with an iPod, we can only return a pixmap
+       for thumbnails "not transferred to the iPod" (thumb->size ==
+       0).
+    */
+    if (device != NULL)
     {
-	g_print (_("Unable to obtain image info on thumb (type: %d, filename: '%s'\n)"), thumb->type, thumb->filename);
-	return NULL;
+	img_info = ipod_get_artwork_info_from_type (device, thumb->type);
     }
 
     if (thumb->size == 0)
-    {   /* pixbuf has not yet been transfered to the iPod */
-	gint width, height;
+    {   /* thumbnail has not yet been transferred to the iPod */
+	gint width=0, height=0;
+
+	if (img_info != NULL)
+	{   /* use image dimensions from iPod */
+	    width = img_info->width;
+	    height = img_info->height;
+	}
+	else
+	{   /* use default dimensions */
+	    /* FIXME: better way to use the ipod_color dimensions? */
+	    switch (thumb->type)
+	    {
+	    case ITDB_THUMB_COVER_SMALL:
+		width =  56;  height =  56;  break;
+	    case ITDB_THUMB_COVER_LARGE:
+		width = 140;  height = 140;  break;
+	    case ITDB_THUMB_PHOTO_SMALL:
+		width =  42;  height =  30;  break;
+	    case ITDB_THUMB_PHOTO_LARGE:
+		width = 130;  height =  88;  break;
+	    case ITDB_THUMB_PHOTO_FULL_SCREEN:
+		width = 220;  height = 176;  break;
+	    case ITDB_THUMB_PHOTO_TV_SCREEN:
+		width = 720;  height = 480;  break;
+	    }
+	    if (width == 0)
+	    {
+		width = 140;
+		height = 140;
+	    }
+	}
 
 	pixbuf = gdk_pixbuf_new_from_file_at_size (thumb->filename, 
-						   img_info->width, 
-						   img_info->height,
+						   width, height,
 						   NULL);
 	if (!pixbuf)
 	    return NULL;
 
-	
 	/* !! cannot write directly to &thumb->width/height because
 	   g_object_get() returns a gint, but thumb->width/height are
 	   gint16 !! */
@@ -380,26 +411,36 @@ itdb_thumb_get_gdk_pixbuf (IpodDevice *device, Itdb_Thumb *thumb)
 
 	thumb->width = width;
 	thumb->height = height;
-
-	return pixbuf;
     }
-
-    /* pixbuf is already on the iPod -> read from there */
-    pixels = itdb_thumb_get_rgb_data (device, thumb);
-    if (pixels == NULL)
+    else
     {
-	return NULL;
+	/* pixbuf is already on the iPod -> read from there */
+
+	if (img_info == NULL)
+	{
+	    g_print (_("Unable to retreive thumbnail (appears to be on iPod, but no image info available): type: %d, filename: '%s'\n"),
+		     thumb->type, thumb->filename);
+	    return NULL;
+	}
+
+	pixels = itdb_thumb_get_rgb_data (device, thumb);
+	if (pixels == NULL)
+	{
+	    return NULL;
+	}
+
+	pixbuf = gdk_pixbuf_new_from_data (pixels,
+					   GDK_COLORSPACE_RGB,
+					   FALSE,
+					   8, thumb->width,
+					   thumb->height,
+					   img_info->width*3,
+					   (GdkPixbufDestroyNotify)g_free,
+					   NULL);
+
+	/* !! do not g_free(pixels) here: it will be freed when doing a
+	 * gdk_pixbuf_unref() on the GdkPixbuf !! */
     }
-
-    pixbuf = gdk_pixbuf_new_from_data (pixels, GDK_COLORSPACE_RGB, FALSE,
-				       8, thumb->width, thumb->height,
-				       img_info->width*3,
-				       (GdkPixbufDestroyNotify)g_free,
-				       NULL);
-
-
-    /* !! do not g_free(pixels) here: it will be freed when doing a
-     * gdk_pixbuf_unref() on the GdkPixbuf !! */
 
     return pixbuf;
 #else
