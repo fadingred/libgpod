@@ -6,7 +6,9 @@
 	  'Local' repository in gtkpod (or any other application).
 
 	* README: added quick HOWTO use libgpod
-	
+
+	* bumped version to 0.3.0 for release.
+
 2005-12-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/ithumb-writer.c: fixed typo leading to segfault.
