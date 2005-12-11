@@ -13,13 +13,75 @@ Gtkpod-devel@lists.sourceforge.net (you may ask to be CC in the
 answer).
 
 ----------------------------------------------------------------------
-For the time being please always use the current version in CVS. See
-http://sourceforge.net/cvs/?group_id=67873 for information on how to
-access the CVS server. The module to download is called 'libgpod'. The
-package released on sourceforge is simply there to raise awareness and
-hopefully have some package maintainers pick up the library.
-----------------------------------------------------------------------
+Quick HOWTO use libgpod
 
+itdb_parse(): read the iTunesDB and ArtbookDB
+itdb_write(): write the iTunesDB and ArtbookDB
+
+itdb_parse() will return a Itdb_iTunesDB structure with GLists
+containing all tracks (each track is represented by a Itdb_Track
+structure) and the playlists (each playlist is represented by a
+Itdb_Playlist structure).
+
+A number of functions for adding, removing, duplicating tracks are
+available. Please see itdb.h for details (itdb_track_*()).
+
+In each Itdb_Playlist structure you can find a GList called 'members'
+with listing all member tracks. Each track referenced in a playlist
+must also be present in the tracks GList of the iTunesDB.
+
+The iPod must contain one master playlist (MPL) containing all tracks
+accessible on the iPod through the
+Music->Tracks/Albums/Artists... menu. Besides the MPL there can be a
+number of normal playlists accessible through the Music->Playlists
+menu on the iPod. Tracks that are a member of one of these normal
+playlists must also be a member of the MPL.
+
+The Podcasts playlist is just another playlist with some internal
+flags set differently. Also, member tracks in the Podcasts playlist
+are not normally members of the MPL (so on the iPod they will only
+show up under the Podcasts menu). All tracks referenced must be in the
+tracklist of the Itdb_iTunesDB, however.
+
+A number of functions to add/remove playlists, or add/remove tracks
+are available. Please see itdb.h for details (itdb_playlist_*()).
+
+Each track can have a thumbnail associated with it. You can retrieve a
+GdkPixmap of the thumbnail using itdb_thumb_get_gdk_pixbuf() (tracks
+have thumbnails of the following types associated:
+ITDB_THUMB_COVER_SMALL and _LARGE). You can remove a thumbnail with
+itdb_track_remove_thumbnails(). And finally, you can set a new
+thumbnail using itdb_track_set_thumbnails().
+
+Please note that iTunes additionally stores the artwork as tags in the
+original music file. That's also from where the data is read when
+artwork is displayed in iTunes, and there can be more than one piece
+of artwork. libgpod does not store the artwork as tags in the original
+music file. As a consequence, if you iTunes attempts to access the
+artwork, it will find none, and remove libgpod's artwork. Luckily,
+iTunes will only attempt to access the artwork if you select a track
+in Tunes. (To work around this, gtkpod keeps a list of the original
+filename of all artwork and silently adds the thumbnails if they were
+'lost'. Your application might want to do something similar, or you
+can supply patches for optionally! adding tags to the original music
+files.)
+
+The Itdb_iTunesDB, Itdb_Playlist and Itdb_Track structures each have a
+userdata and a usertype field that can be used by the application to
+store application-specific additional data. If userdata is a pointer
+to an external structure, you can supply a ItdbUserDataDuplicateFunc
+and a ItdbUserDataDestroyFunc so that this data can be duplicated
+or freed automatically with a call to the library _duplicate()/_free()
+functions.
+
+For more information I would advice to have a look at gtkpod's source
+code. You can also ask questions on the developer's mailing list:
+gtkpod-devel at lists dot sourceforge dot net
+
+
+Jörg Schuler (jcsjcs at users dot sourceforge dot net)
+
+----------------------------------------------------------------------
 Note about photo databases:
 
 First thing, there are 2 different artwork databases on the iPod

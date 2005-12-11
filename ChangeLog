@@ -5,6 +5,8 @@
 	  local filename. This way artwork support is also possible on the
 	  'Local' repository in gtkpod (or any other application).
 
+	* README: added quick HOWTO use libgpod
+	
 2005-12-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/ithumb-writer.c: fixed typo leading to segfault.
