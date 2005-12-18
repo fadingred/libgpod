@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-10 01:23:29 jcs>
+/* Time-stamp: <2005-12-18 23:57:23 jcs>
 |
 |  Copyright (C) 2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -933,13 +933,15 @@ ipod_device_read_device_info_string(FILE *fd)
 	gunichar2 *utf16;
 	gchar *utf8;
 	
-	fread(&length, 1, sizeof(gshort), fd);
+	if (fread(&length, sizeof(gshort), 1, fd) != 1)
+	        return NULL;
 	
 	if(length <= 0)
 		return NULL;
 	
 	utf16 = (gunichar2 *)g_malloc(length * sizeof(gunichar2));
-	fread(utf16, sizeof(gunichar2), length, fd);
+	if (fread(utf16, sizeof(gunichar2), length, fd) != length)
+		return NULL;
 	
 	if(utf16 == NULL)
 		return NULL;
@@ -957,6 +959,7 @@ ipod_device_write_device_info_string(gchar *str, FILE *fd)
 {
 	gunichar2 *unistr;
 	gshort length;
+	size_t res;
 
 	if(str == NULL)
 		return;
@@ -966,8 +969,9 @@ ipod_device_write_device_info_string(gchar *str, FILE *fd)
 	
 	length = length > 0x198 ? 0x198 : length;
 
-	fwrite(&length, 2, 1, fd);
-	fwrite(unistr, 2, length, fd);
+	/* FIXME: we do not check if the write was successful */
+	res = fwrite(&length, 2, 1, fd);
+	res = fwrite(unistr, 2, length, fd);
 	
 	g_free(unistr);
 }
@@ -1029,6 +1033,7 @@ ipod_device_info_load(IpodDevice *device)
 {
 	gchar *path;
 	FILE *fd;
+	gint intres;
 	
 	g_return_val_if_fail(IS_IPOD_DEVICE(device), FALSE);
 	
@@ -1045,10 +1050,10 @@ ipod_device_info_load(IpodDevice *device)
 	if(device->priv->device_name == NULL)
 		device->priv->device_name = g_strdup("iPod");
 	
-	fseek(fd, 0x200, SEEK_SET);
+	intres=fseek(fd, 0x200, SEEK_SET);
 	device->priv->user_name = ipod_device_read_device_info_string(fd);
 	
-	fseek(fd, 0x400, SEEK_SET);
+	intres=fseek(fd, 0x400, SEEK_SET);
 	device->priv->host_name = ipod_device_read_device_info_string(fd);
 	
 	fclose(fd);
@@ -1682,6 +1687,8 @@ ipod_device_save(IpodDevice *device, GError **error_out)
 	gchar *path, *itunes_dir;
 	gchar bs = 0;
 	GError *error = NULL;
+	size_t res;
+	gint intres;
 	
 	g_return_val_if_fail(IS_IPOD_DEVICE(device), FALSE);
 	
@@ -1723,11 +1730,12 @@ ipod_device_save(IpodDevice *device, GError **error_out)
 	fseek(fd, 0x200, SEEK_SET);
 	ipod_device_write_device_info_string(device->priv->user_name, fd);
 	
-	fseek(fd, 0x400, SEEK_SET);
+	intres = fseek(fd, 0x400, SEEK_SET);
 	ipod_device_write_device_info_string(device->priv->host_name, fd);
 	
-	fseek(fd, 0X5FF, SEEK_SET);
-	fwrite(&bs, 1, 1, fd);
+	intres = fseek(fd, 0X5FF, SEEK_SET);
+	/* FIXME: we do not check if the write was successful */
+	res = fwrite(&bs, 1, 1, fd);
 	
 	fclose(fd);
 	
