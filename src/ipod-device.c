@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-12-18 23:57:23 jcs>
+/* Time-stamp: <2006-01-03 13:40:04 jcs>
 |
 |  Copyright (C) 2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -529,19 +529,22 @@ ipod_device_set_property(GObject *object, guint prop_id,
 	gchar **volumes;
 	gint volume_count;
 
+	g_return_if_fail (device);
+
 	switch(prop_id) {
 		case PROP_MOUNT_POINT:
 		case PROP_DEVICE_PATH:
 		case PROP_HAL_VOLUME_ID:
+		    if (device->priv->hal_context)
+		    {
 			str = g_value_get_string(value);
 			volumes = libhal_manager_find_device_string_match(
-				device->priv->hal_context, "block.device", str, 
+				device->priv->hal_context, "block.device", str,
 				&volume_count, NULL);
-		
 			if(volume_count == 0) {
 				libhal_free_string_array(volumes);
 				volumes = libhal_manager_find_device_string_match(
-					device->priv->hal_context, "volume.mount_point", 
+					device->priv->hal_context, "volume.mount_point",
 					str, &volume_count, NULL);
 				
 				if(volume_count >= 1)
@@ -559,8 +562,9 @@ ipod_device_set_property(GObject *object, guint prop_id,
 /* end JCS for libgpod */
 #endif
 			device->priv->is_ipod = ipod_device_reload(device);
-			libhal_free_string_array(volumes);	
-			break;
+			libhal_free_string_array(volumes);
+		    }
+		    break;
 		case PROP_DEVICE_NAME:
 			str = g_value_get_string(value);
 			g_free_if_not_null(device->priv->device_name);
@@ -864,6 +868,7 @@ ipod_device_hal_initialize()
 	libhal_ctx_set_dbus_connection(hal_context, dbus_connection);
 	
 	if(!libhal_ctx_init(hal_context, &error)) {
+		dbus_error_free(&error);
 		libhal_ctx_free(hal_context);
 		return NULL;
 	}

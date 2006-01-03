@@ -1,3 +1,11 @@
+2005-01-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/ipod-device.c: (ipod_device_set_property) check hal_context
+	  before accessing it to avoid segfault when hald is not running.
+
+	  (ipod_device_hal_initialize) fixed memory leak: 'error' was not
+	  freed if libhal_ctx_init() failed.
+	
 2005-12-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/ipod-device.c: don't ignore return value of
