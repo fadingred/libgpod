@@ -5,6 +5,9 @@
 
 	  (ipod_device_hal_initialize) fixed memory leak: 'error' was not
 	  freed if libhal_ctx_init() failed.
+
+	  (ipod_device_get_model_index_from_table): fix warning about
+	  unused computed value (thanks to Martin Aumueller)
 	
 2005-12-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

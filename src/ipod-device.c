@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-01-03 13:40:04 jcs>
+/* Time-stamp: <2006-01-03 20:25:37 jcs>
 |
 |  Copyright (C) 2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1126,7 +1126,7 @@ ipod_device_get_model_index_from_table(const gchar *_model_num)
 	gchar *p = model_num;
 	
 	if(isalpha(model_num[0])) 
-		*p++;
+		p++;
 	
 	for(i = 2; ipod_model_table[i].model_number != NULL; i++) {
 		if(g_strncasecmp(p, ipod_model_table[i].model_number, 4) == 0) {
