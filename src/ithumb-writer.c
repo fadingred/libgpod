@@ -291,16 +291,16 @@ ithumb_writer_free (iThumbWriter *writer)
 }
 
 
+gint offset_sort (gconstpointer a, gconstpointer b);
+gint offset_sort (gconstpointer a, gconstpointer b)
+{
+    return (-(((Itdb_Thumb *)a)->offset - ((Itdb_Thumb *)b)->offset));
+}
+
 static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
 						 gpointer _thumbs,
 						 gpointer _user_data)
 {
-    auto gint offset_sort (gconstpointer a, gconstpointer b);
-    gint offset_sort (gconstpointer a, gconstpointer b)
-	{
-	    return (-(((Itdb_Thumb *)a)->offset - 
-		    ((Itdb_Thumb *)b)->offset));
-	}
     const gchar *filename = _key;
     GList *thumbs = _thumbs;
     gboolean *result = _user_data;

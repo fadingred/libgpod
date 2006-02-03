@@ -1395,17 +1395,19 @@ static glong find_mhsd (FContents *cts, guint32 type)
 
 
 
+gint pos_comp (gpointer a, gpointer b);
+gint pos_comp (gpointer a, gpointer b)
+{
+    return (GPOINTER_TO_UINT(a) - GPOINTER_TO_UINT(b));
+}
+
+
 /* Read and process the mhip at @seek. Return a pointer to the next
    possible mhip. */
 /* Return value: -1 if no mhip is present at @seek */
 static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 		       glong mhip_seek)
 {
-    auto gint pos_comp (gpointer a, gpointer b);
-    gint pos_comp (gpointer a, gpointer b)
-	{
-	    return (GPOINTER_TO_UINT(a) - GPOINTER_TO_UINT(b));
-	}
     gboolean first_entry = TRUE;
     FContents *cts;
     guint32 mhip_hlen, mhip_len, mhod_num, mhod_seek;
@@ -3229,6 +3231,69 @@ static gboolean write_playlist_mhips (FExport *fexp,
 }
 
 
+void free_memberlist (gpointer data);
+void write_one_podcast_group (gpointer key, gpointer value, gpointer userdata);
+void free_memberlist (gpointer data)
+{
+    GList **memberlist = data;
+    if (memberlist)
+    {
+	g_list_free (*memberlist);
+	g_free (memberlist);
+    }
+}
+void write_one_podcast_group (gpointer key, gpointer value,
+			      gpointer userdata)
+{
+    gchar *album = key;
+    GList **memberlist = value;
+    FExport *fexp = userdata;
+    GList *gl;
+    WContents *cts;
+    glong mhip_seek;
+    guint32 groupid;
+    Itdb_iTunesDB *itdb;
+    MHODData mhod;
+
+    g_return_if_fail (album);
+    g_return_if_fail (memberlist);
+    g_return_if_fail (fexp);
+    g_return_if_fail (fexp->itdb);
+    g_return_if_fail (fexp->itunesdb);
+
+    cts = fexp->itunesdb;
+    itdb = fexp->itdb;
+    mhip_seek = cts->pos;
+
+    groupid = fexp->next_id++;
+    mk_mhip (fexp, 1, 256, groupid, 0, 0, 0);
+
+    mhod.valid = TRUE;
+    mhod.type = MHOD_ID_TITLE;
+    mhod.data.string = album;
+    mk_mhod (cts, &mhod);
+    fix_header (cts, mhip_seek);
+
+    /* write members */
+    for (gl=*memberlist; gl; gl=gl->next)
+    {
+	Itdb_Track *track = gl->data;
+	guint32 mhip_id;
+
+	g_return_if_fail (track);
+
+	mhip_seek = cts->pos;
+	mhip_id = fexp->next_id++;
+	mk_mhip (fexp, 1, 0, mhip_id, track->id, 0, groupid);
+	mhod.type = MHOD_ID_PLAYLIST;
+	mhod.data.track_pos = mhip_id;
+	mk_mhod (cts, &mhod);
+	fix_header (cts, mhip_seek);
+    }
+}
+
+
+
 /* write out the mhip/mhod pairs for the podcast playlist
    @pl. @mhyp_seek points to the start of the corresponding mhyp, but
    is not used yet. */
@@ -3236,67 +3301,6 @@ static gboolean write_podcast_mhips (FExport *fexp,
 				     Itdb_Playlist *pl,
 				     glong mhyp_seek)
 {
-    auto void free_memberlist (gpointer data);
-    auto void write_one_podcast_group (gpointer key, gpointer value,
-				       gpointer userdata);
-    void free_memberlist (gpointer data)
-	{
-	    GList **memberlist = data;
-	    if (memberlist)
-	    {
-		g_list_free (*memberlist);
-		g_free (memberlist);
-	    }
-	}
-    auto void write_one_podcast_group (gpointer key, gpointer value,
-				       gpointer userdata)
-	{
-	    gchar *album = key;
-	    GList **memberlist = value;
-	    FExport *fexp = userdata;
-	    GList *gl;
-	    WContents *cts;
-	    glong mhip_seek;
-	    guint32 groupid;
-	    Itdb_iTunesDB *itdb;
-	    MHODData mhod;
-
-	    g_return_if_fail (album);
-	    g_return_if_fail (memberlist);
-	    g_return_if_fail (fexp);
-	    g_return_if_fail (fexp->itdb);
-	    g_return_if_fail (fexp->itunesdb);
-
-	    cts = fexp->itunesdb;
-	    itdb = fexp->itdb;
-	    mhip_seek = cts->pos;
-
-	    groupid = fexp->next_id++;
-	    mk_mhip (fexp, 1, 256, groupid, 0, 0, 0);
-
-	    mhod.valid = TRUE;
-	    mhod.type = MHOD_ID_TITLE;
-	    mhod.data.string = album;
-	    mk_mhod (cts, &mhod);
-	    fix_header (cts, mhip_seek);
-
-	    /* write members */
-	    for (gl=*memberlist; gl; gl=gl->next)
-	    {
-		Itdb_Track *track = gl->data;
-		guint32 mhip_id;
-
-		g_return_if_fail (track);
-
-		mhip_seek = cts->pos;
-		mhip_id = fexp->next_id++;
-		mk_mhip (fexp, 1, 0, mhip_id, track->id, 0, groupid);
-		mhod.type = MHOD_ID_PLAYLIST;
-		mhod.data.track_pos = mhip_id;
-		mk_mhod (cts, &mhod);
-		fix_header (cts, mhip_seek);
-	    }
-	}
     GList *gl;
     WContents *cts;
     guint32 mhip_num;

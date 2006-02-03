@@ -1,5 +1,12 @@
 2005-01-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* src/itdb_itunesdb.c, src/itdb_playlist.c, src/ithumb-writer.c:
+	  removed nested-functions. Thanks to Brian Jackson for the patch
+	  (he was not the only to send patches -- please, nobody feel
+	  offended that I didn't act sooner).
+
+2005-01-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* src/ipod-device.c: (ipod_device_set_property) check hal_context
 	  before accessing it to avoid segfault when hald is not running.
 
