@@ -1,4 +1,10 @@
-2005-01-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2005-02-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c: (itunesstats_read) Fixed error when reading
+	  the Shuffle's stat file (0x18 was used as minimal record length
+	  instead of decimal '18').
+
+2005-02-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c, src/itdb_playlist.c, src/ithumb-writer.c:
 	  removed nested-functions. Thanks to Brian Jackson for the patch

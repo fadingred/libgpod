@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-12-11 16:27:34 jcs>
+/* Time-stamp: <2006-02-04 12:04:25 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -701,7 +701,7 @@ static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 	struct playcount *playcount = g_new0 (struct playcount, 1);
 	guint32 entry_length = get24lint (cts, seek+0);
 	CHECK_ERROR (fimp, FALSE);
-	if (entry_length < 0x18)
+	if (entry_length < 18)
 	{
 	    g_set_error (&fimp->error,
 			 ITDB_FILE_ERROR,
