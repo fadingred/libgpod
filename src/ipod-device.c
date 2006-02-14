@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-01-03 20:25:37 jcs>
+/* Time-stamp: <2006-02-14 22:09:32 jcs>
 |
 |  Copyright (C) 2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -535,22 +535,24 @@ ipod_device_set_property(GObject *object, guint prop_id,
 		case PROP_MOUNT_POINT:
 		case PROP_DEVICE_PATH:
 		case PROP_HAL_VOLUME_ID:
-		    if (device->priv->hal_context)
-		    {
-			str = g_value_get_string(value);
-			volumes = libhal_manager_find_device_string_match(
+		        str = g_value_get_string(value);
+			if (device->priv->hal_context)
+			{
+			    volumes = libhal_manager_find_device_string_match(
 				device->priv->hal_context, "block.device", str,
 				&volume_count, NULL);
-			if(volume_count == 0) {
+			    if(volume_count == 0) {
 				libhal_free_string_array(volumes);
 				volumes = libhal_manager_find_device_string_match(
-					device->priv->hal_context, "volume.mount_point",
-					str, &volume_count, NULL);
+				    device->priv->hal_context, "volume.mount_point",
+				    str, &volume_count, NULL);
 				
 				if(volume_count >= 1)
-					str = volumes[0];
-			} else {
+				    str = volumes[0];
+			    } else {
 				str = volumes[0];
+			    }
+			    libhal_free_string_array(volumes);
 			}
 #ifdef HAVE_LIBHAL
 			g_free_if_not_null(device->priv->hal_volume_id);
@@ -562,9 +564,7 @@ ipod_device_set_property(GObject *object, guint prop_id,
 /* end JCS for libgpod */
 #endif
 			device->priv->is_ipod = ipod_device_reload(device);
-			libhal_free_string_array(volumes);
-		    }
-		    break;
+			break;
 		case PROP_DEVICE_NAME:
 			str = g_value_get_string(value);
 			g_free_if_not_null(device->priv->device_name);

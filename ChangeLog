@@ -2,6 +2,10 @@
 
 	* po/ja.po: updated Japanese catalog -- thanks to Kentaro Fukuchi
 
+	* src/ipod-device.c: (ipod_device_set_property): fixed bug that
+	  caused ipod-detection to fail if hal daemon was not running. As
+	  a consequence cover art was not written to the iPod.
+
 2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c: (itunesstats_read) Fixed error when reading
