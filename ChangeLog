@@ -1,4 +1,8 @@
-2005-02-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2005-02-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* po/ja.po: updated Japanese catalog -- thanks to Kentaro Fukuchi
+
+2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c: (itunesstats_read) Fixed error when reading
 	  the Shuffle's stat file (0x18 was used as minimal record length
