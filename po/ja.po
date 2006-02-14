@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gtkpod 0.40\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-14 21:51+0900\n"
-"PO-Revision-Date: 2005-06-20 23:25+0900\n"
+"POT-Creation-Date: 2006-02-11 08:51+0900\n"
+"PO-Revision-Date: 2006-02-14 16:42+0900\n"
 "Last-Translator: Kentaro Fukuchi <fukuchi@users.sourceforge.net>\n"
 "Language-Team: n/a\n"
 "MIME-Version: 1.0\n"
@@ -16,209 +16,277 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../src/itdb_itunesdb.c:313
+#: ../src/itdb_itunesdb.c:358
 #, c-format
 msgid "Illegal seek to offset %ld (length %ld) in file '%s'."
-msgstr ""
+msgstr "不正なシーク: '%3$s', オフセット %1%d, 長さ (%2$ld)"
 
-#: ../src/itdb_itunesdb.c:521
+#: ../src/itdb_itunesdb.c:604
 #, c-format
+#, fuzzy
 msgid "Not a Play Counts file: '%s' (missing mhdp header)."
-msgstr ""
+msgstr "再生回数ファイルではありません: '%s' (mhdp ヘッダが無い)"
 
-#: ../src/itdb_itunesdb.c:535
+#: ../src/itdb_itunesdb.c:618
 #, c-format
 msgid "Play Counts file ('%s'): header length smaller than expected (%d<96)."
-msgstr ""
+msgstr "再生回数ファイル ('%s'): ヘッダの長さが足りません。(%d<96)"
 
-#: ../src/itdb_itunesdb.c:548
+#: ../src/itdb_itunesdb.c:631
 #, c-format
 msgid "Play Counts file ('%s'): entry length smaller than expected (%d<12)."
-msgstr ""
+msgstr "再生回数ファイル ('%s'): エントリの長さが足りません。(%d<12)"
 
-#: ../src/itdb_itunesdb.c:803
+#: ../src/itdb_itunesdb.c:709
+#, c-format
+msgid "iTunesStats file ('%s'): entry length smaller than expected (%d<18)."
+msgstr "iTunesStats ファイル ('%s'): エントリの長さが足りません。(%d<18)"
+
+#: ../src/itdb_itunesdb.c:986
 #, c-format
 msgid "iTunesDB corrupt: no MHOD at offset %ld in file '%s'."
 msgstr ""
+"iTunesDB が壊れています: MHOD が見付かりません。(ファイル '%2$s', オフセット "
+"%1$ld)"
 
-#: ../src/itdb_itunesdb.c:923
+#: ../src/itdb_itunesdb.c:1128
 #, c-format
 msgid ""
 "Length of smart playlist rule field (%d) not as expected. Trying to continue "
 "anyhow.\n"
 msgstr ""
+"スマートプレイリストのルールの長さ (%d) が期待される長さと異なります。処理を"
+"続けます。\n"
 
-#: ../src/itdb_itunesdb.c:966
-msgid "Did not find SLst hunk as expected. Trying to continue.\n"
+#: ../src/itdb_itunesdb.c:1160
+#, c-format
+msgid "iTunesDB corrupt: no SLst at offset %ld in file '%s'."
 msgstr ""
+"iTunesDB が壊れています: SLst が見付かりません。(ファイル '%2$s', オフセット "
+"%1$ld)"
 
-#: ../src/itdb_itunesdb.c:972
+#: ../src/itdb_itunesdb.c:1173
 #, c-format
 msgid ""
 "Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n"
 "\n"
 msgstr ""
+"iTunesDB の読み込み中に、未知の MHOD タイプ (%d) を発見しました。無視しま"
+"す。\n"
+"\n"
 
-#: ../src/itdb_itunesdb.c:1053 ../src/itdb_itunesdb.c:1744
-#: ../src/itdb_itunesdb.c:1779
+#: ../src/itdb_itunesdb.c:1235
 #, c-format
 msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
 msgstr ""
+"iTunesDB が壊れています: hunk の長さが 0 です。(ファイル '%2$s', オフセット %"
+"1$ld)"
 
-#: ../src/itdb_itunesdb.c:1148
-msgid "Master-PL"
-msgstr ""
-
-#: ../src/itdb_itunesdb.c:1150
-msgid "Playlist"
-msgstr "プレイリスト"
-
-#: ../src/itdb_itunesdb.c:1175
+#: ../src/itdb_itunesdb.c:1248
 #, c-format
-msgid "iTunesDB corrupt: found mhyp at %ld in file '%s'."
+msgid ""
+"iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
 msgstr ""
+"iTunesDB が壊れています: %3$ld の位置にあるセクション '%2$s' の中にセクショ"
+"ン '%1$s' はありません。"
 
-#: ../src/itdb_itunesdb.c:1223
+#: ../src/itdb_itunesdb.c:1262
 #, c-format
-msgid "Itdb_Track ID '%d' not found.\n"
+msgid ""
+"header length of '%s' smaller than expected (%d < %d) at offset %ld in file "
+"'%s'."
 msgstr ""
+"'%s' のヘッダの長さが足りません ($d < %d) (ファイル '%5$s', オフセット %4$ld)"
 
-#: ../src/itdb_itunesdb.c:1487
-msgid "OTG Playlist"
-msgstr ""
-
-#: ../src/itdb_itunesdb.c:1501
+#: ../src/itdb_itunesdb.c:1343
 #, c-format
-msgid "Not a OTG playlist file: '%s' (missing mhpo header)."
+msgid "Not a iTunesDB: '%s' (missing mhdb header)."
+msgstr "iTunesDB ではありません: '%s' (mhdb ヘッダが無い)"
+
+#: ../src/itdb_itunesdb.c:1359
+#, c-format
+msgid ""
+"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). "
+"Aborting."
+msgstr "iTunesDB ('%s'): mhsd のヘッダの長さが足りません(%d<32)。中止します。"
+
+#: ../src/itdb_itunesdb.c:1380
+#, c-format
+msgid "iTunesDB '%s' corrupt: mhsd expected at %ld."
+msgstr "iTunesDB '%S' が壊れています: mhsd が %ld の位置に見付かりません。"
+
+#: ../src/itdb_itunesdb.c:1497
+#, c-format
+msgid "Number of MHODs in mhip at %ld inconsistent in file '%s'."
 msgstr ""
+"mhip の中の MHOD の数が食い違っています。(ファイル '%2$s', オフセット %1$ld)"
 
 #: ../src/itdb_itunesdb.c:1515
 #, c-format
-msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
+msgid "Itdb_Track ID '%d' not found.\n"
+msgstr "Itdb_Track ID '%d' が見付かりません。\n"
+
+#: ../src/itdb_itunesdb.c:1669
+#, c-format
+msgid "Number of MHODs in mhyp at %ld inconsistent in file '%s'."
+msgstr ""
+"mhyp の中の MHOD の数が食い違っています。(ファイル '%2$s', オフセット %1$ld)"
+
+#: ../src/itdb_itunesdb.c:1679
+msgid "Master-PL"
 msgstr ""
 
-#: ../src/itdb_itunesdb.c:1527
+#: ../src/itdb_itunesdb.c:1683
+msgid "Podcasts"
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:1685
+msgid "Playlist"
+msgstr "プレイリスト"
+
+#: ../src/itdb_itunesdb.c:1707
+#, c-format
+msgid ""
+"iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %"
+"ld in file '%s'."
+msgstr ""
+"iTunesDB が壊れています: mhyp の中の mhip セクションの数が食い違っています。"
+"(ファイル '%2$s', オフセット %1$ld)"
+
+#: ../src/itdb_itunesdb.c:1981
+msgid "OTG Playlist"
+msgstr "OTG プレイリスト"
+
+#: ../src/itdb_itunesdb.c:1995
+#, c-format
+msgid "Not a OTG playlist file: '%s' (missing mhpo header)."
+msgstr "OTG プレイリストのファイルではありません: '%s' (mhpo ヘッダが無い)"
+
+#: ../src/itdb_itunesdb.c:2009
+#, c-format
+msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
+msgstr "OTG プレイリストファイル ('%s'): ヘッダの長さが足りません。(%d<20)"
+
+#: ../src/itdb_itunesdb.c:2021
 #, c-format
 msgid ""
 "OTG playlist file file ('%s'): entry length smaller than expected (%d<4)."
-msgstr ""
+msgstr "OTG プレイリストファイル ('%s'): エントリの長さが足りません。(%d<4)"
 
-#: ../src/itdb_itunesdb.c:1562
+#: ../src/itdb_itunesdb.c:2056
 #, c-format
 msgid "OTG playlist file '%s': reference to non-existent track (%d)."
 msgstr ""
+"OTG プレイリストファイル ('%s'): 存在しない曲番号 (%d) への参照があります。"
 
-#: ../src/itdb_itunesdb.c:1607
+#: ../src/itdb_itunesdb.c:2101
 #, c-format
 msgid "OTG Playlist %d"
-msgstr ""
-
-#: ../src/itdb_itunesdb.c:1650
-#, c-format
-msgid "Not a iTunesDB: '%s' (missing mhdb header)."
-msgstr ""
-
-#: ../src/itdb_itunesdb.c:1666
-#, c-format
-msgid ""
-"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%ld<32). "
-"Aborting."
-msgstr ""
-
-#: ../src/itdb_itunesdb.c:1698
-#, c-format
-msgid "iTunesDB '%s' corrupt: already found two playlist mhsds -- giving up."
-msgstr ""
+msgstr "OTG プレイリスト %d"
 
 #. this should not be -- issue warning
-#: ../src/itdb_itunesdb.c:1759
+#: ../src/itdb_itunesdb.c:2169
 msgid ""
-"iTunesDB possibly corrupt: number of tracks (mhit hunks) inconsistent. "
-"Trying to continue.\n"
+"iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to "
+"continue.\n"
 msgstr ""
+"iTunesDB が壊れています: 曲数 (mhit の数) が食い違っています。処理を続けま"
+"す。\n"
 
 #. this should not be -- issue warning
-#: ../src/itdb_itunesdb.c:1841
+#: ../src/itdb_itunesdb.c:2232
 msgid ""
 "iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. "
 "Trying to continue.\n"
 msgstr ""
+"iTunesDB が多分壊れています: プレイリストの数 (mhyp の数) が食い違っていま"
+"す。処理を続けます。\n"
 
-#: ../src/itdb_itunesdb.c:1879
+#: ../src/itdb_itunesdb.c:2279
+#, c-format
+msgid ""
+"iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section "
+"found)"
+msgstr ""
+"iTunesDB '%s' が壊れています: 曲リストが見付かりません。(mhsd タイプ 1 セク"
+"ションが見付からない)"
+
+#: ../src/itdb_itunesdb.c:2297
+#, c-format
+msgid ""
+"iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 "
+"sections found)"
+msgstr ""
+"iTunesDB '%s' が壊れています: プレイリストが見付かりません。(mhsd タイプ 2 "
+"と タイプ 3 のセクションが見付からない)"
+
+#: ../src/itdb_itunesdb.c:2356
 #, c-format
 msgid "File not found: '%s'."
 msgstr "ファイルが見つかりません: '%s'"
 
-#: ../src/itdb_itunesdb.c:2396
+#: ../src/itdb_itunesdb.c:2939
 #, c-format
 msgid "Cannot write mhod of type %d\n"
-msgstr ""
+msgstr "mhod タイプ %d が書き込めません。\n"
 
-#: ../src/itdb_itunesdb.c:2522 ../src/itdb_itunesdb.c:2635
-msgid "Database in memory corrupt (track pointer == NULL). Aborting export."
-msgstr ""
-
-#: ../src/itdb_itunesdb.c:2678
-msgid "Database in memory corrupt (playlist pointer == NULL). Aborting export."
-msgstr ""
-
-#: ../src/itdb_itunesdb.c:2718
+#: ../src/itdb_itunesdb.c:3485
 #, c-format
 msgid "Opening of '%s' for writing failed."
-msgstr "'%s' を書き込みのために開けません。"
+msgstr "'%s' を書き込み用に開くことができません。"
 
-#: ../src/itdb_itunesdb.c:2729
+#: ../src/itdb_itunesdb.c:3496
 #, c-format
 msgid "Writing to '%s' failed."
 msgstr "'%s'の書き込みに失敗しました。"
 
-#: ../src/itdb_itunesdb.c:2740
+#: ../src/itdb_itunesdb.c:3507
 #, c-format
 msgid "Writing to '%s' failed (%s)."
 msgstr "'%s'の書き込みに失敗しました。(%s)"
 
-#: ../src/itdb_itunesdb.c:2881 ../src/itdb_itunesdb.c:3052
-#: ../src/itdb_itunesdb.c:3245 ../src/itdb_itunesdb.c:3451
+#: ../src/itdb_itunesdb.c:3679 ../src/itdb_itunesdb.c:3841
+#: ../src/itdb_itunesdb.c:4029 ../src/itdb_itunesdb.c:4265
 #, c-format
 msgid "Path not found: '%s'."
 msgstr "パスが見つかりません: '%s'"
 
-#: ../src/itdb_itunesdb.c:3265
+#: ../src/itdb_itunesdb.c:4050
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s)."
-msgstr "'%s'を'%s'に変更することができません。(%s)"
+msgstr "'%s' を '%s' に変更することができません。(%s)"
 
-#: ../src/itdb_itunesdb.c:3282
+#: ../src/itdb_itunesdb.c:4067 ../src/itdb_itunesdb.c:4084
 #, c-format
 msgid "Error removing '%s' (%s)."
-msgstr "'%s'の削除中にエラーが発生しました。(%s)"
+msgstr "'%s' の削除中にエラーが発生しました。(%s)"
 
-#: ../src/itdb_itunesdb.c:3426
+#: ../src/itdb_itunesdb.c:4240
 #, c-format
 msgid "No 'F..' directories found in '%s'."
-msgstr ""
+msgstr "'F..' ディレクトリが '%s' の中にありません。"
 
-#: ../src/itdb_itunesdb.c:3589
+#: ../src/itdb_itunesdb.c:4403
 #, c-format
 msgid "Error opening '%s' for reading (%s)."
-msgstr "'%s' を読み込みのために開くことができません。(%s)"
+msgstr "'%s' を読み込み用に開くことができません。(%s)"
 
-#: ../src/itdb_itunesdb.c:3600
+#: ../src/itdb_itunesdb.c:4414
 #, c-format
 msgid "Error opening '%s' for writing (%s)."
-msgstr "'%s' を書き込みのために開くことができません。(%s)"
+msgstr "'%s' を書き込み用に開くことができません。(%s)"
 
-#: ../src/itdb_itunesdb.c:3617
+#: ../src/itdb_itunesdb.c:4431
 #, c-format
 msgid "Error while reading from '%s' (%s)."
 msgstr "'%s' の読み込み中にエラーが発生しました。(%s)"
 
-#: ../src/itdb_itunesdb.c:3633
+#: ../src/itdb_itunesdb.c:4447
 #, c-format
 msgid "Error while writing to '%s' (%s)."
 msgstr "'%s' の書き込み中にエラーが発生しました。(%s)"
 
-#: ../src/itdb_itunesdb.c:3646 ../src/itdb_itunesdb.c:3656
+#: ../src/itdb_itunesdb.c:4460 ../src/itdb_itunesdb.c:4470
 #, c-format
 msgid "Error when closing '%s' (%s)."
 msgstr "'%s' を閉じる際にエラーが発生しました。(%s)"
@@ -227,4 +295,4 @@ msgstr "'%s' を閉じる際にエラーが発生しました。(%s)"
 #: ../src/itdb_playlist.c:71
 #, c-format
 msgid "Unknown action (%d) in smart playlist will be ignored.\n"
-msgstr ""
+msgstr "スマートプレイリスト内の未知のアクション (%d) は無視されます。\n"
