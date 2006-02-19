@@ -1,5 +1,12 @@
 2005-02-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+        * libgpod-1.0.pc: added gobject-2.0 to 'Requires:' list
+
+	* src/db-itunes-parser.h: add '#pragma pack(4)' to fix 64bit issue
+	  with padding (at least as a temporary fix).
+
+2005-02-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* po/ja.po: updated Japanese catalog -- thanks to Kentaro Fukuchi
 
 	* src/ipod-device.c: (ipod_device_set_property): fixed bug that

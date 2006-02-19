@@ -29,6 +29,12 @@
 #include <glib.h>
 /*#include "ipod-db-parser.h"*/
 
+/* Make sure that 64bit integers do not get padded */
+/* FIXME: Obviously, this could also affect 16bit and 32bit integers,
+   but so far all 32bit inters seem to be aligned correctly without
+   padding. */
+#pragma pack(4)
+
 #define ITUNESDB_MAX_SIZE 10 * 1024 * 1024
 
 struct _MHeader {
