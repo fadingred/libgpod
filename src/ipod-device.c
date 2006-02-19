@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-02-14 22:09:32 jcs>
+/* Time-stamp: <2006-02-19 19:41:56 jcs>
 |
 |  Copyright (C) 2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -169,6 +169,7 @@ static const IpodModel ipod_model_table [] = {
 	
 	/* HP iPods, need contributions for this table */
 	{"E436", 40 * GB, MODEL_TYPE_REGULAR, FOURTH_GENERATION},
+	{"S492", 30 * GB, MODEL_TYPE_COLOR, FOURTH_GENERATION},
 	
 	{NULL, 0, 0, 0}
 };
