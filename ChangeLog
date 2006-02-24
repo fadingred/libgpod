@@ -1,3 +1,8 @@
+2005-02-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* configure.ac, po/es.po: added Spanish translation catalog
+	  (thanks to Azael Avalos)
+
 2005-02-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * libgpod-1.0.pc: added gobject-2.0 to 'Requires:' list

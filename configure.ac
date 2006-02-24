@@ -99,7 +99,7 @@ AC_DEFINE_UNQUOTED([UNMOUNT_COMMAND], ["${unmount_command}"], [unmount command])
 dnl **************************************************
 dnl * internationalization support
 dnl **************************************************
-ALL_LINGUAS="de fr he it ja sv"
+ALL_LINGUAS="de es fr he it ja sv"
 
 GETTEXT_PACKAGE=libgpod
 AC_SUBST(GETTEXT_PACKAGE)
