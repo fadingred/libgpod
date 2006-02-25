@@ -44,7 +44,7 @@ PyObject* sw_get_tracks(Itdb_iTunesDB *itdb) {
   GList       *l;
   list = PyList_New(g_list_length(itdb->tracks));
   for (l = itdb->tracks, i = 0; l; l = l->next, ++i) {
-    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data), SWIGTYPE_p_Itdb_Track, 0));
+    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data), SWIGTYPE_p__Itdb_Track, 0));
   }
   return list;
  }
@@ -55,7 +55,7 @@ PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl) {
   GList       *l;
   list = PyList_New(g_list_length(pl->members));
   for (l = pl->members, i = 0; l; l = l->next, ++i) {
-    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data), SWIGTYPE_p_Itdb_Track, 0));
+    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data), SWIGTYPE_p__Itdb_Track, 0));
   }
   return list;
  }
@@ -66,7 +66,7 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb) {
   GList       *l;
   list = PyList_New(g_list_length(itdb->playlists));
   for (l = itdb->playlists, i = 0; l; l = l->next, ++i) {
-    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data), SWIGTYPE_p_Itdb_Playlist, 0));
+    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data), SWIGTYPE_p__Itdb_Playlist, 0));
   }
   return list;
  }
