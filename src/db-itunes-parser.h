@@ -29,12 +29,6 @@
 #include <glib.h>
 /*#include "ipod-db-parser.h"*/
 
-/* Make sure that 64bit integers do not get padded */
-/* FIXME: Obviously, this could also affect 16bit and 32bit integers,
-   but so far all 32bit inters seem to be aligned correctly without
-   padding. */
-#pragma pack(4)
-
 #define ITUNESDB_MAX_SIZE 10 * 1024 * 1024
 
 struct _MHeader {
@@ -529,7 +523,12 @@ struct _MhiiHeader {
 	gint32 unknown8;
 	gint32 orig_img_size;
 	unsigned char padding[];
-};
+} __attribute__((__packed__));
+/* I we don't put the 'packed' attribute above, some 64 bit systems
+ * will pad the 64 bit integer to be aligned to an 8-byte boundary.
+ * Hopefully there won't be any systems around that crash when
+ * accessing 64 bit integers not aligned to 8-byte boundaries. */
+
 
 struct _MhniHeader {
 	unsigned char header_id[4];

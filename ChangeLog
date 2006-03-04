@@ -1,3 +1,14 @@
+2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* configure.ac: bumped version to 0.3.2 for release.
+
+	* db-artwork-writer.c: increased IPOD_MMAP_SIZE from 2 to 16 MB as
+	  a temporary workaround until a propoer solution can be
+	  implemented.
+
+	* db-itunes-parser.h: replaced the #pragma pack(4) with an
+	  'packed' attribute on _MhiiHeader only.
+
 2005-02-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* ipod-device.c: (ipod_device_set_property): fixed possible

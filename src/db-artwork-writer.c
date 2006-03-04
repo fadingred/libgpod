@@ -41,7 +41,11 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#define IPOD_MMAP_SIZE 2 * 1024 * 1024
+/* FIXME: Writing aborts if a file exceeds the following size because
+   the mremap() further down will fail (at least most of the time on
+   most systems). As a workaround the size was increased from 2 MB to
+   16 MB. */
+#define IPOD_MMAP_SIZE 16 * 1024 * 1024
 
 struct iPodMmapBuffer {
 	int fd;
