@@ -1,5 +1,9 @@
 2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* configure.ac: bumped version to 0.3.3 for new CVS version.
+
+	* RELEASED libgpod 0.3.2
+
 	* configure.ac: bumped version to 0.3.2 for release.
 
 	* db-artwork-writer.c: increased IPOD_MMAP_SIZE from 2 to 16 MB as
