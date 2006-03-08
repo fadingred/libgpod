@@ -56,25 +56,40 @@ LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
 dnl **************************************************
 dnl * GDKPIXBUF is optional
 dnl **************************************************
+
+AC_ARG_ENABLE(gdk-pixbuf, [AC_HELP_STRING([--disable-gdk-pixbuf],[ArtworkDB will be disabled without gdk-pixbuf])], 
+[case "${enableval}" in
+  no) have_gdkpixbuf=no ;;
+  *) have_gdkpixbuf=yes;;
+esac], have_gdkpixbuf=yes)
 AH_TEMPLATE([HAVE_GDKPIXBUF], [Whether gdk-pixbuf is installed, ArtworkDB writing support will be disabled if it can't be found])
-PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-2.0, have_gdkpixbuf=yes, have_gdkpibux=no)
-AM_CONDITIONAL(HAVE_GDKPIXBUF, test x"$have_gdkpixbuf" = xyes)
-if test x"$have_gdkpixbuf" = xyes; then
-   AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF, 1)
+if test x$have_gdkpixbuf = xyes; then
+   PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-2.0, have_gdkpixbuf=yes, have_gdkpixbuf=no)
+   if test x"$have_gdkpixbuf" = xyes; then
+      AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF, 1)
+   fi
+   LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $GDKPIXBUF_CFLAGS"
+   LIBGPOD_LIBS="$LIBGPOD_LIBS $GDKPIXBUF_LIBS"
 fi
-LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $GDKPIXBUF_CFLAGS"
-LIBGPOD_LIBS="$LIBGPOD_LIBS $GDKPIXBUF_LIBS"
+AM_CONDITIONAL(HAVE_GDKPIXBUF, test x"$have_gdkpixbuf" = xyes)
 
 dnl **************************************************
 dnl * hal is optional
 dnl **************************************************
 
-PKG_CHECK_MODULES(HAL, dbus-1 dbus-glib-1 hal >= 0.5.2 hal < 0.6, enable_hal05=yes, enable_hal05=no)
-if test x$enable_hal05 == xyes; then
-   AC_DEFINE_UNQUOTED(HAVE_LIBHAL, 1, [Whether HAL is available or not])
+AC_ARG_ENABLE(hal, [AC_HELP_STRING([--enable-hal],[support hal])], 
+[case "${enableval}" in
+  no) enable_hal05=no ;;
+  *) enable_hal05=yes;;
+esac], enable_hal05=no)
+if test x$enable_hal05 = xyes; then
+   PKG_CHECK_MODULES(HAL, dbus-1 dbus-glib-1 hal >= 0.5.2 hal < 0.6, enable_hal05=yes, enable_hal05=no)
+   if test x$enable_hal05 = xyes; then
+      AC_DEFINE_UNQUOTED(HAVE_LIBHAL, 1, [Whether HAL is available or not])
+   fi
+   LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $HAL_CFLAGS"
+   LIBGPOD_LIBS="$LIBGPOD_LIBS $HAL_LIBS"
 fi
-LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $HAL_CFLAGS"
-LIBGPOD_LIBS="$LIBGPOD_LIBS $HAL_LIBS"
 
 dnl **************************************************
 dnl * necessary for the HAL libipoddevice code

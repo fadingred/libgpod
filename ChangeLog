@@ -1,5 +1,10 @@
 2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* configure.ac: enable/disable switches for gdk and hal. Thanks to
+	  Olivier Crête
+
+2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* configure.ac: bumped version to 0.3.3 for new CVS version.
 
 	* RELEASED libgpod 0.3.2
