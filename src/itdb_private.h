@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-15 22:14:26 jcs>
+/* Time-stamp: <2006-03-03 22:55:59 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -59,6 +59,9 @@ typedef struct
     gchar *contents;
     gsize length;
     GError *error;
+    /* indicate that endian order is reversed as in the case of the
+       iTunesDBs for mobile phones */
+    gboolean reversed;
 } FContents;
 
 

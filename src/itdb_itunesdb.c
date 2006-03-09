@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-02-14 22:10:45 jcs>
+/* Time-stamp: <2006-03-04 00:55:13 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -219,6 +219,7 @@ static FContents *fcontents_read (const gchar *fname, GError **error)
     g_return_val_if_fail (fname, NULL);
 
     cts = g_new0 (FContents, 1);
+    cts->reversed = FALSE;
 
     if (g_file_get_contents (fname, &cts->contents, &cts->length, error))
     {
@@ -394,6 +395,27 @@ static gboolean cmp_n_bytes_seek (FContents *cts, const gchar *data,
 }
 
 
+/* Compare 4 bytes of @header with 4 bytes at @seek taking into
+ * consideration the status of cts->reversed */
+static gboolean check_header_seek (FContents *cts, const gchar *data,
+				   glong seek)
+{
+    gchar rdata[4];
+    gint i;
+
+    /* reverse data for compare if necessary */
+    for (i=0; i<4; ++i)
+    {
+	if (cts->reversed)
+	    rdata[i] = data[3-i];
+	else
+	    rdata[i] = data[i];
+    }
+
+    return cmp_n_bytes_seek (cts, rdata, seek, 4);
+}
+
+
 /* Returns the 1-byte number stored at position @seek. On error the
  * GError in @cts is set. */
 static guint8 get8int (FContents *cts, glong seek)
@@ -409,7 +431,7 @@ static guint8 get8int (FContents *cts, glong seek)
 
 /* Get the 2-byte-number stored at position "seek" in little endian
    encoding. On error the GError in @cts is set. */
-static guint16 get16lint (FContents *cts, glong seek)
+static guint16 raw_get16lint (FContents *cts, glong seek)
 {
     guint16 n=0;
 
@@ -424,7 +446,7 @@ static guint16 get16lint (FContents *cts, glong seek)
 
 /* Get the 3-byte-number stored at position "seek" in little endian
    encoding. On error the GError in @cts is set. */
-static guint32 get24lint (FContents *cts, glong seek)
+static guint32 raw_get24lint (FContents *cts, glong seek)
 {
     guint32 n=0;
 
@@ -440,7 +462,7 @@ static guint32 get24lint (FContents *cts, glong seek)
 
 /* Get the 4-byte-number stored at position "seek" in little endian
    encoding. On error the GError in @cts is set. */
-static guint32 get32lint (FContents *cts, glong seek)
+static guint32 raw_get32lint (FContents *cts, glong seek)
 {
     guint32 n=0;
 
@@ -454,7 +476,7 @@ static guint32 get32lint (FContents *cts, glong seek)
 }
 
 /* Get 4 byte floating number */
-static float get32lfloat (FContents *cts, glong seek)
+static float raw_get32lfloat (FContents *cts, glong seek)
 {
     union
     {
@@ -464,30 +486,15 @@ static float get32lfloat (FContents *cts, glong seek)
 
     g_return_val_if_fail (sizeof (float) == 4, 0);
 
-    flt.i = get32lint (cts, seek);
+    flt.i = raw_get32lint (cts, seek);
 
     return flt.f;
 }
 
 
-/* Get the 4-byte-number stored at position "seek" in big endian
-   encoding. On error the GError in @cts is set. */
-static guint32 get32bint (FContents *cts, glong seek)
-{
-    guint32 n=0;
-
-    if (check_seek (cts, seek, 4))
-    {
-	g_return_val_if_fail (cts->contents, 0);
-	memcpy (&n, &cts->contents[seek], 4);
-	n = GUINT32_FROM_BE (n);
-    }
-    return n;
-}
-
 /* Get the 8-byte-number stored at position "seek" in little endian
    encoding. On error the GError in @cts is set. */
-static guint64 get64lint (FContents *cts, glong seek)
+static guint64 raw_get64lint (FContents *cts, glong seek)
 {
     guint64 n=0;
 
@@ -501,9 +508,71 @@ static guint64 get64lint (FContents *cts, glong seek)
 }
 
 
+/* Get the 2-byte-number stored at position "seek" in little endian
+   encoding. On error the GError in @cts is set. */
+static guint16 raw_get16bint (FContents *cts, glong seek)
+{
+    guint16 n=0;
+
+    if (check_seek (cts, seek, 2))
+    {
+	g_return_val_if_fail (cts->contents, 0);
+	memcpy (&n, &cts->contents[seek], 2);
+	n = GUINT16_FROM_BE (n);
+    }
+    return n;
+}
+
+/* Get the 3-byte-number stored at position "seek" in big endian
+   encoding. On error the GError in @cts is set. */
+static guint32 raw_get24bint (FContents *cts, glong seek)
+{
+    guint32 n=0;
+
+    if (check_seek (cts, seek, 3))
+    {
+	g_return_val_if_fail (cts->contents, 0);
+	n = ((guint32)get8int (cts, seek+2)) +
+	    (((guint32)get8int (cts, seek+1)) >> 8) +
+	    (((guint32)get8int (cts, seek+0)) >> 16);
+    }
+    return n;
+}
+
+/* Get the 4-byte-number stored at position "seek" in big endian
+   encoding. On error the GError in @cts is set. */
+static guint32 raw_get32bint (FContents *cts, glong seek)
+{
+    guint32 n=0;
+
+    if (check_seek (cts, seek, 4))
+    {
+	g_return_val_if_fail (cts->contents, 0);
+	memcpy (&n, &cts->contents[seek], 4);
+	n = GUINT32_FROM_BE (n);
+    }
+    return n;
+}
+
+/* Get 4 byte floating number */
+static float raw_get32bfloat (FContents *cts, glong seek)
+{
+    union
+    {
+	guint32 i;
+	float   f;
+    } flt;
+
+    g_return_val_if_fail (sizeof (float) == 4, 0);
+
+    flt.i = raw_get32bint (cts, seek);
+
+    return flt.f;
+}
+
 /* Get the 8-byte-number stored at position "seek" in big endian
    encoding. On error the GError in @cts is set. */
-static guint64 get64bint (FContents *cts, glong seek)
+static guint64 raw_get64bint (FContents *cts, glong seek)
 {
     guint64 n=0;
 
@@ -515,6 +584,103 @@ static guint64 get64bint (FContents *cts, glong seek)
     }
     return n;
 }
+
+
+/* The following functions take into consideration the state of
+ * cts->reversed and call either raw_getnnlint or raw_getnnbint */
+static guint16 get16lint (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get16lint (cts, seek);
+    else
+	return raw_get16bint (cts, seek);
+}
+
+#if 0
+static guint16 get16bint (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get16bint (cts, seek);
+    else
+	return raw_get16lint (cts, seek);
+}
+#endif
+static guint32 get24lint (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get24lint (cts, seek);
+    else
+	return raw_get24bint (cts, seek);
+}
+#if 0
+static guint32 get24bint (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get24bint (cts, seek);
+    else
+	return raw_get24lint (cts, seek);
+}
+#endif
+static guint32 get32lint (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get32lint (cts, seek);
+    else
+	return raw_get32bint (cts, seek);
+}
+
+static guint32 get32bint (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get32bint (cts, seek);
+    else
+	return raw_get32lint (cts, seek);
+}
+
+static float get32lfloat (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get32lfloat (cts, seek);
+    else
+	return raw_get32bfloat (cts, seek);
+}
+#if 0
+static float get32bfloat (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get32bfloat (cts, seek);
+    else
+	return raw_get32lfloat (cts, seek);
+}
+#endif
+static guint64 get64lint (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get64lint (cts, seek);
+    else
+	return raw_get64bint (cts, seek);
+}
+
+static guint64 get64bint (FContents *cts, glong seek)
+{
+    g_return_val_if_fail (cts, 0);
+    if (!cts->reversed)
+	return raw_get64bint (cts, seek);
+    else
+	return raw_get64lint (cts, seek);
+}
+
+
+
 
 /* Fix little endian UTF16 String to correct byteorder if necessary
  * (all strings in the Itdb_iTunesDB are little endian except for the ones
@@ -589,7 +755,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
     g_return_val_if_fail (fimp, FALSE);
     g_return_val_if_fail (cts, FALSE);
 
-    if (!cmp_n_bytes_seek (cts, "mhdp", 0, 4))
+    if (!check_header_seek (cts, "mhdp", 0))
     {
 	if (cts->error)
 	{
@@ -927,7 +1093,7 @@ static gint32 get_mhod_type (FContents *cts, glong seek, guint32 *ml)
 
     if (ml) *ml = -1;
 
-    if (cmp_n_bytes_seek (cts, "mhod", seek, 4))
+    if (check_header_seek (cts, "mhod", seek))
     {
 	guint32 len = get32lint (cts, seek+8);    /* total length */
 	if (cts->error) return -1;
@@ -960,6 +1126,7 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
   gint32 xl;
   guint32 mhod_len;
   gint32 header_length;
+  guint32 string_type;
   gulong seek;
 
   result.valid = FALSE;
@@ -988,8 +1155,12 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
       }
       return result;
   }
+
+  if (!check_seek (cts, mhod_seek, mhod_len))
+      return result;
+
+
   header_length = get32lint (cts, mhod_seek+4); /* header length  */
-  if (cts->error) return result;
 
   seek = mhod_seek + header_length;
 
@@ -1004,7 +1175,6 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
   case MHOD_ID_PLAYLIST:
       /* return the position indicator */
       result.data.track_pos = get32lint (cts, mhod_seek+24);
-      if (cts->error) return result;  /* *ml==-1, result.valid==FALSE */
       break;
   case MHOD_ID_TITLE:
   case MHOD_ID_PATH:
@@ -1018,28 +1188,40 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
   case MHOD_ID_GROUPING:
   case MHOD_ID_DESCRIPTION:
   case MHOD_ID_SUBTITLE:
+      /* type of string: 0x02: UTF8, 0x01 or 0x00: UTF16 LE */
+      string_type = get32lint (cts, seek);
       xl = get32lint (cts, seek+4);   /* length of string */
-      if (cts->error) return result;  /* *ml==-1, result.valid==FALSE */
       g_return_val_if_fail (xl < G_MAXUINT - 2, result);
-      entry_utf16 = g_new0 (gunichar2, (xl+2)/2);
-      if (seek_get_n_bytes (cts, (gchar *)entry_utf16, seek+16, xl))
+      if (string_type != 0x02)
       {
-	  fixup_little_utf16 (entry_utf16);
-	  result.data.string = g_utf16_to_utf8 (entry_utf16, -1,
-					   NULL, NULL, NULL);
-	  g_free (entry_utf16);
+	  entry_utf16 = g_new0 (gunichar2, (xl+2)/2);
+	  if (seek_get_n_bytes (cts, (gchar *)entry_utf16, seek+16, xl))
+	  {
+	      fixup_little_utf16 (entry_utf16);
+	      result.data.string = g_utf16_to_utf8 (entry_utf16, -1,
+						    NULL, NULL, NULL);
+	      g_free (entry_utf16);
+	  }
+	  else
+	  {   /* error */
+	      g_free (entry_utf16);
+	      return result;  /* *ml==-1, result.valid==FALSE */
+	  }
       }
       else
-      {   /* error */
-	  g_free (entry_utf16);
-	  return result;  /* *ml==-1, result.valid==FALSE */
+      {
+	  result.data.string = g_new0 (gchar, xl+1);
+	  if (!seek_get_n_bytes (cts, result.data.string, seek+16, xl))
+	  {   /* error */
+	      g_free (entry_utf16);
+	      return result;  /* *ml==-1, result.valid==FALSE */
+	  }
       }
       break;
   case MHOD_ID_PODCASTURL:
   case MHOD_ID_PODCASTRSS:
       /* length of string */
       xl = mhod_len - header_length;
-      if (cts->error) return result;  /* *ml==-1, result.valid==FALSE */
       g_return_val_if_fail (xl < G_MAXUINT - 1, result);
       result.data.string = g_new0 (gchar, xl+1);
       if (!seek_get_n_bytes (cts, result.data.string, seek, xl))
@@ -1075,7 +1257,7 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 	  result.data.splpref->limitsort |= 0x80000000;
       break;
   case MHOD_ID_SPLRULES:  /* Rules for smart playlist */
-      if (cmp_n_bytes_seek (cts, "SLst", seek, 4))
+      if (check_header_seek (cts, "SLst", seek))
       {
 	  /* !!! for some reason the SLst part is the only part of the
 	     iTunesDB with big-endian encoding, including UTF16
@@ -1307,7 +1489,7 @@ static glong find_next_a_in_b (FContents *cts,
 /* 	printf ("offset: %lx, b_len: %lx, bseek+offset: %lx\n",  */
 /* 		offset, b_len, b_seek+offset); */
     } while ((offset < b_len-4) && 
-	     !cmp_n_bytes_seek (cts, a, b_seek+offset, 4));
+	     !check_header_seek (cts, a, b_seek+offset));
     if (cts->error) return -1;
 
     if (offset >= b_len)	return -1;
@@ -1333,17 +1515,21 @@ static glong find_mhsd (FContents *cts, guint32 type)
     guint32 i, len, mhsd_num;
     glong seek;
 
-    if (!cmp_n_bytes_seek (cts, "mhbd", 0, 4))
+    if (!check_header_seek (cts, "mhbd", 0))
     {
-	if (!cts->error)
-	{   /* set error */
-	    g_set_error (&cts->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_CORRUPT,
-			 _("Not a iTunesDB: '%s' (missing mhdb header)."),
-			 cts->filename);
+	cts->reversed = TRUE;
+	if (!check_header_seek (cts, "mhbd", 0))
+	{
+	    if (!cts->error)
+	    {   /* set error */
+		g_set_error (&cts->error,
+			     ITDB_FILE_ERROR,
+			     ITDB_FILE_ERROR_CORRUPT,
+			     _("Not a iTunesDB: '%s' (missing mhdb header)."),
+			     cts->filename);
+	    }
+	    return 0;
 	}
-	return 0;
     }
     len = get32lint (cts, 4);
     if (cts->error) return 0;
@@ -1370,7 +1556,7 @@ static glong find_mhsd (FContents *cts, guint32 type)
 	guint32 mhsd_type;
 
 	seek += len;
-	if (!cmp_n_bytes_seek (cts, "mhsd", seek, 4))
+	if (!check_header_seek (cts, "mhsd", seek))
 	{
 	    if (!cts->error)
 	    {   /* set error */
@@ -1422,7 +1608,7 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 
     cts = fimp->itunesdb;
 
-    if (!cmp_n_bytes_seek (cts, "mhip", mhip_seek, 4))
+    if (!check_header_seek (cts, "mhip", mhip_seek))
     {
 	CHECK_ERROR (fimp, -1);
 	return -1;
@@ -1551,7 +1737,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 
   cts = fimp->itunesdb;
 
-  if (!cmp_n_bytes_seek (cts, "mhyp", mhyp_seek, 4))
+  if (!check_header_seek (cts, "mhyp", mhyp_seek))
   {
       if (cts->error)
 	  g_propagate_error (&fimp->error, cts->error);
@@ -1583,7 +1769,10 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 
   /* Some Playlists have added 256 to their type -- I don't know what
      it's for, so we just ignore it for now -> & 0xff */
-  plitem->type = get32lint (cts, mhyp_seek+20) & 0xff;
+  plitem->type = get8int (cts, mhyp_seek+20);
+  plitem->flag1 = get8int (cts, mhyp_seek+20);
+  plitem->flag2 = get8int (cts, mhyp_seek+20);
+  plitem->flag3 = get8int (cts, mhyp_seek+20);
   plitem->timestamp = get32lint (cts, mhyp_seek+24);
   plitem->id = get64lint (cts, mhyp_seek+28);
   plitem->mhodcount = get32lint (cts, mhyp_seek+36);
@@ -1741,7 +1930,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 
   cts = fimp->itunesdb;
 
-  if (!cmp_n_bytes_seek (cts, "mhit", seek, 4))
+  if (!check_header_seek (cts, "mhit", seek))
   {
       if (cts->error)
 	  g_propagate_error (&fimp->error, cts->error);
@@ -1776,10 +1965,12 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 
   if (header_len >= 0x9c)
   {
+      guint32 val32;
       track->id = get32lint(cts, seek+16);         /* iPod ID          */
       track->visible = get32lint (cts, seek+20);
       seek_get_n_bytes (cts, track->filetype_marker, seek+24, 4);
-      track->type = get16lint (cts, seek+28);
+      track->type1 = get8int (cts, seek+28);
+      track->type2 = get8int (cts, seek+29);
       track->compilation = get8int (cts, seek+30);
       track->rating = get8int (cts, seek+31);
       track->time_added = get32lint(cts, seek+32); /* time added       */
@@ -1789,8 +1980,9 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->tracks = get32lint(cts, seek+48);     /* nr of tracks     */
       track->year = get32lint(cts, seek+52);       /* year             */
       track->bitrate = get32lint(cts, seek+56);    /* bitrate          */
-      track->unk060 = get32lint(cts, seek+60);     /* unknown          */
-      track->samplerate = get16lint(cts,seek+62);  /* sample rate      */
+      val32 = get32lint (cts, seek+60);
+      track->samplerate = val32 >> 16;             /* sample rate      */
+      track->samplerate_low = val32 & 0xffff;      /* remaining bits   */
       track->volume = get32lint(cts, seek+64);     /* volume adjust    */
       track->starttime = get32lint (cts, seek+68);
       track->stoptime = get32lint (cts, seek+72);
@@ -1980,22 +2172,26 @@ static gboolean process_OTG_file (FImport *fimp, FContents *cts,
 
     if (!plname) plname = _("OTG Playlist");
 
-    if (!cmp_n_bytes_seek (cts, "mhpo", 0, 4))
+    if (!check_header_seek (cts, "mhpo", 0))
     {
 	if (cts->error)
 	{
 	    g_propagate_error (&fimp->error, cts->error);
+	    return FALSE;
 	}
-	else
-	{   /* set error */
+	cts->reversed = TRUE;
+	if (!check_header_seek (cts, "mhpo", 0))
+	{
+	    /* cts->error can't be set as already checked above */
+	    /* set error */
 	    g_return_val_if_fail (cts->filename, FALSE);
 	    g_set_error (&fimp->error,
 			 ITDB_FILE_ERROR,
 			 ITDB_FILE_ERROR_CORRUPT,
 			 _("Not a OTG playlist file: '%s' (missing mhpo header)."),
 			 cts->filename);
+	    return FALSE;
 	}
-	return FALSE;
     }
     header_length = get32lint (cts, 4);
     CHECK_ERROR (fimp, FALSE);
@@ -2134,7 +2330,7 @@ static gboolean parse_tracks (FImport *fimp, glong mhsd_seek)
 
     cts = fimp->itunesdb;
 
-    g_return_val_if_fail (cmp_n_bytes_seek (cts, "mhsd", mhsd_seek, 4),
+    g_return_val_if_fail (check_header_seek (cts, "mhsd", mhsd_seek),
 			  FALSE);
 
    /* The mhlt header should be the next after the mhsd header. In
@@ -2194,7 +2390,7 @@ static gboolean parse_playlists (FImport *fimp, glong mhsd_seek)
 
     cts = fimp->itunesdb;
 
-    g_return_val_if_fail (cmp_n_bytes_seek (cts, "mhsd", mhsd_seek, 4),
+    g_return_val_if_fail (check_header_seek (cts, "mhsd", mhsd_seek),
 			  FALSE);
 
     /* The mhlp header should be the next after the mhsd header. In
@@ -2686,7 +2882,8 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
 
   put32lint (cts, track->visible);
   put_data  (cts, track->filetype_marker, 4);
-  put16lint (cts, track->type);
+  put8int (cts, track->type1);
+  put8int (cts, track->type2);
   put8int   (cts, track->compilation);
   put8int   (cts, track->rating);
   put32lint (cts, track->time_added); /* timestamp               */
@@ -2696,8 +2893,8 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->tracks);  /* number of tracks           */
   put32lint (cts, track->year);    /* the year                   */
   put32lint (cts, track->bitrate); /* bitrate                    */
-  put16lint (cts, track->unk060);  /* unknown                    */
-  put16lint (cts, track->samplerate);
+  put32lint (cts, (((guint32)track->samplerate)<<16) |
+	     ((guint32)track->samplerate_low));
   put32lint (cts, track->volume);  /* volume adjust              */
   put32lint (cts, track->starttime);
   put32lint (cts, track->stoptime);
@@ -3379,7 +3576,10 @@ static gboolean write_playlist (FExport *fexp,
 	put32lint (cts, 2);        /* nr of mhods               */
     /* number of tracks in plist */
     put32lint (cts, -1);           /* number of mhips -> later  */
-    put32lint (cts, pl->type);     /* 1 = main, 0 = visible     */
+    put8int (cts, pl->type);       /* 1 = main, 0 = visible     */
+    put8int (cts, pl->flag1);      /* unknown                   */
+    put8int (cts, pl->flag2);      /* unknown                   */
+    put8int (cts, pl->flag3);      /* unknown                   */
     put32lint (cts, pl->timestamp);/* some timestamp            */
     put64lint (cts, pl->id);       /* 64 bit ID                 */
     pl->mhodcount = 1;             /* we only write one mhod type < 50 */
