@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-02-28 20:04:37 jcs>
+/* Time-stamp: <2006-03-09 21:50:38 jcs>
 |
 |  Copyright (C) 2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -156,6 +156,8 @@ static const IpodModel ipod_model_table [] = {
 	{"9725", GB,     MODEL_TYPE_SHUFFLE,     FOURTH_GENERATION},
 	
 	/* Nano / Fifth Generation */
+	{"A350", GB * 1, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},
+	{"A352", GB * 1, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION},
 	{"A004", GB * 2, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},
 	{"A099", GB * 2, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION},
 	{"A005", GB * 4, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},

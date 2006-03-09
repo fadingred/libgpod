@@ -1,5 +1,10 @@
 2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* ipod-device.c: added entries for iPod Nano 1 GB black and white
+	  (thanks to Leonhard Gruenschlos)
+
+2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* configure.ac: enable/disable switches for gdk and hal. Thanks to
 	  Olivier Crête
 
