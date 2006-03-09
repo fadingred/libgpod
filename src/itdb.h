@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-04 00:39:53 jcs>
+/* Time-stamp: <2005-11-29 00:56:25 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -413,10 +413,7 @@ struct _Itdb_Playlist
 {
     Itdb_iTunesDB *itdb;  /* pointer to iTunesDB (for convenience) */
     gchar *name;          /* name of playlist in UTF8              */
-    guint8 type;          /* ITDB_PL_TYPE_NORM/_MPL                */
-    guint8 flag1;         /* unknown, usually set to 0             */
-    guint8 flag2;         /* unknown, always set to 0              */
-    guint8 flag3;         /* unknown, always set to 0              */
+    guint32 type;         /* ITDB_PL_TYPE_NORM/_MPL                */
     gint  num;            /* number of tracks in playlist          */
     GList *members;       /* tracks in playlist (Track *)          */
     gboolean is_spl;      /* smart playlist?                       */
@@ -550,9 +547,6 @@ struct _Itdb_Track
   gint32  tracks;            /* number of tracks       */
   gint32  bitrate;           /* bitrate                */
   guint16 samplerate;        /* samplerate (CD: 44100) */
-  guint16 samplerate_low;    /* in the iTunesDB the samplerate is
-                                multiplied by 0x10000 -- these are the
-				lower 16 bit, which are usually 0 */
   gint32  year;              /* year                   */
   gint32  volume;            /* volume adjustment              */
   guint32 soundcheck;        /* volume adjustment "soundcheck" */
@@ -569,15 +563,14 @@ struct _Itdb_Track
 				playcount. */
   guint32 recent_playcount;  /* times track was played since last sync */
   gboolean transferred;      /* has file been transferred to iPod?  */
-  gint16  BPM;               /* supposed to vary the playback speed */
+  gint16 BPM;                /* supposed to vary the playback speed */
   guint8  app_rating;        /* star rating set by appl. (not
 			      * iPod). If the rating set on the iPod
 			        and the rating field above differ, the
 				original rating is copied here and the
 				new rating is stored above. */
-  guint8  type1;             /* CBR MP3s and AAC are 0x00, VBR MP3s are
-			        0x01 */
-  guint8  type2;             /* MP3s are 0x01, AAC are 0x00 */
+  guint16 type;              /* CBR MP3s are type 0x100, VBR MP3s are
+			        type 0x101, AAC are type 0x0 */
   guint8  compilation;
   guint32 starttime;
   guint32 stoptime;
@@ -612,6 +605,7 @@ struct _Itdb_Track
 				here.  itdb will set this when adding
 				a track */
 
+  guint16 unk060;     /* unknown */
   guint16 unk126;     /* unknown, but always seems to be 0xffff for
 			 MP3/AAC songs, 0x0 for uncompressed songs
 			 (like WAVE format), 0x1 for Audible. itdb
