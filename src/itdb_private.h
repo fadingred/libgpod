@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-10-15 22:14:26 jcs>
+/* Time-stamp: <2006-03-11 01:27:48 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -57,6 +57,9 @@ typedef struct
 {
     gchar *filename;
     gchar *contents;
+    /* indicate that endian order is reversed as in the case of the
+       iTunesDBs for mobile phones */
+    gboolean reversed;
     gsize length;
     GError *error;
 } FContents;
@@ -67,7 +70,7 @@ typedef struct
 typedef struct
 {
     Itdb_iTunesDB *itdb;
-    FContents *itunesdb;
+    FContents *fcontents;
     GList *pos_glist;    /* temporary list to store position indicators */
     gint32 pos_len;      /* current length of above list */
     GList *playcounts;   /* contents of Play Counts file */
@@ -97,6 +100,9 @@ typedef struct
 {
     gchar *filename;
     gchar *contents;     /* pointer to contents */
+    /* indicate that endian order is reversed as in the case of the
+       iTunesDBs for mobile phones */
+    gboolean reversed;
     gulong pos;          /* current write position ("end of file") */
     gulong total;        /* current total size of *contents array  */
     GError *error;       /* place to report errors to */
@@ -111,7 +117,7 @@ typedef struct
 typedef struct
 {
     Itdb_iTunesDB *itdb;
-    WContents *itunesdb;
+    WContents *wcontents;
     guint32 next_id;     /* next free ID to use       */
     GError *error;       /* where to report errors to */
 } FExport;

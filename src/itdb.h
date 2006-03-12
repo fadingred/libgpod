@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-29 00:56:25 jcs>
+/* Time-stamp: <2006-03-12 00:00:25 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -398,6 +398,8 @@ struct _Itdb_iTunesDB
     IpodDevice *device;
     gint   musicdirs;   /* number of /iPod_Control/Music/F.. dirs */
     guint32 version;
+    gboolean reversed;  /* this iTunesDB has to be written in reversed
+			   endian order (e.g. mobile phone iTunesDBs) */
     guint64 id;
     /* below is for use by application */
     guint64 usertype;
@@ -413,7 +415,10 @@ struct _Itdb_Playlist
 {
     Itdb_iTunesDB *itdb;  /* pointer to iTunesDB (for convenience) */
     gchar *name;          /* name of playlist in UTF8              */
-    guint32 type;         /* ITDB_PL_TYPE_NORM/_MPL                */
+    guint8 type;          /* ITDB_PL_TYPE_NORM/_MPL                */
+    guint8 flag1;         /* unknown, usually set to 0             */
+    guint8 flag2;         /* unknown, always set to 0              */
+    guint8 flag3;         /* unknown, always set to 0              */
     gint  num;            /* number of tracks in playlist          */
     GList *members;       /* tracks in playlist (Track *)          */
     gboolean is_spl;      /* smart playlist?                       */
@@ -547,6 +552,9 @@ struct _Itdb_Track
   gint32  tracks;            /* number of tracks       */
   gint32  bitrate;           /* bitrate                */
   guint16 samplerate;        /* samplerate (CD: 44100) */
+  guint16 samplerate_low;    /* in the iTunesDB the samplerate is
+                                multiplied by 0x10000 -- these are the
+				lower 16 bit, which are usually 0 */
   gint32  year;              /* year                   */
   gint32  volume;            /* volume adjustment              */
   guint32 soundcheck;        /* volume adjustment "soundcheck" */
@@ -563,14 +571,15 @@ struct _Itdb_Track
 				playcount. */
   guint32 recent_playcount;  /* times track was played since last sync */
   gboolean transferred;      /* has file been transferred to iPod?  */
-  gint16 BPM;                /* supposed to vary the playback speed */
+  gint16  BPM;               /* supposed to vary the playback speed */
   guint8  app_rating;        /* star rating set by appl. (not
 			      * iPod). If the rating set on the iPod
 			        and the rating field above differ, the
 				original rating is copied here and the
 				new rating is stored above. */
-  guint16 type;              /* CBR MP3s are type 0x100, VBR MP3s are
-			        type 0x101, AAC are type 0x0 */
+  guint8  type1;             /* CBR MP3s and AAC are 0x00, VBR MP3s are
+			        0x01 */
+  guint8  type2;             /* MP3s are 0x01, AAC are 0x00 */
   guint8  compilation;
   guint32 starttime;
   guint32 stoptime;
@@ -605,7 +614,6 @@ struct _Itdb_Track
 				here.  itdb will set this when adding
 				a track */
 
-  guint16 unk060;     /* unknown */
   guint16 unk126;     /* unknown, but always seems to be 0xffff for
 			 MP3/AAC songs, 0x0 for uncompressed songs
 			 (like WAVE format), 0x1 for Audible. itdb
@@ -643,10 +651,12 @@ struct _Itdb_Track
 			 about the track will be shown. */
   guint64 dbid2;      /* not clear. if not set, itdb will set this to
 			 the same value as dbid when adding a track */
-  guint32 unk176;     /* unknown - added in dbversion 0x0c, first
-			 values observed in 0x0d. Observed to be
-			 0x00010000 for non-podcasts and 0x00020000
-			 for a podcast. */
+  guint8 lyrics_flag; /* set to 0x01 if lyrics are present in MP3 tag
+			 ("ULST"), 0x00 otherwise */
+  guint8 movie_flag;  /* set to 0x01 if it's a movie file, 0x00
+		         otherwise */
+  guint8 unk178;      /* unknown (sometimes 0x01) */
+  guint8 unk179;      /* unknown (always 0x00 so far) */
   guint32 unk180, unk184;
   guint32 samplecount;/* Number of samples in the song. First observed
 			 in dbversion 0x0d, and only for AAC and WAV

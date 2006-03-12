@@ -1,3 +1,17 @@
+2005-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb.h: added movie_flag and lyrics_flag to Itdb_Track
+
+	* itdb.h, itdb_itunesdb.c, itdb_private.h: added support for
+	  mobile phone reversed-endian iTunesDB. Please note that you have
+	  to rename the folder iTunes_Control to iPod_Control manually. to
+	  write reversed-endian files, itdb->reversed must be set to
+	  TRUE. When reading an iTunesDB the endianess is detected
+	  automatically and itdb->reversed set appropriately.  Only the
+	  inversed iTunesDBs, 'Play Counts', and OTG playlist files are
+	  read yet. The ArtworkDB and thumbnail files cannot be parsed
+	  yet.
+
 2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* ipod-device.c: added entries for iPod Nano 1 GB black and white
