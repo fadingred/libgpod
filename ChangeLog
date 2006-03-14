@@ -1,5 +1,12 @@
 2005-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+        * itdb.h, itdb_itunesdb.c: added functions for autodetection of
+	  iControl directory (currently either <mp>/iPod_Control or
+	  <mp>/iTunes/iTunes_Control): itdb_get_control_dir() and
+	  itdb_get_itunes_dir()
+
+2005-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* itdb.h: added movie_flag and lyrics_flag to Itdb_Track
 
 	* itdb.h, itdb_itunesdb.c, itdb_private.h: added support for

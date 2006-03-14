@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-12 00:59:00 jcs>
+/* Time-stamp: <2006-03-14 01:25:03 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2550,6 +2550,42 @@ static gboolean parse_fimp (FImport *fimp)
 }
 
 
+
+/* Set @error with standard error message */
+static void error_no_itunes_dir (const gchar *mp, GError **error)
+{
+    gchar *str;
+
+    g_return_if_fail (mp);
+    g_return_if_fail (error);
+
+    str = g_build_filename (mp, "iPod_Control", "iTunes", NULL);
+    g_set_error (error,
+		 ITDB_FILE_ERROR,
+		 ITDB_FILE_ERROR_NOTFOUND,
+		 _("iTunes directory not found: '%s' (or similar)."),
+		 str);
+    g_free (str);
+}
+
+/* Set @error with standard error message */
+static void error_no_control_dir (const gchar *mp, GError **error)
+{
+    gchar *str;
+
+    g_return_if_fail (mp);
+    g_return_if_fail (error);
+
+    str = g_build_filename (mp, "iPod_Control", NULL);
+    g_set_error (error,
+		 ITDB_FILE_ERROR,
+		 ITDB_FILE_ERROR_NOTFOUND,
+		 _("Control directory not found: '%s' (or similar)."),
+		 str);
+    g_free (str);
+}
+
+
 /* Parse the Itdb_iTunesDB.
    Returns a pointer to the Itdb_iTunesDB struct holding the tracks and the
    playlists.
@@ -2558,10 +2594,19 @@ static gboolean parse_fimp (FImport *fimp)
 Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 {
     gchar *filename;
+    gchar *itunes_dir;
     Itdb_iTunesDB *itdb = NULL;
-    const gchar *db[] = {"iPod_Control","iTunes","iTunesDB",NULL};
+    const gchar *db[] = {"iTunesDB", NULL};
 
-    filename = itdb_resolve_path (mp, db);
+    itunes_dir = itdb_get_itunes_dir (mp);
+
+    if (!itunes_dir)
+    {
+	error_no_itunes_dir (mp, error);
+	return NULL;
+    }
+
+    filename = itdb_resolve_path (itunes_dir, db);
     if (filename)
     {
 	itdb = itdb_parse_file (filename, error);
@@ -2604,6 +2649,7 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 		     str);
 	g_free (str);
     }
+    g_free (itunes_dir);
     return itdb;
 }
 
@@ -4039,7 +4085,7 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 
 #if HAVE_GDKPIXBUF
     /* only write ArtworkDB if we deal with an iPod
-       FIXME: figure out a way to store the artwork data when storint
+       FIXME: figure out a way to store the artwork data when storing
        to local directories. At the moment it's the application's task
        to handle this. */
     if (itdb->device)
@@ -4109,7 +4155,6 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 {
     gchar *itunes_filename, *itunes_path;
-    const gchar *db[] = {"iPod_Control","iTunes",NULL};
     gboolean result = FALSE;
 
     g_return_val_if_fail (itdb, FALSE);
@@ -4122,18 +4167,12 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
      * they shouldn't corrupt the main database.
      */
 
-    itunes_path = itdb_resolve_path (itdb->mountpoint, db);
-    
+
+    itunes_path = itdb_get_itunes_dir (itdb->mountpoint);
+
     if(!itunes_path)
     {
-	gchar *str = g_build_filename (itdb->mountpoint, 
-				       db[0], db[1], db[2], NULL);
-	g_set_error (error,
-		     ITDB_FILE_ERROR,
-		     ITDB_FILE_ERROR_NOTFOUND,
-		     _("Path not found: '%s'."),
-		     str);
-	g_free (str);
+	error_no_itunes_dir (itdb->mountpoint, error);
 	return FALSE;
     }
 
@@ -4141,8 +4180,8 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 
     result = itdb_write_file (itdb, itunes_filename, error);
 
-    g_free(itunes_filename);
-    g_free(itunes_path);
+    g_free (itunes_filename);
+    g_free (itunes_path);
 
     if (result == TRUE)
 	result = itdb_rename_files (itdb->mountpoint, error);
@@ -4462,7 +4501,6 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 /* Returns FALSE on error and sets @error accordingly */
 gboolean itdb_rename_files (const gchar *mp, GError **error)
 {
-    const gchar *db_itd[] =  {"iPod_Control", "iTunes", NULL};
     const gchar *db_plc_o[] = {"Play Counts", NULL};
     const gchar *db_otg[] = {"OTGPlaylistInfo", NULL};
     const gchar *db_shu[] = {"iTunesShuffle", NULL};
@@ -4473,20 +4511,15 @@ gboolean itdb_rename_files (const gchar *mp, GError **error)
     gchar *shuname;
     gboolean result = TRUE;
 
-    itunesdir = itdb_resolve_path (mp, db_itd);
+    g_return_val_if_fail (mp, FALSE);
+
+    itunesdir = itdb_get_itunes_dir (mp);
+
     if(!itunesdir)
     {
-	gchar *str = g_build_filename (mp, db_itd[0],
-				       db_itd[1], db_itd[2], NULL);
-	g_set_error (error,
-		     ITDB_FILE_ERROR,
-		     ITDB_FILE_ERROR_NOTFOUND,
-		     _("Path not found: '%s'."),
-		     str);
-	g_free (str);
+	error_no_itunes_dir (mp, error);
 	return FALSE;
     }
-
 
     plcname_o = itdb_resolve_path (itunesdir, db_plc_o);
     plcname_n = g_build_filename (itunesdir, 
@@ -4600,8 +4633,7 @@ void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp)
    itdb->musicdirs. */
 gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
 {
-    gchar *dest_components[] = {"iPod_Control", "Music",
-				NULL, NULL, NULL};
+    gchar *dest_components[] = {"Music", NULL, NULL};
     gchar *dir_filename = NULL;
     gint dir_num;
 
@@ -4609,22 +4641,26 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
     g_return_val_if_fail (itdb->mountpoint, 0);
 
     if (itdb->musicdirs <= 0)
-    {   /* count number of dirs */
+    {
+	gchar *control_dir = itdb_get_control_dir (itdb->mountpoint);
+	if (!control_dir) return 0;
+	/* count number of dirs */
 	for (dir_num=0; ;++dir_num)
 	{
 	    gchar dir_num_str[5];
 
 	    g_snprintf (dir_num_str, 5, "F%02d", dir_num);
-	    dest_components[2] = dir_num_str;
+	    dest_components[1] = dir_num_str;
   
 	    dir_filename =
-		itdb_resolve_path (itdb->mountpoint,
+		itdb_resolve_path (control_dir,
 				   (const gchar **)dest_components);
 
 	    if (!dir_filename)  break;
 	    g_free (dir_filename);
 	}
 	itdb->musicdirs = dir_num;
+	g_free (control_dir);
     }
     return itdb->musicdirs;
 }
@@ -4658,7 +4694,7 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
   gchar *track_db_path, *ipod_fullfile;
   gboolean success;
   gint mplen = 0;
-  const gchar *mp;
+  const gchar *mountpoint;
   Itdb_iTunesDB *itdb;
 
   g_return_val_if_fail (track, FALSE);
@@ -4668,7 +4704,7 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 
   if(track->transferred)  return TRUE; /* nothing to do */ 
 
-  mp = track->itdb->mountpoint;
+  mountpoint = track->itdb->mountpoint;
   itdb = track->itdb;
 
   /* If track->ipod_path exists, we use that one instead. */
@@ -4676,50 +4712,55 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 
   if (!ipod_fullfile)
   {
-      gchar *dest_components[] = {"iPod_Control", "Music",
-				  NULL, NULL, NULL};
-      gchar *parent_dir_filename;
+      gchar *dest_components[] = {"Music", NULL, NULL, NULL};
+      gchar *parent_dir_filename, *control_dir;
       gchar *original_suffix;
       gchar dir_num_str[5];
       gint32 oops = 0;
       gint32 rand = g_random_int_range (0, 899999); /* 0 to 900000 */
 
+      control_dir = itdb_get_control_dir (mountpoint);
+      if (!control_dir)
+      {
+	  error_no_control_dir (mountpoint, error);
+	  return FALSE;
+      }
+
       if (itdb_musicdirs_number (itdb) <= 0)
       {
-	  gchar *str = g_build_filename (mp, dest_components[0],
-					 dest_components[1], NULL);
+	  gchar *str = g_build_filename (control_dir, "Music", NULL);
 
 	  g_set_error (error,
 		       ITDB_FILE_ERROR,
 		       ITDB_FILE_ERROR_NOTFOUND,
-		       _("No 'F..' directories found in '%s'."),
+		       _("No 'F..' directories found in '%s' (or similar)."),
 		       str);
 	  g_free (str);
+	  g_free (control_dir);
 	  return FALSE;
       }
-		       
+
       if (dir_num == -1) dir_num = g_random_int_range (0, itdb->musicdirs);
       else dir_num = (dir_num + 1) % itdb_musicdirs_number (itdb);
 
       g_snprintf (dir_num_str, 5, "F%02d", dir_num);
-      dest_components[2] = dir_num_str;
+      dest_components[1] = dir_num_str;
   
       parent_dir_filename =
-	  itdb_resolve_path (mp, (const gchar **)dest_components);
-
+	  itdb_resolve_path (control_dir, (const gchar **)dest_components);
       if(parent_dir_filename == NULL)
       {
 	  /* Can't find the F%02d directory */
-	  gchar *str = g_build_filename (mp, dest_components[0],
-					 dest_components[1],
-					 dest_components[2],
-					 dest_components[3], NULL);
+	  gchar *str = g_build_filename (control_dir,
+					 dest_components[0],
+					 dest_components[1], NULL);
 	  g_set_error (error,
 		       ITDB_FILE_ERROR,
 		       ITDB_FILE_ERROR_NOTFOUND,
 		       _("Path not found: '%s'."),
 		       str);
 	  g_free (str);
+	  g_free (control_dir);
 	  return FALSE;
       }
 
@@ -4732,12 +4773,12 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 
       do
       {   /* we need to loop until we find an unused filename */
-	  dest_components[3] = 
+	  dest_components[2] = 
 	      g_strdup_printf("gtkpod%06d%s",
 			      rand + oops, original_suffix);
 	  ipod_fullfile = itdb_resolve_path (
 	      parent_dir_filename,
-	      (const gchar **)&dest_components[3]);
+	      (const gchar **)&dest_components[2]);
 	  if(ipod_fullfile)
 	  {   /* already exists -- try next */
               g_free(ipod_fullfile);
@@ -4746,16 +4787,17 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 	  else
 	  {   /* found unused file -- build filename */
 	      ipod_fullfile = g_build_filename (parent_dir_filename,
-					        dest_components[3], NULL);
+					        dest_components[2], NULL);
 	  }
-	  g_free (dest_components[3]);
+	  g_free (dest_components[2]);
 	  ++oops;
       } while (!ipod_fullfile);
       g_free(parent_dir_filename);
+      g_free (control_dir);
   }
   /* now extract filepath for track->ipod_path from ipod_fullfile */
   /* ipod_path must begin with a '/' */
-  mplen = strlen (mp); /* length of mountpoint in bytes */
+  mplen = strlen (mountpoint); /* length of mountpoint in bytes */
   if (ipod_fullfile[mplen] == G_DIR_SEPARATOR)
   {
       track_db_path = g_strdup (&ipod_fullfile[mplen]);
@@ -4940,6 +4982,59 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 
 
 
+/* Get the i*_Control directory. Observed values are 'iPod_Control'
+ * for standard iPods and 'iTunes/iTunes_Control' for mobile
+ * applications.
+ *
+ * Parameters: @mountpoint: mountpoint of iPod
+ * (itdb->mountpoint). Note: I chose to pass the mountoint over
+ * passing a pointer to the itdb because this function may be used
+ * without relation to a particular itdb.
+ *
+ * Return value: path to the control dir or NULL of none exists. Must
+ * g_free() after use.
+ */
+gchar *itdb_get_control_dir (const gchar *mountpoint)
+{
+    gchar *p_ipod[] = {"iPod_Control", NULL};
+    gchar *p_mobile[] = {"iTunes", "iTunes_Control", NULL};
+    /* Use an array with all possibilities, so further extension will
+       be easy */
+    gchar **paths[] = {p_ipod, p_mobile, NULL};
+    gchar ***ptr;
+    gchar *result = NULL;
+
+    g_return_val_if_fail (mountpoint, NULL);
+
+    for (ptr=paths; *ptr && !result; ++ptr)
+    {
+	result = itdb_resolve_path (mountpoint, (const gchar **)*ptr);
+    }
+    return result;
+}
+
+/* Retrieve the iTunes directory (containing the iTunesDB) by first
+ * calling itdb_get_control_dir() and then adding 'iTunes'
+ *
+ * Return value: path to the iTunes directory or NULL of non
+ * exists. Must g_free() after use.
+ */
+gchar *itdb_get_itunes_dir (const gchar *mountpoint)
+{
+    const gchar *p_itunes[] = {"iTunes", NULL};
+    gchar *control_dir;
+    gchar *result = NULL;
+
+    g_return_val_if_fail (mountpoint, NULL);
+
+    control_dir = itdb_get_control_dir (mountpoint);
+    if (control_dir)
+    {
+	result = itdb_resolve_path (control_dir, p_itunes);
+	g_free (control_dir);
+    }
+    return result;
+}
 
 
 /*------------------------------------------------------------------*\
