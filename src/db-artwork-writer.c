@@ -444,7 +444,7 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 	for (it = song->artwork->thumbnails; it != NULL; it = it->next) {
 		iPodBuffer *sub_buffer;
 		Itdb_Thumb *thumb;
-		const IpodArtworkFormat *img_info;
+		const Itdb_ArtworkFormat *img_info;
 
 		mhii->num_children = GINT_TO_LE (num_children);
 		mhii->total_len = GINT_TO_LE (total_bytes);
@@ -453,7 +453,7 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 			return -1;
 		}
 		thumb = (Itdb_Thumb *)it->data;
-		img_info = ipod_get_artwork_info_from_type (
+		img_info = itdb_get_artwork_info_from_type (
 		    song->itdb->device, thumb->type);
 		if (img_info == NULL) {
 			return -1;
@@ -543,7 +543,7 @@ static int
 write_mhif (Itdb_iTunesDB *db, iPodBuffer *buffer, enum iPodThumbnailType type)
 {
 	MhifHeader *mhif;
-	const IpodArtworkFormat *img_info;
+	const Itdb_ArtworkFormat *img_info;
 	
 	mhif = (MhifHeader *)init_header (buffer, "mhif", sizeof (MhifHeader));
 	if (mhif == NULL) {
@@ -551,7 +551,7 @@ write_mhif (Itdb_iTunesDB *db, iPodBuffer *buffer, enum iPodThumbnailType type)
 	}
 	mhif->total_len = mhif->header_len;
 	
-	img_info = ipod_get_artwork_info_from_type (db->device, type);
+	img_info = itdb_get_artwork_info_from_type (db->device, type);
 	if (img_info == NULL) {
 		return -1;
 	}
@@ -748,7 +748,7 @@ ipod_write_artwork_db (Itdb_iTunesDB *db)
 	/* Now we can update the ArtworkDB file */
 	id_max = ipod_artwork_db_set_ids (db);
 
-	filename = ipod_db_get_artwork_db_path (db->mountpoint);
+	filename = ipod_db_get_artwork_db_path (itdb_get_mountpoint (db));
 	if (filename == NULL) {
 		/* FIXME: the iTunesDB will be inconsistent wrt artwork_count
 		 * it might be better to 0 out this field in all tracks

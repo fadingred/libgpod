@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-12-11 16:27:33 jcs>
+/* Time-stamp: <2006-03-16 22:30:22 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -178,10 +178,9 @@ Itdb_Thumb *itdb_artwork_get_thumb_by_type (Itdb_Artwork *artwork,
    the original file.
    g_free() when not needed any more.
 */
-gchar *itdb_thumb_get_filename (IpodDevice *device, Itdb_Thumb *thumb)
+gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb)
 {
-    gchar *paths[] = {"iPod_Control", "Artwork", NULL, NULL};
-    gchar *filename, *mountpoint;
+    gchar *artwork_dir, *filename=NULL;
 
     g_return_val_if_fail (device, NULL);
     g_return_val_if_fail (thumb, NULL);
@@ -196,18 +195,18 @@ gchar *itdb_thumb_get_filename (IpodDevice *device, Itdb_Thumb *thumb)
 	return NULL;
     }
 
-    g_object_get (G_OBJECT (device),
-		  "mount-point", &mountpoint,
-		  NULL);
-
-    if (!mountpoint)
+    if (!device->mountpoint)
     {
 	g_print (_("Mountpoint not set.\n"));
 	return NULL;
     }
 
-    paths[2] = thumb->filename+1;
-    filename = itdb_resolve_path (mountpoint, (const char **)paths);
+    artwork_dir = itdb_get_artwork_dir (device->mountpoint);
+    if (artwork_dir)
+    {
+	filename = itdb_get_path (artwork_dir, thumb->filename+1);
+	g_free (artwork_dir);
+    }
 
     return filename;
 }
@@ -245,7 +244,7 @@ unpack_RGB_565 (guint16 *pixels, guint bytes_len)
 
 
 static guchar *
-get_pixel_data (IpodDevice *device, Itdb_Thumb *thumb)
+get_pixel_data (Itdb_Device *device, Itdb_Thumb *thumb)
 {
 	gchar *filename = NULL;
 	guchar *result = NULL;
@@ -305,7 +304,7 @@ get_pixel_data (IpodDevice *device, Itdb_Thumb *thumb)
 }
 
 static guchar *
-itdb_thumb_get_rgb_data (IpodDevice *device, Itdb_Thumb *thumb)
+itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 {
 	void *pixels565;
 	guchar *pixels;
@@ -340,12 +339,12 @@ itdb_thumb_get_rgb_data (IpodDevice *device, Itdb_Thumb *thumb)
    The returned GdkPixbuf must be freed with gdk_pixbuf_unref() after
    use. */
 gpointer
-itdb_thumb_get_gdk_pixbuf (IpodDevice *device, Itdb_Thumb *thumb)
+itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 {
 #if HAVE_GDKPIXBUF
     GdkPixbuf *pixbuf=NULL;
     guchar *pixels;
-    const IpodArtworkFormat *img_info=NULL;
+    const Itdb_ArtworkFormat *img_info=NULL;
 
     g_return_val_if_fail (thumb, NULL);
 
@@ -358,7 +357,7 @@ itdb_thumb_get_gdk_pixbuf (IpodDevice *device, Itdb_Thumb *thumb)
     */
     if (device != NULL)
     {
-	img_info = ipod_get_artwork_info_from_type (device, thumb->type);
+	img_info = itdb_get_artwork_info_from_type (device, thumb->type);
     }
 
     if (thumb->size == 0)

@@ -4,7 +4,7 @@ else
 TESTTHUMBS=
 endif
 
-noinst_PROGRAMS=test-ipod-device test-itdb $(TESTTHUMBS)
+noinst_PROGRAMS=test-itdb $(TESTTHUMBS)
 
 INCLUDES=$(LIBGPOD_CFLAGS) -I$(top_srcdir)/src -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
 LIBS=$(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la

@@ -18,14 +18,12 @@ libgpod_la_SOURCES = \
 	db-itunes-parser.h  \
 	db-artwork-writer.c \
 	ithumb-writer.c \
-	ipod-device.c \
-	ipod-device.h \
-	hal-common.c \
-	hal-common.h \
+	itdb_device.c \
+	itdb_device.h \
 	glib-compat.h
 
 
-libgpod_la_headers = itdb.h ipod-device.h
+libgpod_la_headers = itdb.h
 libgpod_la_noinst_headers = itdb_private.h hal-common.h
 libgpod_la_LDFLAGS = -version-info $(LIBGPOD_CURRENT):$(LIBGPOD_REVISION):$(LIBGPOD_AGE) \
         -no-undefined

@@ -26,6 +26,7 @@
 #define IMAGE_PARSER_H
 
 #include "db-itunes-parser.h"
+#include "itdb_device.h"
 #include "itdb.h"
 
 #define RED_BITS   5
@@ -45,7 +46,7 @@ G_GNUC_INTERNAL Itdb_Thumb *ipod_image_new_from_mhni (MhniHeader *mhni,
 
 G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_iTunesDB *db);
 
-G_GNUC_INTERNAL const IpodArtworkFormat *ipod_get_artwork_info_from_type (
-    IpodDevice *ipod, int image_type);
+G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_get_artwork_info_from_type (
+    Itdb_Device *ipod, int image_type);
 
 #endif

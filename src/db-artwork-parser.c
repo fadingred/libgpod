@@ -27,6 +27,8 @@
 #endif
 
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "itdb.h"
 #include "db-artwork-debug.h"
@@ -440,21 +442,38 @@ parse_mhfd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 G_GNUC_INTERNAL char *
 ipod_db_get_artwork_db_path (const char *mount_point)
 {
-        gchar *filename;
-	const char *paths[] = {"iPod_Control", "Artwork", "ArtworkDB", NULL};
-	filename = itdb_resolve_path (mount_point, paths);
+        gchar *filename=NULL;
+
+	/* fail silently if no mount point given */
+	if (!mount_point)  return NULL;
+
+	filename = itdb_get_artworkdb_path (mount_point);
 
 	/* itdb_resolve_path() only returns existing paths */
 	if (!filename)
 	{
-	    gchar *path;
-	    paths[2] = NULL;
-	    path = itdb_resolve_path (mount_point, (const char **)paths);
-	    if (path)
+	    gchar *artwork_dir;
+
+	    artwork_dir = itdb_get_artwork_dir (mount_point);
+	    if (!artwork_dir)
 	    {
-		filename = g_build_filename (path, "ArtworkDB", NULL);
+		/* attempt to create Artwork dir */
+		gchar *control_dir = itdb_get_control_dir (mount_point);
+		gchar *dir;
+		if (control_dir)
+		{
+		    dir = g_build_filename (control_dir, "Artwork", NULL);
+		    mkdir (dir, 0777);
+		    g_free (dir);
+		    g_free (control_dir);
+		}
 	    }
-	    g_free (path);
+	    if (artwork_dir)
+	    {
+		filename = g_build_filename (artwork_dir,
+					     "ArtworkDB", NULL);
+		g_free (artwork_dir);
+	    }
 	}
 
 	return filename;
@@ -471,15 +490,15 @@ ipod_db_get_photo_db_path (const char *mount_point)
 }
 
 static gboolean
-ipod_supports_cover_art (IpodDevice *ipod)
+ipod_supports_cover_art (Itdb_Device *device)
 {
-	const IpodArtworkFormat *formats;
+	const Itdb_ArtworkFormat *formats;
 
-	if (ipod == NULL) {
+	if (device == NULL) {
 		return FALSE;
 	}
 
-	g_object_get (G_OBJECT (ipod), "artwork-formats", &formats, NULL);
+	formats = itdb_device_get_artwork_formats (device);
 	if (formats == NULL) {
 		return FALSE;
 	}
@@ -502,12 +521,13 @@ ipod_parse_artwork_db (Itdb_iTunesDB *db)
 	char *filename;
 
 	g_return_val_if_fail (db, -1);
+	g_return_val_if_fail (db->device, -1);
 
 	if (!ipod_supports_cover_art (db->device)) {
 		return -1;
 	}
 	ctx = NULL;
-	filename = ipod_db_get_artwork_db_path (db->mountpoint);
+	filename = ipod_db_get_artwork_db_path (itdb_get_mountpoint (db));
 	if (filename == NULL) {
 		goto error;
 	}

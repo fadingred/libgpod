@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-12-04 19:10:42 jcs>
+/* Time-stamp: <2006-03-15 00:11:15 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -30,18 +30,24 @@
 #include <config.h>
 
 #include "itdb_private.h"
+#include "itdb_device.h"
 #include <string.h>
 
-static gboolean is_video_ipod (IpodDevice *ipod) 
+static gboolean is_video_ipod (Itdb_Device *device) 
 {
-	guint model;
+    const Itdb_IpodModel *model;
 
-	if (ipod == NULL) {
-		return FALSE;
-	}
-	g_object_get (G_OBJECT (ipod), "device-model", &model, NULL);
-	return ((model == MODEL_TYPE_VIDEO_WHITE) 
-		|| (model == MODEL_TYPE_VIDEO_BLACK));
+    g_return_val_if_fail (device, FALSE);
+
+    model = itdb_device_get_ipod_model (device);
+
+    if (!model) return FALSE;
+
+    if ((model->model_type == MODEL_TYPE_VIDEO_WHITE) ||
+	(model->model_type == MODEL_TYPE_VIDEO_BLACK))
+	return TRUE;
+    else
+	return FALSE;
 }
 
 

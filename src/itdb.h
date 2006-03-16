@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-13 23:01:23 jcs>
+/* Time-stamp: <2006-03-16 23:50:32 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -40,8 +40,6 @@
 #  include <config.h>
 #endif
 
-#include "ipod-device.h"
-
 #include <sys/types.h>
 #include <time.h>
 #include <glib.h>
@@ -56,6 +54,7 @@ G_BEGIN_DECLS
 typedef void (* ItdbUserDataDestroyFunc) (gpointer userdata);
 typedef gpointer (* ItdbUserDataDuplicateFunc) (gpointer userdata);
 
+typedef struct _Itdb_Device Itdb_Device;
 typedef struct _Itdb_Artwork Itdb_Artwork;
 typedef struct _Itdb_Thumb Itdb_Thumb;
 typedef struct _SPLPref SPLPref;
@@ -394,12 +393,8 @@ struct _Itdb_iTunesDB
     GList *tracks;
     GList *playlists;
     gchar *filename;    /* filename of iTunesDB */
-    gchar *mountpoint;  /* mountpoint of iPod (if available) */
-    IpodDevice *device;
-    gint   musicdirs;   /* number of /iPod_Control/Music/F.. dirs */
+    Itdb_Device *device;/* iPod device info     */
     guint32 version;
-    gboolean reversed;  /* this iTunesDB has to be written in reversed
-			   endian order (e.g. mobile phone iTunesDBs) */
     guint64 id;
     /* below is for use by application */
     guint64 usertype;
@@ -746,8 +741,22 @@ void itdb_filename_fs2ipod (gchar *filename);
 void itdb_filename_ipod2fs (gchar *ipod_file);
 gchar *itdb_filename_on_ipod (Itdb_Track *track);
 void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp);
+const gchar *itdb_get_mountpoint (Itdb_iTunesDB *itdb);
 gchar *itdb_get_control_dir (const gchar *mountpoint);
 gchar *itdb_get_itunes_dir (const gchar *mountpoint);
+gchar *itdb_get_music_dir (const gchar *mountpoint);
+gchar *itdb_get_artwork_dir (const gchar *mountpoint);
+gchar *itdb_get_device_dir (const gchar *mountpoint);
+gchar *itdb_get_itunesdb_path (const gchar *mountpoint);
+gchar *itdb_get_artworkdb_path (const gchar *mountpoint);
+gchar *itdb_get_path (const gchar *dir, const gchar *file);
+
+/* itdb_device functions */
+Itdb_Device *itdb_device_new (void);
+void itdb_device_free (Itdb_Device *device);
+void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp);
+gboolean itdb_device_read_sysinfo (Itdb_Device *device);
+gchar *itdb_device_get_sysinfo (Itdb_Device *device, const gchar *field);
 
 /* track functions */
 Itdb_Track *itdb_track_new (void);
@@ -825,12 +834,12 @@ void itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork);
 /* itdb_thumb_... */
 /* the following funciton returns a pointer to a GdkPixbuf if
    gdk-pixbuf is installed -- a NULL pointer otherwise. */
-gpointer itdb_thumb_get_gdk_pixbuf (IpodDevice *device,
+gpointer itdb_thumb_get_gdk_pixbuf (Itdb_Device *device,
 				    Itdb_Thumb *thumb);
 Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb);
 void itdb_thumb_free (Itdb_Thumb *thumb);
 Itdb_Thumb *itdb_thumb_new (void);
-gchar *itdb_thumb_get_filename (IpodDevice *device, Itdb_Thumb *thumb);
+gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb);
 
 
 /* time functions */

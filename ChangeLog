@@ -1,3 +1,18 @@
+2005-02-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb_device.[ch]: rewrote ipod-device.c, removed all hal-code,
+	  removed all code irrelevant to writing the iTunesDB and
+	  ArtworkDB.
+
+	* autodetect iControl directory now also works for ArtworkDB.
+
+	* db-artwork-parser.c (ipod_db_get_artwork_db_path): create
+	  Artwork directory if not already present.
+
+	* itdb.h: Itdb_iTunesDB: moved mountpoint and musicdirs into
+	  private Itdb_Device. Use itdb_set_mountpoint() and
+	  itdb_get_mountpoint() to access the mountpoint.
+
 2005-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * itdb.h, itdb_itunesdb.c: added functions for autodetection of

@@ -29,20 +29,22 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include "itdb_device.h"
 #include "db-artwork-parser.h"
 #include "db-image-parser.h"
 #include <glib/gi18n-lib.h>
 
 static int
-image_type_from_corr_id (IpodDevice *ipod, int corr_id)
+image_type_from_corr_id (Itdb_Device *device, int corr_id)
 {
-	const IpodArtworkFormat *formats;
+	const Itdb_ArtworkFormat *formats;
 
-	if (ipod == NULL) {
+	if (device == NULL) {
 		return -1;
 	}
 
-	g_object_get (G_OBJECT (ipod), "artwork-formats", &formats, NULL);
+	formats = itdb_device_get_artwork_formats (device);
+
 	if (formats == NULL) {
 		return -1;
 	}
@@ -58,16 +60,16 @@ image_type_from_corr_id (IpodDevice *ipod, int corr_id)
 }
 
 
-G_GNUC_INTERNAL const IpodArtworkFormat *
-ipod_get_artwork_info_from_type (IpodDevice *ipod, int image_type)
+G_GNUC_INTERNAL const Itdb_ArtworkFormat *
+itdb_get_artwork_info_from_type (Itdb_Device *device, int image_type)
 {
-	const IpodArtworkFormat *formats;
+	const Itdb_ArtworkFormat *formats;
 	
-	if (ipod == NULL) {
+	if (device == NULL) {
 		return NULL;
 	}
 
-	g_object_get (G_OBJECT (ipod), "artwork-formats", &formats, NULL);
+	formats = itdb_device_get_artwork_formats (device);
 	if (formats == NULL) {
 		return NULL;
 	}

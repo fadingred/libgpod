@@ -45,7 +45,7 @@ struct _iThumbWriter {
 	off_t cur_offset;
 	FILE *f;
         gchar *filename;
-	IpodArtworkFormat *img_info;
+	Itdb_ArtworkFormat *img_info;
 	GHashTable *cache;
 };
 typedef struct _iThumbWriter iThumbWriter;
@@ -105,35 +105,40 @@ pack_RGB_565 (GdkPixbuf *pixbuf, int dst_width, int dst_height)
 static char *
 ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gint index) 
 {
-	char *paths[] = {"iPod_Control", "Artwork", NULL, NULL};
-	char *filename, *buf;
+        gchar *artwork_dir, *filename, *buf;
+
+	g_return_val_if_fail (mount_point, NULL);
+	artwork_dir = itdb_get_artwork_dir (mount_point);
+	if (!artwork_dir)
+	{
+	    /* attempt to create Artwork dir */
+	    gchar *control_dir = itdb_get_control_dir (mount_point);
+	    gchar *dir;
+	    if (!control_dir)
+	    {   /* give up */
+		return NULL;
+	    }
+	    dir = g_build_filename (control_dir, "Artwork", NULL);
+	    mkdir (dir, 0777);
+	    g_free (dir);
+	    g_free (control_dir);
+
+	    /* try again */
+	    artwork_dir = itdb_get_artwork_dir (mount_point);
+	    if (!artwork_dir)
+	    {   /* give up */
+		return NULL;
+	    }
+	}
 
 	buf = g_strdup_printf ("F%04u_%d.ithmb", correlation_id, index);
 
-	paths[2] = buf;
+	filename = itdb_get_path (artwork_dir, buf);
 
-	filename = itdb_resolve_path (mount_point, (const char **)paths);
-
-	/* itdb_resolve_path() only returns existing paths */
+	/* itdb_get_path() only returns existing paths */
 	if (!filename)
 	{
-	    gchar *path;
-	    paths[2] = NULL;
-	    path = itdb_resolve_path (mount_point, (const char **)paths);
-	    if (path == NULL)
-	    {   /* attempt to create directory */
-		gchar *pth = g_build_filename (mount_point,
-					       paths[0], paths[1], NULL);
-		mkdir (pth, 0777);
-		g_free (pth);
-		path = itdb_resolve_path (mount_point,
-					  (const char **)paths);
-	    }
-	    if (path)
-	    {
-		filename = g_build_filename (path, buf, NULL);
-	    }
-	    g_free (path);
+	    filename = g_build_filename (artwork_dir, buf, NULL);
 	}
 
 	g_free (buf);
@@ -239,14 +244,14 @@ write_thumbnail (gpointer _writer, gpointer _artwork)
 }
 
 static iThumbWriter *
-ithumb_writer_new (const char *mount_point, const IpodArtworkFormat *info)
+ithumb_writer_new (const char *mount_point, const Itdb_ArtworkFormat *info)
 {
 	char *filename;
 	iThumbWriter *writer;
 
 	writer = g_new0 (iThumbWriter, 1);
 
-	writer->img_info = g_memdup (info, sizeof (IpodArtworkFormat));
+	writer->img_info = g_memdup (info, sizeof (Itdb_ArtworkFormat));
 
 	writer->cache = g_hash_table_new_full (g_str_hash, g_str_equal, 
 					       g_free, NULL);
@@ -499,7 +504,7 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
 */
 static gboolean
 ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
-				     const IpodArtworkFormat *info)
+				     const Itdb_ArtworkFormat *info)
 {
     GList *gl;
     GHashTable *filenamehash;
@@ -507,10 +512,15 @@ ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
     GList *thumbs;
     gint i;
     gchar *filename;
+    const gchar *mountpoint;
 
     g_return_val_if_fail (itdb, FALSE);
     g_return_val_if_fail (info, FALSE);
-    g_return_val_if_fail (itdb->mountpoint, FALSE);
+    g_return_val_if_fail (itdb->device, FALSE);
+
+    mountpoint = itdb_get_mountpoint (itdb);
+
+    g_return_val_if_fail (mountpoint, FALSE);
 
     filenamehash = g_hash_table_new_full (g_str_hash, g_str_equal, 
 					  g_free, NULL);
@@ -545,7 +555,7 @@ ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
 
     for (i=0; i<10; ++i)
     {
-	filename = ipod_image_get_ithmb_filename (itdb->mountpoint,
+	filename = ipod_image_get_ithmb_filename (mountpoint,
 						  info->correlation_id,
 						  i);
 	if (g_file_test (filename, G_FILE_TEST_EXISTS))
@@ -574,13 +584,13 @@ itdb_write_ithumb_files (Itdb_iTunesDB *db)
 #ifdef HAVE_GDKPIXBUF
 	GList *writers;
 	GList *it;
-	gchar *mount_point;
-	const IpodArtworkFormat *format;
+	const gchar *mount_point;
+	const Itdb_ArtworkFormat *format;
 /*	g_print ("%s\n", G_GNUC_FUNCTION);*/
 
 	g_return_val_if_fail (db, -1);
 
-	mount_point = db->mountpoint;
+	mount_point = itdb_get_mountpoint (db);
 	/* FIXME: support writing to directory rather than writing to
 	   iPod */
 	if (mount_point == NULL)
@@ -590,8 +600,7 @@ itdb_write_ithumb_files (Itdb_iTunesDB *db)
 		return -1;
 	}
 
-	g_object_get (G_OBJECT (db->device), "artwork-formats", 
-		      &format, NULL);
+	format = itdb_device_get_artwork_formats (db->device);
 	if (format == NULL) {
 		return -1;
 	}
