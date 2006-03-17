@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-17 00:02:22 jcs>
+/* Time-stamp: <2006-03-17 23:09:15 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -5045,7 +5045,7 @@ gchar *itdb_get_path (const gchar *dir, const gchar *file)
 
     g_return_val_if_fail (dir, NULL);
 
-    p_file[0] = dir;
+    p_file[0] = file;
 
     return itdb_resolve_path (dir, p_file);
 }

@@ -13,6 +13,11 @@
 	  private Itdb_Device. Use itdb_set_mountpoint() and
 	  itdb_get_mountpoint() to access the mountpoint.
 
+	* simplified some code by using itdb_get_path() instead of
+	  itdb_resolve_path().
+
+	* itdb_itunesdb.c (itdb_get_path): fixed bug.
+
 2005-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * itdb.h, itdb_itunesdb.c: added functions for autodetection of
