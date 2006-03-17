@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-18 00:35:07 jcs>
+/* Time-stamp: <2006-03-18 00:38:18 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2786,10 +2786,6 @@ static void put_header (WContents *cts, gchar *header)
 
     g_return_if_fail (cts);
     g_return_if_fail (header);
-    if (strlen (header) != 4)
-    {
-	printf ("wrong header: '%s'\n", header);
-    }
     g_return_if_fail (strlen (header) == 4);
 
     /* reverse data for write if necessary */
