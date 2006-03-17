@@ -1,3 +1,7 @@
+2005-02-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb_itunesdb.c (mk_mhod): fixed bug when writing podcast urls.
+
 2005-02-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_device.[ch]: rewrote ipod-device.c, removed all hal-code,

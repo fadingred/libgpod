@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-17 23:09:15 jcs>
+/* Time-stamp: <2006-03-18 00:35:07 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2783,8 +2783,13 @@ static void put_header (WContents *cts, gchar *header)
     gchar rdata[4];
     gint i, offset, sign;
 
+
     g_return_if_fail (cts);
     g_return_if_fail (header);
+    if (strlen (header) != 4)
+    {
+	printf ("wrong header: '%s'\n", header);
+    }
     g_return_if_fail (strlen (header) == 4);
 
     /* reverse data for write if necessary */
@@ -3333,9 +3338,9 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
 	  put_header (cts, "mhod");   /* header                     */
 	  put32lint (cts, 24);        /* size of header             */
 	  put32lint (cts, 24+len);    /* size of header + data      */
-	  put32lint (cts, mhod->type); /* type of the mhod           */
+	  put32lint (cts, mhod->type);/* type of the mhod           */
 	  put32_n0 (cts, 2);          /* unknown                    */
-	  put_header (cts, mhod->data.string); /* the string         */
+	  put_string (cts, mhod->data.string);/* the string         */
       }
       break;
   case MHOD_ID_PLAYLIST:
