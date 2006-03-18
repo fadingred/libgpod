@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-18 00:38:18 jcs>
+/* Time-stamp: <2006-03-18 10:21:27 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -4104,6 +4104,10 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 
     if (!filename) filename = itdb->filename;
 
+    /* set endianess flag */
+    if (!itdb->device->endianess_set)
+	itdb_device_autodetect_endianess (itdb->device);
+
 #if HAVE_GDKPIXBUF
     /* only write ArtworkDB if we deal with an iPod
        FIXME: figure out a way to store the artwork data when storing
@@ -4118,9 +4122,6 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
     fexp->wcontents = wcontents_new (filename);
     cts = fexp->wcontents;
 
-    /* set endianess flag */
-    if (!itdb->device->endianess_set)
-	itdb_device_autodetect_endianess (itdb->device);
     cts->reversed = itdb->device->endianess_reversed;
 
     reassign_ids (fexp);

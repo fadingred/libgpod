@@ -2,6 +2,9 @@
 
 	* itdb_itunesdb.c (mk_mhod): fixed bug when writing podcast urls.
 
+	* itdb_itunesdb.c (itdb_write_file): move endianess autodetection
+	  to a place before calling ipod_write_artwork_db().
+
 2005-02-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_device.[ch]: rewrote ipod-device.c, removed all hal-code,
