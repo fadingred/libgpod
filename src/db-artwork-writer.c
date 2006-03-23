@@ -31,6 +31,7 @@
 #include "db-artwork-debug.h"
 #include "db-itunes-parser.h"
 #include "db-image-parser.h"
+#include "itdb_endianness.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -57,6 +58,7 @@ struct iPodMmapBuffer {
 struct _iPodBuffer {
 	struct iPodMmapBuffer *mmap;
 	off_t offset;
+	guint byte_order;
 };
 
 typedef struct _iPodBuffer iPodBuffer;
@@ -172,6 +174,7 @@ ipod_buffer_get_sub_buffer (iPodBuffer *buffer, off_t offset)
 	}
 	sub_buffer->mmap = buffer->mmap;
 	sub_buffer->offset = buffer->offset + offset;
+	sub_buffer->byte_order = buffer->byte_order;
 
 	buffer->mmap->ref_count++;
 
@@ -179,7 +182,7 @@ ipod_buffer_get_sub_buffer (iPodBuffer *buffer, off_t offset)
 }
 
 static iPodBuffer *
-ipod_buffer_new (const char *filename)
+ipod_buffer_new (const char *filename, guint byte_order)
 {
 	int fd;
 	struct iPodMmapBuffer *mmap_buf;
@@ -224,6 +227,7 @@ ipod_buffer_new (const char *filename)
 		return NULL;
 	}
 	buffer->mmap = mmap_buf;
+	buffer->byte_order = byte_order;
 
 	return buffer;
 }
@@ -238,9 +242,6 @@ enum iPodThumbnailType {
 	IPOD_THUMBNAIL_FULL_SIZE,
 	IPOD_THUMBNAIL_NOW_PLAYING
 };
-
-#define IPOD_THUMBNAIL_FULL_SIZE_SIZE (140*140*2)
-#define IPOD_THUMBNAIL_NOW_PLAYING_SIZE (56*56*2)
 
 
 #define RETURN_SIZE_FOR(id, size) if (strncmp (id, header_id, 4) == 0) return (size)
@@ -266,12 +267,13 @@ get_padded_header_size (gchar header_id[4])
 }
 
 static void *
-init_header (iPodBuffer *buffer, gchar header_id[4], guint header_len)
+init_header (iPodBuffer *buffer, gchar _header_id[4], guint header_len)
 {
 	MHeader *mh;
 	int padded_size;
+	gchar *header_id;
 
-	padded_size = get_padded_header_size (header_id);
+	padded_size = get_padded_header_size (_header_id);
 	if (padded_size != 0) {
 		header_len = padded_size;
 	}
@@ -281,9 +283,15 @@ init_header (iPodBuffer *buffer, gchar header_id[4], guint header_len)
 	}
 	mh = (MHeader*)ipod_buffer_get_pointer (buffer);
 	memset (mh, 0, header_len);
+
+	header_id = g_strndup (_header_id, 4);
+	if (buffer->byte_order == G_BIG_ENDIAN) {
+		g_strreverse (header_id);
+	}
 	strncpy ((char *)mh->header_id, header_id, 4);
-	mh->header_len = GINT_TO_LE (header_len);
-	
+	mh->header_len = get_gint32 (header_len, buffer->byte_order);
+
+	g_free (header_id);
 	return mh;
 }
 
@@ -291,48 +299,78 @@ init_header (iPodBuffer *buffer, gchar header_id[4], guint header_len)
 static int 
 write_mhod_type_3 (Itdb_Thumb *thumb, iPodBuffer *buffer)
 {
-	MhodHeaderArtworkType3 *mhod;
+	ArtworkDB_MhodHeaderArtworkType3 *mhod;
 	unsigned int total_bytes;
 	int len;
-	gunichar2 *utf16;
-	int i;
+	gunichar2 *utf16, *strp;
+	int i, pad;
 
 	g_assert (thumb->filename != NULL);
 
-	mhod = (MhodHeaderArtworkType3 *)init_header (buffer, "mhod", 
-						      sizeof (MhodHeaderArtworkType3));
+	mhod = (ArtworkDB_MhodHeaderArtworkType3 *)
+	    init_header (buffer, "mhod", 
+			 sizeof (ArtworkDB_MhodHeaderArtworkType3));
 	if (mhod == NULL) {
 		return -1;
 	}
-	total_bytes = sizeof (MhodHeaderArtworkType3);
-	mhod->total_len = GINT_TO_LE (total_bytes);
+	total_bytes = sizeof (ArtworkDB_MhodHeaderArtworkType3);
+	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
 	/* Modify header length, since iTunes only puts the length of 
 	 * MhodHeader in header_len
 	 */
-	mhod->header_len = GINT_TO_LE (sizeof (MhodHeader));
-	mhod->type = GINT_TO_LE (3);
-	mhod->mhod_version = GINT_TO_LE (2);
+	mhod->header_len = get_gint32 (sizeof (ArtworkDB_MhodHeader), 
+				       buffer->byte_order);
+	mhod->type = get_gint16 (3, buffer->byte_order);
 
 	len = strlen (thumb->filename);
 
-	/* number of bytes of the string encoded in UTF-16 */
-	mhod->string_len = GINT_TO_LE (2*len);
-
 	/* Make sure we have enough free space to write the string */
-	if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len) != 0) {
+	if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len+2) != 0) {
 		return  -1;
 	}
-	utf16 = g_utf8_to_utf16 (thumb->filename, -1, NULL, NULL, NULL);
-	if (utf16 == NULL) {		
+
+	/* Some magic: endianess-reversed (BE) mobile phones use UTF8
+	 * (version 1) with padding, standard iPods (LE) use UTF16
+	 * (version 2).*/
+
+	switch (buffer->byte_order)
+	{
+	case G_LITTLE_ENDIAN:
+	    mhod->mhod_version = 2;
+
+	    /* number of bytes of the string encoded in UTF-16 */
+	    mhod->string_len = get_gint32 (2*len, buffer->byte_order);
+
+	    utf16 = g_utf8_to_utf16 (thumb->filename, -1, NULL, NULL, NULL);
+	    if (utf16 == NULL) {		
 		return -1;
+	    }
+	    strp = (gunichar2 *)mhod->string;
+	    memcpy (strp, utf16, 2*len);
+	    g_free (utf16);
+	    for (i = 0; i < len; i++) {
+		strp[i] = get_gint16 (strp[i], buffer->byte_order);
+	    }
+	    total_bytes += 2*len;
+	    break;
+	case G_BIG_ENDIAN:
+	    mhod->mhod_version = 1;
+	    mhod->string_len = get_gint32 (len, buffer->byte_order);
+	    memcpy (mhod->string, thumb->filename, len);
+	    /* pad string if necessary */
+	    /* e.g. len = 7 bytes, len%4 = 3, 4-3=1 -> requires 1 byte
+	       padding */
+	    pad = 4 - (len % 4);
+	    if (pad == 4)  pad = 0;
+	    for (i=0; i<pad; ++i)
+	    {
+		mhod->string[len+i] = 0;
+	    }
+	    mhod->padding = pad;
+	    total_bytes += (len+pad);
 	}
-	memcpy (mhod->string, utf16, 2*len);
-	g_free (utf16);
-	for (i = 0; i < len; i++) {
-		mhod->string[i] = GINT_TO_LE (mhod->string[i]);
-	}
-	total_bytes += 2*len;
-	mhod->total_len = GINT_TO_LE (total_bytes);	
+
+	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
 
 	dump_mhod_type_3 (mhod);
 
@@ -356,14 +394,14 @@ write_mhni (Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
 	if (mhni == NULL) {
 		return -1;
 	}
-	total_bytes = GINT_FROM_LE (mhni->header_len);
-	mhni->total_len = GINT_TO_LE (total_bytes);
+	total_bytes = get_gint32 (mhni->header_len, buffer->byte_order);
+	mhni->total_len = get_gint32 (total_bytes, buffer->byte_order);
 
-	mhni->correlation_id = GINT_TO_LE (correlation_id);
-	mhni->image_width  = GINT16_TO_LE (thumb->width);
-	mhni->image_height = GINT16_TO_LE (thumb->height);
-	mhni->image_size   = GINT32_TO_LE (thumb->size);
-	mhni->ithmb_offset = GINT32_TO_LE (thumb->offset);
+	mhni->correlation_id = get_gint32 (correlation_id, buffer->byte_order);
+	mhni->image_width  = get_gint16 (thumb->width, buffer->byte_order);
+	mhni->image_height = get_gint16 (thumb->height, buffer->byte_order);
+	mhni->image_size   = get_gint32 (thumb->size, buffer->byte_order);
+	mhni->ithmb_offset = get_gint32 (thumb->offset, buffer->byte_order);
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {
@@ -375,11 +413,11 @@ write_mhni (Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
 		return -1;
 	}
 	total_bytes += bytes_written;
-	mhni->total_len = GINT_TO_LE (total_bytes);
+	mhni->total_len = get_gint32 (total_bytes, buffer->byte_order);
 	/* Only update number of children when all went well to try to get
 	 * something somewhat consistent when there are errors 
 	 */
-	mhni->num_children = GINT_TO_LE (1);
+	mhni->num_children = get_gint32 (1, buffer->byte_order);
 	
 	dump_mhni (mhni);
 
@@ -389,7 +427,7 @@ write_mhni (Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
 static int
 write_mhod (Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
 {
-	MhodHeader *mhod;
+	ArtworkDB_MhodHeader *mhod;
 	unsigned int total_bytes;
 	int bytes_written;
 	iPodBuffer *sub_buffer;
@@ -398,14 +436,15 @@ write_mhod (Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
 		return -1;
 	}
 
-	mhod = (MhodHeader *)init_header (buffer, "mhod", 
-					  sizeof (MhodHeader));
+	mhod = (ArtworkDB_MhodHeader *)
+	    init_header (buffer, "mhod", 
+			 sizeof (ArtworkDB_MhodHeader));
 	if (mhod == NULL) {
 		return -1;
 	}
-	total_bytes = sizeof (MhodHeader);
-	mhod->total_len = GINT_TO_LE (total_bytes);
-	mhod->type = GINT_TO_LE (MHOD_TYPE_LOCATION);
+	total_bytes = sizeof (ArtworkDB_MhodHeader);
+	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
+	mhod->type = get_gint16 (MHOD_TYPE_LOCATION, buffer->byte_order);
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {
 		return -1;
@@ -416,7 +455,7 @@ write_mhod (Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
 		return -1;
 	}
 	total_bytes += bytes_written;
-	mhod->total_len = GINT_TO_LE (total_bytes);
+	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
 
 	dump_mhod (mhod);
 
@@ -436,18 +475,20 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 	if (mhii == NULL) {
 		return -1;
 	}
-	total_bytes = GINT_FROM_LE (mhii->header_len);
-	mhii->song_id = GINT64_TO_LE (song->dbid);
-	mhii->image_id = GUINT_TO_LE (song->artwork->id);
-	mhii->orig_img_size = GINT_TO_LE (song->artwork->artwork_size);
+	total_bytes = get_gint32 (mhii->header_len, buffer->byte_order);
+	mhii->song_id = get_gint64 (song->dbid, buffer->byte_order);
+	mhii->image_id = get_guint32 (song->artwork->id, buffer->byte_order);
+	mhii->orig_img_size = get_gint32 (song->artwork->artwork_size, 
+					  buffer->byte_order);
 	num_children = 0;
 	for (it = song->artwork->thumbnails; it != NULL; it = it->next) {
 		iPodBuffer *sub_buffer;
 		Itdb_Thumb *thumb;
 		const Itdb_ArtworkFormat *img_info;
 
-		mhii->num_children = GINT_TO_LE (num_children);
-		mhii->total_len = GINT_TO_LE (total_bytes);
+		mhii->num_children = get_gint32 (num_children, 
+						 buffer->byte_order);
+		mhii->total_len = get_gint32 (total_bytes, buffer->byte_order);
 		sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 		if (sub_buffer == NULL) {
 			return -1;
@@ -471,8 +512,8 @@ write_mhii (Itdb_Track *song, iPodBuffer *buffer)
 		num_children++;
 	}
 
-	mhii->num_children = GINT_TO_LE (num_children);
-	mhii->total_len = GINT_TO_LE (total_bytes);
+	mhii->num_children = get_gint32 (num_children, buffer->byte_order);
+	mhii->total_len = get_gint32 (total_bytes, buffer->byte_order);
 
 	dump_mhii (mhii);
 
@@ -493,7 +534,7 @@ write_mhli (Itdb_iTunesDB *db, iPodBuffer *buffer)
 	}
 
 	num_thumbs = 0;
-	total_bytes = GINT_FROM_LE (mhli->header_len);
+	total_bytes = get_gint32 (mhli->header_len, buffer->byte_order);
 	for (it = db->tracks; it != NULL; it = it->next) {
 		Itdb_Track *song;
 		int bytes_written;
@@ -515,7 +556,7 @@ write_mhli (Itdb_iTunesDB *db, iPodBuffer *buffer)
 		}
 	}
 
-	mhli->num_children = GINT_TO_LE (num_thumbs);
+	mhli->num_children = get_gint32 (num_thumbs, buffer->byte_order);
 
 	dump_mhl ((MhlHeader *)mhli, "mhli");
 
@@ -534,7 +575,7 @@ write_mhla (Itdb_iTunesDB *db, iPodBuffer *buffer)
 	
 	dump_mhl ((MhlHeader *)mhla, "mhla");
 
-	return GINT_FROM_LE (mhla->header_len);
+	return get_gint32 (mhla->header_len, buffer->byte_order);
 }
 
 
@@ -556,12 +597,14 @@ write_mhif (Itdb_iTunesDB *db, iPodBuffer *buffer, enum iPodThumbnailType type)
 		return -1;
 	}
 
-	mhif->correlation_id = GINT_TO_LE (img_info->correlation_id);
-	mhif->image_size = GINT_TO_LE (img_info->height * img_info->width * 2);
+	mhif->correlation_id = get_gint32 (img_info->correlation_id, 
+					   buffer->byte_order);
+	mhif->image_size = get_gint32 (img_info->height * img_info->width * 2,
+				       buffer->byte_order);
 
 	dump_mhif (mhif);
 	
-	return GINT_FROM_LE (mhif->header_len);
+	return get_gint32 (mhif->header_len, buffer->byte_order);
 }
 
 
@@ -578,7 +621,7 @@ write_mhlf (Itdb_iTunesDB *db, iPodBuffer *buffer)
 		return -1;
 	}
 
-	total_bytes = GINT_FROM_LE (mhlf->header_len);
+	total_bytes = get_gint32 (mhlf->header_len, buffer->byte_order);
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {
@@ -598,7 +641,7 @@ write_mhlf (Itdb_iTunesDB *db, iPodBuffer *buffer)
 	 * thumbnails: F1016_1.ithmb for the bigger thumbnails (39200 bytes)
 	 * and F1017_1.ithmb for the 'now playing' thumbnails (6272)
 	 */
-	mhlf->num_files = GINT_TO_LE (1);
+	mhlf->num_files = get_gint32 (1, buffer->byte_order);
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {
@@ -618,7 +661,7 @@ write_mhlf (Itdb_iTunesDB *db, iPodBuffer *buffer)
 	 * thumbnails: F1016_1.ithmb for the bigger thumbnails (39200 bytes)
 	 * and F1017_1.ithmb for the 'now playing' thumbnails (6272)
 	 */
-	mhlf->num_files = GINT_TO_LE (2);
+	mhlf->num_files = get_gint32 (2, buffer->byte_order);
 
 	dump_mhl ((MhlHeader *)mhlf, "mhlf");
 
@@ -629,20 +672,20 @@ write_mhlf (Itdb_iTunesDB *db, iPodBuffer *buffer)
 static int 
 write_mhsd (Itdb_iTunesDB *db, iPodBuffer *buffer, enum MhsdType type)
 {
-	MhsdHeader *mhsd;
+	ArtworkDB_MhsdHeader *mhsd;
 	unsigned int total_bytes;
 	int bytes_written;
 	iPodBuffer *sub_buffer;
 
 	g_assert (type >= MHSD_TYPE_MHLI);
 	g_assert (type <= MHSD_TYPE_MHLF);
-	mhsd = (MhsdHeader *)init_header (buffer, "mhsd", sizeof (MhsdHeader));
+	mhsd = (ArtworkDB_MhsdHeader *)init_header (buffer, "mhsd", sizeof (ArtworkDB_MhsdHeader));
 	if (mhsd == NULL) {
 		return -1;
 	}
-	total_bytes = GINT_FROM_LE (mhsd->header_len);
-	mhsd->total_len = GINT_TO_LE (total_bytes);
-	mhsd->index = GINT_TO_LE (type);
+	total_bytes = get_gint32 (mhsd->header_len, buffer->byte_order);
+	mhsd->total_len = get_gint32 (total_bytes, buffer->byte_order);
+	mhsd->index = get_gint16 (type, buffer->byte_order);
 	bytes_written = -1;
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
@@ -665,7 +708,7 @@ write_mhsd (Itdb_iTunesDB *db, iPodBuffer *buffer, enum MhsdType type)
 		return -1;
 	} else {
 		total_bytes += bytes_written;
-		mhsd->total_len = GINT_TO_LE (total_bytes);
+		mhsd->total_len = get_gint32 (total_bytes, buffer->byte_order);
 	}
 
 	dump_mhsd (mhsd);
@@ -685,11 +728,11 @@ write_mhfd (Itdb_iTunesDB *db, iPodBuffer *buffer, int id_max)
 	if (mhfd == NULL) {
 		return -1;
 	}
-	total_bytes = GINT_FROM_LE (mhfd->header_len);
-	mhfd->total_len = GINT_TO_LE (total_bytes);
-	mhfd->unknown2 = GINT_TO_LE (1);
-	mhfd->unknown4 = GINT_TO_LE (id_max);
-	mhfd->unknown7 = GINT_TO_LE (2);
+	total_bytes = get_gint32 (mhfd->header_len, buffer->byte_order);
+	mhfd->total_len = get_gint32 (total_bytes, buffer->byte_order);
+	mhfd->unknown2 = get_gint32 (1, buffer->byte_order);
+	mhfd->unknown4 = get_gint32 (id_max, buffer->byte_order);
+	mhfd->unknown_flag1 = 2;
 	for (i = 1 ; i <= 3; i++) {
 		iPodBuffer *sub_buffer;
 
@@ -703,8 +746,8 @@ write_mhfd (Itdb_iTunesDB *db, iPodBuffer *buffer, int id_max)
 			return -1;
 		}
 		total_bytes += bytes_written;
-		mhfd->total_len = GINT_TO_LE (total_bytes);
-		mhfd->num_children = GINT_TO_LE (i);
+		mhfd->total_len = get_gint32 (total_bytes, buffer->byte_order);
+		mhfd->num_children = get_gint32 (i, buffer->byte_order);
 	}
 
 	dump_mhfd (mhfd);
@@ -756,7 +799,7 @@ ipod_write_artwork_db (Itdb_iTunesDB *db)
 		 */
 		return -1;
 	}
-	buf = ipod_buffer_new (filename);
+	buf = ipod_buffer_new (filename, db->device->byte_order);
 	if (buf == NULL) {
 		g_print ("Couldn't create %s\n", filename);
 		g_free (filename);

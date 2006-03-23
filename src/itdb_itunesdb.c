@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-18 10:21:27 jcs>
+/* Time-stamp: <2006-03-23 23:30:35 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2054,7 +2054,8 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->unk132 = get32lint (cts, seek+132);
       track->samplerate2 = get32lfloat (cts, seek+136);
       track->time_released = get32lint (cts, seek+140);
-      track->unk144 = get32lint (cts, seek+144);
+      track->unk144 = get16lint (cts, seek+144);
+      track->unk146 = get16lint (cts, seek+146);
       track->unk148 = get32lint (cts, seek+148);
       track->unk152 = get32lint (cts, seek+152);
   }
@@ -2526,8 +2527,15 @@ static gboolean parse_fimp (FImport *fimp)
     }
 
     /* copy the 'reversed endian flag' */
+    if (cts->reversed) {
+      fimp->itdb->device->byte_order = G_BIG_ENDIAN;
+    } else {
+      fimp->itdb->device->byte_order = G_LITTLE_ENDIAN;
+    }
+#if 0
     fimp->itdb->device->endianess_set = TRUE;
     fimp->itdb->device->endianess_reversed = cts->reversed;
+#endif
 
     parse_tracks (fimp, mhsd_1);
     if (fimp->error) return FALSE;
@@ -3213,7 +3221,8 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->unk132);
   put32lfloat (cts, track->samplerate2);
   put32lint (cts, track->time_released);
-  put32lint (cts, track->unk144);
+  put16lint (cts, track->unk144);
+  put16lint (cts, track->unk146);
   put32lint (cts, track->unk148);
   put32lint (cts, track->unk152);
   /* since iTunesDB version 0x0c */
@@ -4105,7 +4114,7 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
     if (!filename) filename = itdb->filename;
 
     /* set endianess flag */
-    if (!itdb->device->endianess_set)
+    if (!itdb->device->byte_order)
 	itdb_device_autodetect_endianess (itdb->device);
 
 #if HAVE_GDKPIXBUF
@@ -4122,7 +4131,7 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
     fexp->wcontents = wcontents_new (filename);
     cts = fexp->wcontents;
 
-    cts->reversed = itdb->device->endianess_reversed;
+    cts->reversed = (itdb->device->byte_order == G_BIG_ENDIAN);
 
     reassign_ids (fexp);
 

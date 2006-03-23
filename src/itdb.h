@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-16 23:50:32 jcs>
+/* Time-stamp: <2006-03-23 23:30:34 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -619,12 +619,13 @@ struct _Itdb_Track
 			 0700 GMT. For podcasts: release date as
 			 displayed next to the title in the Podcast
 			 playlist  */
-  guint32 unk144;     /* unknown, but MP3 songs appear to be always
-			 0x0000000c or 0x0100000c (if played one or
-			 more times in iTunes), AAC songs are always
-			 0x01000033, Audible files are 0x01000029, WAV
-			 files are 0x0. itdb will attempt to set this
-			 value when adding a track. */  
+  guint16 unk144;     /* unknown, but MP3 songs appear to be always
+			 0x000c, AAC songs are always 0x0033, Audible
+			 files are 0x0029, WAV files are 0x0. itdb
+			 will attempt to set this value when adding a
+			 track. */  
+  guint16 unk146;     /* unknown, but appears to be 1 if played at
+			 least once in iTunes and 0 otherwise. */
   guint32 unk148;     /* unknown - used for Apple Store DRM songs
 			 (always 0x01010100?), zero otherwise */
   guint32 unk152;     /* unknown */

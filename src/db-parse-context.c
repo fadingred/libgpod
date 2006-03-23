@@ -35,9 +35,10 @@
 #include "glib-compat.h"
 #include "db-parse-context.h"
 #include "db-itunes-parser.h"
+#include "itdb_endianness.h"
 
 DBParseContext *
-db_parse_context_new (const unsigned char *buffer, off_t len)
+db_parse_context_new (const unsigned char *buffer, off_t len, guint byte_order)
 {
 	DBParseContext *result;
 
@@ -49,6 +50,7 @@ db_parse_context_new (const unsigned char *buffer, off_t len)
 	result->buffer = buffer;
 	result->cur_pos = buffer;
 	result->total_len = len;
+	result->byte_order = byte_order;
 
 	return result;
 }
@@ -106,7 +108,8 @@ db_parse_context_get_sub_context (DBParseContext *ctx, off_t offset)
 		return NULL;
 	}
 	return db_parse_context_new (&ctx->buffer[offset], 
-				     ctx->total_len - offset);
+				     ctx->total_len - offset, 
+				     ctx->byte_order);
 }
 
 
@@ -127,15 +130,21 @@ void *
 db_parse_context_get_m_header_internal (DBParseContext *ctx, const char *id, off_t size) 
 {
 	MHeader *h;
+	char *header_id;
 
 	if (db_parse_context_get_remaining_length (ctx) < 8) {
 		return NULL;
 	}
 
 	h = (MHeader *)ctx->cur_pos;
-	if (strncmp (id, (char *)h->header_id, 4) != 0) {
+	header_id = g_strndup ((char *)h->header_id, 4);
+	if (ctx->byte_order == G_BIG_ENDIAN) {
+		g_strreverse (header_id);
+	}
+	if (strncmp (id, header_id, 4) != 0) {
 		return NULL;
 	}
+	g_free (header_id);
 
 	/* FIXME: this test sucks for compat: if a field is smaller than 
 	 * expected, we probably should create a buffer of the appropriate 
@@ -143,17 +152,18 @@ db_parse_context_get_m_header_internal (DBParseContext *ctx, const char *id, off
 	 * that buffer in the rest of the code (maybe it's harmful to have
 	 * some fields at 0 in some headers though...)
 	 */
-	if (GINT_FROM_LE (h->header_len) < size) {
+	if (get_gint32 (h->header_len, ctx->byte_order) < size) {
 		return NULL;
 	}
 
-	db_parse_context_set_header_len (ctx, GINT_FROM_LE (h->header_len));
+	db_parse_context_set_header_len (ctx, get_gint32 (h->header_len, 
+							  ctx->byte_order));
 
 	return h;
 }
 
 DBParseContext *
-db_parse_context_new_from_file (const char *filename)
+db_parse_context_new_from_file (const char *filename, guint byte_order)
 {
 	int fd;
 	struct stat stat_buf;
@@ -196,7 +206,7 @@ db_parse_context_new_from_file (const char *filename)
 		goto error;
 	}
 
-	ctx = db_parse_context_new (buffer, stat_buf.st_size);
+	ctx = db_parse_context_new (buffer, stat_buf.st_size, byte_order);
 	if (ctx == NULL) {
 		munmap (buffer, stat_buf.st_size);
 	}

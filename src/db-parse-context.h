@@ -33,6 +33,7 @@ struct _DBParseContext {
 	const unsigned char *cur_pos;
 	off_t header_len;
 	off_t total_len;
+	guint byte_order;
 };
 
 typedef struct _DBParseContext DBParseContext;
@@ -40,15 +41,32 @@ typedef struct _DBParseContext DBParseContext;
 
 #define db_parse_context_get_m_header(ctx, type, id) (type *)db_parse_context_get_m_header_internal (ctx, id, sizeof (type))
 
-G_GNUC_INTERNAL DBParseContext *db_parse_context_new (const unsigned char *buffer, off_t len) G_GNUC_INTERNAL;
-G_GNUC_INTERNAL void db_parse_context_set_total_len (DBParseContext *ctx, off_t len) G_GNUC_INTERNAL;
-G_GNUC_INTERNAL off_t db_parse_context_get_remaining_length (DBParseContext *ctx) G_GNUC_INTERNAL;
-G_GNUC_INTERNAL DBParseContext *db_parse_context_get_sub_context (DBParseContext *ctx, 
-						  off_t offset) G_GNUC_INTERNAL;
-G_GNUC_INTERNAL DBParseContext *db_parse_context_get_next_child (DBParseContext *ctx) G_GNUC_INTERNAL;
-G_GNUC_INTERNAL void *db_parse_context_get_m_header_internal (DBParseContext *ctx, const char *id, off_t size) G_GNUC_INTERNAL;
+G_GNUC_INTERNAL DBParseContext *
+db_parse_context_new (const unsigned char *buffer, 
+		      off_t len, guint byte_order);
 
-G_GNUC_INTERNAL DBParseContext *db_parse_context_new_from_file (const char *filename) G_GNUC_INTERNAL;
-G_GNUC_INTERNAL void db_parse_context_destroy (DBParseContext *ctx, gboolean unmap);
+G_GNUC_INTERNAL void 
+db_parse_context_set_total_len (DBParseContext *ctx, off_t len);
+
+G_GNUC_INTERNAL off_t 
+db_parse_context_get_remaining_length (DBParseContext *ctx) G_GNUC_INTERNAL;
+
+G_GNUC_INTERNAL DBParseContext *
+db_parse_context_get_sub_context (DBParseContext *ctx, off_t offset);
+
+
+G_GNUC_INTERNAL DBParseContext *
+db_parse_context_get_next_child (DBParseContext *ctx);
+
+
+G_GNUC_INTERNAL void *
+db_parse_context_get_m_header_internal (DBParseContext *ctx, 
+					const char *id, off_t size);
+
+G_GNUC_INTERNAL DBParseContext *
+db_parse_context_new_from_file (const char *filename, guint byte_order);
+
+G_GNUC_INTERNAL void 
+db_parse_context_destroy (DBParseContext *ctx, gboolean unmap);
 
 #endif

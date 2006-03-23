@@ -24,6 +24,8 @@
 
 #include "db-artwork-debug.h"
 
+/* FIXME: endianness (whole file) */
+
 #ifdef DEBUG_ARTWORKDB
 G_GNUC_INTERNAL void
 dump_mhif (MhifHeader *mhif)
@@ -169,8 +171,8 @@ dump_mhsd (MhsdHeader *mhsd)
 	g_print ("MHSD (%d):\n", sizeof (MhsdHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhsd->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhsd->total_len));
-	g_print ("\tIndex: %d ", GINT_FROM_LE (mhsd->index));
-	switch (GINT_FROM_LE (mhsd->index)) {
+	g_print ("\tIndex: %d ", GINT16_FROM_LE (mhsd->index));
+	switch (GINT16_FROM_LE (mhsd->index)) {
 	case MHSD_IMAGE_LIST:
 		g_print ("(Image list)\n");
 		break;

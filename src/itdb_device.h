@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-16 23:02:20 jcs>
+/* Time-stamp: <2006-03-21 17:22:34 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -53,11 +53,17 @@ struct _Itdb_Device
 {
     gchar *mountpoint;    /* mountpoint of the iPod */
     gint   musicdirs;     /* number of /iPod_Control/Music/F.. dirs */
+    guint  byte_order;    /* G_LITTLE_ENDIAN "regular" endianness 
+			   * G_BIG_ENDIAN "reversed" endianness (e.g. mobile
+			   * phone iTunesDBs)
+			   */
+#if 0
     gboolean endianess_set; /* the endianess_reversed flag has been
 			     detected or set */
     gboolean endianess_reversed; /* this iTunesDB has to be written in
 			     reversed endian order (e.g. mobile phone
 			     iTunesDBs) */
+#endif
     GHashTable *sysinfo;  /* hash with value/key pairs of all entries
 			     in Device/SysInfo */
 };
@@ -83,7 +89,8 @@ typedef enum {
 	SECOND_GENERATION,
 	THIRD_GENERATION,
 	FOURTH_GENERATION,
-	FIFTH_GENERATION
+	FIFTH_GENERATION,
+	MOBILE_GENERATION
 } Itdb_Generation;
 
 typedef enum {
@@ -102,7 +109,8 @@ typedef enum {
 	MODEL_TYPE_NANO_WHITE,
 	MODEL_TYPE_NANO_BLACK,
 	MODEL_TYPE_VIDEO_WHITE,
-	MODEL_TYPE_VIDEO_BLACK
+	MODEL_TYPE_VIDEO_BLACK,
+	MODEL_TYPE_MOBILE_1
 } Itdb_ModelType;
 
 

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-15 00:11:15 jcs>
+/* Time-stamp: <2006-03-23 23:30:34 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -123,26 +123,26 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
     {
 	if (haystack (tr->filetype, mp3_desc))
 	{
-	    tr->unk144 = 0x0000000c;
+	    tr->unk144 = 0x000c;
 	}
 	else if (haystack (tr->filetype, mp4_desc))
 	{
 	    if (haystack (tr->filetype, audible_subdesc))
 	    {
-		tr->unk144 = 0x01000029;
+		tr->unk144 = 0x0029;
 	    }
 		else
 	    {
-		tr->unk144 = 0x01000033;
+		tr->unk144 = 0x0033;
 	    }
 	}
 	else if (haystack (tr->filetype, wav_desc))
 	{
-	    tr->unk144 = 0x00;
+	    tr->unk144 = 0x0000;
 	}
 	else
 	{
-	    tr->unk144 = 0x00;  /* default value */
+	    tr->unk144 = 0x0000;  /* default value */
 	}
     }
     if (is_video_ipod (tr->itdb->device))

@@ -30,12 +30,13 @@
 #include <glib-object.h>
 
 #include "itdb_device.h"
+#include "itdb_endianness.h"
 #include "db-artwork-parser.h"
 #include "db-image-parser.h"
 #include <glib/gi18n-lib.h>
 
 static int
-image_type_from_corr_id (Itdb_Device *device, int corr_id)
+image_type_from_corr_id (Itdb_Device *device, gint16 corr_id)
 {
 	const Itdb_ArtworkFormat *formats;
 
@@ -88,21 +89,24 @@ itdb_get_artwork_info_from_type (Itdb_Device *device, int image_type)
 G_GNUC_INTERNAL Itdb_Thumb *
 ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_iTunesDB *db)
 {
-
 	Itdb_Thumb *img;
+	gint16 corr_id;
+
 	img = g_new0 (Itdb_Thumb, 1);
 	if (img == NULL) {
 		return NULL;
 	}
-	img->size   = GUINT32_FROM_LE (mhni->image_size);
-	img->offset = GUINT32_FROM_LE (mhni->ithmb_offset);
-	img->width  = GINT16_FROM_LE (mhni->image_width);
-	img->height = GINT16_FROM_LE (mhni->image_height);
+	img->size   = get_guint32_db (db, mhni->image_size);
+	img->offset = get_guint32_db (db, mhni->ithmb_offset);
+	img->width  = get_gint16_db (db, mhni->image_width);
+	img->height = get_gint16_db (db, mhni->image_height);
 
-	img->type = image_type_from_corr_id (db->device, mhni->correlation_id);
+	corr_id = get_gint32_db (db, mhni->correlation_id);
+	img->type = image_type_from_corr_id (db->device, corr_id);
 	if ((img->type != IPOD_COVER_SMALL) && (img->type != IPOD_COVER_LARGE)) {
 		g_warning ("Unexpected cover type in mhni: type %d, size: %ux%u (%d), offset: %d\n", 
-			   img->type, img->width, img->height, mhni->correlation_id, img->offset);
+			   img->type, img->width, img->height, 
+			   corr_id, img->offset);
 		g_free (img);
 		return NULL;
 	}

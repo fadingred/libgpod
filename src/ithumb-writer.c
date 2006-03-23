@@ -29,6 +29,7 @@
 #ifdef HAVE_GDKPIXBUF
 
 #include "itdb_private.h"
+#include "itdb_endianness.h"
 
 #include <errno.h>
 #include <locale.h>
@@ -46,6 +47,7 @@ struct _iThumbWriter {
 	FILE *f;
         gchar *filename;
 	Itdb_ArtworkFormat *img_info;
+        guint byte_order;
 	GHashTable *cache;
 };
 typedef struct _iThumbWriter iThumbWriter;
@@ -56,7 +58,7 @@ typedef struct _iThumbWriter iThumbWriter;
  * square
  */
 static guint16 *
-pack_RGB_565 (GdkPixbuf *pixbuf, int dst_width, int dst_height)
+pack_RGB_565 (GdkPixbuf *pixbuf, int dst_width, int dst_height, guint byte_order)
 {
 	guchar *pixels;
 	guint16 *result;
@@ -93,7 +95,8 @@ pack_RGB_565 (GdkPixbuf *pixbuf, int dst_width, int dst_height)
 			r = (r << RED_SHIFT) & RED_MASK;
 			g = (g << GREEN_SHIFT) & GREEN_MASK;
 			b = (b << BLUE_SHIFT) & BLUE_MASK;
-			result[h*dst_width + w] =  (GINT16_TO_LE (r | g | b));
+			result[h*dst_width + w] =  get_gint16 (r | g | b,
+							       byte_order);
 		}
 	}
 	return result;
@@ -140,6 +143,7 @@ ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gin
 	{
 	    filename = g_build_filename (artwork_dir, buf, NULL);
 	}
+/*	printf ("%s %s\n", buf, filename);*/
 
 	g_free (buf);
 
@@ -203,7 +207,8 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     thumb->filename = g_strdup_printf (":F%04u_1.ithmb", 
 				       writer->img_info->correlation_id);
     pixels = pack_RGB_565 (pixbuf, writer->img_info->width, 
-			   writer->img_info->height);
+			   writer->img_info->height,
+			   writer->byte_order);
     g_object_unref (G_OBJECT (pixbuf));
 
     if (pixels == NULL)
@@ -244,7 +249,9 @@ write_thumbnail (gpointer _writer, gpointer _artwork)
 }
 
 static iThumbWriter *
-ithumb_writer_new (const char *mount_point, const Itdb_ArtworkFormat *info)
+ithumb_writer_new (const char *mount_point,
+		   const Itdb_ArtworkFormat *info,
+		   guint byte_order)
 {
 	char *filename;
 	iThumbWriter *writer;
@@ -255,6 +262,8 @@ ithumb_writer_new (const char *mount_point, const Itdb_ArtworkFormat *info)
 
 	writer->cache = g_hash_table_new_full (g_str_hash, g_str_equal, 
 					       g_free, NULL);
+
+	writer->byte_order = byte_order;
 
 	filename = ipod_image_get_ithmb_filename (mount_point, 
 						  info->correlation_id,
@@ -586,9 +595,9 @@ itdb_write_ithumb_files (Itdb_iTunesDB *db)
 	GList *it;
 	const gchar *mount_point;
 	const Itdb_ArtworkFormat *format;
-/*	g_print ("%s\n", G_GNUC_FUNCTION);*/
 
 	g_return_val_if_fail (db, -1);
+	g_return_val_if_fail (db->device, -1);
 
 	mount_point = itdb_get_mountpoint (db);
 	/* FIXME: support writing to directory rather than writing to
@@ -614,7 +623,8 @@ itdb_write_ithumb_files (Itdb_iTunesDB *db)
 		case IPOD_COVER_LARGE:
 		        ithmb_rearrange_existing_thumbnails (db,
 							     format);
-			writer = ithumb_writer_new (mount_point, format);
+			writer = ithumb_writer_new (mount_point, format,
+						    db->device->byte_order);
 			if (writer != NULL) {
 				writers = g_list_prepend (writers, writer);
 			}

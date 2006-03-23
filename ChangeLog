@@ -1,11 +1,21 @@
-2005-02-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	Alpha version of reversed-endian Artwork writing. Status: iTunesDB
+	can be written and is accepted on mobile phones, ArtworkDB can be
+	read and be written as well, but newly added artwork will not yet
+	display.
+
+	* itdb.h: adjusted a couple of field lengths (4 byte -> 2 byte or
+	  even 1 byte) to address endian issues.
+
+2006-02-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_itunesdb.c (mk_mhod): fixed bug when writing podcast urls.
 
 	* itdb_itunesdb.c (itdb_write_file): move endianess autodetection
 	  to a place before calling ipod_write_artwork_db().
 
-2005-02-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_device.[ch]: rewrote ipod-device.c, removed all hal-code,
 	  removed all code irrelevant to writing the iTunesDB and
@@ -25,14 +35,14 @@
 
 	* itdb_itunesdb.c (itdb_get_path): fixed bug.
 
-2005-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * itdb.h, itdb_itunesdb.c: added functions for autodetection of
 	  iControl directory (currently either <mp>/iPod_Control or
 	  <mp>/iTunes/iTunes_Control): itdb_get_control_dir() and
 	  itdb_get_itunes_dir()
 
-2005-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb.h: added movie_flag and lyrics_flag to Itdb_Track
 
@@ -46,17 +56,17 @@
 	  read yet. The ArtworkDB and thumbnail files cannot be parsed
 	  yet.
 
-2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* ipod-device.c: added entries for iPod Nano 1 GB black and white
 	  (thanks to Leonhard Gruenschlos)
 
-2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* configure.ac: enable/disable switches for gdk and hal. Thanks to
 	  Olivier Crête
 
-2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* configure.ac: bumped version to 0.3.3 for new CVS version.
 
@@ -71,17 +81,17 @@
 	* db-itunes-parser.h: replaced the #pragma pack(4) with an
 	  'packed' attribute on _MhiiHeader only.
 
-2005-02-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* ipod-device.c: (ipod_device_set_property): fixed possible
 	  segfault when hald is present.
 
-2005-02-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* configure.ac, po/es.po: added Spanish translation catalog
 	  (thanks to Azael Avalos)
 
-2005-02-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * libgpod-1.0.pc: added gobject-2.0 to 'Requires:' list
 
@@ -91,7 +101,7 @@
 	* src/ipod-device.c: added HP type color photo ipod 'S492'. Thanks
 	  to David Desrosiers.
 	
-2005-02-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* po/ja.po: updated Japanese catalog -- thanks to Kentaro Fukuchi
 
@@ -99,20 +109,20 @@
 	  caused ipod-detection to fail if hal daemon was not running. As
 	  a consequence cover art was not written to the iPod.
 
-2005-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c: (itunesstats_read) Fixed error when reading
 	  the Shuffle's stat file (0x18 was used as minimal record length
 	  instead of decimal '18').
 
-2005-02-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-02-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c, src/itdb_playlist.c, src/ithumb-writer.c:
 	  removed nested-functions. Thanks to Brian Jackson for the patch
 	  (he was not the only to send patches -- please, nobody feel
 	  offended that I didn't act sooner).
 
-2005-01-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-01-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/ipod-device.c: (ipod_device_set_property) check hal_context
 	  before accessing it to avoid segfault when hald is not running.

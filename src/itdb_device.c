@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-17 00:02:22 jcs>
+/* Time-stamp: <2006-03-21 17:22:25 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -117,6 +117,13 @@ static const Itdb_IpodModel ipod_model_table [] = {
 	/* HP iPods, need contributions for this table */
 	{"E436", 40 * GB, MODEL_TYPE_REGULAR, FOURTH_GENERATION},
 	{"S492", 30 * GB, MODEL_TYPE_COLOR, FOURTH_GENERATION},
+
+	/* No known model number -- create a Device/SysInfo file with
+	 * one entry, e.g.:
+	 ModelNumStr: Mmobile1
+	*/
+
+	{"mobile1", -1, MODEL_TYPE_MOBILE_1, MOBILE_GENERATION},
 	
 	{NULL, 0, 0, 0}
 };
@@ -139,6 +146,7 @@ static const gchar *ipod_model_name_table [] = {
 	"Nano (Black)",
 	"Video (White)",
 	"Video (Black)",
+	"Mobile (1)",
 	NULL
 };
 #endif
@@ -171,6 +179,12 @@ static const Itdb_ArtworkFormat ipod_video_artwork_info[] = {
 	{-1,                      -1,  -1,   -1}
 };
 
+static const Itdb_ArtworkFormat ipod_mobile_1_artwork_info[] = {
+	{IPOD_COVER_SMALL,        50,  50, 2002},
+	{IPOD_COVER_LARGE,       150, 150, 2003},
+	{-1,                      -1,  -1,   -1}
+};
+
 /* This will be indexed using a value from the MODEL_TYPE enum */
 static const Itdb_ArtworkFormat *ipod_artwork_info_table[] = {
         NULL,                    /* Invalid       */
@@ -188,7 +202,8 @@ static const Itdb_ArtworkFormat *ipod_artwork_info_table[] = {
 	ipod_nano_artwork_info,  /* Nano (White)  */
 	ipod_nano_artwork_info,  /* Nano (Black)  */
 	ipod_video_artwork_info, /* Video (White) */
-	ipod_video_artwork_info  /* Video (Black) */
+	ipod_video_artwork_info, /* Video (Black) */
+	ipod_mobile_1_artwork_info /* Mobile (1)    */
 };
 
 
@@ -406,11 +421,8 @@ itdb_device_autodetect_endianess (Itdb_Device *device)
 {
     g_return_if_fail (device);
 
-    /* endianess_set will be set to FALSE. This field is only set to
-       TRUE when importing an iTunesDB. */
-    device->endianess_set = FALSE;
     /* default: non-reversed */
-    device->endianess_reversed = FALSE;
+    device->byte_order = G_LITTLE_ENDIAN;
 
     if (device->mountpoint)
     {
@@ -422,7 +434,7 @@ itdb_device_autodetect_endianess (Itdb_Device *device)
 	    if (strstr (cd_l, "itunes/itunes_control") ==
 		(cd_l + strlen (cd_l) - strlen ("itunes/itunes_control")))
 	    {
-		device->endianess_reversed = TRUE;
+		device->byte_order = G_BIG_ENDIAN;
 	    }
 	    g_free (cd_l);
 	    g_free (control_dir);

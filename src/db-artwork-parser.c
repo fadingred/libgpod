@@ -31,6 +31,7 @@
 #include <sys/types.h>
 
 #include "itdb.h"
+#include "itdb_endianness.h"
 #include "db-artwork-debug.h"
 #include "db-artwork-parser.h"
 #include "db-image-parser.h"
@@ -69,7 +70,7 @@ parse_mhif (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 		return -1;
 	}
 	dump_mhif (mhif);
-	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhif->total_len));
+	db_parse_context_set_total_len (ctx, get_gint32_db (db, mhif->total_len));
 	return 0;
 }
 
@@ -83,12 +84,12 @@ parse_mhia (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 		return -1;
 	}
 	dump_mhia (mhia);
-	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhia->total_len));
+	db_parse_context_set_total_len (ctx, get_gint32_db (db, mhia->total_len));
 	return 0;
 }
 
 static char *
-get_utf16_string (void* buffer, gint length)
+get_utf16_string (void* buffer, gint length, guint byte_order)
 {
 	char *result;
 	gunichar2 *tmp;
@@ -98,7 +99,7 @@ get_utf16_string (void* buffer, gint length)
 	 */
 	tmp = g_memdup (buffer, length);
 	for (i = 0; i < length/2; i++) {
-		tmp[i] = GINT16_FROM_LE (tmp[i]);
+		tmp[i] = get_gint16 (tmp[i], byte_order);
 	}
 	result = g_utf16_to_utf8 (tmp, length/2, NULL, NULL, NULL);
 	g_free (tmp);
@@ -108,15 +109,25 @@ get_utf16_string (void* buffer, gint length)
 }
 
 static char *
-mhod3_get_ithmb_filename (MhodHeaderArtworkType3 *mhod3, 
+mhod3_get_ithmb_filename (ArtworkDB_MhodHeaderArtworkType3 *mhod3, 
 			  Itdb_iTunesDB *db) 
 {
-       char *filename;
+       char *filename=NULL;
 
        g_assert (mhod3 != NULL);
        g_assert (db != NULL);
-       
-       filename = get_utf16_string (mhod3->string, mhod3->string_len);
+
+       if (mhod3->mhod_version == 2)
+	   filename = get_utf16_string ((gunichar2 *)mhod3->string,
+					get_gint32_db (db, mhod3->string_len),
+					db->device->byte_order);
+       else if ((mhod3->mhod_version == 0) ||
+		(mhod3->mhod_version == 1))
+	   filename = g_strndup (mhod3->string,
+				 get_gint32_db (db, mhod3->string_len));
+       else
+	   g_warning (_("Unexpected mhod3 string type: %d\n"),
+		      mhod3->mhod_version);
        return filename;
 }
 
@@ -125,20 +136,22 @@ static int
 parse_mhod_3 (DBParseContext *ctx, Itdb_iTunesDB *db, 
 	      Itdb_Thumb *thumb, GError *error)
 {
-	MhodHeader *mhod;
-	MhodHeaderArtworkType3 *mhod3;
+	ArtworkDB_MhodHeader *mhod;
+	ArtworkDB_MhodHeaderArtworkType3 *mhod3;
+	gint32 mhod3_type;
 
-	mhod = db_parse_context_get_m_header (ctx, MhodHeader, "mhod");
+	mhod = db_parse_context_get_m_header (ctx, ArtworkDB_MhodHeader, "mhod");
 	if (mhod == NULL) {
 		return -1;
 	}
-	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhod->total_len));
+	db_parse_context_set_total_len (ctx, get_gint32_db (db, mhod->total_len));
 	
-	if (GINT_FROM_LE (mhod->total_len) < sizeof (MhodHeaderArtworkType3)){
+	if (get_gint32_db (db, mhod->total_len) < sizeof (ArtworkDB_MhodHeaderArtworkType3)){
 		return -1;
 	}
-	mhod3 = (MhodHeaderArtworkType3*)mhod;
-	if ((GINT_FROM_LE (mhod3->type) & 0x00FFFFFF) != MHOD_ARTWORK_TYPE_FILE_NAME) {
+	mhod3 = (ArtworkDB_MhodHeaderArtworkType3*)mhod;
+	mhod3_type = get_gint16_db (db, mhod3->type);
+	if (mhod3_type != MHOD_ARTWORK_TYPE_FILE_NAME) {
 		return -1;
 	}
 	thumb->filename = mhod3_get_ithmb_filename (mhod3, db);
@@ -157,7 +170,7 @@ parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 	if (mhni == NULL) {
 		return -1;
 	}
-	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhni->total_len));
+	db_parse_context_set_total_len (ctx, get_gint32_db (song->itdb, mhni->total_len));
 	dump_mhni (mhni);
 
 	thumb = ipod_image_new_from_mhni (mhni, song->itdb);
@@ -181,15 +194,17 @@ parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
 static int
 parse_mhod (DBParseContext *ctx, iPodSong *song, GError *error)
 {
-	MhodHeader *mhod;
+	ArtworkDB_MhodHeader *mhod;
 	DBParseContext *mhni_ctx;
 	int type;
+	gint32 total_len;
 
-	mhod = db_parse_context_get_m_header (ctx, MhodHeader, "mhod");
+	mhod = db_parse_context_get_m_header (ctx, ArtworkDB_MhodHeader, "mhod");
 	if (mhod == NULL) {
 		return -1;
 	}
-	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhod->total_len));
+	total_len = get_gint32_db (song->itdb, mhod->total_len);
+	db_parse_context_set_total_len (ctx, total_len);
 
 	/* The MHODs found in the ArtworkDB and Photo Database files are
 	 * significantly different than those found in the iTunesDB.
@@ -197,7 +212,7 @@ parse_mhod (DBParseContext *ctx, iPodSong *song, GError *error)
 	 * - low 3 bytes are actual type;
 	 * - high byte is padding length of string (0-3).
 	 */
-	type = GINT_FROM_LE (mhod->type) & 0x00FFFFFF;
+	type = get_gint16_db (song->itdb, mhod->type);
 	if (type == MHOD_ARTWORK_TYPE_ALBUM_NAME)
 		dump_mhod_type_1 ((MhodHeaderArtworkType1 *)mhod);
 	else
@@ -230,30 +245,30 @@ parse_mhii (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 	if (mhii == NULL) {
 		return -1;
 	}
-	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhii->total_len));
+	db_parse_context_set_total_len (ctx, get_gint32_db (db, mhii->total_len));
 
 	dump_mhii (mhii);
 
 #ifdef DEBUG_ARTWORKDB
 	song = NULL;
 #else
-	song = get_song_by_dbid (db, GINT64_FROM_LE (mhii->song_id));
+	song = get_song_by_dbid (db, get_gint64_db (db, mhii->song_id));
 	if (song == NULL) {
 		return -1;
 	}
 
-	song->artwork->artwork_size = GINT_FROM_LE (mhii->orig_img_size);
+	song->artwork->artwork_size = get_gint32_db (db, mhii->orig_img_size);
 	if ((song->artwork_size+song->artwork_count) !=
 	    song->artwork->artwork_size) {
 		g_warning (_("iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)"), song->artwork_size, song->artwork_count, song->artwork->artwork_size);
 	}
 
-	song->artwork->id = GINT_FROM_LE (mhii->image_id);
+	song->artwork->id = get_gint32_db (db, mhii->image_id);
 #endif
 
 	cur_offset = ctx->header_len;
 	mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
-	num_children = GINT_FROM_LE (mhii->num_children);
+	num_children = get_gint32_db (db, mhii->num_children);
 	while ((num_children > 0) && (mhod_ctx != NULL)) {
 		parse_mhod (mhod_ctx, song, NULL);
 		num_children--;
@@ -279,13 +294,13 @@ parse_mhba (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 	if (mhba == NULL) {
 		return -1;
 	}
-	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhba->total_len));
+	db_parse_context_set_total_len (ctx, get_gint32_db (db, mhba->total_len));
 
 	dump_mhba (mhba);
 
 	cur_offset = ctx->header_len;
 	mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
-	num_children = GINT_FROM_LE (mhba->num_mhods);
+	num_children = get_gint32_db (db, mhba->num_mhods);
 	while ((num_children > 0) && (mhod_ctx != NULL)) {
 		parse_mhod (mhod_ctx, NULL, NULL);
 		num_children--;
@@ -294,7 +309,7 @@ parse_mhba (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error)
 		mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	}
 	mhia_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
-	num_children = GINT_FROM_LE (mhba->num_mhias);
+	num_children = get_gint32_db (db, mhba->num_mhias);
 	while ((num_children > 0) && (mhia_ctx != NULL)) {
 		parse_mhia (mhia_ctx, db, NULL);
 		num_children--;
@@ -323,7 +338,7 @@ parse_mhl (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error,
 
 	dump_mhl (mhl, id);
 
-	num_children = GINT_FROM_LE (mhl->num_children);
+	num_children = get_gint32_db (db, mhl->num_children);
 	if (num_children < 0) {
 		return -1;
 	}
@@ -348,16 +363,16 @@ parse_mhl (DBParseContext *ctx, Itdb_iTunesDB *db, GError *error,
 static int 
 parse_mhsd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 {
-	MhsdHeader *mhsd;
+	ArtworkDB_MhsdHeader *mhsd;
 
-	mhsd = db_parse_context_get_m_header (ctx, MhsdHeader, "mhsd");
+	mhsd = db_parse_context_get_m_header (ctx, ArtworkDB_MhsdHeader, "mhsd");
 	if (mhsd == NULL) {
 		return -1;
 	}
 
-	db_parse_context_set_total_len (ctx, GINT_FROM_LE (mhsd->total_len));
+	db_parse_context_set_total_len (ctx, get_gint32_db (db, mhsd->total_len));
 	dump_mhsd (mhsd);
-	switch (GINT_FROM_LE (mhsd->index)) {
+	switch (get_gint16_db (db, mhsd->index)) {
 	case MHSD_IMAGE_LIST: {
 		DBParseContext *mhli_context;
 		mhli_context = db_parse_context_get_next_child (ctx);
@@ -381,7 +396,7 @@ parse_mhsd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 	}
 	default:
 		g_warning (_("Unexpected mhsd index: %d\n"), 
-			   GINT_FROM_LE (mhsd->index));
+			   get_gint16_db (db, mhsd->index));
 		return -1;
 		break;
 	}
@@ -396,6 +411,7 @@ parse_mhfd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 	MhfdHeader *mhfd;
 	DBParseContext *mhsd_context;
 	unsigned int cur_pos;
+	gint total_len;
 
 	mhfd = db_parse_context_get_m_header (ctx, MhfdHeader, "mhfd");
 	if (mhfd == NULL) {
@@ -403,7 +419,8 @@ parse_mhfd (DBParseContext *ctx, Itdb_iTunesDB *db, GError **error)
 	}
 
 	/* Sanity check */
-	g_return_val_if_fail (GINT_FROM_LE (mhfd->total_len) == ctx->total_len, -1);
+	total_len = get_gint32_db (db, mhfd->total_len);
+	g_return_val_if_fail (total_len == ctx->total_len, -1);
 	dump_mhfd (mhfd);
 	cur_pos = ctx->header_len;
 
@@ -480,15 +497,6 @@ ipod_db_get_artwork_db_path (const char *mount_point)
 }
 
 
-static char *
-ipod_db_get_photo_db_path (const char *mount_point)
-{
-	const char *paths[] = {"Photos", "Photo Database", NULL};
-	g_return_val_if_fail (mount_point != NULL, NULL);
-	return itdb_resolve_path (mount_point, paths);
-				  
-}
-
 static gboolean
 ipod_supports_cover_art (Itdb_Device *device)
 {
@@ -535,7 +543,9 @@ ipod_parse_artwork_db (Itdb_iTunesDB *db)
 	{
 		goto error;
 	}
-	ctx = db_parse_context_new_from_file (filename);	
+
+	ctx = db_parse_context_new_from_file (filename, 
+					      db->device->byte_order);
 	g_free (filename);
 	if (ctx == NULL) {
 		goto error;
@@ -550,6 +560,16 @@ ipod_parse_artwork_db (Itdb_iTunesDB *db)
 		db_parse_context_destroy (ctx, TRUE);
 	}
 	return -1;
+}
+
+#if 0
+static char *
+ipod_db_get_photo_db_path (const char *mount_point)
+{
+	const char *paths[] = {"Photos", "Photo Database", NULL};
+	g_return_val_if_fail (mount_point != NULL, NULL);
+	return itdb_resolve_path (mount_point, paths);
+				  
 }
 
 int
@@ -573,3 +593,4 @@ ipod_parse_photo_db (const char *mount_point)
 
 	return 0;
 }
+#endif

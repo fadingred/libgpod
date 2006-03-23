@@ -49,13 +49,15 @@ typedef struct _MhlHeader MhlHeader;
 
 
 typedef struct _MhbdHeader MhbdHeader;
-typedef struct _MhsdHeader MhsdHeader;
+typedef struct _ArtworkDB_MhsdHeader ArtworkDB_MhsdHeader;
+/*typedef struct _MhsdHeader MhsdHeader;*/
 typedef struct _MhltHeader MhltHeader;
 typedef struct _MhlpHeader MhlpHeader;
 typedef struct _MhypHeader MhypHeader;
 typedef struct _MhipHeader MhipHeader;
 typedef struct _MhitHeader MhitHeader;
-typedef struct _MhodHeader MhodHeader;
+typedef struct _ArtworkDB_MhodHeader ArtworkDB_MhodHeader;
+/*typedef struct _MhodHeader MhodHeader;*/
 typedef struct _MhfdHeader MhfdHeader;
 typedef struct _MhliHeader MhliHeader;
 typedef struct _MhiiHeader MhiiHeader;
@@ -68,9 +70,10 @@ typedef struct _MhiaHeader MhiaHeader;
 
 typedef struct _MhitHeader471 MhitHeader471;
 /* MHOD typedef mess */
+typedef struct _ArtworkDB_MhodHeaderArtworkType3 ArtworkDB_MhodHeaderArtworkType3;
 typedef struct _MhodHeaderString MhodHeaderString;
 typedef struct _MhodHeaderArtworkType1 MhodHeaderArtworkType1;
-typedef struct _MhodHeaderArtworkType3 MhodHeaderArtworkType3;
+/* typedef struct _MhodHeaderArtworkType3 MhodHeaderArtworkType3; */
 typedef struct _MhodHeaderSmartPlaylistData MhodHeaderSmartPlaylistData;
 typedef struct _MhodHeaderSmartPlaylistRuleString MhodHeaderSmartPlaylistRuleString; 
 typedef struct _MhodHeaderSmartPlaylistRuleNonString MhodHeaderSmartPlaylistRuleNonString;
@@ -99,14 +102,27 @@ enum MhsdPhotoIndexType {
 	MHSD_FILE_LIST = 3
 };
 
-struct _MhsdHeader {
+struct _ArtworkDB_MhsdHeader {
+	unsigned char header_id[4];
+	gint32 header_len;
+	gint32 total_len;
+        /* Strangely, the following field is only 16 bits long in the
+	 * ArtworkDB (it's definitely 32 bits in the iTunesDB). This
+	 * could well be an error with the first generation of mobile
+	 * phones with iPod support).
+	 */
+	gint16 index;
+        gint16 unknown014;
+	unsigned char padding[];
+};
+
+struct _iTunesDB_MhsdHeader {
 	unsigned char header_id[4];
 	gint32 header_len;
 	gint32 total_len;
 	gint32 index;
 	unsigned char padding[];
 };
-
 struct _MhltHeader {
 	unsigned char header_id[4];
 	gint32 header_len;
@@ -305,6 +321,21 @@ struct _MhodHeader {
 	gint32 unknown2;
 };
 
+struct _ArtworkDB_MhodHeader {
+	unsigned char header_id[4];
+	gint32 header_len;
+	gint32 total_len;
+        /* Strangely, the following field is only 16 bits long in the
+	 * ArtworkDB (it's definitely 32 bits in the iTunesDB). This
+	 * could well be an error with the first generation of mobile
+	 * phones with iPod support).
+	 */
+	gint16 type;
+        gint16 unknown014;
+	gint32 unknown1;
+	gint32 unknown2;
+};
+
 struct _MhodHeaderString {
 	unsigned char header_id[4];
 	gint32 header_len;
@@ -330,10 +361,12 @@ enum MhodArtworkType {
 	MHOD_ARTWORK_TYPE_IMAGE      = 5  /* container: full resolution image (in the Photo Database) */
 };
 
-struct _MhodHeaderArtworkType1 {
+struct __MhodHeaderArtworkType1 {
 	unsigned char header_id[4];
 	gint32 header_len;
 	gint32 total_len;
+/* FIXME: mobile phone ArtworkDB are known to have a 2 byte type. The
+   high byte again seems to indicate the padding */
 	gint32 type; /* low 3 bytes are type (always 1); high byte is padding length (0-3) */
 	gint32 unknown1;
 	gint32 unknown2;
@@ -355,6 +388,25 @@ struct _MhodHeaderArtworkType3 {
 	gint32 unknown4;
 	gunichar2 string[];
 };
+
+struct _ArtworkDB_MhodHeaderArtworkType3 {
+	unsigned char header_id[4];
+	gint32 header_len;
+	gint32 total_len;
+        gint16 type; /* 3 */
+        gint8  unknown13;
+	gint8  padding;
+	gint32 unknown1;
+	gint32 unknown2;
+	gint32 string_len;
+	gint8 mhod_version; /* 0,1: string is UTF8, 2: string is
+			       UTF16-LE */
+        gint8 unknown5;
+        gint16 unknown6;
+	gint32 unknown4;
+        gchar  string[];
+};
+
 
 enum MhodLimitType {
 	MHOD_LIMIT_MINUTES = 1,
@@ -494,7 +546,10 @@ struct _MhfdHeader {
 	gint32 unknown4;
 	gint64 unknown5;
 	gint64 unknown6;
-	gint32 unknown7;
+        gint8  unknown_flag1;
+        gint8  unknown_flag2;
+        gint8  unknown_flag3;
+        gint8  unknown_flag4;
 	gint32 unknown8;
 	gint32 unknown9;
 	gint32 unknown10;

@@ -20,6 +20,7 @@ libgpod_la_SOURCES = \
 	ithumb-writer.c \
 	itdb_device.c \
 	itdb_device.h \
+	itdb_endianness.h \
 	glib-compat.h
 
 

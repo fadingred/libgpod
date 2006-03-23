@@ -31,6 +31,7 @@
 
 #include "itdb_private.h"
 #include "db-image-parser.h"
+#include "itdb_endianness.h"
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -214,7 +215,7 @@ gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb)
 
 #if HAVE_GDKPIXBUF
 static guchar *
-unpack_RGB_565 (guint16 *pixels, guint bytes_len)
+unpack_RGB_565 (guint16 *pixels, guint bytes_len, guint byte_order)
 {
 	guchar *result;
 	guint i;
@@ -226,8 +227,8 @@ unpack_RGB_565 (guint16 *pixels, guint bytes_len)
 	}
 	for (i = 0; i < bytes_len/2; i++) {
 		guint16 cur_pixel;
-
-		cur_pixel = GINT16_FROM_LE (pixels[i]);
+		/* FIXME: endianness */
+		cur_pixel = get_gint16 (pixels[i], byte_order);
 		/* Unpack pixels */
 		result[3*i] = (cur_pixel & RED_MASK) >> RED_SHIFT;
 		result[3*i+1] = (cur_pixel & GREEN_MASK) >> GREEN_SHIFT;
@@ -321,7 +322,7 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 		return NULL;
 	}
 	
-	pixels = unpack_RGB_565 (pixels565, thumb->size);
+	pixels = unpack_RGB_565 (pixels565, thumb->size, device->byte_order);
 	g_free (pixels565);
 
 	return pixels;
