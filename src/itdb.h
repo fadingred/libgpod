@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-23 23:30:34 jcs>
+/* Time-stamp: <2006-03-24 00:38:39 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -585,15 +585,16 @@ struct _Itdb_Track
   guint32 visible;           /*  If this value is 1, the song is visible
 				 on the iPod. All other values cause
 				 the file to be hidden. */
-  gchar filetype_marker[4];  /* This appears to always be 0 on hard
+  guint32 filetype_marker;   /* This appears to always be 0 on hard
                                 drive based iPods, but for the
                                 iTunesDB that is written to an iPod
                                 Shuffle, iTunes 4.7.1 writes out the
                                 file's type as an ANSI string(!). For
                                 example, a MP3 file has a filetype of
                                 0x4d503320 -> 0x4d = 'M', 0x50 = 'P',
-                                0x33 = '3', 0x20 = <space>. (always
-                                left set to 0 by itdb)*/
+                                0x33 = '3', 0x20 = <space>. (set to
+				the filename extension by itdb when
+				copying track to iPod)*/
   guint16 artwork_count;     /* The number of album artwork items
 				associated with this song. libgpod
 				updates this value when syncing */

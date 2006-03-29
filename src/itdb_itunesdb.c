@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-23 23:30:35 jcs>
+/* Time-stamp: <2006-03-24 00:40:16 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2013,7 +2013,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       guint32 val32;
       track->id = get32lint(cts, seek+16);         /* iPod ID          */
       track->visible = get32lint (cts, seek+20);
-      seek_get_n_bytes (cts, track->filetype_marker, seek+24, 4);
+      track->filetype_marker = get32lint (cts, seek+24);
       track->type1 = get8int (cts, seek+28);
       track->type2 = get8int (cts, seek+29);
       track->compilation = get8int (cts, seek+30);
@@ -3183,7 +3183,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->id); /* track index number */
 
   put32lint (cts, track->visible);
-  put_data  (cts, track->filetype_marker, 4);
+  put32lint (cts, track->filetype_marker);
   put8int (cts, track->type1);
   put8int (cts, track->type2);
   put8int   (cts, track->compilation);
@@ -4683,7 +4683,7 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
    If @track->transferred is set to TRUE, nothing is done. Upon
    successful transfer @track->transferred is set to TRUE.
 
-   For storage, the directories "f00 ... f19" will be
+   For storage, the directories "f00 ... fnn" will be
    cycled through.
 
    The filename is constructed as "gtkpod"<random number> and copied
@@ -4692,7 +4692,10 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
 
    If @track->ipod_path is already set, this one will be used
    instead. If a file with this name already exists, it will be
-   overwritten. */
+   overwritten.
+
+   @track->filetype_marker is set according to the filename extension
+ */
 gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 				gchar *filename, GError **error)
 {
@@ -4700,6 +4703,7 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
   gchar *track_db_path, *ipod_fullfile;
   gboolean success;
   gint mplen = 0;
+  gint i;
   const gchar *mountpoint;
   Itdb_iTunesDB *itdb;
 
@@ -4779,6 +4783,16 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 	 string. Note: the iPod will most certainly ignore this file... */
       if (!original_suffix) original_suffix = "";
 
+      /* set filetype from the suffix, e.g. '.mp3' -> 'MP3 ' */
+      track->filetype_marker = 0;
+      for (i=1; i<=4; ++i)   /* start with i=1 to skip the '.' */
+      {
+	  track->filetype_marker = track->filetype_marker << 8;
+	  if (strlen (original_suffix) > i)
+	      track->filetype_marker |= g_ascii_toupper (original_suffix[i]);
+	  else
+	      track->filetype_marker |= g_ascii_toupper (' ');
+      }
       do
       {   /* we need to loop until we find an unused filename */
 	  dest_components[1] = 

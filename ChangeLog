@@ -1,3 +1,8 @@
+2006-02-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * itunesdb.c: set filetype identifier when transfering track to
+	  the iPod.
+
 2006-02-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	Alpha version of reversed-endian Artwork writing. Status: iTunesDB
