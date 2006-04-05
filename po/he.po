@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gtkpod\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-14 21:51+0900\n"
+"POT-Creation-Date: 2006-03-31 23:04+0900\n"
 "PO-Revision-Date: 2005-08-02 21:19+0300\n"
 "Last-Translator: Assaf Gillat\n"
 "Language-Team: HEBREW <kde-il@yahoogroups.com>\n"
@@ -17,32 +17,37 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: ../src/itdb_itunesdb.c:313
+#: ../src/itdb_itunesdb.c:361
 #, c-format
 msgid "Illegal seek to offset %ld (length %ld) in file '%s'."
 msgstr "חיפוש לא חוקי בהיסט %ld (אורך %ld) בקובץ '%s'."
 
-#: ../src/itdb_itunesdb.c:521
+#: ../src/itdb_itunesdb.c:815
 #, c-format
 msgid "Not a Play Counts file: '%s' (missing mhdp header)."
 msgstr "זהו לא קובץ ספירת השמעה: '%s' (חסר תחילית mhdp)"
 
-#: ../src/itdb_itunesdb.c:535
+#: ../src/itdb_itunesdb.c:830
 #, c-format
 msgid "Play Counts file ('%s'): header length smaller than expected (%d<96)."
 msgstr "קובץ ספירת השמעה ('%s'): אורך תחילית קטן מהצפוי (%d<96)."
 
-#: ../src/itdb_itunesdb.c:548
+#: ../src/itdb_itunesdb.c:843
 #, c-format
 msgid "Play Counts file ('%s'): entry length smaller than expected (%d<12)."
 msgstr "קובץ ספירת השמעה ('%s'): אורך רשומה קטן מהצפוי (%d<12)."
 
-#: ../src/itdb_itunesdb.c:803
+#: ../src/itdb_itunesdb.c:921
+#, fuzzy, c-format
+msgid "iTunesStats file ('%s'): entry length smaller than expected (%d<18)."
+msgstr "קובץ ספירת השמעה ('%s'): אורך רשומה קטן מהצפוי (%d<12)."
+
+#: ../src/itdb_itunesdb.c:1197
 #, c-format
 msgid "iTunesDB corrupt: no MHOD at offset %ld in file '%s'."
 msgstr "iTunesDB שבור: אין MHOD בהיסט %ld בקובץ '%s'."
 
-#: ../src/itdb_itunesdb.c:923
+#: ../src/itdb_itunesdb.c:1354
 #, c-format
 msgid ""
 "Length of smart playlist rule field (%d) not as expected. Trying to continue "
@@ -50,11 +55,12 @@ msgid ""
 msgstr ""
 "אורך שדה של חוק (%d) רשימת השמעה חכמה הוא לא כצפוי. מנסה להמשיך בכל זאת.\n"
 
-#: ../src/itdb_itunesdb.c:966
-msgid "Did not find SLst hunk as expected. Trying to continue.\n"
-msgstr "לא נמצאה חתיכת SLst כצפוי. מנסה להמשיך.\n"
+#: ../src/itdb_itunesdb.c:1386
+#, fuzzy, c-format
+msgid "iTunesDB corrupt: no SLst at offset %ld in file '%s'."
+msgstr "iTunesDB שבור: אין MHOD בהיסט %ld בקובץ '%s'."
 
-#: ../src/itdb_itunesdb.c:972
+#: ../src/itdb_itunesdb.c:1399
 #, c-format
 msgid ""
 "Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n"
@@ -63,89 +69,119 @@ msgstr ""
 "נתקלנו בסוג לא ידוע של MHOD (%d) בזמן ניתוח ה-iTuneDB. מתעלם.\n"
 "\n"
 
-#: ../src/itdb_itunesdb.c:1053 ../src/itdb_itunesdb.c:1744
-#: ../src/itdb_itunesdb.c:1779
+#: ../src/itdb_itunesdb.c:1461
 #, c-format
 msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
 msgstr "iTunesDB שבור: אורך חתיכה 0 בחתיכה  %ld בקובץ '%s'."
 
-#: ../src/itdb_itunesdb.c:1148
-msgid "Master-PL"
-msgstr "רשימת ראשית"
+#: ../src/itdb_itunesdb.c:1474
+#, fuzzy, c-format
+msgid ""
+"iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
+msgstr "iTunesDB שבור: אין MHOD בהיסט %ld בקובץ '%s'."
 
-#: ../src/itdb_itunesdb.c:1150
-msgid "Playlist"
-msgstr "רשימת השמעה"
+#: ../src/itdb_itunesdb.c:1488
+#, fuzzy, c-format
+msgid ""
+"header length of '%s' smaller than expected (%d < %d) at offset %ld in file "
+"'%s'."
+msgstr ""
+"iTunesDB ('%s'): גודל תחילית של החתיכה mhsd קטנה מהצפוי (%ld<32). מבטל."
 
-#: ../src/itdb_itunesdb.c:1175
+#: ../src/itdb_itunesdb.c:1573
 #, c-format
-msgid "iTunesDB corrupt: found mhyp at %ld in file '%s'."
+msgid "Not a iTunesDB: '%s' (missing mhdb header)."
+msgstr "זהו לא iTunesDB: '%s' (חסרה תחילית mhdb)."
+
+#: ../src/itdb_itunesdb.c:1590
+#, fuzzy, c-format
+msgid ""
+"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). "
+"Aborting."
+msgstr ""
+"iTunesDB ('%s'): גודל תחילית של החתיכה mhsd קטנה מהצפוי (%ld<32). מבטל."
+
+#: ../src/itdb_itunesdb.c:1611
+#, fuzzy, c-format
+msgid "iTunesDB '%s' corrupt: mhsd expected at %ld."
 msgstr "iTunesDB שבור: נמצא mhyp ב %ld בקובץ '%s'."
 
-#: ../src/itdb_itunesdb.c:1223
+#: ../src/itdb_itunesdb.c:1728
+#, c-format
+msgid "Number of MHODs in mhip at %ld inconsistent in file '%s'."
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:1746
 #, c-format
 msgid "Itdb_Track ID '%d' not found.\n"
 msgstr "מזהה Itdb_Track '%d' לא נמצא.\n"
 
-#: ../src/itdb_itunesdb.c:1487
+#: ../src/itdb_itunesdb.c:1903
+#, fuzzy, c-format
+msgid "Number of MHODs in mhyp at %ld inconsistent in file '%s'."
+msgstr "iTunesDB שבור: נמצא mhyp ב %ld בקובץ '%s'."
+
+#: ../src/itdb_itunesdb.c:1913
+msgid "Master-PL"
+msgstr "רשימת ראשית"
+
+#: ../src/itdb_itunesdb.c:1917
+msgid "Podcasts"
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:1919
+msgid "Playlist"
+msgstr "רשימת השמעה"
+
+#: ../src/itdb_itunesdb.c:1941
+#, fuzzy, c-format
+msgid ""
+"iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %"
+"ld in file '%s'."
+msgstr "iTunesDB שבור: נמצא mhyp ב %ld בקובץ '%s'."
+
+#: ../src/itdb_itunesdb.c:2222
 msgid "OTG Playlist"
 msgstr "רשימת השמעה OTG"
 
-#: ../src/itdb_itunesdb.c:1501
+#: ../src/itdb_itunesdb.c:2240
 #, c-format
 msgid "Not a OTG playlist file: '%s' (missing mhpo header)."
 msgstr "זהו לא קובץ רשימת השמעה OTG: '%s' (חסרה תחילת קובץ mhpo)."
 
-#: ../src/itdb_itunesdb.c:1515
+#: ../src/itdb_itunesdb.c:2254
 #, c-format
 msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
 msgstr "קובץ רשימת השמעה OTG ('%s'): גודל תחילית קטן מהצפוי (%d<20)."
 
-#: ../src/itdb_itunesdb.c:1527
+#: ../src/itdb_itunesdb.c:2266
 #, c-format
 msgid ""
 "OTG playlist file file ('%s'): entry length smaller than expected (%d<4)."
 msgstr "קובץ רשימת השמעה OTG ('%s'): גודל רשומה קטן מהצפוי (%d<4)."
 
-#: ../src/itdb_itunesdb.c:1562
+#: ../src/itdb_itunesdb.c:2301
 #, c-format
 msgid "OTG playlist file '%s': reference to non-existent track (%d)."
 msgstr "רשימת השמעה OTG '%s': התייחסות לרצועה לא קיימת (%d)."
 
-#: ../src/itdb_itunesdb.c:1607
+#: ../src/itdb_itunesdb.c:2346
 #, c-format
 msgid "OTG Playlist %d"
 msgstr "רשימת השמעה OTG %d"
 
-#: ../src/itdb_itunesdb.c:1650
-#, c-format
-msgid "Not a iTunesDB: '%s' (missing mhdb header)."
-msgstr "זהו לא iTunesDB: '%s' (חסרה תחילית mhdb)."
-
-#: ../src/itdb_itunesdb.c:1666
-#, c-format
-msgid ""
-"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%ld<32). "
-"Aborting."
-msgstr ""
-"iTunesDB ('%s'): גודל תחילית של החתיכה mhsd קטנה מהצפוי (%ld<32). מבטל."
-
-#: ../src/itdb_itunesdb.c:1698
-#, c-format
-msgid "iTunesDB '%s' corrupt: already found two playlist mhsds -- giving up."
-msgstr "iTunesDB '%s' שבור: כבר מצאנו mhsds של שתי רשימות השמעה -- מוותר."
-
 #. this should not be -- issue warning
-#: ../src/itdb_itunesdb.c:1759
+#: ../src/itdb_itunesdb.c:2414
+#, fuzzy
 msgid ""
-"iTunesDB possibly corrupt: number of tracks (mhit hunks) inconsistent. "
-"Trying to continue.\n"
+"iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to "
+"continue.\n"
 msgstr ""
 "יכול להיות ש-iTuneDB שבור: מספר רצועות (mhit חתיכות) לא עקביות. מנסה "
 "להמשיך.\n"
 
 #. this should not be -- issue warning
-#: ../src/itdb_itunesdb.c:1841
+#: ../src/itdb_itunesdb.c:2477
 msgid ""
 "iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. "
 "Trying to continue.\n"
@@ -153,81 +189,106 @@ msgstr ""
 "יכול להיות ש-iTuneDB שבור: מספר רשימות השמעה (mhyp חתיכות) לא עקביות. מנסה "
 "להמשיך.\n"
 
-#: ../src/itdb_itunesdb.c:1879
+#: ../src/itdb_itunesdb.c:2524
+#, fuzzy, c-format
+msgid ""
+"iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section "
+"found)"
+msgstr "iTunesDB '%s' שבור: כבר מצאנו mhsds של שתי רשימות השמעה -- מוותר."
+
+#: ../src/itdb_itunesdb.c:2553
+#, fuzzy, c-format
+msgid ""
+"iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 "
+"sections found)"
+msgstr "iTunesDB '%s' שבור: כבר מצאנו mhsds של שתי רשימות השמעה -- מוותר."
+
+#: ../src/itdb_itunesdb.c:2575
+#, c-format
+msgid "iTunes directory not found: '%s' (or similar)."
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:2592
+#, c-format
+msgid "Music directory not found: '%s' (or similar)."
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:2610
+#, c-format
+msgid "Control directory not found: '%s' (or similar)."
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:2677
 #, c-format
 msgid "File not found: '%s'."
 msgstr "קובץ לא קיים: '%s'."
 
-#: ../src/itdb_itunesdb.c:2396
+#: ../src/itdb_itunesdb.c:3465
 #, c-format
 msgid "Cannot write mhod of type %d\n"
 msgstr "לא יכול לכתוב mhod של סוג %d\n"
 
-#: ../src/itdb_itunesdb.c:2522 ../src/itdb_itunesdb.c:2635
-msgid "Database in memory corrupt (track pointer == NULL). Aborting export."
-msgstr "מסד הנתונים בזיכרון שבור (מצביע רצועה == NULL). מבטל ייצוא."
-
-#: ../src/itdb_itunesdb.c:2678
-msgid "Database in memory corrupt (playlist pointer == NULL). Aborting export."
-msgstr "מסד הנתונים בזיכרון שבור (מצביע רשימת השמעה == NULL). מבטל ייצוא."
-
-#: ../src/itdb_itunesdb.c:2718
+#: ../src/itdb_itunesdb.c:4014
 #, c-format
 msgid "Opening of '%s' for writing failed."
 msgstr "פתיחת '%s' לכתיבה נכשלה."
 
-#: ../src/itdb_itunesdb.c:2729
+#: ../src/itdb_itunesdb.c:4025
 #, c-format
 msgid "Writing to '%s' failed."
 msgstr "נכשלה כתיבה ל '%s'."
 
-#: ../src/itdb_itunesdb.c:2740
+#: ../src/itdb_itunesdb.c:4036
 #, c-format
 msgid "Writing to '%s' failed (%s)."
 msgstr "נכשלה כתיבה ל '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:2881 ../src/itdb_itunesdb.c:3052
-#: ../src/itdb_itunesdb.c:3245 ../src/itdb_itunesdb.c:3451
-#, c-format
-msgid "Path not found: '%s'."
+#: ../src/itdb_itunesdb.c:4370
+#, fuzzy, c-format
+msgid "Path not found: '%s' (or similar)."
 msgstr "נתיב לא נמצא: '%s'."
 
-#: ../src/itdb_itunesdb.c:3265
+#: ../src/itdb_itunesdb.c:4573
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s)."
 msgstr "תקלה בשינוי שם '%s' ל '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:3282
+#: ../src/itdb_itunesdb.c:4590 ../src/itdb_itunesdb.c:4607
 #, c-format
 msgid "Error removing '%s' (%s)."
 msgstr "תקלה בהסרת '%s' (%s)"
 
-#: ../src/itdb_itunesdb.c:3426
+#: ../src/itdb_itunesdb.c:4747
 #, c-format
 msgid "No 'F..' directories found in '%s'."
 msgstr ""
 
-#: ../src/itdb_itunesdb.c:3589
+#: ../src/itdb_itunesdb.c:4775
+#, c-format
+msgid "Path not found: '%s'."
+msgstr "נתיב לא נמצא: '%s'."
+
+#: ../src/itdb_itunesdb.c:4925
 #, c-format
 msgid "Error opening '%s' for reading (%s)."
 msgstr "תקלה בפתיחת '%s' לקריאה (%s)."
 
-#: ../src/itdb_itunesdb.c:3600
+#: ../src/itdb_itunesdb.c:4936
 #, c-format
 msgid "Error opening '%s' for writing (%s)."
 msgstr "תקלה בפתיחת '%s' לכתיבה (%s)."
 
-#: ../src/itdb_itunesdb.c:3617
+#: ../src/itdb_itunesdb.c:4953
 #, c-format
 msgid "Error while reading from '%s' (%s)."
 msgstr "תקלה בזמן קריאה מ '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:3633
+#: ../src/itdb_itunesdb.c:4969
 #, c-format
 msgid "Error while writing to '%s' (%s)."
 msgstr "תקלה בזמן כתיבה ל '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:3646 ../src/itdb_itunesdb.c:3656
+#: ../src/itdb_itunesdb.c:4982 ../src/itdb_itunesdb.c:4992
 #, c-format
 msgid "Error when closing '%s' (%s)."
 msgstr "תקלה בזמן סגירה '%s' (%s)."
@@ -237,3 +298,13 @@ msgstr "תקלה בזמן סגירה '%s' (%s)."
 #, c-format
 msgid "Unknown action (%d) in smart playlist will be ignored.\n"
 msgstr "התעלמות מפעולה לא ידועה (%d) ברשימת השמעה חכמה.\n"
+
+#~ msgid "Did not find SLst hunk as expected. Trying to continue.\n"
+#~ msgstr "לא נמצאה חתיכת SLst כצפוי. מנסה להמשיך.\n"
+
+#~ msgid "Database in memory corrupt (track pointer == NULL). Aborting export."
+#~ msgstr "מסד הנתונים בזיכרון שבור (מצביע רצועה == NULL). מבטל ייצוא."
+
+#~ msgid ""
+#~ "Database in memory corrupt (playlist pointer == NULL). Aborting export."
+#~ msgstr "מסד הנתונים בזיכרון שבור (מצביע רשימת השמעה == NULL). מבטל ייצוא."

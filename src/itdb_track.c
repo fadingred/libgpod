@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-23 23:30:34 jcs>
+/* Time-stamp: <2006-04-04 00:08:14 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -85,6 +85,14 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 
     g_return_if_fail (tr);
     g_return_if_fail (tr->itdb);
+
+    if (tr->mark_unplayed == 0)
+    {
+	/* don't have the iPod mark this track with a bullet as
+	   unplayed. Should be set to 0x02 for podcasts that have not
+	   yet been played. */
+	tr->mark_unplayed = 0x01;
+    }
 
     /* The exact meaning of unk126 is unknown, but always seems to be
        0xffff for MP3/AAC tracks, 0x0 for uncompressed tracks (like WAVE
@@ -346,10 +354,12 @@ gboolean itdb_track_set_thumbnails (Itdb_Track *track,
 	/* for some reason artwork->artwork_size is always
 	   track->artwork_size + track->artwork_count */
 	track->artwork->artwork_size += track->artwork_count;
+	/* indicate artwork is present */
+	track->has_artwork = 0x01;
     }
     else
     {
-	itdb_artwork_remove_thumbnails (track->artwork);
+	itdb_track_remove_thumbnails (track);
     }
 
     return result;
@@ -362,6 +372,8 @@ void itdb_track_remove_thumbnails (Itdb_Track *track)
     itdb_artwork_remove_thumbnails (track->artwork);
     track->artwork_size = 0;
     track->artwork_count = 0;
+    /* indicate no artwork is present */
+    track->has_artwork = 0x02;
 }
 
 

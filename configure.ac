@@ -1,6 +1,7 @@
 AC_PREREQ(2.52)
 AC_INIT(src)
 AC_CONFIG_SRCDIR(configure.ac)
+AC_CONFIG_MACRO_DIR(m4)
 
 AM_CONFIG_HEADER(config.h)
 
@@ -85,6 +86,15 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package.])
 AM_GLIB_GNU_GETTEXT
 
 
+dnl **************************************************
+dnl * optional python bindings
+dnl **************************************************
+
+PYTHON_MIN_VERSION=2.1.1
+SWIG_MIN_VERSION=1.3.24
+LIBGPOD_CHECK_PYTHON($PYTHON_MIN_VERSION)
+
+
 dnl warnings bits, copied from gnome-keyring configure.in
 dnl Turn on the additional warnings last, so -Werror doesn't affect other tests.
 
@@ -135,6 +145,9 @@ AC_SUBST(LIBGPOD_LIBS)
 
 AC_OUTPUT([
 Makefile
+bindings/Makefile
+bindings/python/Makefile
+m4/Makefile
 po/Makefile.in
 src/Makefile
 tests/Makefile

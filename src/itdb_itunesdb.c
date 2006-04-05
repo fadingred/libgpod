@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-24 00:40:16 jcs>
+/* Time-stamp: <2006-04-04 23:42:19 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2063,14 +2063,14 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
   {
       track->unk156 = get32lint (cts, seek+156);
       track->unk160 = get32lint (cts, seek+160);
-      track->flag1 = get8int (cts, seek+164);
+      track->has_artwork = get8int (cts, seek+164);
       track->flag2 = get8int (cts, seek+165);
       track->flag3 = get8int (cts, seek+166);
       track->flag4 = get8int (cts, seek+167);
       track->dbid2 = get64lint (cts, seek+168);
       track->lyrics_flag = get8int (cts, seek+176);
       track->movie_flag = get8int (cts, seek+177);
-      track->unk178 = get8int (cts, seek+178);
+      track->mark_unplayed = get8int (cts, seek+178);
       track->unk179 = get8int (cts, seek+179);
       track->unk180 = get32lint (cts, seek+180);
       track->unk184 = get32lint (cts, seek+184);
@@ -2198,6 +2198,10 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	  track->bookmark_time = playcount->bookmark_time;
 
       track->playcount += playcount->playcount;
+      if (playcount->playcount != 0)
+      {   /* unmark the 'unplayed' flag */
+	  track->mark_unplayed = 0x01;
+      }
       track->recent_playcount = playcount->playcount;
       g_free (playcount);
   }
@@ -2663,6 +2667,7 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 	     * should be modified by the repository name.
 	     */
 	    ipod_parse_artwork_db (itdb);
+
 	}
 	g_free (filename);
     }
@@ -3228,14 +3233,14 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   /* since iTunesDB version 0x0c */
   put32lint (cts, track->unk156);
   put32lint (cts, track->unk160);
-  put8int (cts, track->flag1);
+  put8int (cts, track->has_artwork);
   put8int (cts, track->flag2);
   put8int (cts, track->flag3);
   put8int (cts, track->flag4);
   put64lint (cts, track->dbid2);
   put8int (cts, track->lyrics_flag);
   put8int (cts, track->movie_flag);
-  put8int (cts, track->unk178);
+  put8int (cts, track->mark_unplayed);
   put8int (cts, track->unk179);
   put32lint (cts, track->unk180);
   put32lint (cts, track->unk184);

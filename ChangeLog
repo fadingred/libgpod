@@ -1,9 +1,28 @@
-2006-02-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-04-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb.h: flag1 -> has_artwork
+
+	* itdb_track.c: (itdb_track_set_thumbnails,
+	  itdb_remove_thumbnails) set has_artwork flag correctly.
+
+2006-04-01  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb.h: unk178 -> mark_unplayed
+
+	* itdb_itunesdb.c: reset the mark_unplayed flag when playcount is
+	  detected.
+
+2006-03-31  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * po/es.po: replaced with version from Alejandro Lamas who
+	  maintains the gtkpod translation as well.
+
+2006-03-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * itunesdb.c: set filetype identifier when transfering track to
 	  the iPod.
 
-2006-02-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-03-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	Alpha version of reversed-endian Artwork writing. Status: iTunesDB
 	can be written and is accepted on mobile phones, ArtworkDB can be
@@ -13,14 +32,14 @@
 	* itdb.h: adjusted a couple of field lengths (4 byte -> 2 byte or
 	  even 1 byte) to address endian issues.
 
-2006-02-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-03-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_itunesdb.c (mk_mhod): fixed bug when writing podcast urls.
 
 	* itdb_itunesdb.c (itdb_write_file): move endianess autodetection
 	  to a place before calling ipod_write_artwork_db().
 
-2006-02-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-03-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_device.[ch]: rewrote ipod-device.c, removed all hal-code,
 	  removed all code irrelevant to writing the iTunesDB and
@@ -40,7 +59,7 @@
 
 	* itdb_itunesdb.c (itdb_get_path): fixed bug.
 
-2006-02-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-03-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * itdb.h, itdb_itunesdb.c: added functions for autodetection of
 	  iControl directory (currently either <mp>/iPod_Control or

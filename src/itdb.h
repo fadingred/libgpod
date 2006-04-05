@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-24 00:38:39 jcs>
+/* Time-stamp: <2006-04-04 23:41:58 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -631,8 +631,9 @@ struct _Itdb_Track
 			 (always 0x01010100?), zero otherwise */
   guint32 unk152;     /* unknown */
   guint32 unk156, unk160;
-  guint8 flag1;       /* basically unknown. set to 0x02 for
-		       * podcasts, 0x00 otherwise. */
+  guint8 has_artwork; /* 0x01: artwork is present. 0x02: no artwork is
+			 present for this track (used by the iPod to
+			 decide whether to display Artwork or not) */
   guint8 flag2;       /* "Skip when shuffling" when set to 0x01, set
 			 to 0x00 otherwise. .m4b and .aa files always
 			 seem to be skipped when shuffling, however */
@@ -652,7 +653,9 @@ struct _Itdb_Track
 			 ("ULST"), 0x00 otherwise */
   guint8 movie_flag;  /* set to 0x01 if it's a movie file, 0x00
 		         otherwise */
-  guint8 unk178;      /* unknown (sometimes 0x01) */
+  guint8 mark_unplayed; /* A value of 0x02 marks a podcast as unplayed
+			   on the iPod (bullet) once played it is set to
+			   0x01. Non-podcasts have this set to 0x01. */
   guint8 unk179;      /* unknown (always 0x00 so far) */
   guint32 unk180, unk184;
   guint32 samplecount;/* Number of samples in the song. First observed

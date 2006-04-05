@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-14 21:51+0900\n"
+"POT-Creation-Date: 2006-03-31 23:04+0900\n"
 "PO-Revision-Date: 2005-06-22 17:56+0200\n"
 "Last-Translator: Stefan Asserhäll <stefan.asserhall@comhem.se>\n"
 "Language-Team: Svenska <sv@li.org>\n"
@@ -16,32 +16,37 @@ msgstr ""
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 "X-Generator: KBabel 1.11\n"
 
-#: ../src/itdb_itunesdb.c:313
+#: ../src/itdb_itunesdb.c:361
 #, c-format
 msgid "Illegal seek to offset %ld (length %ld) in file '%s'."
 msgstr "Ogiltig sökning till position %ld (längd %ld) i filen '%s'."
 
-#: ../src/itdb_itunesdb.c:521
+#: ../src/itdb_itunesdb.c:815
 #, c-format
 msgid "Not a Play Counts file: '%s' (missing mhdp header)."
 msgstr "Inte en uppspelningsdatafil: '%s' (saknar mhdp-huvud)."
 
-#: ../src/itdb_itunesdb.c:535
+#: ../src/itdb_itunesdb.c:830
 #, c-format
 msgid "Play Counts file ('%s'): header length smaller than expected (%d<96)."
 msgstr "Uppspelningsdatafil ('%s'): Huvudlängd mindre än väntat (%d < 96)"
 
-#: ../src/itdb_itunesdb.c:548
+#: ../src/itdb_itunesdb.c:843
 #, c-format
 msgid "Play Counts file ('%s'): entry length smaller than expected (%d<12)."
 msgstr "Uppspelningsdatafil ('%s'): Postlängd mindre än väntat (%d < 12)"
 
-#: ../src/itdb_itunesdb.c:803
+#: ../src/itdb_itunesdb.c:921
+#, fuzzy, c-format
+msgid "iTunesStats file ('%s'): entry length smaller than expected (%d<18)."
+msgstr "Uppspelningsdatafil ('%s'): Postlängd mindre än väntat (%d < 12)"
+
+#: ../src/itdb_itunesdb.c:1197
 #, c-format
 msgid "iTunesDB corrupt: no MHOD at offset %ld in file '%s'."
 msgstr "iTunes databas skadad: Ingen MHOD på position %ld i filen '%s'."
 
-#: ../src/itdb_itunesdb.c:923
+#: ../src/itdb_itunesdb.c:1354
 #, c-format
 msgid ""
 "Length of smart playlist rule field (%d) not as expected. Trying to continue "
@@ -50,11 +55,12 @@ msgstr ""
 "Regelfältets längd (%d) i den smarta spellistan är inte den förväntade. "
 "Försöker fortsätta ändå.\n"
 
-#: ../src/itdb_itunesdb.c:966
-msgid "Did not find SLst hunk as expected. Trying to continue.\n"
-msgstr "Hittade inte SLst data som förväntat. Försöker fortsätta ändå.\n"
+#: ../src/itdb_itunesdb.c:1386
+#, fuzzy, c-format
+msgid "iTunesDB corrupt: no SLst at offset %ld in file '%s'."
+msgstr "iTunes databas skadad: Ingen MHOD på position %ld i filen '%s'."
 
-#: ../src/itdb_itunesdb.c:972
+#: ../src/itdb_itunesdb.c:1399
 #, c-format
 msgid ""
 "Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n"
@@ -64,92 +70,122 @@ msgstr ""
 "den.\n"
 "\n"
 
-#: ../src/itdb_itunesdb.c:1053 ../src/itdb_itunesdb.c:1744
-#: ../src/itdb_itunesdb.c:1779
+#: ../src/itdb_itunesdb.c:1461
 #, c-format
 msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
 msgstr ""
 "iTunes databas skadad: Datalängd 0 för data på position %ld i filen '%s'."
 
-#: ../src/itdb_itunesdb.c:1148
-msgid "Master-PL"
-msgstr "Huvudspellista"
-
-#: ../src/itdb_itunesdb.c:1150
-msgid "Playlist"
-msgstr "Spellista"
-
-#: ../src/itdb_itunesdb.c:1175
-#, c-format
-msgid "iTunesDB corrupt: found mhyp at %ld in file '%s'."
-msgstr "iTunes databas skadad: Hittade mhyp på position %ld i filen '%s'."
-
-#: ../src/itdb_itunesdb.c:1223
-#, c-format
-msgid "Itdb_Track ID '%d' not found.\n"
-msgstr "ITunes databas spår-id '%d' hittades inte.\n"
-
-#: ../src/itdb_itunesdb.c:1487
-msgid "OTG Playlist"
-msgstr "OTG-spellista"
-
-#: ../src/itdb_itunesdb.c:1501
-#, c-format
-msgid "Not a OTG playlist file: '%s' (missing mhpo header)."
-msgstr "Inte en OTG-spellistefil: '%s' (saknar mhpo-huvud)."
-
-#: ../src/itdb_itunesdb.c:1515
-#, c-format
-msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
-msgstr "OTG-spellistefil ('%s'): Huvudlängd mindre än väntat (%d < 20)"
-
-#: ../src/itdb_itunesdb.c:1527
-#, c-format
+#: ../src/itdb_itunesdb.c:1474
+#, fuzzy, c-format
 msgid ""
-"OTG playlist file file ('%s'): entry length smaller than expected (%d<4)."
-msgstr "OTG-spellistefil ('%s'): Postlängd mindre än väntat (%d < 4)"
+"iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
+msgstr "iTunes databas skadad: Ingen MHOD på position %ld i filen '%s'."
 
-#: ../src/itdb_itunesdb.c:1562
-#, c-format
-msgid "OTG playlist file '%s': reference to non-existent track (%d)."
-msgstr "OTG-spellistefil '%s': Referens till spår som inte finns (%d)."
+#: ../src/itdb_itunesdb.c:1488
+#, fuzzy, c-format
+msgid ""
+"header length of '%s' smaller than expected (%d < %d) at offset %ld in file "
+"'%s'."
+msgstr ""
+"iTunes databas (%s): Huvudlängd för mhsd-data mindre än väntat (%ld < 32). "
+"Avbryter."
 
-#: ../src/itdb_itunesdb.c:1607
-#, c-format
-msgid "OTG Playlist %d"
-msgstr "OTG-spellista %d"
-
-#: ../src/itdb_itunesdb.c:1650
+#: ../src/itdb_itunesdb.c:1573
 #, c-format
 msgid "Not a iTunesDB: '%s' (missing mhdb header)."
 msgstr "Inte en iTunes databas: '%s' (saknar mhdb-huvud)."
 
-#: ../src/itdb_itunesdb.c:1666
-#, c-format
+#: ../src/itdb_itunesdb.c:1590
+#, fuzzy, c-format
 msgid ""
-"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%ld<32). "
+"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). "
 "Aborting."
 msgstr ""
 "iTunes databas (%s): Huvudlängd för mhsd-data mindre än väntat (%ld < 32). "
 "Avbryter."
 
-#: ../src/itdb_itunesdb.c:1698
+#: ../src/itdb_itunesdb.c:1611
+#, fuzzy, c-format
+msgid "iTunesDB '%s' corrupt: mhsd expected at %ld."
+msgstr "iTunes databas skadad: Hittade mhyp på position %ld i filen '%s'."
+
+#: ../src/itdb_itunesdb.c:1728
 #, c-format
-msgid "iTunesDB '%s' corrupt: already found two playlist mhsds -- giving up."
+msgid "Number of MHODs in mhip at %ld inconsistent in file '%s'."
 msgstr ""
-"iTunes databas '%s' skadad: Två mhsd för spellistor redan hittade. Ger upp."
+
+#: ../src/itdb_itunesdb.c:1746
+#, c-format
+msgid "Itdb_Track ID '%d' not found.\n"
+msgstr "ITunes databas spår-id '%d' hittades inte.\n"
+
+#: ../src/itdb_itunesdb.c:1903
+#, fuzzy, c-format
+msgid "Number of MHODs in mhyp at %ld inconsistent in file '%s'."
+msgstr "iTunes databas skadad: Hittade mhyp på position %ld i filen '%s'."
+
+#: ../src/itdb_itunesdb.c:1913
+msgid "Master-PL"
+msgstr "Huvudspellista"
+
+#: ../src/itdb_itunesdb.c:1917
+msgid "Podcasts"
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:1919
+msgid "Playlist"
+msgstr "Spellista"
+
+#: ../src/itdb_itunesdb.c:1941
+#, fuzzy, c-format
+msgid ""
+"iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %"
+"ld in file '%s'."
+msgstr "iTunes databas skadad: Hittade mhyp på position %ld i filen '%s'."
+
+#: ../src/itdb_itunesdb.c:2222
+msgid "OTG Playlist"
+msgstr "OTG-spellista"
+
+#: ../src/itdb_itunesdb.c:2240
+#, c-format
+msgid "Not a OTG playlist file: '%s' (missing mhpo header)."
+msgstr "Inte en OTG-spellistefil: '%s' (saknar mhpo-huvud)."
+
+#: ../src/itdb_itunesdb.c:2254
+#, c-format
+msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
+msgstr "OTG-spellistefil ('%s'): Huvudlängd mindre än väntat (%d < 20)"
+
+#: ../src/itdb_itunesdb.c:2266
+#, c-format
+msgid ""
+"OTG playlist file file ('%s'): entry length smaller than expected (%d<4)."
+msgstr "OTG-spellistefil ('%s'): Postlängd mindre än väntat (%d < 4)"
+
+#: ../src/itdb_itunesdb.c:2301
+#, c-format
+msgid "OTG playlist file '%s': reference to non-existent track (%d)."
+msgstr "OTG-spellistefil '%s': Referens till spår som inte finns (%d)."
+
+#: ../src/itdb_itunesdb.c:2346
+#, c-format
+msgid "OTG Playlist %d"
+msgstr "OTG-spellista %d"
 
 #. this should not be -- issue warning
-#: ../src/itdb_itunesdb.c:1759
+#: ../src/itdb_itunesdb.c:2414
+#, fuzzy
 msgid ""
-"iTunesDB possibly corrupt: number of tracks (mhit hunks) inconsistent. "
-"Trying to continue.\n"
+"iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to "
+"continue.\n"
 msgstr ""
 "iTunes databas möjligen skadad: Antal spår (mhit-data) inte konsekvent. "
 "Försöker fortsätta.\n"
 
 #. this should not be -- issue warning
-#: ../src/itdb_itunesdb.c:1841
+#: ../src/itdb_itunesdb.c:2477
 msgid ""
 "iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. "
 "Trying to continue.\n"
@@ -157,81 +193,108 @@ msgstr ""
 "iTunes databas möjligen skadad: Antal spellistor (mhyp-data) inte "
 "konsekvent. Försöker fortsätta.\n"
 
-#: ../src/itdb_itunesdb.c:1879
+#: ../src/itdb_itunesdb.c:2524
+#, fuzzy, c-format
+msgid ""
+"iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section "
+"found)"
+msgstr ""
+"iTunes databas '%s' skadad: Två mhsd för spellistor redan hittade. Ger upp."
+
+#: ../src/itdb_itunesdb.c:2553
+#, fuzzy, c-format
+msgid ""
+"iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 "
+"sections found)"
+msgstr ""
+"iTunes databas '%s' skadad: Två mhsd för spellistor redan hittade. Ger upp."
+
+#: ../src/itdb_itunesdb.c:2575
+#, c-format
+msgid "iTunes directory not found: '%s' (or similar)."
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:2592
+#, c-format
+msgid "Music directory not found: '%s' (or similar)."
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:2610
+#, c-format
+msgid "Control directory not found: '%s' (or similar)."
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:2677
 #, c-format
 msgid "File not found: '%s'."
 msgstr "Filen hittades inte: '%s'."
 
-#: ../src/itdb_itunesdb.c:2396
+#: ../src/itdb_itunesdb.c:3465
 #, c-format
 msgid "Cannot write mhod of type %d\n"
 msgstr "Kan inte skriva mhod av typen %d\n"
 
-#: ../src/itdb_itunesdb.c:2522 ../src/itdb_itunesdb.c:2635
-msgid "Database in memory corrupt (track pointer == NULL). Aborting export."
-msgstr "Databas i minnet skadad (spårpekare == NULL). Avbryter export."
-
-#: ../src/itdb_itunesdb.c:2678
-msgid "Database in memory corrupt (playlist pointer == NULL). Aborting export."
-msgstr "Databas i minnet skadad (spårlistepekare == NULL). Avbryter export."
-
-#: ../src/itdb_itunesdb.c:2718
+#: ../src/itdb_itunesdb.c:4014
 #, c-format
 msgid "Opening of '%s' for writing failed."
 msgstr "Fel när '%s' skulle öppnas för skrivning."
 
-#: ../src/itdb_itunesdb.c:2729
+#: ../src/itdb_itunesdb.c:4025
 #, c-format
 msgid "Writing to '%s' failed."
 msgstr "Fel vid skrivning till '%s'."
 
-#: ../src/itdb_itunesdb.c:2740
+#: ../src/itdb_itunesdb.c:4036
 #, c-format
 msgid "Writing to '%s' failed (%s)."
 msgstr "Fel vid skrivning till '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:2881 ../src/itdb_itunesdb.c:3052
-#: ../src/itdb_itunesdb.c:3245 ../src/itdb_itunesdb.c:3451
-#, c-format
-msgid "Path not found: '%s'."
+#: ../src/itdb_itunesdb.c:4370
+#, fuzzy, c-format
+msgid "Path not found: '%s' (or similar)."
 msgstr "Sökväg hittades inte: '%s'."
 
-#: ../src/itdb_itunesdb.c:3265
+#: ../src/itdb_itunesdb.c:4573
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s)."
 msgstr "Fel vid byte av namn på '%s' till '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:3282
+#: ../src/itdb_itunesdb.c:4590 ../src/itdb_itunesdb.c:4607
 #, c-format
 msgid "Error removing '%s' (%s)."
 msgstr "Fel vid borttagning av '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:3426
+#: ../src/itdb_itunesdb.c:4747
 #, c-format
 msgid "No 'F..' directories found in '%s'."
 msgstr ""
 
-#: ../src/itdb_itunesdb.c:3589
+#: ../src/itdb_itunesdb.c:4775
+#, c-format
+msgid "Path not found: '%s'."
+msgstr "Sökväg hittades inte: '%s'."
+
+#: ../src/itdb_itunesdb.c:4925
 #, c-format
 msgid "Error opening '%s' for reading (%s)."
 msgstr "Fel när '%s' skulle öppnas för läsning (%s)."
 
-#: ../src/itdb_itunesdb.c:3600
+#: ../src/itdb_itunesdb.c:4936
 #, c-format
 msgid "Error opening '%s' for writing (%s)."
 msgstr "Fel när '%s' skulle öppnas för skrivning (%s)."
 
-#: ../src/itdb_itunesdb.c:3617
+#: ../src/itdb_itunesdb.c:4953
 #, c-format
 msgid "Error while reading from '%s' (%s)."
 msgstr "Fel vid läsning från '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:3633
+#: ../src/itdb_itunesdb.c:4969
 #, c-format
 msgid "Error while writing to '%s' (%s)."
 msgstr "Fel vid skrivning till '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:3646 ../src/itdb_itunesdb.c:3656
+#: ../src/itdb_itunesdb.c:4982 ../src/itdb_itunesdb.c:4992
 #, c-format
 msgid "Error when closing '%s' (%s)."
 msgstr "Fel när '%s' skulle stängas (%s)."
@@ -241,3 +304,13 @@ msgstr "Fel när '%s' skulle stängas (%s)."
 #, c-format
 msgid "Unknown action (%d) in smart playlist will be ignored.\n"
 msgstr "Okänd åtgärd (%d) i smart spellista kommer att ignoreras.\n"
+
+#~ msgid "Did not find SLst hunk as expected. Trying to continue.\n"
+#~ msgstr "Hittade inte SLst data som förväntat. Försöker fortsätta ändå.\n"
+
+#~ msgid "Database in memory corrupt (track pointer == NULL). Aborting export."
+#~ msgstr "Databas i minnet skadad (spårpekare == NULL). Avbryter export."
+
+#~ msgid ""
+#~ "Database in memory corrupt (playlist pointer == NULL). Aborting export."
+#~ msgstr "Databas i minnet skadad (spårlistepekare == NULL). Avbryter export."

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-21 17:22:25 jcs>
+/* Time-stamp: <2006-04-05 22:53:35 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -45,18 +45,26 @@ static const Itdb_IpodModel ipod_model_table [] = {
 	{"Unknown", 0,    MODEL_TYPE_UNKNOWN,    UNKNOWN_GENERATION},
 	
 	/* First Generation */
+        /* Mechanical buttons arranged around rotating "scroll wheel".
+	   8513, 8541 and 8709 are Mac types, 8697 is PC */
 	{"8513", 5  * GB, MODEL_TYPE_REGULAR,    FIRST_GENERATION},
 	{"8541", 5  * GB, MODEL_TYPE_REGULAR,    FIRST_GENERATION},
 	{"8697", 5  * GB, MODEL_TYPE_REGULAR,    FIRST_GENERATION},
 	{"8709", 10 * GB, MODEL_TYPE_REGULAR,    FIRST_GENERATION},
 	
 	/* Second Generation */
+	/* Same buttons as First Generation but around touch-sensitive
+	 * "touch wheel". 8737 and 8738 are Mac types, 8740 and 8741
+	   are PC */
 	{"8737", 10 * GB, MODEL_TYPE_REGULAR,    SECOND_GENERATION},
 	{"8740", 10 * GB, MODEL_TYPE_REGULAR,    SECOND_GENERATION},
 	{"8738", 20 * GB, MODEL_TYPE_REGULAR,    SECOND_GENERATION},
 	{"8741", 20 * GB, MODEL_TYPE_REGULAR,    SECOND_GENERATION},
 	
 	/* Third Generation */
+	/* Touch sensitive buttons and arranged in a line above "touch
+	   wheel". Docking connector was introduced here, same models
+	   for Mac and PC from now on. */
 	{"8976", 10 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
 	{"8946", 15 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
 	{"9460", 15 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
@@ -64,8 +72,8 @@ static const Itdb_IpodModel ipod_model_table [] = {
 	{"8948", 30 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
 	{"9245", 40 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
 	
-	
 	/* Fourth Generation */
+	/* Buttons are now integrated into the "touch wheel". */
 	{"9282", 20 * GB, MODEL_TYPE_REGULAR,    FOURTH_GENERATION},
 	{"9787", 25 * GB, MODEL_TYPE_REGULAR_U2, FOURTH_GENERATION},
 	{"9268", 40 * GB, MODEL_TYPE_REGULAR,    FOURTH_GENERATION},
@@ -91,6 +99,7 @@ static const Itdb_IpodModel ipod_model_table [] = {
 	{"9807", 6 * GB, MODEL_TYPE_MINI_GREEN,  SECOND_GENERATION},	
 
 	/* Photo / Fourth Generation */
+	/* Buttons are integrated into the "touch wheel". */
 	{"9829", 30 * GB, MODEL_TYPE_COLOR,      FOURTH_GENERATION},
 	{"9585", 40 * GB, MODEL_TYPE_COLOR,      FOURTH_GENERATION},
 	{"9586", 60 * GB, MODEL_TYPE_COLOR,      FOURTH_GENERATION},
@@ -101,6 +110,7 @@ static const Itdb_IpodModel ipod_model_table [] = {
 	{"9725", GB,     MODEL_TYPE_SHUFFLE,     FOURTH_GENERATION},
 	
 	/* Nano / Fifth Generation */
+	/* Buttons are integrated into the "touch wheel". */
 	{"A350", GB * 1, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},
 	{"A352", GB * 1, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION},
 	{"A004", GB * 2, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},
@@ -109,20 +119,21 @@ static const Itdb_IpodModel ipod_model_table [] = {
 	{"A107", GB * 4, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION},
 
 	/* Video / Fifth Generation */
+	/* Buttons are integrated into the "touch wheel". */
 	{"A002", GB * 30, MODEL_TYPE_VIDEO_WHITE, FIFTH_GENERATION},
 	{"A146", GB * 30, MODEL_TYPE_VIDEO_BLACK, FIFTH_GENERATION},
 	{"A003", GB * 60, MODEL_TYPE_VIDEO_WHITE, FIFTH_GENERATION},
 	{"A147", GB * 60, MODEL_TYPE_VIDEO_BLACK, FIFTH_GENERATION},
 	
 	/* HP iPods, need contributions for this table */
-	{"E436", 40 * GB, MODEL_TYPE_REGULAR, FOURTH_GENERATION},
-	{"S492", 30 * GB, MODEL_TYPE_COLOR, FOURTH_GENERATION},
+	/* Buttons are integrated into the "touch wheel". */
+	{"E436", 40 * GB, MODEL_TYPE_REGULAR,     FOURTH_GENERATION},
+	{"S492", 30 * GB, MODEL_TYPE_COLOR,       FOURTH_GENERATION},
 
 	/* No known model number -- create a Device/SysInfo file with
 	 * one entry, e.g.:
 	 ModelNumStr: Mmobile1
 	*/
-
 	{"mobile1", -1, MODEL_TYPE_MOBILE_1, MOBILE_GENERATION},
 	
 	{NULL, 0, 0, 0}
