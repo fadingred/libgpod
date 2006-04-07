@@ -90,7 +90,13 @@ for track in gpod.sw_get_tracks(itdb):
             print "Added thumbnails for %s, %s" % (track.album,track.artist)
     except KeyError:
         print "No image available for %s, %s" % (track.album,track.artist)
-            
 
+print "Cleaning up downloaded images..."
+# really, we should do this if any of the real work threw an exception
+# too. This is just a demo script :-)
+for filename in images.values():
+    os.unlink(filename)
+
+print "Writing ipod database..."
 gpod.itdb_write(itdb, None)
-print "Saved db"
+
