@@ -45,6 +45,8 @@ images = {}
 for track in gpod.sw_get_tracks(itdb):
     print track.artist, track.album, track.title, " :",
 
+    #gpod.itdb_track_remove_thumbnails(track)
+
     if track.artwork.artwork_size:
         print "Already has artwork, skipping."
         continue
@@ -91,12 +93,13 @@ for track in gpod.sw_get_tracks(itdb):
     except KeyError:
         print "No image available for %s, %s" % (track.album,track.artist)
 
+
+print "Writing ipod database..."
+gpod.itdb_write(itdb, None)
+
 print "Cleaning up downloaded images..."
 # really, we should do this if any of the real work threw an exception
 # too. This is just a demo script :-)
 for filename in images.values():
     os.unlink(filename)
-
-print "Writing ipod database..."
-gpod.itdb_write(itdb, None)
 
