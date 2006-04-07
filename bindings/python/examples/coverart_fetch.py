@@ -36,15 +36,33 @@ if not itdb:
     print "Failed to read %s" % dbname
     sys.exit(2)
 
-# set your key here...
-amazon.setLicense('')
+# set your key here, or see amazon.py for a list of other places to
+# store it.
+amazon.setLicense('THISISNOTREALLYMYKEY')
+
+images = {}
 
 for track in gpod.sw_get_tracks(itdb):
-    output = ("/tmp/%s %s.jpg" % (track.artist, track.album)).replace(' ','_')
-    if not os.path.exists(output):
-        print "Searching for %s %s" % (track.artist, track.album)
+    print track.artist, track.album, track.title, " :",
+
+    if track.artwork.artwork_size:
+        print "Already has artwork, skipping."
+        continue
+
+    if not (track.artist and track.album):
+        print "Need an artist AND album name, skipping."       
+        continue
+    
+    # avoid fetching again if we already had a suitable image
+    if not images.has_key((track.album,track.artist)):
+        query = "%s + %s" % (track.artist, track.album)
+        # nasty hacks to get better hits. Is there a library out there
+        # for this?
+        query = query.replace("Disk 2","")
+        query = query.replace("Disk 1","")        
+        print "Searching for %s: " % query,
         try:
-            albums = amazon.searchByKeyword("%s %s" % (track.artist, track.album),
+            albums = amazon.searchByKeyword(query,
                                             type="lite",product_line="music")
         except amazon.AmazonError, e:
             print e
@@ -54,19 +72,25 @@ for track in gpod.sw_get_tracks(itdb):
             continue
         album = albums[0]
 
+        hdle, filename = tempfile.mkstemp()
         i = urllib.urlopen(album.ImageUrlLarge)
-        o = open(output, "wb")
-        o.write(i.read())
-        o.close()
-        img = Image.open(output)
+        open(filename,"w").write(i.read())
+        img = Image.open(filename)
         if not (img.size[0] > 10 or img.size[1] > 10):
-            os.unlink(output)
+            os.unlink(filename)
         else:
-                print "Fetched image!"
-    
-    if os.path.exists(output):
-        if gpod.itdb_track_set_thumbnail(track,output) != 0:
-            print "Failed to save image thumbnail"
+            print "Fetched image for %s, %s" % (track.album,track.artist)
+            images[(track.album,track.artist)] = filename
+
+    try:
+        r = gpod.itdb_track_set_thumbnails(track,images[(track.album,track.artist)])
+        if r != 1:
+            print "Failed to save image thumbnail to ipod."
+        else:
+            print "Added thumbnails for %s, %s" % (track.album,track.artist)
+    except KeyError:
+        print "No image available for %s, %s" % (track.album,track.artist)
+            
 
 gpod.itdb_write(itdb, None)
 print "Saved db"

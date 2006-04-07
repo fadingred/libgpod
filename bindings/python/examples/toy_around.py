@@ -47,7 +47,7 @@ if not itdb:
     sys.exit(2)
 itdb.mountpoint = ipod_mount
 
-if False:
+if True:
     for playlist in gpod.sw_get_playlists(itdb):
         print playlist.name
         print type(playlist.name)
@@ -61,6 +61,9 @@ for track in gpod.sw_get_tracks(itdb):
         if gpod.itdb_playlist_contains_track(playlist, track):
             lists.append(playlist)
 
+    print track.artist
+    print track.tracklen
+    print track.size
     if track.artist == "Placebo":
         print u"%-25s %-20s %-20s %-30s %s" % (track.title,
                                                track.album,
