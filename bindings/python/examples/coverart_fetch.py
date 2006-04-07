@@ -59,9 +59,12 @@ for track in gpod.sw_get_tracks(itdb):
     if not images.has_key((track.album,track.artist)):
         query = "%s + %s" % (track.artist, track.album)
         # nasty hacks to get better hits. Is there a library out there
-        # for this?
-        query = query.replace("Disk 2","")
-        query = query.replace("Disk 1","")        
+        # for this?  Note we take out double quotes too: Amazon place 
+        # this string literally into their XML response, so can end up 
+        # giving us back: <Arg value="search"term" 
+        # name="KeywordSearch"> which is not well formed :-( 
+        for term in ["Disk 1", "Disk 2", '12"', '12 "','"']: 
+            query = query.replace(term,"") 
         print "Searching for %s: " % query,
         try:
             albums = amazon.searchByKeyword(query,
