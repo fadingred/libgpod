@@ -38,7 +38,7 @@ if not itdb:
 
 # set your key here, or see amazon.py for a list of other places to
 # store it.
-amazon.setLicense('THISISNOTREALLYMYKEY')
+amazon.setLicense('')
 
 images = {}
 
