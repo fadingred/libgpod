@@ -1,3 +1,7 @@
+2006-04-08  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.ac: generate Makefile for bindings/python/examples
+
 2006-04-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb.h: flag1 -> has_artwork

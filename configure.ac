@@ -147,6 +147,7 @@ AC_OUTPUT([
 Makefile
 bindings/Makefile
 bindings/python/Makefile
+bindings/python/examples/Makefile
 m4/Makefile
 po/Makefile.in
 src/Makefile
