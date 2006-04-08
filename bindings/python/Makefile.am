@@ -1,9 +1,7 @@
+SUBDIRS = examples
+
 EXTRA_DIST =				\
-	gpod.i				\
-	examples/coverart_fetch.py	\
-	examples/toy_around.py		\
-	examples/add_song.py		\
-	examples/tag_genre_from_audioscrobber.py
+	gpod.i
 
 CLEANFILES =		\
 	*.py*		\
