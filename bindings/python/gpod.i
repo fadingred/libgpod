@@ -81,11 +81,15 @@ typedef char gchar;
    long ival;
    ival = PyInt_AsLong($input);
    if (( ival > 255 ) || ( ival < 0 )) {
-      PyErr_SetString(PyExc_ValueError, "Value must be between 0 and 255");
+      PyErr_SetString(PyExc_ValueError, "$symname: Value must be between 0 and 255");
       SWIG_fail;
    } else {
       $1 = (guint8) ival;
    }
+}
+
+%typemap(out) guint8 {
+   $result = PyInt_FromLong($1);
 }
 
 typedef int gboolean;
