@@ -1,8 +1,9 @@
 EXTRA_DIST =				\
 	gpod.i				\
 	examples/coverart_fetch.py	\
-	examples/play.py		\
-	examples/tag-genre-from-audioscrobber.py
+	examples/toy_around.py		\
+	examples/add_song.py		\
+	examples/tag_genre_from_audioscrobber.py
 
 CLEANFILES =		\
 	*.py*		\
