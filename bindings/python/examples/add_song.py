@@ -35,6 +35,11 @@ parser.add_option("-m", "--mountpoint", dest="mountpoint",
 parser.add_option("-a", "--add",
                   dest="filetoadd",metavar="FILE",
                   help="add mp3 FILE")
+parser.add_option("-p", "--podcast",
+                  dest="ispodcast",
+                  action="store_true",
+                  default=False,
+                  help="add to podcast playlist")
 (options, args) = parser.parse_args()
 
 if not options.filetoadd:
@@ -59,11 +64,28 @@ track.title = str(tag.getTitle())
 track.filetype = 'mp3'
 track.tracklen  = audiofile.getPlayTime() * 1000 # important to add!, iPod uses ms.
 
+if options.ispodcast:
+    print track.flag1
+    print type(track.flag1)
+    track.flag1 = 0x02 # unknown
+    track.flag2 = 0x01 # skip when shuffling
+    track.flag3 = 0x01 # remember playback position
+    track.flag4 = 0x01 # Show Title/Album on the 'Now Playing' page
+    playlists = [gpod.itdb_playlist_mpl(itdb)]
+else:
+    track.flag1 = 0x02 # unknown
+    track.flag2 = 0x00 # do not skip when shuffling
+    track.flag3 = 0x00 # do not remember playback position
+    track.flag4 = 0x00 # Show Title/Album/Artist on the 'New Playing' page
+    playlists = [itdb_playlist_podcasts(itdb)]
+
 print "Adding %s (Title: %s)" % (options.filetoadd, track.title)
 
-gpod.itdb_track_add(itdb, track, -1)    
-master = gpod.sw_get_playlists(itdb)[0]
-gpod.itdb_playlist_add_track(master, track, -1)
+gpod.itdb_track_add(itdb, track, -1)
+
+for playlist in playlists:
+    gpod.itdb_playlist_add_track(playlist, track, -1)
+
 if gpod.itdb_cp_track_to_ipod(track, options.filetoadd, None) == 1:
     print "Copied to %s" % gpod.itdb_filename_on_ipod(track)
 else:

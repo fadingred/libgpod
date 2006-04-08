@@ -77,8 +77,20 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb) {
 # them utf8 encoded Strings.
 typedef char gchar;
 
+%typemap(in) guint8 {
+   long ival;
+   ival = PyInt_AsLong($input);
+   if (( ival > 255 ) || ( ival < 0 )) {
+      PyErr_SetString(PyExc_ValueError, "Value must be between 0 and 255");
+      SWIG_fail;
+   } else {
+      $1 = (guint8) ival;
+   }
+}
+
 typedef int gboolean;
 typedef int gint32;
+
 typedef unsigned int guint32;
 
 #define G_BEGIN_DECLS
