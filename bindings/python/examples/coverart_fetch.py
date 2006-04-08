@@ -33,7 +33,7 @@ import tempfile
 ipod_mount = '/mnt/ipod'
 itdb = gpod.itdb_parse(ipod_mount, None)
 if not itdb:
-    print "Failed to read %s" % dbname
+    print "Failed to read ipod at mountpoint %s" % ipod_mount
     sys.exit(2)
 
 # set your key here, or see amazon.py for a list of other places to
@@ -63,7 +63,7 @@ for track in gpod.sw_get_tracks(itdb):
         # this string literally into their XML response, so can end up 
         # giving us back: <Arg value="search"term" 
         # name="KeywordSearch"> which is not well formed :-( 
-        for term in ["Disk 1", "Disk 2", '12"', '12 "','"']: 
+        for term in ["Disk 1", "Disk 2", '12"', '12 "','"','&']: 
             query = query.replace(term,"") 
         print "Searching for %s: " % query,
         try:
