@@ -49,6 +49,20 @@ PyObject* sw_get_tracks(Itdb_iTunesDB *itdb) {
   return list;
  }
 
+PyObject* sw_get_track(GList *list, gint index) {
+  GList *position;
+  if ( (index >= g_list_length(list)) || index < 0 ) {
+   PyErr_SetString(PyExc_IndexError, "Value out of range");
+   return NULL;
+  }
+  position = g_list_nth(list, index);
+  return SWIG_NewPointerObj((void*)(position->data), SWIGTYPE_p__Itdb_Track, 0);
+ }
+
+PyObject* sw_get_list_len(GList *list) {
+   return PyInt_FromLong(g_list_length(list));
+ }
+
 PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl) {
   PyObject    *list;
   gint        i;
@@ -88,12 +102,28 @@ typedef char gchar;
    }
 }
 
+%typemap(out) guint64 {
+   $result = PyLong_FromLong($1);
+}
+
+%typemap(out) guint32 {
+   $result = PyInt_FromLong($1);
+}
+
+%typemap(out) guint16 {
+   $result = PyInt_FromLong($1);
+}
+
+
 %typemap(out) guint8 {
    $result = PyInt_FromLong($1);
 }
 
 typedef int gboolean;
+typedef long gint64;
 typedef int gint32;
+typedef int gint16;
+typedef int gint;
 
 typedef unsigned int guint32;
 
@@ -101,6 +131,8 @@ typedef unsigned int guint32;
 #define G_END_DECLS
 
 PyObject* sw_get_tracks(Itdb_iTunesDB *itdb);
+PyObject* sw_get_track(GList *list, gint index);
+PyObject* sw_get_list_len(GList *list);
 PyObject* sw_get_playlists(Itdb_iTunesDB *itdb);
 PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl);
 %include "../../src/itdb.h"
