@@ -1,5 +1,17 @@
 2006-04-10  Christophe Fergeau  <teuf@gnome.org>
 
+	* tests/test-ls.c: new test program reading and displaying the iPod 
+	content 
+	* tests/test-rebuild-db.cc: new test program which looks for mp3 files
+	on the iPod in the Music dir and rebuild an iPod database from that
+	(it uses taglib to parse the tags, so it's conditionnally built
+	depending on taglib's availability)
+	* configure.ac:
+	* tests/Makefile.am: build system changes to accomodate the 2 new test
+	programs
+	
+2006-04-10  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_device.h: removed dead code
 	* src/itdb_playlist.c: make spl_update2 static, kill spl_update
 

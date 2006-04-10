@@ -55,6 +55,19 @@ PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.4.0 gobject-2.0)
 LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
 
 dnl **************************************************
+dnl * TagLib is only used by test-rebuild-db 
+dnl **************************************************
+PKG_CHECK_MODULES(TAGLIB, taglib, have_taglib=yes, have_taglib=no)
+if test x"$have_taglib" = xyes; then
+   AH_TEMPLATE([HAVE_TAGLIB], [Whether TagLib is installed, it's only used in a test program])
+   AC_DEFINE_UNQUOTED(HAVE_TAGLIB, 1)
+fi
+AC_SUBST(TAGLIB_CFLAGS)
+AC_SUBST(TAGLIB_LIBS)
+AM_CONDITIONAL(HAVE_TAGLIB, test x"$have_taglib" = xyes)
+
+
+dnl **************************************************
 dnl * GDKPIXBUF is optional
 dnl **************************************************
 
