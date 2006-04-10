@@ -825,14 +825,6 @@ void itdb_spl_update (Itdb_Playlist *spl)
 }
 
 
-void spl_update (Itdb_Playlist *playlist, gpointer data);
-void spl_update (Itdb_Playlist *playlist, gpointer data)
-{
-    g_return_if_fail (playlist);
-    itdb_spl_update (playlist);
-}
-
-
 /**
  * itdb_spl_update_all:
  * @itdb: an #Itdb_iTunesDB
@@ -843,12 +835,11 @@ void itdb_spl_update_all (Itdb_iTunesDB *itdb)
 {
     g_return_if_fail (itdb);
 
-    g_list_foreach (itdb->playlists, (GFunc)spl_update, NULL);
+    g_list_foreach (itdb->playlists, (GFunc)itdb_spl_update, NULL);
 }
 
 
-void spl_update2 (Itdb_Playlist *playlist, gpointer data);
-void spl_update2 (Itdb_Playlist *playlist, gpointer data)
+static void spl_update2 (Itdb_Playlist *playlist, gpointer data)
 {
     g_return_if_fail (playlist);
     if (playlist->is_spl && playlist->splpref.liveupdate)

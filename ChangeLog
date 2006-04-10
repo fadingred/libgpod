@@ -1,5 +1,10 @@
 2006-04-10  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_device.h: removed dead code
+	* src/itdb_playlist.c: make spl_update2 static, kill spl_update
+
+2006-04-10  Christophe Fergeau  <teuf@gnome.org>
+
 	* docs/Makefile.am:
 	* docs/reference/Makefile.am:
 	* docs/reference/libgpod-docs.xml:

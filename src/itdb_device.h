@@ -57,13 +57,6 @@ struct _Itdb_Device
 			   * G_BIG_ENDIAN "reversed" endianness (e.g. mobile
 			   * phone iTunesDBs)
 			   */
-#if 0
-    gboolean endianess_set; /* the endianess_reversed flag has been
-			     detected or set */
-    gboolean endianess_reversed; /* this iTunesDB has to be written in
-			     reversed endian order (e.g. mobile phone
-			     iTunesDBs) */
-#endif
     GHashTable *sysinfo;  /* hash with value/key pairs of all entries
 			     in Device/SysInfo */
 };
