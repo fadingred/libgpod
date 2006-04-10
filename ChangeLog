@@ -1,3 +1,31 @@
+2006-04-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* docs/Makefile.am:
+	* docs/reference/Makefile.am:
+	* docs/reference/libgpod-docs.xml:
+	* docs/reference/libgpod-sections.txt:
+	* docs/reference/tmpl/Internal.sgml:
+	* docs/reference/tmpl/artwork.sgml:
+	* docs/reference/tmpl/device.sgml:
+	* docs/reference/tmpl/itunesdb-copying.sgml:
+	* docs/reference/tmpl/itunesdb-db.sgml:
+	* docs/reference/tmpl/itunesdb-lowlevel.sgml:
+	* docs/reference/tmpl/itunesdb-time.sgml:
+	* docs/reference/tmpl/libgpod-unused.sgml:
+	* docs/reference/tmpl/playlists.sgml:
+	* docs/reference/tmpl/smart-playlists.sgml:
+	* docs/reference/tmpl/track.sgml:
+	* docs/reference/version.xml.in: all the files below are new files
+	needed for gtk-doc support
+	* Makefile.am:
+	* configure.ac: add gtk-doc support to build system
+	* src/itdb_artwork.c:
+	* src/itdb_device.c:
+	* src/itdb_itunesdb.c:
+	* src/itdb_playlist.c:
+	* src/itdb_track.c: update inline comments in those files so that
+	gtk-doc can pick them up to build documentation
+	
 2006-04-08  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac: generate Makefile for bindings/python/examples

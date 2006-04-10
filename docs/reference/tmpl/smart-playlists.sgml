@@ -1,0 +1,269 @@
+<!-- ##### SECTION Title ##### -->
+Smart Playlists
+
+<!-- ##### SECTION Short_Description ##### -->
+Data structures used to manipulate iPod smart playlists
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT SPLPref ##### -->
+<para>
+
+</para>
+
+@liveupdate: 
+@checkrules: 
+@checklimits: 
+@limittype: 
+@limitsort: 
+@limitvalue: 
+@matchcheckedonly: 
+
+<!-- ##### STRUCT SPLRule ##### -->
+<para>
+
+</para>
+
+@field: 
+@action: 
+@string: 
+@fromvalue: 
+@fromdate: 
+@fromunits: 
+@tovalue: 
+@todate: 
+@tounits: 
+@unk052: 
+@unk056: 
+@unk060: 
+@unk064: 
+@unk068: 
+
+<!-- ##### STRUCT SPLRules ##### -->
+<para>
+
+</para>
+
+@unk004: 
+@match_operator: 
+@rules: 
+
+<!-- ##### ENUM SPLAction ##### -->
+<para>
+
+</para>
+
+@SPLACTION_IS_INT: 
+@SPLACTION_IS_GREATER_THAN: 
+@SPLACTION_IS_LESS_THAN: 
+@SPLACTION_IS_IN_THE_RANGE: 
+@SPLACTION_IS_IN_THE_LAST: 
+@SPLACTION_IS_STRING: 
+@SPLACTION_CONTAINS: 
+@SPLACTION_STARTS_WITH: 
+@SPLACTION_ENDS_WITH: 
+@SPLACTION_IS_NOT_INT: 
+@SPLACTION_IS_NOT_GREATER_THAN: 
+@SPLACTION_IS_NOT_LESS_THAN: 
+@SPLACTION_IS_NOT_IN_THE_RANGE: 
+@SPLACTION_IS_NOT_IN_THE_LAST: 
+@SPLACTION_IS_NOT: 
+@SPLACTION_DOES_NOT_CONTAIN: 
+@SPLACTION_DOES_NOT_START_WITH: 
+@SPLACTION_DOES_NOT_END_WITH: 
+
+<!-- ##### ENUM SPLFieldType ##### -->
+<para>
+
+</para>
+
+@splft_string: 
+@splft_int: 
+@splft_boolean: 
+@splft_date: 
+@splft_playlist: 
+@splft_unknown: 
+
+<!-- ##### ENUM SPLActionType ##### -->
+<para>
+
+</para>
+
+@splat_string: 
+@splat_int: 
+@splat_date: 
+@splat_range_int: 
+@splat_range_date: 
+@splat_inthelast: 
+@splat_playlist: 
+@splat_none: 
+@splat_invalid: 
+@splat_unknown: 
+
+<!-- ##### ENUM SPLField ##### -->
+<para>
+
+</para>
+
+@SPLFIELD_SONG_NAME: 
+@SPLFIELD_ALBUM: 
+@SPLFIELD_ARTIST: 
+@SPLFIELD_BITRATE: 
+@SPLFIELD_SAMPLE_RATE: 
+@SPLFIELD_YEAR: 
+@SPLFIELD_GENRE: 
+@SPLFIELD_KIND: 
+@SPLFIELD_DATE_MODIFIED: 
+@SPLFIELD_TRACKNUMBER: 
+@SPLFIELD_SIZE: 
+@SPLFIELD_TIME: 
+@SPLFIELD_COMMENT: 
+@SPLFIELD_DATE_ADDED: 
+@SPLFIELD_COMPOSER: 
+@SPLFIELD_PLAYCOUNT: 
+@SPLFIELD_LAST_PLAYED: 
+@SPLFIELD_DISC_NUMBER: 
+@SPLFIELD_RATING: 
+@SPLFIELD_COMPILATION: 
+@SPLFIELD_BPM: 
+@SPLFIELD_GROUPING: 
+@SPLFIELD_PLAYLIST: 
+
+<!-- ##### MACRO SPLDATE_IDENTIFIER ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO SPL_MAXSTRINGLENGTH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO SPL_STRING_MAXLEN ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION itdb_splr_get_field_type ##### -->
+<para>
+
+</para>
+
+@splr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_splr_get_action_type ##### -->
+<para>
+
+</para>
+
+@splr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_splr_validate ##### -->
+<para>
+
+</para>
+
+@splr: 
+
+
+<!-- ##### FUNCTION itdb_splr_remove ##### -->
+<para>
+
+</para>
+
+@pl: 
+@splr: 
+
+
+<!-- ##### FUNCTION itdb_splr_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_splr_add ##### -->
+<para>
+
+</para>
+
+@pl: 
+@splr: 
+@pos: 
+
+
+<!-- ##### FUNCTION itdb_splr_add_new ##### -->
+<para>
+
+</para>
+
+@pl: 
+@pos: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_spl_copy_rules ##### -->
+<para>
+
+</para>
+
+@dest: 
+@src: 
+
+
+<!-- ##### FUNCTION itdb_splr_eval ##### -->
+<para>
+
+</para>
+
+@splr: 
+@track: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_spl_update ##### -->
+<para>
+
+</para>
+
+@spl: 
+
+
+<!-- ##### FUNCTION itdb_spl_update_all ##### -->
+<para>
+
+</para>
+
+@itdb: 
+
+
+<!-- ##### FUNCTION itdb_spl_update_live ##### -->
+<para>
+
+</para>
+
+@itdb: 
+
+

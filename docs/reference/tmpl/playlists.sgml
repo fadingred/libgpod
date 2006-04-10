@@ -1,0 +1,287 @@
+<!-- ##### SECTION Title ##### -->
+Playlists
+
+<!-- ##### SECTION Short_Description ##### -->
+Data structure to represent an iPod playlist
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT Itdb_Playlist ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@name: 
+@type: 
+@flag1: 
+@flag2: 
+@flag3: 
+@num: 
+@members: 
+@is_spl: 
+@timestamp: 
+@id: 
+@mhodcount: 
+@libmhodcount: 
+@sortorder: 
+@podcastflag: 
+@splpref: 
+@splrules: 
+@usertype: 
+@userdata: 
+@userdata_duplicate: 
+@userdata_destroy: 
+
+<!-- ##### ENUM ItdbPlaylistSortOrder ##### -->
+<para>
+
+</para>
+
+@ITDB_PSO_MANUAL: 
+@ITDB_PSO_TITLE: 
+@ITDB_PSO_ALBUM: 
+@ITDB_PSO_ARTIST: 
+@ITDB_PSO_BIRATE: 
+@ITDB_PSO_GENRE: 
+@ITDB_PSO_FILETYPE: 
+@ITDB_PSO_TIME_MODIFIED: 
+@ITDB_PSO_TRACK_NR: 
+@ITDB_PSO_SIZE: 
+@ITDB_PSO_TIME: 
+@ITDB_PSO_YEAR: 
+@ITDB_PSO_SAMPLERATE: 
+@ITDB_PSO_COMMENT: 
+@ITDB_PSO_TIME_ADDED: 
+@ITDB_PSO_EQUALIZER: 
+@ITDB_PSO_COMPOSER: 
+@ITDB_PSO_PLAYCOUNT: 
+@ITDB_PSO_TIME_PLAYED: 
+@ITDB_PSO_CD_NR: 
+@ITDB_PSO_RATING: 
+@ITDB_PSO_RELEASE_DATE: 
+@ITDB_PSO_BPM: 
+@ITDB_PSO_GROUPING: 
+@ITDB_PSO_CATEGORY: 
+@ITDB_PSO_DESCRIPTION: 
+
+<!-- ##### FUNCTION itdb_playlist_new ##### -->
+<para>
+
+</para>
+
+@title: 
+@spl: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_free ##### -->
+<para>
+
+</para>
+
+@pl: 
+
+
+<!-- ##### FUNCTION itdb_playlist_duplicate ##### -->
+<para>
+
+</para>
+
+@pl: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_add ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@pl: 
+@pos: 
+
+
+<!-- ##### FUNCTION itdb_playlist_move ##### -->
+<para>
+
+</para>
+
+@pl: 
+@pos: 
+
+
+<!-- ##### FUNCTION itdb_playlist_remove ##### -->
+<para>
+
+</para>
+
+@pl: 
+
+
+<!-- ##### FUNCTION itdb_playlist_unlink ##### -->
+<para>
+
+</para>
+
+@pl: 
+
+
+<!-- ##### FUNCTION itdb_playlist_add_track ##### -->
+<para>
+
+</para>
+
+@pl: 
+@track: 
+@pos: 
+
+
+<!-- ##### FUNCTION itdb_playlist_remove_track ##### -->
+<para>
+
+</para>
+
+@pl: 
+@track: 
+
+
+<!-- ##### FUNCTION itdb_playlist_contains_track ##### -->
+<para>
+
+</para>
+
+@pl: 
+@track: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_contain_track_number ##### -->
+<para>
+
+</para>
+
+@tr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_tracks_number ##### -->
+<para>
+
+</para>
+
+@pl: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_mpl ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_is_mpl ##### -->
+<para>
+
+</para>
+
+@pl: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_set_mpl ##### -->
+<para>
+
+</para>
+
+@pl: 
+
+
+<!-- ##### FUNCTION itdb_playlist_podcasts ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_is_podcasts ##### -->
+<para>
+
+</para>
+
+@pl: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_set_podcasts ##### -->
+<para>
+
+</para>
+
+@pl: 
+
+
+<!-- ##### FUNCTION itdb_playlist_exists ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@pl: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_by_id ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_by_nr ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@num: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_by_name ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlist_randomize ##### -->
+<para>
+
+</para>
+
+@pl: 
+
+

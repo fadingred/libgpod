@@ -1,0 +1,129 @@
+<!-- ##### SECTION Title ##### -->
+Device
+
+<!-- ##### SECTION Short_Description ##### -->
+Data structure holding information about the iPod (model, mount point, ...)
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT Itdb_Device ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@musicdirs: 
+@byte_order: 
+@endianess_reversed: 
+
+<!-- ##### FUNCTION itdb_device_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_device_free ##### -->
+<para>
+
+</para>
+
+@device: 
+
+
+<!-- ##### FUNCTION itdb_device_set_mountpoint ##### -->
+<para>
+
+</para>
+
+@device: 
+@mp: 
+
+
+<!-- ##### FUNCTION itdb_device_read_sysinfo ##### -->
+<para>
+
+</para>
+
+@device: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_device_get_sysinfo ##### -->
+<para>
+
+</para>
+
+@device: 
+@field: 
+@Returns: 
+
+
+<!-- ##### STRUCT Itdb_IpodModel ##### -->
+<para>
+
+</para>
+
+@model_number: 
+@capacity: 
+@model_type: 
+@generation: 
+
+<!-- ##### STRUCT Itdb_ArtworkFormat ##### -->
+<para>
+
+</para>
+
+@type: 
+@width: 
+@height: 
+@correlation_id: 
+
+<!-- ##### ENUM Itdb_Generation ##### -->
+<para>
+
+</para>
+
+@UNKNOWN_GENERATION: 
+@FIRST_GENERATION: 
+@SECOND_GENERATION: 
+@THIRD_GENERATION: 
+@FOURTH_GENERATION: 
+@FIFTH_GENERATION: 
+@MOBILE_GENERATION: 
+
+<!-- ##### ENUM Itdb_ModelType ##### -->
+<para>
+
+</para>
+
+@MODEL_TYPE_INVALID: 
+@MODEL_TYPE_UNKNOWN: 
+@MODEL_TYPE_COLOR: 
+@MODEL_TYPE_COLOR_U2: 
+@MODEL_TYPE_REGULAR: 
+@MODEL_TYPE_REGULAR_U2: 
+@MODEL_TYPE_MINI: 
+@MODEL_TYPE_MINI_BLUE: 
+@MODEL_TYPE_MINI_PINK: 
+@MODEL_TYPE_MINI_GREEN: 
+@MODEL_TYPE_MINI_GOLD: 
+@MODEL_TYPE_SHUFFLE: 
+@MODEL_TYPE_NANO_WHITE: 
+@MODEL_TYPE_NANO_BLACK: 
+@MODEL_TYPE_VIDEO_WHITE: 
+@MODEL_TYPE_VIDEO_BLACK: 
+@MODEL_TYPE_MOBILE_1: 
+

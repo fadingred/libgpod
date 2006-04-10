@@ -40,14 +40,26 @@
 #endif
 #include <glib/gi18n-lib.h>
 
-
+/**
+ * itdb_artwork_new:
+ * 
+ * Creates a new #Itdb_Artwork 
+ *
+ * Return value: a new #Itdb_Artwork to be freed with itdb_artwork_free() when
+ * no longer needed
+ **/
 Itdb_Artwork *itdb_artwork_new (void)
 {
     Itdb_Artwork *artwork = g_new0 (Itdb_Artwork, 1);
     return artwork;
 }
 
-
+/**
+ * itdb_artwork_free:
+ * @artwork: an #Itdb_Artwork
+ *
+ * Frees memory used by @artwork
+ **/
 void itdb_artwork_free (Itdb_Artwork *artwork)
 {
     g_return_if_fail (artwork);
@@ -78,6 +90,14 @@ static GList *dup_thumbnails (GList *thumbnails)
     return g_list_reverse (result);
 }
 
+/**
+ * itdb_artwork_duplicate:
+ * @artwork: an #Itdb_Artwork
+ *
+ * Duplicates @artwork
+ *
+ * Return value: a new copy of @artwork
+ **/
 Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork)
 {
     Itdb_Artwork *dup;
@@ -93,7 +113,13 @@ Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork)
 }
 
 
-/* Remove @thumb in @artwork */
+/**
+ * itdb_artwork_remove_thumbnail:
+ * @artwork: an #Itdb_Artwork
+ * @thumb: an #Itdb_Thumb
+ *
+ * Removes @thumb from @artwork. The memory used by @thumb isn't freed.
+ **/
 void
 itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork, Itdb_Thumb *thumb)
 {
@@ -104,7 +130,12 @@ itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork, Itdb_Thumb *thumb)
 }
 
 
-/* Remove all thumbnails in @artwork */
+/**
+ * itdb_artwork_remove_thumbnails:
+ * @artwork: an #Itdb_Artwork
+ *
+ * Removes all thumbnails from @artwork 
+ **/
 void
 itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
 {
@@ -123,7 +154,19 @@ itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
 
 
 
-/* Append thumbnail of type @type to existing thumbnails in @artwork */
+/**
+ * itdb_artwork_add_thumbnail
+ * @artwork: an #Itdb_Thumbnail
+ * @type: thumbnail size
+ * @filename: image file to use to create the thumbnail
+ *
+ * Appends a thumbnail of type @type to existing thumbnails in @artwork. No 
+ * data is read from @filename yet, the file will be when @artwork is saved to
+ * disk. @filename must still exist when that happens.
+ *
+ * Return value: TRUE if the thumbnail could be successfully added, FALSE
+ * otherwise
+ **/
 gboolean
 itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
 			    ItdbThumbType type,
@@ -155,8 +198,16 @@ itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
 }
 
 
-/* Return a pointer to the Itdb_Thumb of type @type or NULL when it
- * does not exist */
+/**
+ * itdb_artwork_get_thumb_by_type:
+ * @artwork: an #Itdb_Artwork
+ * @type: type of the #Itdb_Thumb to retrieve
+ *
+ * Searches @artwork for an #Itdb_Thumb of type @type.
+ * 
+ * Returns: an #Itdb_Thumb of type @type, or NULL if such a thumbnail couldn't
+ * be found
+ **/
 Itdb_Thumb *itdb_artwork_get_thumb_by_type (Itdb_Artwork *artwork,
 					    ItdbThumbType type)
 {
@@ -174,11 +225,18 @@ Itdb_Thumb *itdb_artwork_get_thumb_by_type (Itdb_Artwork *artwork,
 }
 
 
-/* Get filename of thumbnail. If it's a thumbnail on the iPod, return
-   the full path to the ithmb file. Otherwise return the full path to
-   the original file.
-   g_free() when not needed any more.
-*/
+/**
+ * itdb_thumb_get_filename:
+ * @device: an #Itdb_Device
+ * @thumb: an #Itdb_Thumb
+ *
+ * Get filename of thumbnail. If it's a thumbnail on the iPod, return
+ * the full path to the ithmb file. Otherwise return the full path to
+ * the original file.
+ *
+ * Return value: newly allocated string containing the absolute path to the 
+ * thumbnail file. 
+ **/
 gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb)
 {
     gchar *artwork_dir, *filename=NULL;
@@ -332,13 +390,20 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 
 
 
-/* Convert the pixeldata in @thumb to a GdkPixbuf.
-   Since we want to have gdk-pixbuf dependency optional, a generic
-   gpointer is returned which you have to cast to (GdkPixbuf *)
-   yourself. If gdk-pixbuf is not installed the NULL pointer is
-   returned.
-   The returned GdkPixbuf must be freed with gdk_pixbuf_unref() after
-   use. */
+/**
+ * itdb_thumb_get_gdk_pixbuf:
+ * @device: an #Itdb_Device
+ * @thumb: an #Itdb_Thumb
+ * 
+ * Converts @thumb to a #GdkPixbuf.
+ * Since we want to have gdk-pixbuf dependency optional, a generic
+ * gpointer is returned which you have to cast to a #GdkPixbuf using 
+ * GDK_PIXBUF() yourself. 
+ *
+ * Return value: a #GdkPixbuf that must be unreffed with gdk_pixbuf_unref()
+ * after use, or NULL if the creation of the gdk-pixbuf failed or if 
+ * libgpod was compiled without gdk-pixbuf support.
+ **/
 gpointer
 itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 {
@@ -448,14 +513,26 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 #endif
 }
 
-
+/**
+ * itdb_thumb_new:
+ * 
+ * Creates a new #Itdb_Thumb
+ *
+ * Return Value: newly allocated #Itdb_Thumb to be freed with itdb_thumb_free()
+ * after use
+ **/
 Itdb_Thumb *itdb_thumb_new (void)
 {
     Itdb_Thumb *thumb = g_new0 (Itdb_Thumb, 1);
     return thumb;
 }
 
-
+/** 
+ * itdb_thumb_free:
+ * @thumb: an #Itdb_Thumb
+ *
+ * Frees the memory used by @thumb
+ **/
 void itdb_thumb_free (Itdb_Thumb *thumb)
 {
     g_return_if_fail (thumb);
@@ -464,6 +541,16 @@ void itdb_thumb_free (Itdb_Thumb *thumb)
     g_free (thumb);
 }
 
+
+/** 
+ * itdb_thumb_duplicate:
+ * @thumb: an #Itdb_Thumb
+ *
+ * Duplicates the data contained in @thumb
+ *
+ * Return value: a newly allocated copy of @thumb to be freed with 
+ * itdb_thumb_free() after use
+ **/
 Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb)
 {
     Itdb_Thumb *new_thumb;

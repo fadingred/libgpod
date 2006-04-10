@@ -87,6 +87,11 @@ AM_GLIB_GNU_GETTEXT
 
 
 dnl **************************************************
+dnl * gtk-doc
+dnl **************************************************
+GTK_DOC_CHECK(1.0)
+
+dnl **************************************************
 dnl * optional python bindings
 dnl **************************************************
 
@@ -148,6 +153,9 @@ Makefile
 bindings/Makefile
 bindings/python/Makefile
 bindings/python/examples/Makefile
+docs/Makefile
+docs/reference/Makefile
+docs/reference/version.xml
 m4/Makefile
 po/Makefile.in
 src/Makefile

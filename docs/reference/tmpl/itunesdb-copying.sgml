@@ -1,0 +1,74 @@
+<!-- ##### SECTION Title ##### -->
+File handling functions
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions to copy new files to the iPod
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION itdb_cp_track_to_ipod ##### -->
+<para>
+
+</para>
+
+@track: 
+@filename: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_filename_fs2ipod ##### -->
+<para>
+
+</para>
+
+@filename: 
+
+
+<!-- ##### FUNCTION itdb_filename_ipod2fs ##### -->
+<para>
+
+</para>
+
+@ipod_file: 
+
+
+<!-- ##### FUNCTION itdb_filename_on_ipod ##### -->
+<para>
+
+</para>
+
+@track: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_musicdirs_number ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_rename_files ##### -->
+<para>
+
+</para>
+
+@mp: 
+@error: 
+@Returns: 
+
+

@@ -228,7 +228,14 @@ static void itdb_device_reset_sysinfo (Itdb_Device *device)
 }
 
 
-/* Create new Itdb_Device structure */
+/**
+ * itdb_device_new:
+ * 
+ * Creates a new #Itdb_Device structure
+ *
+ * Return value: a newly allocated #Itdb_Device which must be freed with
+ * itdb_device_free() when no longer needed
+ **/
 Itdb_Device *itdb_device_new ()
 {
     Itdb_Device *dev;
@@ -238,7 +245,12 @@ Itdb_Device *itdb_device_new ()
     return dev;
 }
 
-/* Free memory used by @device */
+/**
+ * itdb_device_free:
+ * @device: an #Itdb_Device
+ *
+ * Frees memory used by @device
+ **/
 void itdb_device_free (Itdb_Device *device)
 {
     if (device)
@@ -251,7 +263,14 @@ void itdb_device_free (Itdb_Device *device)
 }
 
 
-/* Set mountpoint and read SysInfo file */
+/**
+ * itdb_device_set_mountpoint:
+ * @device: an #Itdb_Device
+ * @mp: the new mount point
+ *
+ * Sets the mountpoint of @device to @mp and update the cached device 
+ * information (in particular, re-read the SysInfo file)
+ **/
 void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp)
 {
     g_return_if_fail (device);
@@ -263,10 +282,15 @@ void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp)
 }
 
 
-/* Read SysInfo file and store information in device->sysinfo for
+/** 
+ * itdb_device_read_sysinfo:
+ * @device: an #Itdb_Device
+ *
+ * Reads the SysInfo file and stores information in device->sysinfo for
  * later use.
  *
- * Return value: TRUE if file could be read, FALSE otherwise */
+ * Return value: TRUE if file could be read, FALSE otherwise 
+ **/
 gboolean itdb_device_read_sysinfo (Itdb_Device *device)
 {
     const gchar *p_sysinfo[] = {"SysInfo", NULL};
@@ -325,10 +349,16 @@ gboolean itdb_device_read_sysinfo (Itdb_Device *device)
 }
 
 
-/* Retrieve specified field from the SysInfo file.
+/**
+ * itdb_device_get_sysinfo:
+ * @device: an #Itdb_Device
+ * @field: field to retrive information from
  *
- * Return value: g_free() after use
- */
+ * Retrieve specified field from the SysInfo file.
+ *
+ * Return value: the information associated with @field, or NULL if @field
+ * couldn't be found. g_free() after use
+ **/
 gchar *itdb_device_get_sysinfo (Itdb_Device *device, const gchar *field)
 {
     g_return_val_if_fail (device, NULL);

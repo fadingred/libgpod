@@ -1,0 +1,45 @@
+<!-- ##### SECTION Title ##### -->
+Time handling
+
+<!-- ##### SECTION Short_Description ##### -->
+Helper functions to convert between Epoch time and Mac (iPod) time
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION itdb_time_get_mac_time ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_time_mac_to_host ##### -->
+<para>
+
+</para>
+
+@mactime: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_time_host_to_mac ##### -->
+<para>
+
+</para>
+
+@time: 
+@Returns: 
+
+

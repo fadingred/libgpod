@@ -1,0 +1,126 @@
+<!-- ##### SECTION ./tmpl/itunesdb.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/itunesdb.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/itunesdb.sgml:Short_Description ##### -->
+Main data structure to manipulate an iPod content (songs, playlists, ...)
+
+
+<!-- ##### SECTION ./tmpl/itunesdb.sgml:Stability_Level ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/itunesdb.sgml:Title ##### -->
+iTunesDB
+
+
+<!-- ##### MACRO ITDB_FILE_ERROR ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM ItdbFileError ##### -->
+<para>
+
+</para>
+
+@ITDB_FILE_ERROR_SEEK: 
+@ITDB_FILE_ERROR_CORRUPT: 
+@ITDB_FILE_ERROR_NOTFOUND: 
+@ITDB_FILE_ERROR_RENAME: 
+@ITDB_FILE_ERROR_ITDB_CORRUPT: 
+
+<!-- ##### MACRO SPLACTION_LAST_FORTNIGHT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_HOURS_VALUE ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_LUNARCYCLE_VALUE ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_MINUTES_VALUE ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_MOMENT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_OSTENT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_QUARTER ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_SIDEREAL_DAY ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_SIDEREAL_YEAR ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_SOLAR_YEAR ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_SWATCH_BEAT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_VINAL ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO SPLACTION_LAST_YEARS_VALUE ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION itdb_file_error_quark ##### -->
+<para>
+
+</para>
+
+@Returns: 
+

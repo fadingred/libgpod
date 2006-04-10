@@ -1,0 +1,164 @@
+<!-- ##### SECTION Title ##### -->
+Low-level functions
+
+<!-- ##### SECTION Short_Description ##### -->
+Low-level functions which shouldn't be needed in normal situations
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION itdb_get_control_dir ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_get_itunes_dir ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_get_music_dir ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_get_artwork_dir ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_get_device_dir ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_get_itunesdb_path ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_get_artworkdb_path ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_get_path ##### -->
+<para>
+
+</para>
+
+@dir: 
+@file: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_resolve_path ##### -->
+<para>
+
+</para>
+
+@root: 
+@components: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_shuffle_write ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_shuffle_write_file ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@filename: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_cp ##### -->
+<para>
+
+</para>
+
+@from_file: 
+@to_file: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_parse_file ##### -->
+<para>
+
+</para>
+
+@filename: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_write_file ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@filename: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_duplicate ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+

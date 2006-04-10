@@ -1,0 +1,133 @@
+<!-- ##### SECTION Title ##### -->
+iPod database reading/writing
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions to create, read, write the iPod database
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT Itdb_iTunesDB ##### -->
+<para>
+
+</para>
+
+@tracks: 
+@playlists: 
+@filename: 
+@device: 
+@version: 
+@id: 
+@usertype: 
+@userdata: 
+@userdata_duplicate: 
+@userdata_destroy: 
+
+<!-- ##### USER_FUNCTION ItdbUserDataDestroyFunc ##### -->
+<para>
+
+</para>
+
+@userdata: 
+
+
+<!-- ##### USER_FUNCTION ItdbUserDataDuplicateFunc ##### -->
+<para>
+
+</para>
+
+@userdata: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_free ##### -->
+<para>
+
+</para>
+
+@itdb: 
+
+
+<!-- ##### FUNCTION itdb_parse ##### -->
+<para>
+
+</para>
+
+@mp: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_write ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_set_mountpoint ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@mp: 
+
+
+<!-- ##### FUNCTION itdb_get_mountpoint ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_tracks_number ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_tracks_number_nontransferred ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_playlists_number ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+

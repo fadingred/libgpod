@@ -1,0 +1,160 @@
+<!-- ##### SECTION Title ##### -->
+Artwork
+
+<!-- ##### SECTION Short_Description ##### -->
+Data structure to store iPod artwork (cover and photos)
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT Itdb_Artwork ##### -->
+<para>
+
+</para>
+
+@thumbnails: 
+@artwork_size: 
+@id: 
+
+<!-- ##### STRUCT Itdb_Thumb ##### -->
+<para>
+
+</para>
+
+@type: 
+@filename: 
+@offset: 
+@size: 
+@width: 
+@height: 
+
+<!-- ##### ENUM ItdbThumbType ##### -->
+<para>
+
+</para>
+
+@ITDB_THUMB_COVER_SMALL: 
+@ITDB_THUMB_COVER_LARGE: 
+@ITDB_THUMB_PHOTO_SMALL: 
+@ITDB_THUMB_PHOTO_LARGE: 
+@ITDB_THUMB_PHOTO_FULL_SCREEN: 
+@ITDB_THUMB_PHOTO_TV_SCREEN: 
+
+<!-- ##### FUNCTION itdb_artwork_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_artwork_duplicate ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_artwork_free ##### -->
+<para>
+
+</para>
+
+@artwork: 
+
+
+<!-- ##### FUNCTION itdb_artwork_add_thumbnail ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@type: 
+@filename: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_artwork_remove_thumbnail ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@thumb: 
+
+
+<!-- ##### FUNCTION itdb_artwork_remove_thumbnails ##### -->
+<para>
+
+</para>
+
+@artwork: 
+
+
+<!-- ##### FUNCTION itdb_artwork_get_thumb_by_type ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_thumb_get_gdk_pixbuf ##### -->
+<para>
+
+</para>
+
+@device: 
+@thumb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_thumb_duplicate ##### -->
+<para>
+
+</para>
+
+@thumb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_thumb_free ##### -->
+<para>
+
+</para>
+
+@thumb: 
+
+
+<!-- ##### FUNCTION itdb_thumb_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_thumb_get_filename ##### -->
+<para>
+
+</para>
+
+@device: 
+@thumb: 
+@Returns: 
+
+

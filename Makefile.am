@@ -1,4 +1,7 @@
-SUBDIRS=src tests po bindings m4
+SUBDIRS=src bindings tests po m4 docs
+
+# build documentation when doing a distcheck.
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libgpod-1.0.pc
