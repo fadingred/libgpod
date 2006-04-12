@@ -1,3 +1,7 @@
+2006-04-12  Christophe Fergeau  <teuf@gnome.org>
+
+	* tests/test-rebuild-db.cc: forgot to propagate a GError
+
 2006-04-10  Christophe Fergeau  <teuf@gnome.org>
 
 	* tests/test-ls.c: new test program reading and displaying the iPod 

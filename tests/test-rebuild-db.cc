@@ -2,20 +2,20 @@
  * Copyright (C) 2006 Christophe Fergeau
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to 
- * deal in the Software without restriction, including without limitation the 
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is 
+ * sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in 
+ * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
@@ -89,7 +89,7 @@ track_from_file (const char *filename)
 	g_print ("\t%d\n", tag->year());
 	g_print ("\t%d\n", tag->track());
 	g_print ("\n");
-#endif	
+#endif
 	track = itdb_track_new ();
 	track->title = g_strdup (tag->title().toCString(true));
 	track->album = g_strdup (tag->album().toCString(true));
@@ -130,9 +130,9 @@ process_one_file (const char *filename, gpointer data)
 typedef void (*DirTraversalFunc)(const char *filename, gpointer data);
 
 static void
-foreach_file (const char *basedir, 
-	      DirTraversalFunc func, gpointer data, 
-	      GError **error) 
+foreach_file (const char *basedir,
+	      DirTraversalFunc func, gpointer data,
+	      GError **error)
 {
 	GError *tmp_error;
 	const char *name;
@@ -146,7 +146,7 @@ foreach_file (const char *basedir,
 		g_propagate_error (error, tmp_error);
 		return;
 	}
-	
+
 	name = g_dir_read_name (dir);
 	while (name != NULL) {
 		char *absolute_path;
@@ -183,7 +183,11 @@ fill_db (Itdb_iTunesDB *db, GError **error)
 	music_dir = itdb_get_music_dir (itdb_get_mountpoint (db));
 	foreach_file (music_dir, process_one_file, db, &err);
 	g_free (music_dir);
-	g_print ("Found %d files\n", 
+	if (err != NULL) {
+		g_propagate_error (error, err);
+		return;
+	}
+	g_print ("Found %d files\n",
 		 g_list_length (itdb_playlist_mpl(db)->members));
 }
 
@@ -209,7 +213,7 @@ int main (int argc, char **argv)
 {
 	Itdb_iTunesDB *db;
 	GError *error;
-	
+
 	if (argc != 2) {
 		g_print ("Usage:\n");
 		g_print ("%s <mountpoint>\n", g_basename (argv[0]));
