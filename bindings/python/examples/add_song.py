@@ -101,14 +101,12 @@ for path in args:
     track.tracklen  = audiofile.getPlayTime() * 1000 # important to add!, iPod uses ms.
 
     if options.ispodcast:
-        track.flag1 = 0x02 # unknown
         track.flag2 = 0x01 # skip when shuffling
         track.flag3 = 0x01 # remember playback position
         track.flag4 = 0x01 # Show Title/Album on the 'Now Playing' page
         playlists = [gpod.itdb_playlist_podcasts(itdb)]
         print "Adding Podcast %s (Title: %s)" % (path,track.title)
     else:
-        track.flag1 = 0x02 # unknown
         track.flag2 = 0x00 # do not skip when shuffling
         track.flag3 = 0x00 # do not remember playback position
         track.flag4 = 0x00 # Show Title/Album/Artist on the 'New Playing' page
