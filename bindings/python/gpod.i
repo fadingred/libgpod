@@ -59,6 +59,16 @@ PyObject* sw_get_track(GList *list, gint index) {
   return SWIG_NewPointerObj((void*)(position->data), SWIGTYPE_p__Itdb_Track, 0);
  }
 
+PyObject* sw_get_rule(GList *list, gint index) {
+  GList *position;
+  if ( (index >= g_list_length(list)) || index < 0 ) {
+   PyErr_SetString(PyExc_IndexError, "Value out of range");
+   return NULL;
+  }
+  position = g_list_nth(list, index);
+  return SWIG_NewPointerObj((void*)(position->data), SWIGTYPE_p__SPLRule, 0);
+ }
+
 PyObject* sw_get_list_len(GList *list) {
    return PyInt_FromLong(g_list_length(list));
  }
@@ -92,9 +102,11 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb) {
 typedef char gchar;
 
 %typemap(in) guint8 {
-   long ival;
-   ival = PyInt_AsLong($input);
-   if (( ival > 255 ) || ( ival < 0 )) {
+   unsigned long ival;
+   ival = PyInt_AsUnsignedLongMask($input);
+   if (PyErr_Occurred())
+        SWIG_fail;
+   if (ival > 255) {
       PyErr_SetString(PyExc_ValueError, "$symname: Value must be between 0 and 255");
       SWIG_fail;
    } else {
@@ -102,36 +114,68 @@ typedef char gchar;
    }
 }
 
+%typemap(in) guint16 {
+   unsigned long ival;
+   ival = PyInt_AsUnsignedLongMask($input);
+   if (PyErr_Occurred())
+        SWIG_fail;
+   if (ival > 65535) {
+      PyErr_SetString(PyExc_ValueError, "$symname: Value must be between 0 and 65535");
+      SWIG_fail;
+   } else {
+      $1 = (guint16) ival;
+   }
+}
+
+%typemap(in) guint32 {
+   unsigned long ival;
+   ival = PyInt_AsUnsignedLongMask($input);
+   if (PyErr_Occurred())
+        SWIG_fail;
+   $1 = (guint32) ival;
+}
+
+%typemap(in) guint64 {
+   unsigned long ival;
+   ival = PyInt_AsUnsignedLongLongMask($input);
+   if (PyErr_Occurred())
+        SWIG_fail;
+   $1 = (guint64) ival;
+}
+
 %typemap(out) guint64 {
-   $result = PyLong_FromLong($1);
+   $result = PyLong_FromUnsignedLongLong($1);
+}
+
+%typemap(out) gint64 {
+   $result = PyLong_FromLongLong($1);
 }
 
 %typemap(out) guint32 {
-   $result = PyInt_FromLong($1);
+   $result = PyLong_FromUnsignedLong($1);
+}
+
+%typemap(out) gint32 {
+   $result = PyLong_FromLong($1);
 }
 
 %typemap(out) guint16 {
-   $result = PyInt_FromLong($1);
+   $result = PyLong_FromUnsignedLong($1);
 }
-
 
 %typemap(out) guint8 {
    $result = PyInt_FromLong($1);
 }
 
 typedef int gboolean;
-typedef long gint64;
-typedef int gint32;
-typedef int gint16;
 typedef int gint;
-
-typedef unsigned int guint32;
 
 #define G_BEGIN_DECLS
 #define G_END_DECLS
 
 PyObject* sw_get_tracks(Itdb_iTunesDB *itdb);
 PyObject* sw_get_track(GList *list, gint index);
+PyObject* sw_get_rule(GList *list, gint index);
 PyObject* sw_get_list_len(GList *list);
 PyObject* sw_get_playlists(Itdb_iTunesDB *itdb);
 PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl);
