@@ -1,3 +1,10 @@
+2006-04-26  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * tests/Makefile.am: removed 'test-rebuild-db' from
+	  'noinst_PROGRAM' declaration (bug reported by Jens
+	  Taprogge). 'test-rebuild-db' is only added when the taglib is
+	  detected.
+
 2006-04-12  Christophe Fergeau  <teuf@gnome.org>
 
 	* tests/test-rebuild-db.cc: forgot to propagate a GError
