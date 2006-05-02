@@ -1,3 +1,8 @@
+2006-05-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c: smart playlists: avoid assertion
+	  when writing rules with empty strings.
+
 2006-04-26  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * tests/Makefile.am: removed 'test-rebuild-db' from

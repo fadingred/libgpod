@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-04-04 23:42:19 jcs>
+/* Time-stamp: <2006-05-02 23:14:46 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2820,10 +2820,10 @@ static void put_data_seek (WContents *cts, gchar *data,
 			   gulong len, gulong seek)
 {
     g_return_if_fail (cts);
-    g_return_if_fail (data);
 
     if (len != 0)
     {
+	g_return_if_fail (data);
 	wcontents_maybe_expand (cts, len, seek);
 
 	memcpy (&cts->contents[seek], data, len);
@@ -3501,9 +3501,13 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
 	      put32_n0 (cts, 11);          /* unknown              */
 	      if (ft == splft_string)
 	      {   /* write string-type rule */
-		  gunichar2 *entry_utf16 =
-		      g_utf8_to_utf16 (splr->string, -1,NULL,NULL,NULL);
-		  gint len = utf16_strlen (entry_utf16);
+		  gunichar2 *entry_utf16 = NULL;
+		  gint len;
+		  /* splr->string may be NULL */
+		  if (splr->string)
+		      entry_utf16 = g_utf8_to_utf16 (splr->string,
+						     -1,NULL,NULL,NULL);
+		  len = utf16_strlen (entry_utf16);
 		  fixup_big_utf16 (entry_utf16);
 		  put32bint (cts, 2*len); /* length of string     */
 		  put_data (cts, (gchar *)entry_utf16, 2*len);
