@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-05-02 23:14:46 jcs>
+/* Time-stamp: <2006-05-05 01:07:19 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -3920,14 +3920,21 @@ static gboolean write_podcast_mhips (FExport *fexp,
     for (gl=pl->members; gl; gl=gl->next)
     {
 	GList **memberlist;
+	gchar *album;
 	Itdb_Track *track = gl->data;
 	g_return_val_if_fail (track, FALSE);
 
-	memberlist = g_hash_table_lookup (album_hash, track->album);
+	if (track->album)
+	    album = track->album;
+	else
+	    album = "";
+
+	memberlist = g_hash_table_lookup (album_hash, album);
+
 	if (!memberlist)
 	{
 	    memberlist = g_new0 (GList *, 1);
-	    g_hash_table_insert (album_hash, track->album, memberlist);
+	    g_hash_table_insert (album_hash, album, memberlist);
 	}
 	*memberlist = g_list_append (*memberlist, track);
     }
