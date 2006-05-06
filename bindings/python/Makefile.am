@@ -1,8 +1,9 @@
 SUBDIRS = examples
 
-EXTRA_DIST =				\
+EXTRA_DIST =		\
 	gpod.i 		\
-	ipod.py
+	ipod.py 	\
+	__init__.py
 
 CLEANFILES =		\
 	*.py*		\
@@ -29,16 +30,16 @@ _gpod.so: gpod_wrap.o
 	$(CC) $(MODULE_LIBS) @PYTHON_LDFLAGS@ gpod_wrap.o -o $@
 
 install-pythonDATA: $(python_DATA)
-	$(mkinstalldirs) $(DESTDIR)$(pythondir)
-	$(INSTALL_PROGRAM) _gpod.so $(DESTDIR)$(pythondir)/_gpod.so
-	$(INSTALL_DATA) gpod.py  $(DESTDIR)$(pythondir)/gpod.py
-	$(INSTALL_DATA) ipod.py  $(DESTDIR)$(pythondir)/ipod.py
-	$(PYTHON) -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod.py")'
-	$(PYTHON) -O -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod.py")'
-	$(PYTHON) -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/ipod.py")'
-	$(PYTHON) -O -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/ipod.py")'
+	$(mkinstalldirs) $(DESTDIR)$(pythondir)/gpod
+	$(INSTALL_PROGRAM) _gpod.so  $(DESTDIR)$(pythondir)/gpod/_gpod.so
+	$(INSTALL_DATA) __init__.py  $(DESTDIR)$(pythondir)/gpod/__init__.py
+	$(INSTALL_DATA) gpod.py      $(DESTDIR)$(pythondir)/gpod/gpod.py
+	$(INSTALL_DATA) ipod.py      $(DESTDIR)$(pythondir)/gpod/ipod.py
+	$(PYTHON) -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/gpod.py")'
+	$(PYTHON) -O -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/gpod.py")'
+	$(PYTHON) -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/ipod.py")'
+	$(PYTHON) -O -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/ipod.py")'
 
 uninstall-pythonDATA: $(python_DATA)
-	rm -f $(DESTDIR)$(pythondir)/_gpod.so
-	rm -f $(DESTDIR)$(pythondir)/gpod.py $(DESTDIR)$(pythondir)/ipod.py
+	rm -rf $(DESTDIR)$(pythondir)/gpod
 endif
