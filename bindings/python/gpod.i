@@ -114,6 +114,19 @@ typedef char gchar;
    }
 }
 
+%typemap(in) gint8 {
+   long ival;
+   ival = PyInt_AsInt($input);
+   if (PyErr_Occurred())
+        SWIG_fail;
+   if ((ival < -128) || (ival > 127)) {
+      PyErr_SetString(PyExc_ValueError, "$symname: Value must be between -128 and 127");
+      SWIG_fail;
+   } else {
+      $1 = (gint8) ival;
+   }
+}
+
 %typemap(in) guint16 {
    unsigned long ival;
    ival = PyInt_AsUnsignedLongMask($input);
@@ -127,6 +140,19 @@ typedef char gchar;
    }
 }
 
+%typemap(in) gint16 {
+   long ival;
+   ival = PyInt_AsLong($input);
+   if (PyErr_Occurred())
+        SWIG_fail;
+   if ((ival < -32768) || (ival > 32767)) {
+      PyErr_SetString(PyExc_ValueError, "$symname: Value must be between -32,768 and 32,767");
+      SWIG_fail;
+   } else {
+      $1 = (gint16) ival;
+   }
+}
+
 %typemap(in) guint32 {
    unsigned long ival;
    ival = PyInt_AsUnsignedLongMask($input);
@@ -135,12 +161,28 @@ typedef char gchar;
    $1 = (guint32) ival;
 }
 
+%typemap(in) gint32 {
+   long ival;
+   ival = PyInt_AsLong($input);
+   if (PyErr_Occurred())
+        SWIG_fail;
+   $1 = (gint32) ival;
+}
+
 %typemap(in) guint64 {
    unsigned long ival;
    ival = PyInt_AsUnsignedLongLongMask($input);
    if (PyErr_Occurred())
         SWIG_fail;
    $1 = (guint64) ival;
+}
+
+%typemap(in) gint64 {
+   long ival;
+   ival = PyInt_AsUnsignedLongMask($input);
+   if (PyErr_Occurred())
+        SWIG_fail;
+   $1 = (gint64) ival;
 }
 
 %typemap(out) guint64 {
