@@ -3,7 +3,8 @@ SUBDIRS = examples
 EXTRA_DIST =		\
 	gpod.i 		\
 	ipod.py 	\
-	__init__.py
+	__init__.py	\
+	gtkpod.py
 
 CLEANFILES =		\
 	*.py*		\
@@ -34,9 +35,12 @@ install-pythonDATA: $(python_DATA)
 	$(INSTALL_PROGRAM) _gpod.so  $(DESTDIR)$(pythondir)/gpod/_gpod.so
 	$(INSTALL_DATA) __init__.py  $(DESTDIR)$(pythondir)/gpod/__init__.py
 	$(INSTALL_DATA) gpod.py      $(DESTDIR)$(pythondir)/gpod/gpod.py
+	$(INSTALL_DATA) gtkpod.py    $(DESTDIR)$(pythondir)/gpod/gtkpod.py
 	$(INSTALL_DATA) ipod.py      $(DESTDIR)$(pythondir)/gpod/ipod.py
 	$(PYTHON) -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/gpod.py")'
 	$(PYTHON) -O -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/gpod.py")'
+	$(PYTHON) -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/gtkpod.py")'
+	$(PYTHON) -O -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/gtkpod.py")'
 	$(PYTHON) -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/ipod.py")'
 	$(PYTHON) -O -c 'from py_compile import compile; compile("$(DESTDIR)$(pythondir)/gpod/ipod.py")'
 

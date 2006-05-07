@@ -94,12 +94,55 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb) {
   }
   return list;
  }
+ 
+ void sw__track_extra_destroy (PyObject *data) {
+   Py_XDECREF(data);   
+ }
+
+ PyObject *sw__track_extra_duplicate (PyObject *data) {
+   if (data == Py_None) {
+     Py_INCREF(Py_None);
+     return Py_None;
+   } else {
+     return PyDict_Copy(data);
+   }
+ }
+
+ PyObject *sw_set_track_userdata(Itdb_Track *track, PyObject *data) {
+   Py_INCREF(data);
+   if ((PyDict_Check(data)) || (data == Py_None)) {
+     if (track->userdata) {
+       Py_DECREF((PyObject *)track->userdata);
+     }
+     track->userdata = (gpointer) data;
+     track->userdata_duplicate = (ItdbUserDataDuplicateFunc)sw__track_extra_duplicate;
+     track->userdata_destroy   = (ItdbUserDataDestroyFunc)sw__track_extra_destroy;
+     Py_INCREF(Py_None);
+     return Py_None;
+   } else {
+     PyErr_SetString(PyExc_TypeError, "userdata must be a Dictionary");
+     return NULL;
+   }
+ }
+ 
+ PyObject* sw_get_track_userdata(Itdb_Track *track) {
+   if (track->userdata) {
+     Py_INCREF((PyObject *)track->userdata);
+     return (PyObject *)track->userdata;
+   } else {
+     Py_INCREF(Py_None);
+     return Py_None;
+   }
+ }
+ 
+ 
 %}
 
 # be nicer to decode these utf8 strings into Unicode objects in the C
 # layer. Here we are leaving it to the Python side, and just giving
 # them utf8 encoded Strings.
 typedef char gchar;
+
 
 %typemap(in) guint8 {
    unsigned long ival;
@@ -221,4 +264,7 @@ PyObject* sw_get_rule(GList *list, gint index);
 PyObject* sw_get_list_len(GList *list);
 PyObject* sw_get_playlists(Itdb_iTunesDB *itdb);
 PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl);
+PyObject* sw_set_track_userdata(Itdb_Track *track, PyObject *data);
+PyObject* sw_get_track_userdata(Itdb_Track *track);
+
 %include "../../src/itdb.h"

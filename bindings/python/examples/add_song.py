@@ -26,10 +26,10 @@ import os, os.path
 import gpod
 import sys
 from optparse import OptionParser
-import eyeD3
 import urlparse, urllib2
 import tempfile
 import shutil
+import eyeD3
 
 def download(path):
     print "Downloading %s" % path
@@ -70,11 +70,7 @@ parser.add_option("-p", "--podcast",
 if len(args) == 0:
     parser.error("Requires an mp3 to add.")
 
-itdb = gpod.itdb_parse(options.mountpoint, None)
-if not itdb:
-    print "Failed to read iPod at %s" % options.mountpoint
-    sys.exit(2)
-itdb.mountpoint = options.mountpoint
+db = gpod.Database(options.mountpoint)
 
 for path in args:
     deleteWhenDone = []
@@ -90,42 +86,28 @@ for path in args:
             deleteWhenDone.pop()
         continue
 
-    track = gpod.itdb_track_new()
-    audiofile = eyeD3.Mp3AudioFile(path)
-    tag = audiofile.getTag()
-
-    track.artist= str(tag.getArtist())
-    track.album = str(tag.getAlbum())
-    track.title = str(tag.getTitle())
-    track.filetype = 'mp3'
-    track.tracklen  = audiofile.getPlayTime() * 1000 # important to add!, iPod uses ms.
-
+    track = gpod.Track(from_file=path, podcast=options.ispodcast)
+    db.add(track)
+    
     if options.ispodcast:
-        track.flag2 = 0x01 # skip when shuffling
-        track.flag3 = 0x01 # remember playback position
-        track.flag4 = 0x01 # Show Title/Album on the 'Now Playing' page
-        playlists = [gpod.itdb_playlist_podcasts(itdb)]
-        print "Adding Podcast %s (Title: %s)" % (path,track.title)
+        playlists = [db.Podcasts]
+        print "Adding Podcast %s (%s)" % (path,track)
     else:
-        track.flag2 = 0x00 # do not skip when shuffling
-        track.flag3 = 0x00 # do not remember playback position
-        track.flag4 = 0x00 # Show Title/Album/Artist on the 'New Playing' page
-        playlists = [gpod.itdb_playlist_mpl(itdb)]
-        print "Adding Song %s (Title: %s)" % (path,track.title)
-
-    gpod.itdb_track_add(itdb, track, -1)
+        playlists = [db.Master]
+        print "Adding Song %s (%s)" % (path,track)
 
     for playlist in playlists:
-        gpod.itdb_playlist_add_track(playlist, track, -1)
+        print " adding to playlist %s" % playlist
+        playlist.add(track)
+        print "  added to playlist %s" % playlist
 
-    if gpod.itdb_cp_track_to_ipod(track, path, None) == 1:
-        print "Copied to %s" % gpod.itdb_filename_on_ipod(track)
-    else:
-        print "Copy failed"
+    print " added Song %s (%s)" % (path,track)        
+
+    track.copy_to_ipod()
 
     [os.unlink(f) for f in deleteWhenDone]
 
-gpod.itdb_write(itdb, None)
+db.close()
 print "Saved db"
 
 
