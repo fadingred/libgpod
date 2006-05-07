@@ -60,6 +60,8 @@ parser = OptionParser()
 parser.add_option("-m", "--mountpoint", dest="mountpoint",
                   default="/mnt/ipod",
                   help="use iPod at MOUNTPOINT", metavar="MOUNTPOINT")
+parser.add_option("-l", "--playlist", dest="playlist",
+                  help="add tracks to PLAYLIST", metavar="PLAYLIST")
 parser.add_option("-p", "--podcast",
                   dest="ispodcast",
                   action="store_true",
@@ -71,6 +73,15 @@ if len(args) == 0:
     parser.error("Requires an mp3 to add.")
 
 db = gpod.Database(options.mountpoint)
+
+playlist = None
+if options.playlist:
+    for pl in db.Playlists:
+        if pl.name == options.playlist:
+            playlist = pl
+    if not playlist:
+        print "Creating new playlist"
+        playlist = gpod.Playlist(db,title=options.playlist)
 
 for path in args:
     deleteWhenDone = []
@@ -86,22 +97,24 @@ for path in args:
             deleteWhenDone.pop()
         continue
 
-    track = gpod.Track(from_file=path, podcast=options.ispodcast)
+    try:
+        track = gpod.Track(from_file=path, podcast=options.ispodcast)
+    except gpod.TrackException, e:
+        print "Exception handling %s: %s" % (path, e)
+        continue
     db.add(track)
     
     if options.ispodcast:
-        playlists = [db.Podcasts]
+        playlists = [db.Podcasts, playlist]
         print "Adding Podcast %s (%s)" % (path,track)
     else:
-        playlists = [db.Master]
+        playlists = [db.Master, playlist]
         print "Adding Song %s (%s)" % (path,track)
 
-    for playlist in playlists:
-        print " adding to playlist %s" % playlist
-        playlist.add(track)
-        print "  added to playlist %s" % playlist
-
-    print " added Song %s (%s)" % (path,track)        
+    for pl in playlists:
+        if pl:
+            print " adding to playlist %s" % pl
+            pl.add(track)
 
     track.copy_to_ipod()
 

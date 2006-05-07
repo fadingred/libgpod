@@ -113,7 +113,10 @@ class Track:
             self._track = gpod.itdb_track_new()
             self['userdata'] = {'filename_locale': from_file,
                                 'transferred': 0}
-            audiofile = eyeD3.Mp3AudioFile(self['userdata']['filename_locale'])
+            try:
+                audiofile = eyeD3.Mp3AudioFile(self['userdata']['filename_locale'])
+            except eyeD3.tag.InvalidAudioFormatException, e:
+                raise TrackException(str(e))
             tag = audiofile.getTag()
             for func, attrib in (('getArtist','artist'),
                                  ('getTitle','title'),
@@ -123,7 +126,10 @@ class Track:
                 value = getattr(tag,func)()
                 if value:
                     self[attrib] = value
-            self['genre'] = tag.getGenre().name
+            try:
+                self['genre'] = tag.getGenre().name
+            except AttributeError:
+                pass
             disc, of = tag.getDiscNum()
             if disc is not None:
                 self['cd_nr'] = disc
@@ -321,6 +327,9 @@ class Playlist:
     def __len__(self):
         #return self._pl.num # Always 0 ?
         return gpod.sw_get_list_len(self._pl.members)
+
+    def __nonzero__(self):
+        return True
 
     def add(self, track, pos=-1):
         gpod.itdb_playlist_add_track(self._pl, track._track, pos)
