@@ -38,11 +38,11 @@ def download(path):
         size = int(remotefile.info()['Content-Length'])
     except KeyError:
         size = None
-    hndl, tempfilename = tempfile.mkstemp()
+    hndl, tempfilename = tempfile.mkstemp('.mp3')
     temp = open(tempfilename,"wb")
     fetched = 0
     while 1:
-        buf = remotefile.read(1024*10)
+        buf = remotefile.read(1024*20)
         if not buf: break
         temp.write(buf)
         fetched += len(buf)
@@ -74,52 +74,47 @@ if len(args) == 0:
 
 db = gpod.Database(options.mountpoint)
 
+
 playlist = None
 if options.playlist:
     for pl in db.Playlists:
         if pl.name == options.playlist:
             playlist = pl
     if not playlist:
-        print "Creating new playlist"
-        playlist = gpod.Playlist(db,title=options.playlist)
+        playlist = db.new_Playlist(title=options.playlist)
+        print "Created new playlist %s" % playlist
+
+
+deleteWhenDone = []
 
 for path in args:
-    deleteWhenDone = []
     transport = urlparse.urlsplit(path)[0]
     if transport:
         path = download(path)
         deleteWhenDone.append(path)
 
-    if not eyeD3.isMp3File(path):
-        sys.stderr.write("%s it not recognised as an mp3 file by eyeD3 tag library.\n" % path)
-        if transport:
-            sys.stderr.write("Leaving for inspection.\n")
-            deleteWhenDone.pop()
-        continue
-
     try:
-        track = gpod.Track(from_file=path, podcast=options.ispodcast)
+        track = db.new_Track(filename=path, podcast=options.ispodcast)
     except gpod.TrackException, e:
         print "Exception handling %s: %s" % (path, e)
-        continue
-    db.add(track)
-    
-    if options.ispodcast:
-        playlists = [db.Podcasts, playlist]
-        print "Adding Podcast %s (%s)" % (path,track)
-    else:
-        playlists = [db.Master, playlist]
-        print "Adding Song %s (%s)" % (path,track)
+        continue # skip this track
 
-    for pl in playlists:
-        if pl:
-            print " adding to playlist %s" % pl
-            pl.add(track)
+    print "Added %s to database" % track
 
-    track.copy_to_ipod()
+    if playlist:
+        print " adding to playlist %s" % playlist
+        playlist.add(track)
 
-    [os.unlink(f) for f in deleteWhenDone]
+def print_progress(database, track, i, total):
+    sys.stdout.write("Copying to iPod %04d/%d: %s\r" % (i,total,track))
+    sys.stdout.flush()
+        
+print "Copying to iPod"
+db.copy_delayed_files(callback=print_progress)
 
+[os.unlink(f) for f in deleteWhenDone]
+
+print "Saving database"
 db.close()
 print "Saved db"
 

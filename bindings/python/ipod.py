@@ -13,14 +13,23 @@ class TrackException(RuntimeError):
     pass
 
 class Database:
-    def __init__(self, mountpoint="/mnt/ipod"):
-        self._itdb = itdb = gpod.itdb_parse(mountpoint,
-                                            None)
-        if not self._itdb:
-            raise DatabaseException("Unable to parse iTunes database at mount point %s" % mountpoint)
+    def __init__(self, mountpoint="/mnt/ipod", local=False, localdb=None):
+        if local:
+            if localdb:
+                self._itdb_file = localdb
+            else:
+                self._itdb_file = os.path.join(os.environ['HOME'],
+                                               ".gtkpod",
+                                               "local_0.itdb")
+            self._itdb = gpod.itdb_parse_file(self._itdb_file, None)
         else:
-            self._itdb.mountpoint = mountpoint
-
+            self._itdb = gpod.itdb_parse(mountpoint, None)
+            if not self._itdb:
+                raise DatabaseException("Unable to parse iTunes database at mount point %s" % mountpoint)
+            else:
+                self._itdb.mountpoint = mountpoint
+            self._itdb_file    = os.path.join(self._itdb.mountpoint,
+                                              "iPod_Control","iTunes","iTunesDB")
         self._load_gtkpod_extended_info()
 
     def __str__(self):
@@ -33,17 +42,16 @@ class Database:
             len(self))
 
     def _load_gtkpod_extended_info(self):
-        self._itdb_file    = os.path.join(self._itdb.mountpoint,
-                                          "iPod_Control","iTunes","iTunesDB")
-        self._itdbext_file = os.path.join(self._itdb.mountpoint,
-                                          "iPod_Control","iTunes","iTunesDB.ext")
-        if os.path.exists(self._itdb_file) and os.path.exists(self._itdbext_file):
-            gtkpod.parse(self._itdbext_file, self, self._itdb_file)
+        itdbext_file = "%s.ext" % (self._itdb_file)
+
+        if os.path.exists(self._itdb_file) and os.path.exists(itdbext_file):
+            gtkpod.parse(itdbext_file, self, self._itdb_file)
 
     def close(self):
-        if not gpod.itdb_write(self._itdb, None):
-            raise DatabaseException("Unable to save iTunes database at %s" % mountpoint)
-        gtkpod.write(self._itdbext_file, self, self._itdb_file)
+        if not gpod.itdb_write_file(self._itdb, self._itdb_file, None):
+            raise DatabaseException("Unable to save iTunes database %s" % self)
+        itdbext_file = "%s.ext" % (self._itdb_file)        
+        gtkpod.write(itdbext_file, self, self._itdb_file)
 
     def __getitem__(self, index):
         if type(index) == types.SliceType:
@@ -68,6 +76,35 @@ class Database:
     def add(self, track, pos=-1):
         gpod.itdb_track_add(self._itdb, track._track, pos)
 
+    def remove(self, item, harddisk=False, ipod=True):
+        if isinstance(item, Playlist):
+            if ipod or harddisk:
+                # remove all the tracks that were in this playlist
+                for track in item:
+                    self.remove(track, ipod=ipod, harddisk=harddisk)
+            if gpod.itdb_playlist_exists(self._itdb, item._pl):
+                gpod.itdb_playlist_remove(item._pl)
+            else:
+                raise DatabaseException("Playlist %s was not in %s" % (item, self))
+        elif isinstance(item, Track):
+            for pl in self.Playlists:
+                if item in pl:
+                    pl.remove(item)
+            if harddisk:
+                try:
+                    filename = item['userdata']['filename_locale']
+                except KeyError, e:
+                    raise TrackException("Unable to remove %s from hard disk, no filename available." % item)
+                os.unlink(filename)
+            if ipod:
+                filename = item.ipod_filename()
+                if filename and os.path.exists(filename):
+                    os.unlink(filename)
+                    print "unlinked %s" % filename
+            gpod.itdb_track_unlink(item._track)
+        else:
+            raise DatabaseException("Unable to remove a %s from database" % type(item))
+
     def get_master(self):
         return Playlist(self,proxied_playlist=gpod.itdb_playlist_mpl(self._itdb))
 
@@ -83,6 +120,38 @@ class Database:
 
     def smart_update(self):
         gpod.itdb_spl_update_all(self._itdb)
+
+    def new_Playlist(self,**kwargs):
+        return Playlist(self, **kwargs)
+
+    def new_Track(self,**kwargs):
+        track = Track(**kwargs)
+        self.add(track)
+        if kwargs.has_key('podcast') and kwargs['podcast'] == True:
+            self.Podcasts.add(track)
+        else:
+            self.Master.add(track)
+        return track
+
+    def copy_delayed_files(self,callback=False):
+        if not gpod.itdb_get_mountpoint(self._itdb):
+            # we're not working with a real ipod.
+            return
+        to_copy=[]
+        for track in self:
+            try:
+                transferred = int(track['userdata']['transferred'])
+            except KeyError:
+                transferred = 1
+            if not transferred:
+                to_copy.append(track)
+        i = 0
+        total = len(to_copy)
+        for track in to_copy:
+            if callback:
+                i=i+1
+                callback(self,track, i, total)
+            track.copy_to_ipod()
 
 class Track:
     # Note we don't free the underlying structure, as it's still used
@@ -105,10 +174,13 @@ class Track:
                            "chapterdata_raw","chapterdata_raw_length","artwork",
                            "usertype")
 
-    def __init__(self, from_file=None, proxied_track=None, podcast=False):
+    def __init__(self, filename=None, from_file=None,
+                 proxied_track=None, podcast=False):
         if from_file:
+            filename = from_file
+        if filename:
             self._track = gpod.itdb_track_new()
-            self['userdata'] = {'filename_locale': from_file,
+            self['userdata'] = {'filename_locale': filename,
                                 'transferred': 0}
             try:
                 audiofile = eyeD3.Mp3AudioFile(self['userdata']['filename_locale'])
@@ -156,12 +228,15 @@ class Track:
     def copy_to_ipod(self):
         self['userdata']['md5_hash'] = gtkpod.sha1_hash(
             self['userdata']['filename_locale'])
+        if not gpod.itdb_get_mountpoint(self._track.itdb):
+            return False
         self['userdata']['transferred'] = 1
         if gpod.itdb_cp_track_to_ipod(self._track,
                                       self['userdata']['filename_locale'], None) != 1:
             raise TrackException('Unable to copy %s to iPod as %s' % (
                 self['userdata']['filename_locale'],
                 self))
+        return True
 
     def ipod_filename(self):
         return gpod.itdb_filename_on_ipod(self._track)
@@ -305,8 +380,7 @@ class _Playlists:
                                     proxied_playlist=pl)
                 else:
                     raise KeyError("Playlist with number %s not found." % repr(number))
-            
-
+        
 class Playlist:
     def __init__(self, parent_db, proxied_playlist=None,
                  title="New Playlist", smart=False, pos=-1):
@@ -389,5 +463,17 @@ class Playlist:
     def __nonzero__(self):
         return True
 
+    def __contains__(self, track):
+        if gpod.itdb_playlist_contains_track(self._pl, track._track):
+            return True
+        else:
+            return False
+    
     def add(self, track, pos=-1):
         gpod.itdb_playlist_add_track(self._pl, track._track, pos)
+
+    def remove(self, track):
+        if self.__contains__(track):
+            gpod.itdb_playlist_remove_track(self._pl, track._track)
+        else:
+            raise DatabaseException("Playlist %s does not contain %s" % (self, track))
