@@ -75,10 +75,7 @@ class Database:
         return Playlist(self,proxied_playlist=gpod.itdb_playlist_podcasts(self._itdb))
 
     def get_playlists(self):
-        l = []
-        for playlist in gpod.sw_get_playlists(self._itdb):
-            l.append(Playlist(self,proxied_playlist=playlist))
-        return tuple(l)
+        return _Playlists(self)
 
     Master   = property(get_master)
     Podcasts = property(get_podcasts)
@@ -248,7 +245,68 @@ _playlist_sorting = {
     26:'grouping',
     27:'category',
     28:'description'}
-        
+
+class _Playlists:
+    def __init__(self, db):
+        self._db = db
+
+    def __len__(self):
+        return gpod.sw_get_list_len(gpod.sw_get_playlists(self._itdb))
+
+    def __nonzero__(self):
+        return True
+    
+    def __getitem__(self, index):
+        if type(index) == types.SliceType:
+            return [self[i] for i in xrange(*index.indices(len(self)))]
+        else:
+            if index < 0:
+                index += len(self)
+            return Playlist(self._db,
+                            proxied_playlist=gpod.sw_get_playlist(self._db._itdb.playlists,
+                                                                  index))
+
+    def __repr__(self):
+        return "<Playlists from %s>" % self._db
+    
+    def __call__(self, id=None, number=None, name=None):
+        if ((id and (number or name)) or (number and name)):
+            raise ValueError("Only specify id, number OR name")
+        if id:
+            if type(id) in (types.TupleType, types.ListType):
+                return [self.__call__(id=i) for i in id]
+            else:
+                pl = gpod.itdb_playlist_by_id(self._db._itdb,
+                                              id)
+                if pl:
+                    return Playlist(self._db,
+                                    proxied_playlist=pl)
+                else:
+                    raise KeyError("Playlist with id %s not found." % repr(id))
+        if name:
+            if type(name) in (types.TupleType, types.ListType):
+                return [self.__call__(name=i) for i in name]
+            else:
+                pl = gpod.itdb_playlist_by_name(self._db._itdb,
+                                                name)
+                if pl:
+                    return Playlist(self._db,
+                                    proxied_playlist=pl)
+                else:
+                    raise KeyError("Playlist with name %s not found." % repr(name))
+        if number:
+            if type(number) in (types.TupleType, types.ListType):
+                return [self.__call__(number=i) for i in number]
+            else:
+                pl = gpod.itdb_playlist_by_nr(self._db._itdb,
+                                                number)
+                if pl:
+                    return Playlist(self._db,
+                                    proxied_playlist=pl)
+                else:
+                    raise KeyError("Playlist with number %s not found." % repr(number))
+            
+
 class Playlist:
     def __init__(self, parent_db, proxied_playlist=None,
                  title="New Playlist", smart=False, pos=-1):
