@@ -213,19 +213,21 @@ typedef char gchar;
 }
 
 %typemap(in) guint64 {
-   unsigned long ival;
-   ival = PyInt_AsUnsignedLongLongMask($input);
-   if (PyErr_Occurred())
-        SWIG_fail;
-   $1 = (guint64) ival;
+  if (PyInt_CheckExact($input))
+    $1 = PyInt_AsUnsignedLongLongMask($input);
+  else
+    $1 = PyLong_AsUnsignedLongLong($input);
+  if (PyErr_Occurred())
+    SWIG_fail;
 }
 
 %typemap(in) gint64 {
-   long ival;
-   ival = PyInt_AsUnsignedLongMask($input);
-   if (PyErr_Occurred())
-        SWIG_fail;
-   $1 = (gint64) ival;
+  if (PyInt_CheckExact($input))
+    $1 = PyInt_AsLong($input);
+  else
+    $1 = PyLong_AsLongLong($input);
+  if (PyErr_Occurred())
+    SWIG_fail;
 }
 
 %typemap(out) guint64 {
