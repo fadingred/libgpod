@@ -69,6 +69,16 @@ PyObject* sw_get_rule(GList *list, gint index) {
   return SWIG_NewPointerObj((void*)(position->data), SWIGTYPE_p__SPLRule, 0);
  }
 
+PyObject* sw_get_playlist(GList *list, gint index) {
+  GList *position;
+  if ( (index >= g_list_length(list)) || index < 0 ) {
+   PyErr_SetString(PyExc_IndexError, "Value out of range");
+   return NULL;
+  }
+  position = g_list_nth(list, index);
+  return SWIG_NewPointerObj((void*)(position->data), SWIGTYPE_p__Itdb_Playlist, 0);
+ }
+
 PyObject* sw_get_list_len(GList *list) {
    return PyInt_FromLong(g_list_length(list));
  }
@@ -263,6 +273,7 @@ typedef int gint;
 PyObject* sw_get_tracks(Itdb_iTunesDB *itdb);
 PyObject* sw_get_track(GList *list, gint index);
 PyObject* sw_get_rule(GList *list, gint index);
+PyObject* sw_get_playlist(GList *list, gint index);
 PyObject* sw_get_list_len(GList *list);
 PyObject* sw_get_playlists(Itdb_iTunesDB *itdb);
 PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl);
