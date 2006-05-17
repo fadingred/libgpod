@@ -1,4 +1,7 @@
-# This isn't even really started.
+"""Documentation for this module.
+
+More details.
+"""
 
 import gpod
 import types
