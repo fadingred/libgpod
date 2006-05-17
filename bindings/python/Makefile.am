@@ -34,8 +34,8 @@ install-pythonDATA: $(python_DATA)
 	$(mkinstalldirs) $(DESTDIR)$(pythondir)/gpod
 	$(INSTALL_PROGRAM) _gpod.so  $(DESTDIR)$(pythondir)/gpod/_gpod.so
 	$(INSTALL_DATA) *.py         $(DESTDIR)$(pythondir)/gpod/
-	$(PYTHON) -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pythondir)/gpod/")'
-	$(PYTHON) -O -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pythondir)/gpod/")'
+	$(PYTHON) -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pythondir)/gpod/", ddir="$(pythondir)/gpod/")'
+	$(PYTHON) -O -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pythondir)/gpod/", ddir="$(pythondir)/gpod/")'
 
 uninstall-pythonDATA: $(python_DATA)
 	rm -rf $(DESTDIR)$(pythondir)/gpod
