@@ -17,7 +17,7 @@ class TrackException(RuntimeError):
 
 class Database:
     def __init__(self, mountpoint="/mnt/ipod", local=False, localdb=None):
-        if local:
+        if local or localdb:
             if localdb:
                 self._itdb_file = localdb
             else:
