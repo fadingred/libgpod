@@ -39,4 +39,7 @@ install-pythonDATA: $(python_DATA)
 
 uninstall-pythonDATA: $(python_DATA)
 	rm -rf $(DESTDIR)$(pythondir)/gpod
+
+test:
+	cd tests && python tests.py
 endif
