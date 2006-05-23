@@ -124,8 +124,8 @@ class Database:
     def smart_update(self):
         gpod.itdb_spl_update_all(self._itdb)
 
-    def new_Playlist(self,**kwargs):
-        return Playlist(self, **kwargs)
+    def new_Playlist(self,*args,**kwargs):
+        return Playlist(self, *args,**kwargs)
 
     def new_Track(self,**kwargs):
         track = Track(**kwargs)
@@ -329,7 +329,7 @@ class _Playlists:
         self._db = db
 
     def __len__(self):
-        return gpod.sw_get_list_len(gpod.sw_get_playlists(self._itdb))
+        return gpod.sw_get_list_len(self._db._itdb.playlists)
 
     def __nonzero__(self):
         return True
@@ -385,8 +385,8 @@ class _Playlists:
                     raise KeyError("Playlist with number %s not found." % repr(number))
         
 class Playlist:
-    def __init__(self, parent_db, proxied_playlist=None,
-                 title="New Playlist", smart=False, pos=-1):
+    def __init__(self, parent_db, title="New Playlist",
+                 smart=False, pos=-1, proxied_playlist=None):
         self._db = parent_db
         if proxied_playlist:
             self._pl = proxied_playlist
