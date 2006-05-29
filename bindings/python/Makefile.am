@@ -7,7 +7,8 @@ EXTRA_DIST =		\
 	gtkpod.py
 
 CLEANFILES =		\
-	*.py*		\
+	*.pyc		\
+	*.pyo		\
 	_gpod.so	\
 	gpod.py		\
 	gpod_wrap.c	\
