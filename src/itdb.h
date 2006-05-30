@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-04-04 23:41:58 jcs>
+/* Time-stamp: <2006-05-30 21:59:40 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -61,7 +61,10 @@ typedef struct _SPLPref SPLPref;
 typedef struct _SPLRule SPLRule;
 typedef struct _SPLRules SPLRules;
 typedef struct _Itdb_iTunesDB Itdb_iTunesDB;
+typedef struct _Itdb_PhotoDB Itdb_PhotoDB;
+typedef struct _Itdb_DB Itdb_DB;
 typedef struct _Itdb_Playlist Itdb_Playlist;
+typedef struct _Itdb_PhotoAlbum Itdb_PhotoAlbum;
 typedef struct _Itdb_Track Itdb_Track;
 
 
@@ -110,11 +113,25 @@ struct _Itdb_Thumb {
     gint16 height;
 };
 
+typedef enum { 
+    ITDB_COVERART,
+    ITDB_PHOTO
+} ItdbArtworkType;
+
 struct _Itdb_Artwork {
     GList *thumbnails;    /* list of Itdb_Thumbs */
     guint32 artwork_size; /* Size in bytes of the original source image */
-    guint id;             /* some kind of ID, starting with
+    ItdbArtworkType type; /* Cover art or photo */
+    guint32 id;           /* Artwork id used by photoalbums, starts at
 			   * 0x40... libgpod will set this on sync. */
+    gint32 creation_date; /* Date the image was created */
+    /* below is for use by application */
+    guint64 usertype;
+    gpointer userdata;
+    /* function called to duplicate userdata */
+    ItdbUserDataDuplicateFunc userdata_duplicate;
+    /* function called to free userdata */
+    ItdbUserDataDestroyFunc userdata_destroy;
 };
 
 
@@ -388,6 +405,35 @@ struct _SPLRules
 /* one star is how much (track->rating) */
 #define ITDB_RATING_STEP 20
 
+enum _DbType {
+    DB_TYPE_ITUNES,
+    DB_TYPE_PHOTO
+};
+
+typedef enum _DbType DbType;
+
+struct _Itdb_DB{
+	DbType db_type;
+	union {
+		Itdb_PhotoDB *photodb; 
+		Itdb_iTunesDB *itdb;
+	} db;
+};
+
+struct _Itdb_PhotoDB
+{
+    GList *photos;
+    GList *photoalbums;
+    Itdb_Device *device;/* iPod device info     */
+    /* below is for use by application */
+    guint64 usertype;
+    gpointer userdata;
+    /* function called to duplicate userdata */
+    ItdbUserDataDuplicateFunc userdata_duplicate;
+    /* function called to free userdata */
+    ItdbUserDataDestroyFunc userdata_destroy;
+};
+
 struct _Itdb_iTunesDB
 {
     GList *tracks;
@@ -405,6 +451,22 @@ struct _Itdb_iTunesDB
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
+struct _Itdb_PhotoAlbum
+{
+    gchar *name;          /* name of photoalbum in UTF8            */
+    GList *members;       /* photos in album (Track *)             */
+    gint  num_images;     /* number of photos in album             */
+    gint  master;         /* 0x01 for master, 0x00 otherwise       */
+    gint  album_id;
+    gint  prev_album_id;
+    /* below is for use by application */
+    guint64 usertype;
+    gpointer userdata;
+    /* function called to duplicate userdata */
+    ItdbUserDataDuplicateFunc userdata_duplicate;
+    /* function called to free userdata */
+    ItdbUserDataDestroyFunc userdata_destroy;
+};
 
 struct _Itdb_Playlist
 {
@@ -634,13 +696,14 @@ struct _Itdb_Track
   guint8 has_artwork; /* 0x01: artwork is present. 0x02: no artwork is
 			 present for this track (used by the iPod to
 			 decide whether to display Artwork or not) */
-  guint8 flag2;       /* "Skip when shuffling" when set to 0x01, set
-			 to 0x00 otherwise. .m4b and .aa files always
-			 seem to be skipped when shuffling, however */
-  guint8 flag3;       /* "Remember playback position" when set to
+  guint8 skip_when_shuffling;/* "Skip when shuffling" when set to
 			 0x01, set to 0x00 otherwise. .m4b and .aa
-			 files always seem to remember the playback
-			 position, however. */
+			 files always seem to be skipped when
+			 shuffling, however */
+  guint8 remember_playback_position;/* "Remember playback position"
+			 when set to 0x01, set to 0x00 otherwise. .m4b
+			 and .aa files always seem to remember the
+			 playback position, however. */
   guint8 flag4;       /* Used for podcasts, 0x00 otherwise.  If set to
 			 0x01 the "Now Playing" page will show
 			 Title/Album, when set to 0x00 it will also
@@ -720,7 +783,7 @@ GQuark     itdb_file_error_quark      (void);
 /* functions for reading/writing database, general itdb functions */
 Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error);
 Itdb_iTunesDB *itdb_parse_file (const gchar *filename, GError **error);
-gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error);
+gboolean itdb_write (Itdb_iTunesDB *db, GError **error);
 gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 			  GError **error);
 gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error);
@@ -751,9 +814,12 @@ gchar *itdb_get_control_dir (const gchar *mountpoint);
 gchar *itdb_get_itunes_dir (const gchar *mountpoint);
 gchar *itdb_get_music_dir (const gchar *mountpoint);
 gchar *itdb_get_artwork_dir (const gchar *mountpoint);
+gchar *itdb_get_photos_dir (const gchar *mountpoint);
+gchar *itdb_get_photos_thumb_dir (const gchar *mountpoint);
 gchar *itdb_get_device_dir (const gchar *mountpoint);
 gchar *itdb_get_itunesdb_path (const gchar *mountpoint);
 gchar *itdb_get_artworkdb_path (const gchar *mountpoint);
+gchar *itdb_get_photodb_path (const gchar *mountpoint);
 gchar *itdb_get_path (const gchar *dir, const gchar *file);
 
 /* itdb_device functions */
@@ -824,6 +890,21 @@ void itdb_spl_update_live (Itdb_iTunesDB *itdb);
 gboolean itdb_track_set_thumbnails (Itdb_Track *track,
 				    const gchar *filename);
 void itdb_track_remove_thumbnails (Itdb_Track *track);
+
+/* photoalbum functions */
+Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error);
+gboolean itdb_photodb_add_photo (Itdb_PhotoDB *db,
+				 const gchar *albumname,
+				 const gchar *filename);
+Itdb_PhotoAlbum *itdb_photodb_photoalbum_new (Itdb_PhotoDB *db,
+					      const gchar *album_name);
+Itdb_PhotoDB *itdb_photodb_new (void);
+void itdb_photodb_free (Itdb_PhotoDB *photodb);
+gboolean itdb_photodb_write (Itdb_PhotoDB *db, GError **error);
+void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *pa);
+gboolean itdb_photodb_remove_photo (Itdb_PhotoDB *db,
+        const gint photo_id );
+
 /* itdb_artwork_... */
 Itdb_Artwork *itdb_artwork_new (void);
 Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork);
@@ -846,11 +927,16 @@ void itdb_thumb_free (Itdb_Thumb *thumb);
 Itdb_Thumb *itdb_thumb_new (void);
 gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb);
 
-
 /* time functions */
 guint64 itdb_time_get_mac_time (void);
 time_t itdb_time_mac_to_host (guint64 mactime);
 guint64 itdb_time_host_to_mac (time_t time);
+
+/* Initialise a blank ipod */
+gboolean itdb_init_ipod (const gchar *mountpoint,
+			 const gchar *model_number,
+			 const gchar *ipod_name,
+			 GError **error);
 
 G_END_DECLS
 

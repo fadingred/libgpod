@@ -85,8 +85,8 @@ Data structure to store metadata about an iPod track
 @unk156: 
 @unk160: 
 @has_artwork: 
-@flag2: 
-@flag3: 
+@skip_when_shuffling: 
+@remember_playback_position: 
 @flag4: 
 @dbid2: 
 @lyrics_flag: 

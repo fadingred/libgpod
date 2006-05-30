@@ -1,8 +1,10 @@
 if HAVE_GDKPIXBUF
-TESTTHUMBS=test-thumbnails test-write-thumbnails
+TESTTHUMBS=test-thumbnails test-write-thumbnails test-photos
 else
 TESTTHUMBS=
 endif
+
+TESTMISC=test-init-ipod
 
 if HAVE_TAGLIB
 TESTTAGLIB=test-rebuild-db
@@ -10,7 +12,7 @@ else
 TESTTAGLIB=
 endif
 
-noinst_PROGRAMS=test-itdb test-ls $(TESTTHUMBS) $(TESTTAGLIB)
+noinst_PROGRAMS=test-itdb test-ls $(TESTTHUMBS) $(TESTTAGLIB) $(TESTMISC)
 
 INCLUDES=$(LIBGPOD_CFLAGS) -I$(top_srcdir)/src -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
 LIBS=$(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la
@@ -30,6 +32,11 @@ endif
 if HAVE_GDKPIXBUF
 test_thumbnails_SOURCES = test-covers.c
 test_thumbnails_CFLAGS = $(AM_CFLAGS)
+
+test_photos_SOURCES = test-photos.c
+test_photos_CFLAGS = $(AM_CFLAGS)
+
+test_init_ipod_SOURCES = test-init-ipod.c
 
 test_write_thumbnails_SOURCES = test-write-covers.c
 test_write_thumbnails_CFLAGS = $(AM_CFLAGS)

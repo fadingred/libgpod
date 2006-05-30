@@ -104,12 +104,16 @@ db_parse_context_get_remaining_length (DBParseContext *ctx)
 DBParseContext *
 db_parse_context_get_sub_context (DBParseContext *ctx, off_t offset)
 {
+	DBParseContext *sub_ctx;
+
 	if (offset >= ctx->total_len) {
 		return NULL;
 	}
-	return db_parse_context_new (&ctx->buffer[offset], 
+	sub_ctx = db_parse_context_new (&ctx->buffer[offset], 
 				     ctx->total_len - offset, 
 				     ctx->byte_order);
+	sub_ctx->db = ctx->db;
+	return sub_ctx;
 }
 
 
@@ -163,16 +167,29 @@ db_parse_context_get_m_header_internal (DBParseContext *ctx, const char *id, off
 }
 
 DBParseContext *
-db_parse_context_new_from_file (const char *filename, guint byte_order)
+db_parse_context_new_from_file (const char *filename, Itdb_DB *db)
 {
 	int fd;
 	struct stat stat_buf;
 	int result;
 	unsigned char *buffer;
 	DBParseContext *ctx;
+	Itdb_Device *device;
 
 	buffer = NULL;
 	ctx = NULL;
+
+	switch (db->db_type) {
+	case DB_TYPE_ITUNES:
+		device = db->db.itdb->device;
+		break;
+	case DB_TYPE_PHOTO:
+		device = db->db.photodb->device;
+		break;
+	default:
+	        g_return_val_if_reached (NULL);
+	}
+	g_return_val_if_fail (device, NULL);
 
 	fd = open (filename, O_RDONLY);
 	if (fd == -1) {
@@ -206,10 +223,17 @@ db_parse_context_new_from_file (const char *filename, guint byte_order)
 		goto error;
 	}
 
-	ctx = db_parse_context_new (buffer, stat_buf.st_size, byte_order);
+	if (device->byte_order == 0)
+	    itdb_device_autodetect_endianess (device);
+
+	ctx = db_parse_context_new (buffer,
+				    stat_buf.st_size, device->byte_order);
+
 	if (ctx == NULL) {
 		munmap (buffer, stat_buf.st_size);
 	}
+	ctx->db = db;
+
  error:
 	close (fd);
 	return ctx;

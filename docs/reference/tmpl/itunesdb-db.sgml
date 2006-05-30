@@ -81,7 +81,7 @@ Functions to create, read, write the iPod database
 
 </para>
 
-@itdb: 
+@db: 
 @error: 
 @Returns: 
 

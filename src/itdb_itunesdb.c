@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-05-05 01:07:19 jcs>
+/* Time-stamp: <2006-05-30 21:59:40 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -111,19 +111,20 @@
 #  include <config.h>
 #endif
 
-#include <time.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
-#include <stdio.h>
-#include "itdb_private.h"
-#include "itdb_device.h"
 #include "db-artwork-parser.h"
-#include <glib/gi18n-lib.h>
+#include "itdb_device.h"
+#include "itdb_private.h"
+#include <errno.h>
+#include <fcntl.h>
 #include <glib-object.h>
+#include <glib/gi18n-lib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/statvfs.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 
 #define ITUNESDB_DEBUG 0
 #define ITUNESDB_MHIT_DEBUG 0
@@ -190,6 +191,9 @@ struct _MHODData
 };
 
 typedef struct _MHODData MHODData;
+
+/* Declarations */
+static gboolean itdb_create_directories (Itdb_Device *device, GError **error);
 
 
 /* ID for error domain */
@@ -1863,9 +1867,9 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   /* Some Playlists have added 256 to their type -- I don't know what
      it's for, so we just ignore it for now -> & 0xff */
   plitem->type = get8int (cts, mhyp_seek+20);
-  plitem->flag1 = get8int (cts, mhyp_seek+20);
-  plitem->flag2 = get8int (cts, mhyp_seek+20);
-  plitem->flag3 = get8int (cts, mhyp_seek+20);
+  plitem->flag1 = get8int (cts, mhyp_seek+21);
+  plitem->flag2 = get8int (cts, mhyp_seek+22);
+  plitem->flag3 = get8int (cts, mhyp_seek+23);
   plitem->timestamp = get32lint (cts, mhyp_seek+24);
   plitem->id = get64lint (cts, mhyp_seek+28);
   plitem->mhodcount = get32lint (cts, mhyp_seek+36);
@@ -2112,8 +2116,8 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->unk156 = get32lint (cts, seek+156);
       track->unk160 = get32lint (cts, seek+160);
       track->has_artwork = get8int (cts, seek+164);
-      track->flag2 = get8int (cts, seek+165);
-      track->flag3 = get8int (cts, seek+166);
+      track->skip_when_shuffling = get8int (cts, seek+165);
+      track->remember_playback_position = get8int (cts, seek+166);
       track->flag4 = get8int (cts, seek+167);
       track->dbid2 = get64lint (cts, seek+168);
       track->lyrics_flag = get8int (cts, seek+176);
@@ -2740,7 +2744,6 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
     return itdb;
 }
 
-
 /**
  * itdb_parse_file:
  * @filename: path to a file in iTunesDB format
@@ -3300,8 +3303,8 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->unk156);
   put32lint (cts, track->unk160);
   put8int (cts, track->has_artwork);
-  put8int (cts, track->flag2);
-  put8int (cts, track->flag3);
+  put8int (cts, track->skip_when_shuffling);
+  put8int (cts, track->remember_playback_position);
   put8int (cts, track->flag4);
   put64lint (cts, track->dbid2);
   put8int (cts, track->lyrics_flag);
@@ -4212,8 +4215,8 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
        FIXME: figure out a way to store the artwork data when storing
        to local directories. At the moment it's the application's task
        to handle this. */
-    if (itdb->device)
-	ipod_write_artwork_db (itdb);
+    if (itdb->device && itdb_device_get_artwork_formats(itdb->device))
+		ipod_write_artwork_db (itdb);
 #endif
 
     fexp = g_new0 (FExport, 1);
@@ -4788,6 +4791,45 @@ const gchar *itdb_get_mountpoint (Itdb_iTunesDB *itdb)
     return itdb->device->mountpoint;
 }
 
+/* Retrieve a reference to the mountpoint */
+const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb)
+{
+    g_return_val_if_fail (photodb, NULL);
+    g_return_val_if_fail (photodb->device, NULL);
+    return photodb->device->mountpoint;
+}
+
+/* Retrieve a reference to the mountpoint */
+gchar *db_get_mountpoint(Itdb_DB *db)
+{
+    g_return_val_if_fail (db, NULL);
+
+    switch (db->db_type) {
+    case DB_TYPE_ITUNES:
+		g_return_val_if_fail (db->db.itdb->device, NULL);
+		return db->db.itdb->device->mountpoint;
+    case DB_TYPE_PHOTO:
+		g_return_val_if_fail (db->db.photodb->device, NULL);
+		return db->db.photodb->device->mountpoint;
+    }
+	return NULL;
+}
+
+Itdb_Device *db_get_device(Itdb_DB *db)
+{
+    g_return_val_if_fail (db, NULL);
+
+    switch (db->db_type) {
+    case DB_TYPE_ITUNES:
+		g_return_val_if_fail (db->db.itdb->device, NULL);
+		return db->db.itdb->device;
+    case DB_TYPE_PHOTO:
+		g_return_val_if_fail (db->db.photodb->device, NULL);
+		return db->db.photodb->device;
+    }
+	return NULL;
+}
+
 
 /**
  * itdb_musicdirs_number:
@@ -5191,8 +5233,8 @@ gchar *itdb_get_control_dir (const gchar *mountpoint)
 
 /**
  * itdb_get_dir:
- * mountpoint: the iPod mountpoint
- * dir: a directory
+ * @mountpoint: the iPod mountpoint
+ * @dir: a directory
  *
  * Retrieve the directory @dir by first calling itdb_get_control_dir()
  * and then adding @dir
@@ -5415,4 +5457,381 @@ time_t itdb_time_mac_to_host (guint64 mactime)
 guint64 itdb_time_host_to_mac (time_t time)
 {
     return (guint64)(((gint64)time) + 2082844800);
+}
+
+
+/**
+ * itdb_init_ipod:
+ * @mountpoint:   the iPod mountpoint
+ * @model_number: the iPod model number
+ * @model_type:   the type of iPod, eg. regular, shuffle
+ * @ipod_name:    the name to give to the iPod. Will be displayed in
+ *                gtkpod or itunes
+ *
+ * Initialise an iPod device from scratch. The function attempts to
+ * create a blank database, complete with master playlist and device
+ * information as well as the directory structure required for the
+ * type of iPod.
+ * 
+ * Return value: TRUE when successful, FALSE if a failure has occurred.
+ * 
+ **/
+gboolean itdb_init_ipod (const gchar *mountpoint,
+			 const gchar *model_number,
+			 const gchar *ipod_name,
+			 GError **error)
+{
+	gboolean writeok;
+	Itdb_iTunesDB *itdb = NULL;
+	Itdb_Playlist *mpl = NULL;
+	
+	g_return_val_if_fail (mountpoint, FALSE);
+						
+	/* Create new blank itdb database for writing to iPod */
+	itdb = itdb_new();
+					
+	/* Assign iPod device reference to new database */
+	itdb_set_mountpoint(itdb, mountpoint);
+	
+	/* Rather than reread sysinfo file (that may not exist if
+	 * shuffle, use parameter to load into the sysinfo hash.
+	 * The model number can be extracted in a couple of ways:
+	 *		- use the read_sysinfo_file function
+	 * 		- use libipoddevice and hal to get the model
+	 *                (as far as I know, libipoddevice will also
+         *                read the sysinfo file, complemented by some
+	 *	          guessing).
+	 */
+	g_hash_table_insert (itdb->device->sysinfo,
+			     g_strdup ("ModelNumStr"),
+			     g_strdup (model_number));
+	
+	/* Create the remaining directories resident on blank ipod */
+	writeok = itdb_create_directories(itdb->device, error);
+	if(! writeok)
+	{
+		return FALSE;
+	}
+
+	/* Create a new playlist with the desired name of the ipod
+	 * and set it as the mpl */
+	if (ipod_name == NULL)
+	{
+	    mpl = itdb_playlist_new(_("iPod"), FALSE);
+	}
+	else
+	{
+	    mpl = itdb_playlist_new(ipod_name, FALSE);
+	}
+	itdb_playlist_set_mpl(mpl);
+	itdb_playlist_add(itdb, mpl, -1);
+	
+	/* Write both the iTunesDB and iTunesSD files to the new ipod */
+	writeok = itdb_write(itdb, error);
+	if(! writeok)
+	{
+	        itdb_free (itdb);
+		return FALSE;
+	}
+	
+	writeok = itdb_shuffle_write(itdb, error);
+	if(! writeok)
+	{
+	        itdb_free (itdb);
+		return FALSE;
+	}
+	
+	itdb_free (itdb);
+	return TRUE;
+}
+
+/*------------------------------------------------------------------*\
+ *                                                                  *
+ *             Create iPod directory hierarchy                      *
+ *                                                                  *
+\*------------------------------------------------------------------*/
+
+/* mkdir_with_parents is copied from GLIB2.8 (gfileutils.c, V1.78), as
+ * it is new to V2.8. May be replaced with g_mkdir_with_parents() in a
+ * couple of years. */
+
+/**
+ * mkdir_with_parents:
+ * @pathname: a pathname in the GLib file name encoding
+ * @mode: permissions to use for newly created directories
+ *
+ * Create a directory if it doesn't already exist. Create intermediate
+ * parent directories as needed, too.
+ *
+ * Returns: 0 if the directory already exists, or was successfully
+ * created. Returns -1 if an error occurred, with errno set.
+ *
+ */
+static int
+mkdir_with_parents (const gchar *pathname,
+		      int          mode)
+{
+  gchar *fn, *p;
+
+  if (pathname == NULL || *pathname == '\0')
+    {
+      errno = EINVAL;
+      return -1;
+    }
+
+  fn = g_strdup (pathname);
+
+  if (g_path_is_absolute (fn))
+    p = (gchar *) g_path_skip_root (fn);
+  else
+    p = fn;
+
+  do
+    {
+      while (*p && !G_IS_DIR_SEPARATOR (*p))
+	p++;
+      
+      if (!*p)
+	p = NULL;
+      else
+	*p = '\0';
+      
+      if (!g_file_test (fn, G_FILE_TEST_EXISTS))
+	{
+	  if (g_mkdir (fn, mode) == -1)
+	    {
+	      int errno_save = errno;
+	      g_free (fn);
+	      errno = errno_save;
+	      return -1;
+	    }
+	}
+      else if (!g_file_test (fn, G_FILE_TEST_IS_DIR))
+	{
+	  g_free (fn);
+	  errno = ENOTDIR;
+	  return -1;
+	}
+      if (p)
+	{
+	  *p++ = G_DIR_SEPARATOR;
+	  while (*p && G_IS_DIR_SEPARATOR (*p))
+	    p++;
+	}
+    }
+  while (p);
+
+  g_free (fn);
+
+  return 0;
+}
+
+	
+static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
+{
+    const gchar *mp;
+    gboolean result;
+    gchar *pbuf;
+    gint i, dirnum;
+    FILE *sysinfo = NULL;
+    Itdb_IpodModel const *model = NULL;
+    gboolean calconnotes, devicefile;
+    gchar *podpath;
+
+    g_return_val_if_fail (device, FALSE);
+
+    mp = device->mountpoint;
+    g_return_val_if_fail (mp, FALSE);
+
+    /* Retrieve the model from the device information */
+    model = itdb_device_get_ipod_model(device);
+
+    /* Set up special treatment for shuffle and mobile */
+    switch(model->model_type)
+    {
+    case MODEL_TYPE_SHUFFLE:
+	podpath = g_strdup ("iPod_Control");
+	calconnotes = FALSE;
+	devicefile = TRUE;
+	break;
+    case MODEL_TYPE_MOBILE_1:
+	podpath = g_build_filename ("iTunes", "iTunes_Control", NULL);
+	calconnotes = FALSE;
+	devicefile = TRUE;
+	break;
+    case MODEL_TYPE_UNKNOWN:
+	podpath = g_strdup ("iPod_Control");
+	calconnotes = TRUE;
+	devicefile = TRUE;
+	break;
+    default:
+	podpath = g_strdup ("iPod_Control");
+	calconnotes = TRUE;
+	devicefile = TRUE;
+	break;
+    }
+
+    /* Construct the Control directory */
+    pbuf = g_build_filename (mp, podpath, NULL);
+    if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+    {
+	if (mkdir_with_parents(pbuf, 0777) != 0)
+	{
+	    goto error_dir;
+	}
+    }
+    g_free (pbuf);
+
+    /* Construct the Music directory inside the Control directory */
+    pbuf = g_build_filename (mp, podpath, "Music", NULL);
+    if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+    {
+	if((mkdir(pbuf, 0777) != 0))
+	{
+	    goto error_dir;
+	}
+    }
+    g_free (pbuf);
+
+    /* Construct the iTunes directory inside the Control directory */
+    pbuf = g_build_filename (mp, podpath, "iTunes", NULL);
+    if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+    {
+	if((mkdir(pbuf, 0777) != 0))
+	{
+	    goto error_dir;
+	}
+    }
+    g_free (pbuf);
+
+    /* Build Artwork directory only for devices requiring artwork
+     * (assume that 'unknown models' are new and will support
+     * artwork) */
+    if (itdb_device_get_artwork_formats(device) ||
+	(model->model_type == MODEL_TYPE_UNKNOWN))
+    {
+	pbuf = g_build_filename (mp, podpath, "Artwork", NULL);
+	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+	{
+	    if((mkdir(pbuf, 0777) != 0)) {
+		goto error_dir;
+	    }
+	}
+	g_free (pbuf);
+    }
+
+    /* Build the directories that hold the music files */
+    dirnum = model->musicdirs;
+    if (dirnum == 0)
+    {   /* do a guess */
+	struct statvfs stat;
+	if (statvfs (mp, &stat) != 0)
+	{   /* why should this fail !? */
+	    dirnum = 20;
+	}
+	else
+	{
+	    gdouble size = ((gdouble)stat.f_blocks * stat.f_frsize) / 1073741824;
+	    if (size < 20)  dirnum = 20;
+	    else            dirnum = 50;
+	}
+    }
+
+    for(i = 0; i < dirnum; i++)
+    {
+	gchar *num = g_strdup_printf ("F%02d", i);
+	pbuf = g_build_filename (mp, podpath, "Music", num, NULL);
+	g_free (num);
+	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+	{
+	    if((mkdir(pbuf, 0777) != 0))
+	    {
+		goto error_dir;
+	    }
+	}
+	g_free (pbuf);
+    }
+
+    /* Build Calendar directory for models requiring it */
+    if (calconnotes)
+    {
+	pbuf = g_build_filename (mp, "Calendars", NULL);
+	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+	{
+	    if((mkdir(pbuf, 0777) != 0))
+	    {
+		goto error_dir;
+	    }
+	}
+	g_free (pbuf);
+
+	/* Build Contacts directory for models requiring it */
+	pbuf = g_build_filename (mp, "Contacts", NULL);
+	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+	{
+	    if((mkdir(pbuf, 0777) != 0))
+	    {
+		goto error_dir;
+	    }
+	}
+	g_free (pbuf);
+
+	pbuf = g_build_filename (mp, "Notes", NULL);
+	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+	{
+	    if((mkdir(pbuf, 0777) != 0))
+	    {
+		goto error_dir;
+	    }
+	}
+	g_free (pbuf);
+    }
+
+    /* Construct a Device directory file for special models */
+    if (devicefile)
+    {
+	pbuf = g_build_filename (mp, podpath, "Device", NULL);
+	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+	{
+	    if((mkdir(pbuf, 0777) != 0))
+	    {
+		goto error_dir;
+	    }
+   	}
+	g_free (pbuf);
+
+   	/* Construct a SysInfo file */
+	pbuf = g_build_filename (mp, podpath, "Device", "SysInfo", NULL);
+	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+	{
+	    sysinfo = fopen(pbuf, "w");
+	    if(sysinfo != NULL)
+	    {
+		fprintf(sysinfo, "ModelNumStr:%s", 
+			model->model_number);
+		fclose(sysinfo);
+	    }
+	    else
+	    {
+		goto error_dir;
+	    }
+	}
+	g_free (pbuf);
+    }
+    pbuf = NULL;
+
+  error_dir:
+    if (pbuf)
+    {
+	g_set_error (error, 0, -1,
+		     _("Problem creating iPod directory or file: '%s'."), 
+		     pbuf);
+	result = FALSE;
+    } else
+    {
+	result = TRUE;
+    }
+    g_free (pbuf);
+    g_free (podpath);
+    return result;
 }

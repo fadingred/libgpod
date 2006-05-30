@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-15 00:11:00 jcs>
+/* Time-stamp: <2006-05-28 01:11:35 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -125,5 +125,9 @@ typedef struct
 
 G_GNUC_INTERNAL gboolean itdb_spl_action_known (SPLAction action);
 G_GNUC_INTERNAL void itdb_splr_free (SPLRule *splr);
+G_GNUC_INTERNAL const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb);
+G_GNUC_INTERNAL gchar *db_get_mountpoint (Itdb_DB *db);
+G_GNUC_INTERNAL Itdb_Device *db_get_device(Itdb_DB *db);
+G_GNUC_INTERNAL gint itdb_get_free_photo_id ( Itdb_PhotoDB *db );
 
 #endif

@@ -41,7 +41,7 @@
 	} \
         return 0;  /* never reached */ \
     }
-
+/*
 #define DB_TO_CPU_GET_DB(lower_case_type, upper_case_type) \
     DB_TO_CPU_GET(lower_case_type, upper_case_type) \
     static inline lower_case_type \
@@ -50,7 +50,23 @@
         g_assert (db->device != NULL); \
         return get_##lower_case_type (val, db->device->byte_order); \
 }
+*/
 
+#define DB_TO_CPU_GET_DB(lower_case_type, upper_case_type) \
+    DB_TO_CPU_GET(lower_case_type, upper_case_type) \
+    static inline lower_case_type \
+    get_##lower_case_type##_db (Itdb_DB *db, lower_case_type val) \
+    { \
+		    switch (db->db_type) { \
+			case DB_TYPE_ITUNES: \
+				g_assert (db->db.itdb->device != NULL); \
+				return get_##lower_case_type (val, db->db.itdb->device->byte_order); \
+			case DB_TYPE_PHOTO: \
+				g_assert (db->db.photodb->device != NULL); \
+				return get_##lower_case_type (val, db->db.photodb->device->byte_order); \
+			} \
+	return 0; \
+}
 
 DB_TO_CPU_GET_DB(guint32, GUINT32)
 DB_TO_CPU_GET_DB(gint32, GINT32)

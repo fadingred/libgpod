@@ -175,3 +175,20 @@ src/Makefile
 tests/Makefile
 libgpod-1.0.pc
 ])
+
+echo "
+Configuration for $PACKAGE $VERSION :
+--------------------------------
+
+ Host System Type .....: $host
+ Install path .........: $prefix
+ Preprocessor .........: $CC $CPPFLAGS
+ Compiler .............: $CC $CFLAGS $PACKAGE_CFLAGS
+ Linker ...............: $CC $LDFLAGS $LIBS $PACKAGE_LIBS
+ ArtworkDB support ....: $have_gdkpixbuf
+ Python bindings ......: $with_python
+
+ Now type 'make' to build $PACKAGE $VERSION,
+ and then 'make install' for installation.
+"
+

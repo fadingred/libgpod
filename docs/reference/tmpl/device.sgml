@@ -25,7 +25,7 @@ Data structure holding information about the iPod (model, mount point, ...)
 @mountpoint: 
 @musicdirs: 
 @byte_order: 
-@endianess_reversed: 
+@sysinfo: 
 
 <!-- ##### FUNCTION itdb_device_new ##### -->
 <para>
@@ -80,6 +80,7 @@ Data structure holding information about the iPod (model, mount point, ...)
 @capacity: 
 @model_type: 
 @generation: 
+@musicdirs: 
 
 <!-- ##### STRUCT Itdb_ArtworkFormat ##### -->
 <para>

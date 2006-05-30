@@ -325,13 +325,13 @@ struct _ArtworkDB_MhodHeader {
 	unsigned char header_id[4];
 	gint32 header_len;
 	gint32 total_len;
-        /* Strangely, the following field is only 16 bits long in the
+    /* Strangely, the following field is only 16 bits long in the
 	 * ArtworkDB (it's definitely 32 bits in the iTunesDB). This
 	 * could well be an error with the first generation of mobile
 	 * phones with iPod support).
 	 */
 	gint16 type;
-        gint16 unknown014;
+    gint16 unknown014;
 	gint32 unknown1;
 	gint32 unknown2;
 };
@@ -361,13 +361,13 @@ enum MhodArtworkType {
 	MHOD_ARTWORK_TYPE_IMAGE      = 5  /* container: full resolution image (in the Photo Database) */
 };
 
-struct __MhodHeaderArtworkType1 {
+struct _MhodHeaderArtworkType1 {
 	unsigned char header_id[4];
 	gint32 header_len;
 	gint32 total_len;
-/* FIXME: mobile phone ArtworkDB are known to have a 2 byte type. The
-   high byte again seems to indicate the padding */
-	gint32 type; /* low 3 bytes are type (always 1); high byte is padding length (0-3) */
+	gint16 type; 
+	gint8 unknown;
+	gint8 padding;
 	gint32 unknown1;
 	gint32 unknown2;
 	gint32 string_len;
@@ -380,7 +380,8 @@ struct _MhodHeaderArtworkType3 {
 	unsigned char header_id[4];
 	gint32 header_len;
 	gint32 total_len;
-	gint32 type; /* 3 */
+	gint16 type; /* 3 */
+	gint16 padding; /* high byte is padding length (0-3) */
 	gint32 unknown1;
 	gint32 unknown2;
 	gint32 string_len;
@@ -543,13 +544,13 @@ struct _MhfdHeader {
 	gint32 unknown2;
 	gint32 num_children;
 	gint32 unknown3;
-	gint32 unknown4;
+	gint32 next_id;
 	gint64 unknown5;
 	gint64 unknown6;
-        gint8  unknown_flag1;
-        gint8  unknown_flag2;
-        gint8  unknown_flag3;
-        gint8  unknown_flag4;
+	gint8  unknown_flag1;
+	gint8  unknown_flag2;
+	gint8  unknown_flag3;
+	gint8  unknown_flag4;
 	gint32 unknown8;
 	gint32 unknown9;
 	gint32 unknown10;
@@ -574,8 +575,8 @@ struct _MhiiHeader {
 	gint32 unknown4;
 	gint32 unknown5;
 	gint32 unknown6;
-	gint32 unknown7;
-	gint32 unknown8;
+	gint32 orig_date;
+	gint32 digitised_date;
 	gint32 orig_img_size;
 	unsigned char padding[];
 } __attribute__((__packed__));
@@ -593,7 +594,8 @@ struct _MhniHeader {
 	gint32 correlation_id;
 	gint32 ithmb_offset;
 	gint32 image_size;
-	gint32 unknown3;
+	gint16 vertical_padding;
+	gint16 horizontal_padding;
 	gint16 image_height;
 	gint16 image_width;
 	unsigned char padding[];
@@ -614,9 +616,19 @@ struct _MhbaHeader {
 	gint32 num_mhias; /* number of pictures in the album */
 	gint32 playlist_id; /* starts out at $64 and increments by 1 */
 	gint32 unknown2; /* unknown, seems to be always 0 */
-	gint32 unknown3; /* unknown, but is 0x10000 for the Photo Library and 0x60000 for normal albums
-			  * (maybe not a 4 byte field?) */
-	gint32 unknown[7]; /* more zeroes */
+	gint16 unknown3; /* unknown, seems to be always 0 */
+	gchar master;
+	/* FIXME: not sure if I have these right; iPod doesn't seem to listen to them */
+	guint8 playmusic;
+	guint8 repeat;
+	guint8 random;
+	guint8 show_titles;
+	guint8 transition_direction;
+	gint32 slide_duration;
+	gint32 transition_duration;
+	gint32 unknown4;
+	gint32 unknown5;
+	gint64 song_id;
 	gint32 prev_playlist_id; /* the id of the previous playlist */
 	unsigned char padding[];
 };

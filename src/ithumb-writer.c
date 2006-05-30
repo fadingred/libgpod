@@ -58,7 +58,7 @@ typedef struct _iThumbWriter iThumbWriter;
  * square
  */
 static guint16 *
-pack_RGB_565 (GdkPixbuf *pixbuf, int dst_width, int dst_height, guint byte_order)
+pack_RGB_565 (GdkPixbuf *pixbuf, iThumbWriter *writer )
 {
 	guchar *pixels;
 	guint16 *result;
@@ -68,18 +68,32 @@ pack_RGB_565 (GdkPixbuf *pixbuf, int dst_width, int dst_height, guint byte_order
 	gint height;
 	gint w;
 	gint h;
+	gint horizontal_padding;
+	gint vertical_padding;
+	gint byte_order;
 
 	g_object_get (G_OBJECT (pixbuf), 
 		      "rowstride", &row_stride, "n-channels", &channels,
 		      "height", &height, "width", &width,
 		      "pixels", &pixels, NULL);
-	g_return_val_if_fail ((width <= dst_width) && (height <= dst_height), NULL);
+	g_return_val_if_fail ((width <= writer->img_info->width) && (height <= writer->img_info->height), NULL);
 	/* dst_width and dst_height come from a width/height database 
 	 * hardcoded in libipoddevice code, so dst_width * dst_height * 2 can't
 	 * overflow, even on an iPod containing malicious data
 	 */
-	result = g_malloc0 (dst_width * dst_height * 2);
+	result = g_malloc0 ( writer->img_info->width * writer->img_info->height * 2);
 
+	/* Swap the byte order on full screen nano photos */
+	byte_order = writer->byte_order;
+	if ( writer->img_info->correlation_id == 1023) {
+		if (byte_order == G_LITTLE_ENDIAN)
+			byte_order = G_BIG_ENDIAN;
+		else
+			byte_order = G_LITTLE_ENDIAN; 
+	}
+
+	horizontal_padding = (writer->img_info->width - width)/2;
+	vertical_padding = (writer->img_info->height - height)/2;
 	for (h = 0; h < height; h++) {
 		for (w = 0; w < width; w++) {
 			gint r;
@@ -89,49 +103,75 @@ pack_RGB_565 (GdkPixbuf *pixbuf, int dst_width, int dst_height, guint byte_order
 			r = pixels[h*row_stride + w*channels];
 			g = pixels[h*row_stride + w*channels + 1]; 
 			b = pixels[h*row_stride + w*channels + 2]; 
+
 			r >>= (8 - RED_BITS);
 			g >>= (8 - GREEN_BITS);
 			b >>= (8 - BLUE_BITS);
 			r = (r << RED_SHIFT) & RED_MASK;
 			g = (g << GREEN_SHIFT) & GREEN_MASK;
 			b = (b << BLUE_SHIFT) & BLUE_MASK;
-			result[h*dst_width + w] =  get_gint16 (r | g | b,
-							       byte_order);
+			result[(h+vertical_padding)*writer->img_info->width + w + horizontal_padding]
+						=  get_gint16 (r | g | b, byte_order);
 		}
 	}
 	return result;
 }
 
 
-
-
 static char *
-ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gint index) 
+ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gint index, DbType db_type ) 
 {
-        gchar *artwork_dir, *filename, *buf;
+	gchar *artwork_dir = NULL, *filename, *buf;
 
 	g_return_val_if_fail (mount_point, NULL);
+	switch( db_type ) {
+	case DB_TYPE_PHOTO:
+		artwork_dir = itdb_get_photos_thumb_dir (mount_point);
+		if (!artwork_dir)
+		{
+			/* attempt to create Thumbs dir */
+			gchar *photos_dir = itdb_get_photos_dir (mount_point);
+			gchar *dir;
+			if (!photos_dir)
+			{   /* give up */
+				return NULL;
+			}
+			dir = g_build_filename (photos_dir, "Thumbs", NULL);
+			mkdir (dir, 0777);
+			g_free (dir);
+			g_free (photos_dir);
+
+			/* try again */
+			artwork_dir = itdb_get_photos_thumb_dir (mount_point);
+			if (!artwork_dir)
+			{   /* give up */
+				return NULL;
+			}
+		}
+		break;
+	case DB_TYPE_ITUNES:
 	artwork_dir = itdb_get_artwork_dir (mount_point);
 	if (!artwork_dir)
 	{
-	    /* attempt to create Artwork dir */
-	    gchar *control_dir = itdb_get_control_dir (mount_point);
-	    gchar *dir;
-	    if (!control_dir)
-	    {   /* give up */
-		return NULL;
-	    }
-	    dir = g_build_filename (control_dir, "Artwork", NULL);
-	    mkdir (dir, 0777);
-	    g_free (dir);
-	    g_free (control_dir);
+		/* attempt to create Artwork dir */
+		gchar *control_dir = itdb_get_control_dir (mount_point);
+		gchar *dir;
+		if (!control_dir)
+		{   /* give up */
+			return NULL;
+		}
+		dir = g_build_filename (control_dir, "Artwork", NULL);
+		mkdir (dir, 0777);
+		g_free (dir);
+		g_free (control_dir);
 
-	    /* try again */
-	    artwork_dir = itdb_get_artwork_dir (mount_point);
-	    if (!artwork_dir)
-	    {   /* give up */
-		return NULL;
-	    }
+		/* try again */
+		artwork_dir = itdb_get_artwork_dir (mount_point);
+		if (!artwork_dir)
+		{   /* give up */
+			return NULL;
+		}
+	}
 	}
 
 	buf = g_strdup_printf ("F%04u_%d.ithmb", correlation_id, index);
@@ -199,17 +239,24 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     thumb->height = height;
     thumb->offset = writer->cur_offset;
     thumb->size = writer->img_info->width * writer->img_info->height * 2;
-/*     printf("offset: %d type: %d, size: %d\n", thumb->offset, thumb->type, thumb->size); */
+
     /* FIXME: under certain conditions (probably related to
      * writer->offset getting too big), this should be :F%04u_2.ithmb
      * and so on
      */
-    thumb->filename = g_strdup_printf (":F%04u_1.ithmb", 
-				       writer->img_info->correlation_id);
-    pixels = pack_RGB_565 (pixbuf, writer->img_info->width, 
-			   writer->img_info->height,
-			   writer->byte_order);
-    g_object_unref (G_OBJECT (pixbuf));
+	if( thumb->type == ITDB_THUMB_PHOTO_LARGE 
+			|| thumb->type == ITDB_THUMB_PHOTO_SMALL
+			|| thumb->type == ITDB_THUMB_PHOTO_FULL_SCREEN )
+	{
+		thumb->filename = g_strdup_printf (":Thumbs:F%04u_1.ithmb", 
+				writer->img_info->correlation_id);
+
+	} else {
+		thumb->filename = g_strdup_printf (":F%04u_1.ithmb", 
+				writer->img_info->correlation_id);
+	}
+	pixels = pack_RGB_565 (pixbuf, writer );
+	g_object_unref (G_OBJECT (pixbuf));
 
     if (pixels == NULL)
     {
@@ -250,8 +297,9 @@ write_thumbnail (gpointer _writer, gpointer _artwork)
 
 static iThumbWriter *
 ithumb_writer_new (const char *mount_point,
-		   const Itdb_ArtworkFormat *info,
-		   guint byte_order)
+			const Itdb_ArtworkFormat *info,
+			DbType db_type,
+			guint byte_order)
 {
 	char *filename;
 	iThumbWriter *writer;
@@ -267,7 +315,8 @@ ithumb_writer_new (const char *mount_point,
 
 	filename = ipod_image_get_ithmb_filename (mount_point, 
 						  info->correlation_id,
-						  1);
+						  1, 
+						  db_type);
 	if (filename == NULL) {
 		g_hash_table_destroy (writer->cache);
 		g_free (writer->img_info);
@@ -512,7 +561,7 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
    slots are filled, the file is truncated to the new length.
 */
 static gboolean
-ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
+ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 				     const Itdb_ArtworkFormat *info)
 {
     GList *gl;
@@ -523,11 +572,11 @@ ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
     gchar *filename;
     const gchar *mountpoint;
 
-    g_return_val_if_fail (itdb, FALSE);
+    g_return_val_if_fail (db, FALSE);
     g_return_val_if_fail (info, FALSE);
-    g_return_val_if_fail (itdb->device, FALSE);
+    g_return_val_if_fail (db_get_device(db), FALSE);
 
-    mountpoint = itdb_get_mountpoint (itdb);
+    mountpoint = db_get_mountpoint (db);
 
     g_return_val_if_fail (mountpoint, FALSE);
 
@@ -538,24 +587,47 @@ ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
        This will usually be a number of "F%04d_%d.ithmb" files. A
        GList is kept with pointers to all images in a given file which
        allows to adjust the offset pointers */
-    for (gl=itdb->tracks; gl; gl=gl->next)
-    {
-	Itdb_Thumb *thumb;
-	Itdb_Track *track = gl->data;
-	g_return_val_if_fail (track, FALSE);
+	switch (db->db_type) {
+	case DB_TYPE_ITUNES:
+		for (gl=db->db.itdb->tracks; gl; gl=gl->next)
+		{
+			Itdb_Thumb *thumb;
+			Itdb_Track *track = gl->data;
+			g_return_val_if_fail (track, FALSE);
 
-	thumb = itdb_artwork_get_thumb_by_type (track->artwork,
-						info->type);
-	if (thumb && thumb->filename && (thumb->size != 0))
-	{
-	    filename = itdb_thumb_get_filename (itdb->device,
+			thumb = itdb_artwork_get_thumb_by_type (track->artwork,
+					info->type);
+			if (thumb && thumb->filename && (thumb->size != 0))
+			{
+				filename = itdb_thumb_get_filename (db->db.itdb->device,
 						thumb);
-	    if (filename)
-	    {
-		thumbs = g_hash_table_lookup (filenamehash, filename);
-		thumbs = g_list_append (thumbs, thumb);
-		g_hash_table_insert (filenamehash, filename, thumbs);
-	    }
+				if (filename)
+				{
+					thumbs = g_hash_table_lookup (filenamehash, filename);
+					thumbs = g_list_append (thumbs, thumb);
+					g_hash_table_insert (filenamehash, filename, thumbs);
+				}
+			}
+		}
+    case DB_TYPE_PHOTO:
+	for (gl=db->db.photodb->photos; gl; gl=gl->next)
+	{
+		Itdb_Thumb *thumb;
+		Itdb_Artwork *artwork = gl->data;
+
+		thumb = itdb_artwork_get_thumb_by_type (artwork,
+				info->type);
+		if (thumb && thumb->filename && (thumb->size != 0))
+		{
+			filename = itdb_thumb_get_filename (db->db.photodb->device,
+					thumb);
+			if (filename)
+			{
+				thumbs = g_hash_table_lookup (filenamehash, filename);
+				thumbs = g_list_append (thumbs, thumb);
+				g_hash_table_insert (filenamehash, filename, thumbs);
+			}
+		}
 	}
     }
 
@@ -566,7 +638,8 @@ ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
     {
 	filename = ipod_image_get_ithmb_filename (mountpoint,
 						  info->correlation_id,
-						  i);
+						  i,
+						  db->db_type);
 	if (g_file_test (filename, G_FILE_TEST_EXISTS))
 	{
 	    if (g_hash_table_lookup (filenamehash, filename) == NULL)
@@ -588,32 +661,29 @@ ithmb_rearrange_existing_thumbnails (Itdb_iTunesDB *itdb,
 #endif
 
 G_GNUC_INTERNAL int
-itdb_write_ithumb_files (Itdb_iTunesDB *db) 
+itdb_write_ithumb_files (Itdb_DB *db) 
 {
 #ifdef HAVE_GDKPIXBUF
 	GList *writers;
 	GList *it;
-	const gchar *mount_point;
+	Itdb_Device *device;
 	const Itdb_ArtworkFormat *format;
+	const gchar *mount_point;
 
 	g_return_val_if_fail (db, -1);
-	g_return_val_if_fail (db->device, -1);
+	device = db_get_device(db);
+	g_return_val_if_fail (device, -1);
 
-	mount_point = itdb_get_mountpoint (db);
+	mount_point = db_get_mountpoint (db);
 	/* FIXME: support writing to directory rather than writing to
 	   iPod */
 	if (mount_point == NULL)
 	    return -1;
 	
-	if (db->device == NULL) {
-		return -1;
-	}
-
-	format = itdb_device_get_artwork_formats (db->device);
+	format = itdb_device_get_artwork_formats (device);
 	if (format == NULL) {
 		return -1;
 	}
-
 	writers = NULL;
 	while (format->type != -1) {
 		iThumbWriter *writer;
@@ -621,10 +691,15 @@ itdb_write_ithumb_files (Itdb_iTunesDB *db)
 		switch (format->type) {
 		case IPOD_COVER_SMALL:
 		case IPOD_COVER_LARGE:
-		        ithmb_rearrange_existing_thumbnails (db,
-							     format);
-			writer = ithumb_writer_new (mount_point, format,
-						    db->device->byte_order);
+		case IPOD_PHOTO_SMALL:
+		case IPOD_PHOTO_LARGE:
+		case IPOD_PHOTO_FULL_SCREEN:
+		    ithmb_rearrange_existing_thumbnails (db,
+							     format );
+			writer = ithumb_writer_new (mount_point, 
+							format,
+							db->db_type, 
+							device->byte_order);
 			if (writer != NULL) {
 				writers = g_list_prepend (writers, writer);
 			}
@@ -634,20 +709,32 @@ itdb_write_ithumb_files (Itdb_iTunesDB *db)
 		}
 		format++;
 	}
-
 	if (writers == NULL) {
 		return -1;
 	}
+	switch (db->db_type) {
+	case DB_TYPE_ITUNES:
+		for (it = db->db.itdb->tracks; it != NULL; it = it->next) {
+			Itdb_Track *track;
 
-	for (it = db->tracks; it != NULL; it = it->next) {
-		Itdb_Track *track;
+			track = it->data;
+			g_return_val_if_fail (track, -1);
 
-		track = it->data;
-		g_return_val_if_fail (track, -1);
+			g_list_foreach (writers, write_thumbnail, track->artwork);
+		}
+		break;
+	case DB_TYPE_PHOTO:
+		for (it = db->db.photodb->photos; it != NULL; it = it->next) {
+			Itdb_Artwork *photo;
 
-		g_list_foreach (writers, write_thumbnail, track->artwork);
+			photo = it->data;
+			g_return_val_if_fail (photo, -1);
+
+			g_list_foreach (writers, write_thumbnail, photo);
+		}
+		break;
 	}
-
+	
 	g_list_foreach (writers, (GFunc)ithumb_writer_free, NULL);
 	g_list_free (writers);
 

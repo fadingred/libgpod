@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-04-05 22:53:35 jcs>
+/* Time-stamp: <2006-05-29 23:55:05 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -31,112 +31,116 @@
 |  $Id$
 */
 
+#include "itdb_device.h"
+#include <ctype.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-#include "itdb_device.h"
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define GB 1024
 
 static const Itdb_IpodModel ipod_model_table [] = {
-	/* Handle idiots who hose their iPod file system, or 
-	   lucky people with iPods we don't yet know about*/
-	{"Invalid", 0,    MODEL_TYPE_INVALID,    UNKNOWN_GENERATION},
-	{"Unknown", 0,    MODEL_TYPE_UNKNOWN,    UNKNOWN_GENERATION},
-	
-	/* First Generation */
-        /* Mechanical buttons arranged around rotating "scroll wheel".
-	   8513, 8541 and 8709 are Mac types, 8697 is PC */
-	{"8513", 5  * GB, MODEL_TYPE_REGULAR,    FIRST_GENERATION},
-	{"8541", 5  * GB, MODEL_TYPE_REGULAR,    FIRST_GENERATION},
-	{"8697", 5  * GB, MODEL_TYPE_REGULAR,    FIRST_GENERATION},
-	{"8709", 10 * GB, MODEL_TYPE_REGULAR,    FIRST_GENERATION},
-	
-	/* Second Generation */
-	/* Same buttons as First Generation but around touch-sensitive
-	 * "touch wheel". 8737 and 8738 are Mac types, 8740 and 8741
-	   are PC */
-	{"8737", 10 * GB, MODEL_TYPE_REGULAR,    SECOND_GENERATION},
-	{"8740", 10 * GB, MODEL_TYPE_REGULAR,    SECOND_GENERATION},
-	{"8738", 20 * GB, MODEL_TYPE_REGULAR,    SECOND_GENERATION},
-	{"8741", 20 * GB, MODEL_TYPE_REGULAR,    SECOND_GENERATION},
-	
-	/* Third Generation */
-	/* Touch sensitive buttons and arranged in a line above "touch
-	   wheel". Docking connector was introduced here, same models
-	   for Mac and PC from now on. */
-	{"8976", 10 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
-	{"8946", 15 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
-	{"9460", 15 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
-	{"9244", 20 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
-	{"8948", 30 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
-	{"9245", 40 * GB, MODEL_TYPE_REGULAR,    THIRD_GENERATION},
-	
-	/* Fourth Generation */
-	/* Buttons are now integrated into the "touch wheel". */
-	{"9282", 20 * GB, MODEL_TYPE_REGULAR,    FOURTH_GENERATION},
-	{"9787", 25 * GB, MODEL_TYPE_REGULAR_U2, FOURTH_GENERATION},
-	{"9268", 40 * GB, MODEL_TYPE_REGULAR,    FOURTH_GENERATION},
-	{"A079", 20 * GB, MODEL_TYPE_COLOR,      FOURTH_GENERATION},
-	{"A127", 20 * GB, MODEL_TYPE_COLOR_U2,   FOURTH_GENERATION},
-	{"9830", 60 * GB, MODEL_TYPE_COLOR,      FOURTH_GENERATION},
-	
-	/* First Generation Mini */
-	{"9160", 4 * GB, MODEL_TYPE_MINI,        FIRST_GENERATION},
-	{"9436", 4 * GB, MODEL_TYPE_MINI_BLUE,   FIRST_GENERATION},
-	{"9435", 4 * GB, MODEL_TYPE_MINI_PINK,   FIRST_GENERATION},
-	{"9434", 4 * GB, MODEL_TYPE_MINI_GREEN,  FIRST_GENERATION},
-	{"9437", 4 * GB, MODEL_TYPE_MINI_GOLD,   FIRST_GENERATION},	
+    /* Handle idiots who hose their iPod file system, or lucky people
+       with iPods we don't yet know about*/
+    {"Invalid", 0,  MODEL_TYPE_INVALID,     UNKNOWN_GENERATION, 0},
+    {"Unknown", 0,  MODEL_TYPE_UNKNOWN,     UNKNOWN_GENERATION, 0},
 
-	/* Second Generation Mini */
-	{"9800", 4 * GB, MODEL_TYPE_MINI,        SECOND_GENERATION},
-	{"9802", 4 * GB, MODEL_TYPE_MINI_BLUE,   SECOND_GENERATION},
-	{"9804", 4 * GB, MODEL_TYPE_MINI_PINK,   SECOND_GENERATION},
-	{"9806", 4 * GB, MODEL_TYPE_MINI_GREEN,  SECOND_GENERATION},
-	{"9801", 6 * GB, MODEL_TYPE_MINI,        SECOND_GENERATION},
-	{"9803", 6 * GB, MODEL_TYPE_MINI_BLUE,   SECOND_GENERATION},
-	{"9805", 6 * GB, MODEL_TYPE_MINI_PINK,   SECOND_GENERATION},
-	{"9807", 6 * GB, MODEL_TYPE_MINI_GREEN,  SECOND_GENERATION},	
+    /* First Generation */
+    /* Mechanical buttons arranged around rotating "scroll wheel".
+       8513, 8541 and 8709 are Mac types, 8697 is PC */
+    {"8513",  5*GB, MODEL_TYPE_REGULAR,     FIRST_GENERATION,  20},
+    {"8541",  5*GB, MODEL_TYPE_REGULAR,     FIRST_GENERATION,  20},
+    {"8697",  5*GB, MODEL_TYPE_REGULAR,     FIRST_GENERATION,  20},
+    {"8709", 10*GB, MODEL_TYPE_REGULAR,     FIRST_GENERATION,  20},
 
-	/* Photo / Fourth Generation */
-	/* Buttons are integrated into the "touch wheel". */
-	{"9829", 30 * GB, MODEL_TYPE_COLOR,      FOURTH_GENERATION},
-	{"9585", 40 * GB, MODEL_TYPE_COLOR,      FOURTH_GENERATION},
-	{"9586", 60 * GB, MODEL_TYPE_COLOR,      FOURTH_GENERATION},
-	{"9830", 60 * GB, MODEL_TYPE_COLOR,      FOURTH_GENERATION},
-	
-	/* Shuffle / Fourth Generation */
-	{"9724", GB / 2, MODEL_TYPE_SHUFFLE,     FOURTH_GENERATION},
-	{"9725", GB,     MODEL_TYPE_SHUFFLE,     FOURTH_GENERATION},
-	
-	/* Nano / Fifth Generation */
-	/* Buttons are integrated into the "touch wheel". */
-	{"A350", GB * 1, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},
-	{"A352", GB * 1, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION},
-	{"A004", GB * 2, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},
-	{"A099", GB * 2, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION},
-	{"A005", GB * 4, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION},
-	{"A107", GB * 4, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION},
+    /* Second Generation */
+    /* Same buttons as First Generation but around touch-sensitive
+       "touch wheel". 8737 and 8738 are Mac types, 8740 and 8741 * are
+       PC */
+    {"8737", 10*GB, MODEL_TYPE_REGULAR,     SECOND_GENERATION, 20},
+    {"8740", 10*GB, MODEL_TYPE_REGULAR,     SECOND_GENERATION, 20},
+    {"8738", 20*GB, MODEL_TYPE_REGULAR,     SECOND_GENERATION, 50},
+    {"8741", 20*GB, MODEL_TYPE_REGULAR,     SECOND_GENERATION, 50},
 
-	/* Video / Fifth Generation */
-	/* Buttons are integrated into the "touch wheel". */
-	{"A002", GB * 30, MODEL_TYPE_VIDEO_WHITE, FIFTH_GENERATION},
-	{"A146", GB * 30, MODEL_TYPE_VIDEO_BLACK, FIFTH_GENERATION},
-	{"A003", GB * 60, MODEL_TYPE_VIDEO_WHITE, FIFTH_GENERATION},
-	{"A147", GB * 60, MODEL_TYPE_VIDEO_BLACK, FIFTH_GENERATION},
-	
-	/* HP iPods, need contributions for this table */
-	/* Buttons are integrated into the "touch wheel". */
-	{"E436", 40 * GB, MODEL_TYPE_REGULAR,     FOURTH_GENERATION},
-	{"S492", 30 * GB, MODEL_TYPE_COLOR,       FOURTH_GENERATION},
+    /* Third Generation */
+    /* Touch sensitive buttons and arranged in a line above "touch
+       wheel". Docking connector was introduced here, same models for
+       Mac and PC from now on. */
+    {"8976", 10*GB, MODEL_TYPE_REGULAR,     THIRD_GENERATION,  20},
+    {"8946", 15*GB, MODEL_TYPE_REGULAR,     THIRD_GENERATION,  50},
+    {"9460", 15*GB, MODEL_TYPE_REGULAR,     THIRD_GENERATION,  50},
+    {"9244", 20*GB, MODEL_TYPE_REGULAR,     THIRD_GENERATION,  50},
+    {"8948", 30*GB, MODEL_TYPE_REGULAR,     THIRD_GENERATION,  50},
+    {"9245", 40*GB, MODEL_TYPE_REGULAR,     THIRD_GENERATION,  50},
 
-	/* No known model number -- create a Device/SysInfo file with
-	 * one entry, e.g.:
-	 ModelNumStr: Mmobile1
-	*/
-	{"mobile1", -1, MODEL_TYPE_MOBILE_1, MOBILE_GENERATION},
-	
-	{NULL, 0, 0, 0}
+    /* Fourth Generation */
+    /* Buttons are now integrated into the "touch wheel". */
+    {"9282", 20*GB, MODEL_TYPE_REGULAR,     FOURTH_GENERATION, 50},
+    {"9787", 25*GB, MODEL_TYPE_REGULAR_U2,  FOURTH_GENERATION, 50},
+    {"9268", 40*GB, MODEL_TYPE_REGULAR,     FOURTH_GENERATION, 50},
+    {"A079", 20*GB, MODEL_TYPE_COLOR,       FOURTH_GENERATION, 50},
+    {"A127", 20*GB, MODEL_TYPE_COLOR_U2,    FOURTH_GENERATION, 50},
+    {"9830", 60*GB, MODEL_TYPE_COLOR,       FOURTH_GENERATION, 50},
+
+    /* First Generation Mini */
+    {"9160",  4*GB, MODEL_TYPE_MINI,        FIRST_GENERATION,   6},
+    {"9436",  4*GB, MODEL_TYPE_MINI_BLUE,   FIRST_GENERATION,   6},
+    {"9435",  4*GB, MODEL_TYPE_MINI_PINK,   FIRST_GENERATION,   6},
+    {"9434",  4*GB, MODEL_TYPE_MINI_GREEN,  FIRST_GENERATION,   6},
+    {"9437",  4*GB, MODEL_TYPE_MINI_GOLD,   FIRST_GENERATION,   6},	
+
+    /* Second Generation Mini */
+    {"9800",  4*GB, MODEL_TYPE_MINI,        SECOND_GENERATION,  6},
+    {"9802",  4*GB, MODEL_TYPE_MINI_BLUE,   SECOND_GENERATION,  6},
+    {"9804",  4*GB, MODEL_TYPE_MINI_PINK,   SECOND_GENERATION,  6},
+    {"9806",  4*GB, MODEL_TYPE_MINI_GREEN,  SECOND_GENERATION,  6},
+    {"9801",  6*GB, MODEL_TYPE_MINI,        SECOND_GENERATION, 20},
+    {"9803",  6*GB, MODEL_TYPE_MINI_BLUE,   SECOND_GENERATION, 20},
+    {"9805",  6*GB, MODEL_TYPE_MINI_PINK,   SECOND_GENERATION, 20},
+    {"9807",  6*GB, MODEL_TYPE_MINI_GREEN,  SECOND_GENERATION, 20},	
+
+    /* Photo / Fourth Generation */
+    /* Buttons are integrated into the "touch wheel". */
+    {"9829", 30*GB, MODEL_TYPE_COLOR,       FOURTH_GENERATION, 50},
+    {"9585", 40*GB, MODEL_TYPE_COLOR,       FOURTH_GENERATION, 50},
+    {"9586", 60*GB, MODEL_TYPE_COLOR,       FOURTH_GENERATION, 50},
+    {"9830", 60*GB, MODEL_TYPE_COLOR,       FOURTH_GENERATION, 50},
+
+    /* Shuffle / Fourth Generation */
+    {"9724", GB/2,  MODEL_TYPE_SHUFFLE,     FOURTH_GENERATION,  3},
+    {"9725", GB,    MODEL_TYPE_SHUFFLE,     FOURTH_GENERATION,  3},
+
+    /* Nano / Fifth Generation */
+    /* Buttons are integrated into the "touch wheel". */
+    {"A350",  1*GB, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION,   3},
+    {"A352",  1*GB, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION,   3},
+    {"A004",  2*GB, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION,   3},
+    {"A099",  2*GB, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION,   3},
+    {"A005",  4*GB, MODEL_TYPE_NANO_WHITE,  FIFTH_GENERATION,   6},
+    {"A107",  4*GB, MODEL_TYPE_NANO_BLACK,  FIFTH_GENERATION,   6},
+
+    /* Video / Fifth Generation */
+    /* Buttons are integrated into the "touch wheel". */
+    {"A002", 30*GB, MODEL_TYPE_VIDEO_WHITE, FIFTH_GENERATION,  50},
+    {"A146", 30*GB, MODEL_TYPE_VIDEO_BLACK, FIFTH_GENERATION,  50},
+    {"A003", 60*GB, MODEL_TYPE_VIDEO_WHITE, FIFTH_GENERATION,  50},
+    {"A147", 60*GB, MODEL_TYPE_VIDEO_BLACK, FIFTH_GENERATION,  50},
+
+    /* HP iPods, need contributions for this table */
+    /* Buttons are integrated into the "touch wheel". */
+    {"E436", 40*GB, MODEL_TYPE_REGULAR,     FOURTH_GENERATION, 50},
+    {"S492", 30*GB, MODEL_TYPE_COLOR,       FOURTH_GENERATION, 50},
+
+    /* No known model number -- create a Device/SysInfo file with
+     * one entry, e.g.:
+       ModelNumStr: Mmobile1
+    */
+    {"mobile1", -1, MODEL_TYPE_MOBILE_1, MOBILE_GENERATION},
+
+    {NULL, 0, 0, 0, 0}
 };
 
 #if 0
@@ -450,6 +454,50 @@ itdb_device_musicdirs_number (Itdb_Device *device)
     return device->musicdirs;
 }
 
+/**
+ * endianess_check_path:
+ *
+ * Check if endianess can be determined by looking at header of @path.
+ *
+ * @path:   the file to look at.
+ * @hdr: the header string (4 bytes) in case of LITTLE_ENDIAN
+ *
+ * Return value:
+ * G_LITTLE_ENDIAN, G_BIG_ENDIAN or 0 if endianess could not be
+ * determined.
+ */
+static guint endianess_check_path (const gchar *path, const gchar *hdr)
+{
+    guint byte_order = 0;
+
+    if (path)
+    {
+	int fd = open (path, O_RDONLY);
+	if (fd != -1)
+	{
+	    gchar buf[4];
+	    if (read (fd, buf, 4) == 4)
+	    {
+		if (strncmp (buf, hdr, 4) == 0)
+		{
+		    byte_order = G_LITTLE_ENDIAN;
+		}
+		else
+		{
+		    if ((buf[0] == hdr[3]) &&
+			(buf[1] == hdr[2]) &&
+			(buf[2] == hdr[1]) &&
+			(buf[3] == hdr[0]))
+		    {
+			byte_order = G_LITTLE_ENDIAN;
+		    }
+		}
+	    }
+	    close (fd);
+	}
+    }
+    return byte_order;
+}
 
 /* Attempt to guess the endianess used by this iPod.
  *
@@ -460,25 +508,54 @@ itdb_device_musicdirs_number (Itdb_Device *device)
 G_GNUC_INTERNAL void
 itdb_device_autodetect_endianess (Itdb_Device *device)
 {
-    g_return_if_fail (device);
+    guint byte_order = 0;
 
-    /* default: non-reversed */
-    device->byte_order = G_LITTLE_ENDIAN;
+    g_return_if_fail (device);
 
     if (device->mountpoint)
     {
-	gchar *control_dir = itdb_get_control_dir (device->mountpoint);
-    
-	if (control_dir)
+	gchar *path;
+	if (byte_order == 0)
 	{
-	    gchar *cd_l = g_ascii_strdown (control_dir, -1);
-	    if (strstr (cd_l, "itunes/itunes_control") ==
-		(cd_l + strlen (cd_l) - strlen ("itunes/itunes_control")))
+	    /* First try reading the iTunesDB */
+	    path = itdb_get_itunesdb_path (device->mountpoint);
+	    byte_order = endianess_check_path (path, "mhbd");
+	    g_free (path);
+	}
+	if (byte_order == 0)
+	{
+	    /* Try reading the ArtworkDB */
+	    path = itdb_get_artworkdb_path (device->mountpoint);
+	    byte_order = endianess_check_path (path, "mhfd");
+	    g_free (path);
+	}
+	if (byte_order == 0)
+	{
+	    /* Try reading the Photos Database */
+	    path = itdb_get_photodb_path (device->mountpoint);
+	    byte_order = endianess_check_path (path, "mhfd");
+	    g_free (path);
+	}
+	if (byte_order == 0)
+	{
+	    gchar *control_dir = itdb_get_control_dir (device->mountpoint);
+	    if (control_dir)
 	    {
-		device->byte_order = G_BIG_ENDIAN;
+		gchar *cd_l = g_ascii_strdown (control_dir, -1);
+		if (strstr (cd_l, "itunes/itunes_control") ==
+		    (cd_l + strlen (cd_l) - strlen ("itunes/itunes_control")))
+		{
+		    device->byte_order = G_BIG_ENDIAN;
+		}
+		g_free (cd_l);
+		g_free (control_dir);
 	    }
-	    g_free (cd_l);
-	    g_free (control_dir);
 	}
     }
+
+    /* default: non-reversed */
+    if (byte_order == 0)
+	byte_order = G_LITTLE_ENDIAN;
+
+    device->byte_order = byte_order;
 }

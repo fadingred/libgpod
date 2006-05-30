@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-21 17:22:34 jcs>
+/* Time-stamp: <2006-05-30 21:53:34 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -74,6 +74,11 @@ struct _Itdb_IpodModel {
 	const guint64 capacity;
 	guint model_type;
 	guint generation;
+        /* number of music (Fnn) dirs created by iTunes. The exact
+	   number seems to be version dependent. Therefore, the
+	   numbers here represent a mixture of reported values and
+	   common sense. */
+        guint musicdirs;
 };
 
 typedef enum {
@@ -120,8 +125,6 @@ G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_device_get_artwork_formats (Itdb_
 G_GNUC_INTERNAL const Itdb_IpodModel *itdb_device_get_ipod_model (Itdb_Device *device);
 G_GNUC_INTERNAL gint itdb_device_musicdirs_number (Itdb_Device *device);
 G_GNUC_INTERNAL void itdb_device_autodetect_endianess (Itdb_Device *device);
-
-
 G_END_DECLS
 
 #endif

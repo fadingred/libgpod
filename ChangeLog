@@ -1,11 +1,217 @@
+2006-05-30  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (itdb_create_directories): applied
+	  Christophe's cleanup-patch, 'normalized' indenting. Function
+	  made 'static'.
+
+	* src/itdb_itunesdb.c (itdb_init_ipod): fixed segfault.
+
+	* m4/python: default configure option --with_python to 'yes'
+	  (Nicholas Piper)
+
+	***** merged photo-support branch back to MAIN. branch is tagged
+	      photo-support-merged_00
+
+2006-05-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * tests/test-photos.c: removed unneeded #include.
+
+	* configure.ac: print configuration summary -- thanks to Todd
+	  Zullinger
+
+	* itdb.h:
+	  itdb_itunesdb.c:
+	  added itdb_init_ipod() -- thanks to P.G. Richardson.
+
+	* src/itdb_itunesdb.c (itdb_write_file): only write artwork if
+	  supported by the iPod -- thanks to P.G. Richardson.
+
+	* src/itdb_itunesdb.c:
+	  src/itdb_photoalbum.c:
+	  src/itdb_playlist.c:
+	
+	  fixed some comments so the doc subsystem won't complain.
+
+	* tests/Makefile.am:
+	  tests/test-init-ipod.c
+
+	  added new test for itdb_init_ipod(). The test also demonstrates
+	  how to 'autodetect' the iPod model number.
+
+	* src/itdb_photoalbum.c:
+	  src/ithumb-writer.c:
+	  src/itdb_artwork.c:
+	  src/itdb.h:
+	  src/db-itunes-parser.h:
+	  src/db-artwork-writer.c:
+	  src/db-artwork-parser.c:
+	  src/db-artwork-debug.c:
+
+	  Patch by Michael McLellan:
+	  
+	  Doesn't automatically make the first photoalbum the
+	  'master'. However, if a master already exists it will remain the
+	  master.
+
+	  Sets the creation date of a new image to the modification time
+	  of the image file.
+
+	  Centers new images.
+
+	  Introduces itdb_photodb_remove_photo().
+
+	
+2006-05-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h:
+	  src/itunesdb.c: (Itdb_Track)
+	      flag2 -> skip_when_shuffling
+	      flag3 -> remember_playback_position
+
+	* src/itunesdb.c: playlist flags 1,2,3 were not read correctly.
+
+2006-05-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-parse-context.c (db_parse_context_new_from_file):
+	  Detect endianess if not already set.
+
+	* src/itdb_device.c (itdb_device_autodetect_endianess): try
+	  reading the first for bytes of iTunesDB, ArtworkDB or Photos
+	  Database in order to reliably detect the endianess of the
+	  connected iPod.
+
+	* src/itdb_photoalbum.c: (itdb_photodb_parse): will fail again if
+	  no photos dir is available.
+
+	* tests/test-photos.c: takes into consideration the possibility
+	  that an iPod does not have a Photos Database and creates a new
+	  one in that case. (I think it's safer that way -- the
+	  application is forced to 'think' about the fact that no database
+	  is available and either warn the user or create one. If
+	  itdb_photodb_parse() simply returns an empty database in case
+	  none could be found, the application might not become aware of
+	  the fact.)
+
+	* renamed itdb_get_mountpoint_photo to
+	  itdb_photodb_get_mountpoint.
+
+	* tests/test-photos.c: added g_error_free()
+
+	* src/itdb_device.c
+	  src/itdb_device.h: added number of musicdirs (Fnn dirs) to the
+	  model descriptions. The exact number seems to be version
+	  dependent. Therefore, the numbers here represent a mixture of
+	  reported values and common sense.
+
+2006-05-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_photoalbum.c: itdb_photodb_parse() would fail if no
+	  photos dir is available. Quick fix for now (I mean, why
+	  SHOULDN'T it fail if no photos dir is available??).
+
+2006-05-26  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h:
+	  src/itdb_photoalbum.c:
+	  src/itdb_artwork.c:
+	  Added userdata/usertype fields to Itdb_PhotoDB, Itdb_PhotoAlbum,
+	  Itdb_Artwork.
+
+2006-05-25  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * Slight cleanup, make PhotoDB API more consistent with iTunesDB
+	  API:
+
+	* src/db-artwork-parser.h: declared ipod_write_photo_db() as
+	  G_GNUC_INTERNAL
+
+	* src/db-artwork-writer.c (ipod_write_photo_db for non-gdk):
+	  Itdb_iTunesDB -> Itdb_PhotoDB
+
+	* src/itdb.h:
+	  Itdb_ItunesDB: removed photoalbums and photos.
+	  renamed:
+	  	 itdb_parse_photo -> itdb_photodb_parse
+		 itdb_add_photo_to_photoalbum -> itdb_photodb_add_photo
+		 itdb_create_new_photoalbum -> itdb_photodb_photoalbum_new
+		 itdb_free_photodb -> itdb_photodb_free
+		 itdb_write_photo_db -> itdb_photodb_write
+	  new:   itdb_photodb_new()
+
+	* src/itdb_itunesdb.c (itdb_parse_photo, itdb_get_photos_dir,
+	  itdb_get_photodb_path, itdb_get_photos_thumb_dir): moved to
+	  itdb_photoalbum.c
+
+	* src/itdb_photoalbum.c:
+	  new:   error_no_photos_dir, itdb_photodb_new, itdb_photodb_write
+	  moved: itdb_get_photos_dir, itdb_get_photodb_path,
+	         itdb_get_photos_thumb_dir
+	  rewrote: 
+	         itdb_photodb_parse
+	  (itdb_photodb_free): free device struct as well.
+
+	* tests/test-photos.c: change to new API.
+
+	* src/itdb.h: applied Christophe's patch to fix compile time
+	  error.
+
+	* po/sv.po: updated Swedish translation (thanks to Stefan
+	  Asserhall)
+
+2006-05-20  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* po/POTFILES.in: updated file list -> updated .po files.
+
+2006-05-15  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-image-parser.c
+	* src/itdb_photoalbum.c
+	* src/ithumb-writer.c
+	  Michael McLellan patch for photo support on iPod Videos
+
+2006-05-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h
+	* src/itdb_itunesdb.c
+	* src/itdb_private.h
+	* src/db-artwork-parser.c
+	* src/db-artwork-parser.h
+	* src/db-itunes-parser.h
+	* src/db-artwork-writer.c
+	* src/itdb_photoalbum.c
+	  Make sure Photos and Photos/Thumbs directories are created. New:
+	  itdb_get_photodb_path().
+
+
+2006-05-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-artwork-parser.c:
+	* src/db-itunes-parser.h:
+	* src/db-artwork-writer.c:
+	* src/itdb_photoalbum.c:
+	* src/itdb.h:
+	* src/itdb_private.h:
+	* tests/test-photos.c:
+	  Applied Mikey's second patch for photo support. test-photos now
+	  comes with support for photo albums!
+
 2006-05-07  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* Created new branch "photo-support" for testing of photo
 	  support. Comes complete with a test program to add photos to
 	  your iPod. Works great for me -- thanks to Mikey!
 
-	  Update your repository with the "-r photo-support" option to get
-	  a copy and help testing.
+	  --- 2006-05-30: merged back to MAIN.
+
+2006-05-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * Applied Mikey's patch for photo support.
+
+	* src/itdb_photoalbum.c: new.
+
+	* tests/test-photo.c: test program to add photos to your iPod.
+
+	* Created branch for this patch: 'photo-support'.
 
 2006-05-05  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

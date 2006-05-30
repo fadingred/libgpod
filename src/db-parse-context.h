@@ -27,13 +27,14 @@
 #define DB_PARSE_CONTEXT
 
 #include <sys/types.h>
-
+#include "itdb.h"
 struct _DBParseContext {
 	const unsigned char *buffer;
 	const unsigned char *cur_pos;
 	off_t header_len;
 	off_t total_len;
 	guint byte_order;
+	Itdb_DB *db;
 };
 
 typedef struct _DBParseContext DBParseContext;
@@ -64,7 +65,8 @@ db_parse_context_get_m_header_internal (DBParseContext *ctx,
 					const char *id, off_t size);
 
 G_GNUC_INTERNAL DBParseContext *
-db_parse_context_new_from_file (const char *filename, guint byte_order);
+db_parse_context_new_from_file (const char *filename, Itdb_DB *db);
+
 
 G_GNUC_INTERNAL void 
 db_parse_context_destroy (DBParseContext *ctx, gboolean unmap);

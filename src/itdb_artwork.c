@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-03-18 01:23:13 jcs>
+/* Time-stamp: <2006-05-26 20:49:27 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -64,6 +64,8 @@ void itdb_artwork_free (Itdb_Artwork *artwork)
 {
     g_return_if_fail (artwork);
     itdb_artwork_remove_thumbnails (artwork);
+    if (artwork->userdata && artwork->userdata_destroy)
+	(*artwork->userdata_destroy) (artwork->userdata);
     g_free (artwork);
 }
 
@@ -184,7 +186,8 @@ itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
 	return FALSE;
     }
 
-    artwork->artwork_size = statbuf.st_size;
+    artwork->artwork_size  = statbuf.st_size;
+    artwork->creation_date = statbuf.st_mtime;
 
     thumb = itdb_thumb_new ();
     thumb->filename = g_strdup (filename);
@@ -259,14 +262,23 @@ gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb)
 	g_print (_("Mountpoint not set.\n"));
 	return NULL;
     }
-
     artwork_dir = itdb_get_artwork_dir (device->mountpoint);
     if (artwork_dir)
     {
 	filename = itdb_get_path (artwork_dir, thumb->filename+1);
 	g_free (artwork_dir);
     }
+    /* FIXME: Hack */
+    if( !filename ) {
+	artwork_dir = itdb_get_photos_thumb_dir (device->mountpoint);
 
+	if (artwork_dir)
+	{
+	    filename = itdb_get_path (artwork_dir, strchr( thumb->filename+1, ':') + 1);
+	    g_free (artwork_dir);
+	}
+
+    }
     return filename;
 }
 

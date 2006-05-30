@@ -76,7 +76,8 @@ dump_mhod_type_1 (MhodHeaderArtworkType1 *mhod1)
 	g_print ("MHOD [artwork type 1] (%d):\n", sizeof (MhodHeaderArtworkType1));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod1->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod1->total_len));
-	g_print ("\tType: %08x\n", GINT_FROM_LE (mhod1->type));
+	g_print ("\tPadding: %04x\n", GINT_FROM_LE (mhod1->padding));
+	g_print ("\tType: %04x\n", GINT_FROM_LE (mhod1->type));
 	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhod1->unknown1));
 	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhod1->unknown2));
 	g_print ("\tString length: %u\n", GINT_FROM_LE (mhod1->string_len));
@@ -87,14 +88,15 @@ dump_mhod_type_1 (MhodHeaderArtworkType1 *mhod1)
 }
 
 G_GNUC_INTERNAL void 
-dump_mhod_type_3 (MhodHeaderArtworkType3 *mhod3) 
+dump_mhod_type_3 (ArtworkDB_MhodHeaderArtworkType3 *mhod3) 
 {
 	gchar *str;
 
-	g_print ("MHOD [artwork type 3] (%d):\n", sizeof (MhodHeaderArtworkType3));
+	g_print ("MHOD [artwork type 3] (%d):\n", sizeof (ArtworkDB_MhodHeaderArtworkType3));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod3->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod3->total_len));
-	g_print ("\tType: %08x\n", GINT_FROM_LE (mhod3->type));
+	g_print ("\tPadding: %04x\n", GINT_FROM_LE (mhod3->padding));
+	g_print ("\tType: %04x\n", GINT_FROM_LE (mhod3->type));
 	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhod3->unknown1));
 	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhod3->unknown2));
 	g_print ("\tString length: %u\n", GINT_FROM_LE (mhod3->string_len));
@@ -120,14 +122,15 @@ dump_mhni (MhniHeader *mhni)
 		 GINT_FROM_LE (mhni->correlation_id));
 	g_print ("\tithmb offset: %u bytes\n", GINT_FROM_LE (mhni->ithmb_offset));
 	g_print ("\tImage size: %u bytes\n", GINT_FROM_LE (mhni->image_size));
-	g_print ("\tUnknown3: %08x\n", GINT_FROM_LE (mhni->unknown3));
+	g_print ("\tVertical padding: %d\n", GINT_FROM_LE (mhni->vertical_padding));
+	g_print ("\tHorizontal padding: %d\n", GINT_FROM_LE (mhni->horizontal_padding));
 	g_print ("\tImage dimensions: %ux%u\n", width, height);
 }
 
 G_GNUC_INTERNAL void
-dump_mhod (MhodHeader *mhod) 
+dump_mhod (ArtworkDB_MhodHeader *mhod) 
 {
-	g_print ("MHOD (%d):\n", sizeof (MhodHeader));
+	g_print ("MHOD (%d):\n", sizeof (ArtworkDB_MhodHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod->total_len));
 	g_print ("\tType: %08x\n", GINT_FROM_LE (mhod->type));
@@ -147,8 +150,8 @@ dump_mhii (MhiiHeader *mhii)
 	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhii->unknown4));
 	g_print ("\tUnknown5: %08x\n", GINT_FROM_LE (mhii->unknown5));
 	g_print ("\tUnknown6: %08x\n", GINT_FROM_LE (mhii->unknown6));
-	g_print ("\tUnknown7: %08x\n", GINT_FROM_LE (mhii->unknown7));
-	g_print ("\tUnknown8: %08x\n", GINT_FROM_LE (mhii->unknown8));
+	g_print ("\tOrig Date: %08x\n", GINT_FROM_LE (mhii->orig_date));
+	g_print ("\tDigitised Date: %08x\n", GINT_FROM_LE (mhii->digitised_date));
 	g_print ("\tImage size: %d bytes\n", GINT_FROM_LE (mhii->orig_img_size));
 }
 
@@ -166,9 +169,9 @@ dump_mhl (MhlHeader *mhl, const char *id)
 }
 
 G_GNUC_INTERNAL void
-dump_mhsd (MhsdHeader *mhsd)
+dump_mhsd (ArtworkDB_MhsdHeader *mhsd)
 {
-	g_print ("MHSD (%d):\n", sizeof (MhsdHeader));
+	g_print ("MHSD (%d):\n", sizeof (ArtworkDB_MhsdHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhsd->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhsd->total_len));
 	g_print ("\tIndex: %d ", GINT16_FROM_LE (mhsd->index));
@@ -199,10 +202,10 @@ dump_mhfd (MhfdHeader *mhfd)
 	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhfd->unknown2));
 	g_print ("\tNumber of children: %d\n", GINT_FROM_LE (mhfd->num_children));
 	g_print ("\tUnknown3: %08x\n", GINT_FROM_LE (mhfd->unknown3));
-	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhfd->unknown4));
+	g_print ("\tNext id: %08x\n", GINT_FROM_LE (mhfd->next_id));
 	g_print ("\tUnknown5: %016llx\n", GINT64_FROM_LE (mhfd->unknown5));
 	g_print ("\tUnknown6: %016llx\n", GINT64_FROM_LE (mhfd->unknown6));
-	g_print ("\tUnknown7: %08x\n", GINT_FROM_LE (mhfd->unknown7));
+	g_print ("\tunknown_flag1: %04x\n", GINT_FROM_LE (mhfd->unknown_flag1));
 	g_print ("\tUnknown8: %08x\n", GINT_FROM_LE (mhfd->unknown8));
 	g_print ("\tUnknown9: %08x\n", GINT_FROM_LE (mhfd->unknown9));
 	g_print ("\tUnknown10: %08x\n", GINT_FROM_LE (mhfd->unknown10));
@@ -212,8 +215,6 @@ dump_mhfd (MhfdHeader *mhfd)
 G_GNUC_INTERNAL void
 dump_mhba (MhbaHeader *mhba)
 {
-	int i;
-
 	g_print ("MHBA (%d):\n", sizeof (MhbaHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhba->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhba->total_len));
@@ -221,9 +222,12 @@ dump_mhba (MhbaHeader *mhba)
 	g_print ("\tNumber of pictures in the album: %d\n", GINT_FROM_LE (mhba->num_mhias));
 	g_print ("\tPlaylist ID: %08x\n", GINT_FROM_LE (mhba->playlist_id));
 	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhba->unknown2));
-	g_print ("\tUnknown3: %08x\n", GINT_FROM_LE (mhba->unknown3));
-	for (i = 0; i < 7; i++)
-		g_print ("\tUnknown[%d]: %08x\n", i, GINT_FROM_LE (mhba->unknown[i]));
+	g_print ("\tUnknown3: %04x\n", GINT_FROM_LE (mhba->unknown3));
+	g_print ("\tMaster playlist: %02x\n", GINT_FROM_LE (mhba->master));
+	g_print ("\tRepeat: %02x\n", GINT_FROM_LE (mhba->repeat));
+	g_print ("\tRandom: %02x\n", GINT_FROM_LE (mhba->random));
+	g_print ("\tTransition direction: %02x\n", GINT_FROM_LE (mhba->transition_direction));
+	g_print ("\tSlide duration: %08x\n", GINT_FROM_LE (mhba->slide_duration));
 	g_print ("\tPrev playlist ID: %08x\n", GINT_FROM_LE (mhba->prev_playlist_id));
 }
 

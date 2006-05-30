@@ -30,8 +30,8 @@ AC_DEFUN([LIBGPOD_CHECK_PYTHON],
 [
     AC_ARG_WITH(python,
         AC_HELP_STRING([--with-python=PATH],
-            [build python bindings [[default=no]]]),
-        [with_python=$withval],[with_python=no])
+            [build python bindings [[default=yes]]]),
+        [with_python=$withval],[with_python=yes])
 
     AC_MSG_CHECKING(whether to build python bindings)
     if test "X$with_python" != Xno; then

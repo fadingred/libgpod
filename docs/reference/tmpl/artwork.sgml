@@ -24,7 +24,13 @@ Data structure to store iPod artwork (cover and photos)
 
 @thumbnails: 
 @artwork_size: 
+@type: 
 @id: 
+@creation_date: 
+@usertype: 
+@userdata: 
+@userdata_duplicate: 
+@userdata_destroy: 
 
 <!-- ##### STRUCT Itdb_Thumb ##### -->
 <para>

@@ -42,9 +42,9 @@
 #define BLUE_MASK (((1 << BLUE_BITS)-1) << BLUE_SHIFT)
 
 G_GNUC_INTERNAL Itdb_Thumb *ipod_image_new_from_mhni (MhniHeader *mhni, 
-						      Itdb_iTunesDB *db);
+						      Itdb_DB *db);
 
-G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_iTunesDB *db);
+G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_DB *db);
 
 G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_get_artwork_info_from_type (
     Itdb_Device *ipod, int image_type);

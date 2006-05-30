@@ -32,12 +32,12 @@
 extern G_GNUC_INTERNAL void dump_mhif (MhifHeader *mhif);
 extern G_GNUC_INTERNAL void dump_mhia (MhiaHeader *mhia);
 extern G_GNUC_INTERNAL void dump_mhod_type_1 (MhodHeaderArtworkType1 *mhod);
-extern G_GNUC_INTERNAL void dump_mhod_type_3 (MhodHeaderArtworkType3 *mhod);
+extern G_GNUC_INTERNAL void dump_mhod_type_3 (ArtworkDB_MhodHeaderArtworkType3 *mhod);
 extern G_GNUC_INTERNAL void dump_mhni (MhniHeader *mhni);
-extern G_GNUC_INTERNAL void dump_mhod (MhodHeader *mhod);
+extern G_GNUC_INTERNAL void dump_mhod (ArtworkDB_MhodHeader *mhod);
 extern G_GNUC_INTERNAL void dump_mhii (MhiiHeader *mhii);
 extern G_GNUC_INTERNAL void dump_mhl (MhlHeader *mhl, const char *id);
-extern G_GNUC_INTERNAL void dump_mhsd (MhsdHeader *mhsd);
+extern G_GNUC_INTERNAL void dump_mhsd (ArtworkDB_MhsdHeader *mhsd);
 extern G_GNUC_INTERNAL void dump_mhfd (MhfdHeader *mhfd);
 extern G_GNUC_INTERNAL void dump_mhba (MhbaHeader *mhba);
 #else 

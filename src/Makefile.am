@@ -6,6 +6,7 @@ libgpod_la_SOURCES = \
 	itdb_itunesdb.c  \
 	itdb_playlist.c  \
 	itdb_private.h   \
+	itdb_photoalbum.c \
 	itdb_track.c     \
 	db-artwork-parser.c \
 	db-artwork-parser.h \

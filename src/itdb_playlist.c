@@ -1,4 +1,4 @@
-/* Time-stamp: <2005-11-19 16:24:56 jcs>
+/* Time-stamp: <2006-05-30 00:29:18 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -40,7 +40,7 @@
 
 /**
  * itdb_spl_action_known:
- * action: an #SPLAction
+ * @action: an #SPLAction
  *
  * Checks if @action is a known (to libgpod) smart playlist action.
  *
