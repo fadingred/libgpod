@@ -171,8 +171,8 @@ class Track:
                            "recent_playcount","transferred","BPM","app_rating",
                            "type1","type2","compilation","starttime","stoptime",
                            "checked","dbid","drm_userid","visible","filetype_marker",
-                           "artwork_count","artwork_size","samplerate2",
-                           "time_released","has_artwork","flag1","flag2","flag3","flag4",
+                           "artwork_count","artwork_size","samplerate2", "remember_playback_position",
+                           "time_released","has_artwork","flag4", "skip_when_shuffling",
                            "lyrics_flag","movie_flag","mark_unplayed","samplecount",
                            "chapterdata_raw","chapterdata_raw_length","artwork",
                            "usertype")
@@ -213,15 +213,7 @@ class Track:
             if of is not None:
                 self['tracks'] = of
             self['tracklen'] = audiofile.getPlayTime() * 1000
-            if podcast:
-                self['flag2'] = 0x01 # skip when shuffling
-                self['flag3'] = 0x01 # remember playback position
-                self['flag4'] = 0x01 # Show Title/Album on the 'Now Playing' page
-            else:
-                self['flag2'] = 0x00 # do not skip when shuffling
-                self['flag3'] = 0x00 # do not remember playback position
-                self['flag4'] = 0x00 # Show Title/Album/Artist on the 'New Playing' page
-            
+            self.set_podcast(podcast)
         elif proxied_track:
             self._track = proxied_track
         else:
@@ -246,14 +238,12 @@ class Track:
 
     def set_podcast(self, value):
         if value:
-            self['flag1'] = 0x02 # unknown
-            self['flag2'] = 0x01 # skip when shuffling
-            self['flag3'] = 0x01 # remember playback position
+            self['skip_when_shuffling'] = 0x01
+            self['remember_playback_position'] = 0x01
             self['flag4'] = 0x01 # Show Title/Album on the 'Now Playing' page            
         else:
-            self['flag1'] = 0x02 # unknown
-            self['flag2'] = 0x00 # do not skip when shuffling
-            self['flag3'] = 0x00 # do not remember playback position
+            self['skip_when_shuffling'] = 0x00
+            self['remember_playback_position'] = 0x00
             self['flag4'] = 0x00 # Show Title/Album/Artist on the 'New Playing' page
 
     def __str__(self):
