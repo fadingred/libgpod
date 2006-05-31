@@ -5,7 +5,7 @@ dnl  AM_CHECK_PYTHON_HEADERS([ACTION-IF-POSSIBLE], [ACTION-IF-NOT-POSSIBLE])
 dnl function also defines PYTHON_INCLUDES
 AC_DEFUN([AM_CHECK_PYTHON_HEADERS],
 [AC_REQUIRE([AM_PATH_PYTHON])
-AC_MSG_CHECKING(for  development headers)
+AC_MSG_CHECKING(for python development headers)
 dnl deduce PYTHON_INCLUDES
 py_prefix=`$PYTHON -c "import sys; print sys.prefix"`
 py_exec_prefix=`$PYTHON -c "import sys; print sys.exec_prefix"`
@@ -25,9 +25,64 @@ $2])
 CPPFLAGS="$save_CPPFLAGS"
 ])
 
+dnl copied and modified from gnome-python
+dnl http://cvs.gnome.org/viewcvs/*checkout*/gnome-python/pygtk/m4/python.m4
+dnl
+dnl AM_CHECK_PYMOD(MODNAME [,VERSION, VERSION_MATCHER [,ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND]]])
+dnl Check if a module of a particular version is visible to python.
+AC_DEFUN([AM_CHECK_PYMOD],
+[AC_REQUIRE([AM_PATH_PYTHON])
+py_mod_var=`echo $1`
+AC_MSG_CHECKING(for python module $1 ifelse([$2],[],,[>= $2]))
+AC_CACHE_VAL(py_cv_mod_$py_mod_var, [
+ifelse([$2],[], [prog="
+import sys
+try:
+        import $1
+except ImportError:
+        sys.exit(1)
+except:
+        sys.exit(0)
+sys.exit(0)"], [prog="
+import sys, string, $1
+curverstr = $3
+# use method from AM_PYTHON_CHECK_VERSION
+minver = map(int, string.split('$2', '.')) + [[0, 0, 0]]
+minverhex = 0
+for i in xrange(0, 4): minverhex = (minverhex << 8) + minver[[i]]
+curver = map(int, string.split(curverstr, '.')) + [[0, 0, 0]]
+curverhex = 0
+for i in xrange(0, 4): curverhex = (curverhex << 8) + curver[[i]]
+if (curverhex >= minverhex):
+        sys.exit(0)
+else:
+        sys.exit(1)
+sys.exit(0)"])
+if $PYTHON -c "$prog" 1>&AC_FD_CC 2>&AC_FD_CC
+  then
+    eval "py_cv_mod_$py_mod_var=yes"
+  else
+    eval "py_cv_mod_$py_mod_var=no"
+  fi
+])
+py_val=`eval "echo \`echo '$py_cv_mod_'$py_mod_var\`"`
+if test "x$py_val" != xno; then
+  AC_MSG_RESULT(yes)
+  ifelse([$4], [],, [$4
+])dnl
+else
+  AC_MSG_RESULT(no)
+  ifelse([$5], [],, [$5
+])dnl
+fi
+])
+
 dnl check for python
 AC_DEFUN([LIBGPOD_CHECK_PYTHON],
 [
+    dnl aclocal-1.7 is missing this when version is used in AM_PATH_PYTHON, fudge it
+    am_display_PYTHON=python
+
     AC_ARG_WITH(python,
         AC_HELP_STRING([--with-python=PATH],
             [build python bindings [[default=yes]]]),
@@ -66,9 +121,14 @@ AC_DEFUN([LIBGPOD_CHECK_PYTHON],
                 fi
                 AC_SUBST(PYTHON_LDFLAGS)
 
+                dnl check for eyeD3 module >= $PYTHON_EYED3_MIN_VERSION
+                AM_CHECK_PYMOD(eyeD3,$PYTHON_EYED3_MIN_VERSION,eyeD3.eyeD3Version,,with_python=no)
+
                 dnl check for swig
-                AC_PROG_SWIG($SWIG_MIN_VERSION)
-                with_python="$has_swig"
+                if test "X$with_python" == Xyes; then
+                    AC_PROG_SWIG($SWIG_MIN_VERSION)
+                    with_python="$has_swig"
+                fi
             fi
         else
             AC_MSG_WARN(python not found.  try --with-python=/path/to/python)
@@ -77,3 +137,4 @@ AC_DEFUN([LIBGPOD_CHECK_PYTHON],
     fi
     AM_CONDITIONAL(HAVE_PYTHON, test x$with_python = xyes)
 ])dnl
+
