@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-05-30 21:59:40 jcs>
+/* Time-stamp: <2006-06-01 23:07:57 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -62,7 +62,6 @@ typedef struct _SPLRule SPLRule;
 typedef struct _SPLRules SPLRules;
 typedef struct _Itdb_iTunesDB Itdb_iTunesDB;
 typedef struct _Itdb_PhotoDB Itdb_PhotoDB;
-typedef struct _Itdb_DB Itdb_DB;
 typedef struct _Itdb_Playlist Itdb_Playlist;
 typedef struct _Itdb_PhotoAlbum Itdb_PhotoAlbum;
 typedef struct _Itdb_Track Itdb_Track;
@@ -404,21 +403,6 @@ struct _SPLRules
 
 /* one star is how much (track->rating) */
 #define ITDB_RATING_STEP 20
-
-enum _DbType {
-    DB_TYPE_ITUNES,
-    DB_TYPE_PHOTO
-};
-
-typedef enum _DbType DbType;
-
-struct _Itdb_DB{
-	DbType db_type;
-	union {
-		Itdb_PhotoDB *photodb; 
-		Itdb_iTunesDB *itdb;
-	} db;
-};
 
 struct _Itdb_PhotoDB
 {

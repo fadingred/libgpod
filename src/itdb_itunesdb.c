@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-01 22:09:17 jcs>
+/* Time-stamp: <2006-06-01 23:31:27 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -4799,36 +4799,6 @@ const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb)
     return photodb->device->mountpoint;
 }
 
-/* Retrieve a reference to the mountpoint */
-gchar *db_get_mountpoint(Itdb_DB *db)
-{
-    g_return_val_if_fail (db, NULL);
-
-    switch (db->db_type) {
-    case DB_TYPE_ITUNES:
-		g_return_val_if_fail (db->db.itdb->device, NULL);
-		return db->db.itdb->device->mountpoint;
-    case DB_TYPE_PHOTO:
-		g_return_val_if_fail (db->db.photodb->device, NULL);
-		return db->db.photodb->device->mountpoint;
-    }
-	return NULL;
-}
-
-Itdb_Device *db_get_device(Itdb_DB *db)
-{
-    g_return_val_if_fail (db, NULL);
-
-    switch (db->db_type) {
-    case DB_TYPE_ITUNES:
-		return db->db.itdb->device;
-    case DB_TYPE_PHOTO:
-		return db->db.photodb->device;
-    }
-    g_return_val_if_reached (NULL);
-}
-
-
 /**
  * itdb_musicdirs_number:
  * @itdb: an #Itdb_iTunesDB
@@ -5542,6 +5512,61 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	itdb_free (itdb);
 	return TRUE;
 }
+
+
+
+/*------------------------------------------------------------------*\
+ *                                                                  *
+ *             Some functions to access Itdb_DB safely              *
+ *                                                                  *
+\*------------------------------------------------------------------*/
+G_GNUC_INTERNAL
+Itdb_iTunesDB *db_get_itunesdb (Itdb_DB *db)
+{
+    g_return_val_if_fail (db, NULL);
+    g_return_val_if_fail (db->db_type == DB_TYPE_ITUNES, NULL);
+
+    return db->db.itdb;
+}
+
+G_GNUC_INTERNAL
+Itdb_PhotoDB *db_get_photodb (Itdb_DB *db)
+{
+    g_return_val_if_fail (db, NULL);
+    g_return_val_if_fail (db->db_type == DB_TYPE_PHOTO, NULL);
+
+    return db->db.photodb;
+}
+
+G_GNUC_INTERNAL
+Itdb_Device *db_get_device(Itdb_DB *db)
+{
+    g_return_val_if_fail (db, NULL);
+
+    switch (db->db_type) {
+    case DB_TYPE_ITUNES:
+	g_return_val_if_fail (db_get_itunesdb(db), NULL);
+	return db_get_itunesdb(db)->device;
+    case DB_TYPE_PHOTO:
+	g_return_val_if_fail (db_get_photodb(db), NULL);
+	return db_get_photodb(db)->device;
+    }
+    g_return_val_if_reached (NULL);
+}
+
+G_GNUC_INTERNAL
+gchar *db_get_mountpoint(Itdb_DB *db)
+{
+    Itdb_Device *device;
+    g_return_val_if_fail (db, NULL);
+
+    device = db_get_device (db);
+    g_return_val_if_fail (device, NULL);
+
+    return device->mountpoint;
+}
+
+
 
 /*------------------------------------------------------------------*\
  *                                                                  *

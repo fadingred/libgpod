@@ -27,6 +27,7 @@
 
 #include "db-itunes-parser.h"
 #include "itdb_device.h"
+#include "itdb_private.h"
 #include "itdb.h"
 
 #define RED_BITS   5

@@ -27,6 +27,7 @@
 #include <glib.h>
 #include "itdb.h"
 #include "itdb_device.h"
+#include "itdb_private.h"
 
 #define DB_TO_CPU_GET(lower_case_type, upper_case_type) \
     static inline lower_case_type \
@@ -57,20 +58,12 @@
     static inline lower_case_type \
     get_##lower_case_type##_db (Itdb_DB *db, lower_case_type val) \
     { \
-		    switch (db->db_type) { \
-			case DB_TYPE_ITUNES: \
-				g_assert (db->db.itdb->device != NULL); \
-				return get_##lower_case_type (val, db->db.itdb->device->byte_order); \
-			case DB_TYPE_PHOTO: \
-				g_assert (db->db.photodb->device != NULL); \
-				return get_##lower_case_type (val, db->db.photodb->device->byte_order); \
-			} \
-	return 0; \
-}
+	g_assert (db_get_device(db) != NULL); \
+	return get_##lower_case_type (val, db_get_device(db)->byte_order); \
+    }
 
 DB_TO_CPU_GET_DB(guint32, GUINT32)
 DB_TO_CPU_GET_DB(gint32, GINT32)
 DB_TO_CPU_GET_DB(gint16, GINT16)
 DB_TO_CPU_GET_DB(gint64, GINT64)
-     /*DB_TO_CPU_GET(gint, GINT)*/
 #endif

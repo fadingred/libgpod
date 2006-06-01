@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-05-28 01:11:35 jcs>
+/* Time-stamp: <2006-06-01 23:31:27 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -123,11 +123,29 @@ typedef struct
 } FExport;
 
 
+enum _DbType {
+    DB_TYPE_ITUNES,
+    DB_TYPE_PHOTO
+};
+
+typedef enum _DbType DbType;
+
+struct _Itdb_DB{
+	DbType db_type;
+	union {
+		Itdb_PhotoDB *photodb; 
+		Itdb_iTunesDB *itdb;
+	} db;
+};
+
+typedef struct _Itdb_DB Itdb_DB;
+
 G_GNUC_INTERNAL gboolean itdb_spl_action_known (SPLAction action);
 G_GNUC_INTERNAL void itdb_splr_free (SPLRule *splr);
 G_GNUC_INTERNAL const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb);
 G_GNUC_INTERNAL gchar *db_get_mountpoint (Itdb_DB *db);
 G_GNUC_INTERNAL Itdb_Device *db_get_device(Itdb_DB *db);
 G_GNUC_INTERNAL gint itdb_get_free_photo_id ( Itdb_PhotoDB *db );
-
+G_GNUC_INTERNAL Itdb_iTunesDB *db_get_itunesdb (Itdb_DB *db);
+G_GNUC_INTERNAL Itdb_PhotoDB *db_get_photodb (Itdb_DB *db);
 #endif

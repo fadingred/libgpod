@@ -87,9 +87,10 @@ parse_mhia (DBParseContext *ctx, Itdb_PhotoAlbum *photo_album, GError *error)
 	}
 	dump_mhia (mhia);
 	image_id = get_gint32 (mhia->image_id, ctx->byte_order);
-    photo_album->members = g_list_append (photo_album->members
-										, GINT_TO_POINTER(image_id));
-	db_parse_context_set_total_len (ctx,  get_gint32_db (ctx->db, mhia->total_len));
+	photo_album->members = g_list_append (photo_album->members,
+					      GINT_TO_POINTER(image_id));
+	db_parse_context_set_total_len (ctx,
+					get_gint32_db (ctx->db, mhia->total_len));
 	return 0;
 }
 
@@ -309,6 +310,8 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	off_t cur_offset;
 	iPodSong *song;
 	Itdb_Artwork *artwork;
+	Itdb_PhotoDB *photodb;
+	Itdb_iTunesDB *itunesdb;
 
 	mhii = db_parse_context_get_m_header (ctx, MhiiHeader, "mhii");
 	if (mhii == NULL) {
@@ -335,13 +338,20 @@ parse_mhii (DBParseContext *ctx, GError *error)
 			g_free (mhod_ctx);
 			mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 		}
-		ctx->db->db.photodb->photos = g_list_append (ctx->db->db.photodb->photos, artwork);
+		photodb = db_get_photodb (ctx->db);
+		g_return_val_if_fail (photodb, -1);
+		photodb->photos = g_list_append (photodb->photos,
+						 artwork);
 		break;
 	case DB_TYPE_ITUNES:
 #ifdef NOT_DEFINED_DEBUG_ARTWORKDB
 		song = NULL;
 #else
-		song = get_song_by_dbid (ctx->db->db.itdb, get_gint64 (mhii->song_id, ctx->byte_order));
+		itunesdb = db_get_itunesdb (ctx->db);
+		g_return_val_if_fail (itunesdb, -1);
+		song = get_song_by_dbid (itunesdb,
+					 get_gint64 (mhii->song_id,
+						     ctx->byte_order));
 		if (song == NULL) {
 			return -1;
 		}
@@ -364,6 +374,8 @@ parse_mhii (DBParseContext *ctx, GError *error)
 			mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 		}
 		break;
+	default:
+	       g_return_val_if_reached (-1);
 	}
 	return 0;
 }
@@ -376,6 +388,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 	DBParseContext *mhod_ctx;
 	DBParseContext *mhia_ctx;
 	Itdb_PhotoAlbum *photo_album;
+	Itdb_PhotoDB *photodb;
 	int num_children;
 	off_t cur_offset;
 
@@ -419,7 +432,10 @@ parse_mhba (DBParseContext *ctx, GError *error)
 		g_free (mhia_ctx);
 		mhia_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	}
-	ctx->db->db.photodb->photoalbums = g_list_append (ctx->db->db.photodb->photoalbums, photo_album);
+	photodb = db_get_photodb (ctx->db);
+	g_return_val_if_fail (photodb, -1);
+	photodb->photoalbums = g_list_append (photodb->photoalbums,
+					      photo_album);
 	return 0;
 }
 
@@ -635,11 +651,11 @@ ipod_parse_artwork_db (Itdb_iTunesDB *itdb)
 
 	g_return_val_if_fail (itdb, -1);
 
-	if (!ipod_supports_cover_art (db.db.itdb->device)) {
+	if (!ipod_supports_cover_art (itdb->device)) {
 		return -1;
 	}
 	ctx = NULL;
-	filename = ipod_db_get_artwork_db_path (itdb_get_mountpoint (db.db.itdb));
+	filename = ipod_db_get_artwork_db_path (itdb_get_mountpoint (itdb));
 	if (filename == NULL) {
 		goto error;
 	}

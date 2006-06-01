@@ -443,26 +443,32 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 	if (mhni == NULL) {
 		return -1;
 	}
-	total_bytes = get_gint32 (mhni->header_len, buffer->byte_order);
-	mhni->total_len = get_gint32 (total_bytes, buffer->byte_order);
-
-	mhni->correlation_id		= get_gint32 (correlation_id, buffer->byte_order);
-	mhni->image_width			= get_gint16 (thumb->width, buffer->byte_order);
-	mhni->image_height			= get_gint16 (thumb->height, buffer->byte_order);
-	mhni->image_size   			= get_gint32 (thumb->size, buffer->byte_order);
-	mhni->ithmb_offset 			= get_gint32 (thumb->offset, buffer->byte_order);
+	total_bytes =          get_gint32 (mhni->header_len,
+					   buffer->byte_order);
+	mhni->total_len =      get_gint32 (total_bytes,
+					   buffer->byte_order);
+	mhni->correlation_id = get_gint32 (correlation_id,
+					   buffer->byte_order);
+	mhni->image_width =    get_gint16 (thumb->width,
+					   buffer->byte_order);
+	mhni->image_height =   get_gint16 (thumb->height,
+					   buffer->byte_order);
+	mhni->image_size =     get_gint32 (thumb->size,
+					   buffer->byte_order);
+	mhni->ithmb_offset =   get_gint32 (thumb->offset,
+					   buffer->byte_order);
 
 	/* Work out the image padding */
-	format = itdb_device_get_artwork_formats (db_get_device (db));
+	format = itdb_get_artwork_info_from_type (
+	    db_get_device(db), thumb->type);
         g_return_val_if_fail (format, 0);
-	while( format->type != thumb->type && format->type != -1 )
-		format++;
+
 	mhni->vertical_padding = get_gint16 (
-				(format->height - thumb->height)
-				, buffer->byte_order);
+	    format->height - thumb->height,
+	    buffer->byte_order);
 	mhni->horizontal_padding = get_gint16 (
-				(format->width - thumb->width)
-				, buffer->byte_order);
+	    format->width - thumb->width,
+	    buffer->byte_order);
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {
@@ -615,11 +621,13 @@ write_mhli (Itdb_DB *db, iPodBuffer *buffer )
 	total_bytes = get_gint32 (mhli->header_len, buffer->byte_order);
 	switch (buffer->db_type) {
 	case DB_TYPE_PHOTO:
-		it = db->db.photodb->photos;
+		it = db_get_photodb(db)->photos;
 		break;
 	case DB_TYPE_ITUNES:
-		it = db->db.itdb->tracks;
+		it = db_get_itunesdb(db)->tracks;
 		break;
+	default:
+	        g_return_val_if_reached (-1);
 	}
 	while (it != NULL) {
 		Itdb_Track *song;
@@ -738,7 +746,7 @@ write_mhla (Itdb_DB *db, iPodBuffer *buffer)
 	if (buffer->db_type == DB_TYPE_PHOTO) {
 	    unsigned int bytes_written;
 
-	    for (it = db->db.photodb->photoalbums; it != NULL; it = it->next) {
+	    for (it = db_get_photodb(db)->photoalbums; it != NULL; it = it->next) {
 		Itdb_PhotoAlbum *photo_album = (Itdb_PhotoAlbum *)it->data;
 
 		sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);

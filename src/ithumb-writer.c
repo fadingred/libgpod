@@ -94,6 +94,7 @@ pack_RGB_565 (GdkPixbuf *pixbuf, iThumbWriter *writer )
 
 	horizontal_padding = (writer->img_info->width - width)/2;
 	vertical_padding = (writer->img_info->height - height)/2;
+
 	for (h = 0; h < height; h++) {
 		for (w = 0; w < width; w++) {
 			gint r;
@@ -589,7 +590,7 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
        allows to adjust the offset pointers */
 	switch (db->db_type) {
 	case DB_TYPE_ITUNES:
-		for (gl=db->db.itdb->tracks; gl; gl=gl->next)
+		for (gl=db_get_itunesdb(db)->tracks; gl; gl=gl->next)
 		{
 			Itdb_Thumb *thumb;
 			Itdb_Track *track = gl->data;
@@ -599,8 +600,9 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 					info->type);
 			if (thumb && thumb->filename && (thumb->size != 0))
 			{
-				filename = itdb_thumb_get_filename (db->db.itdb->device,
-						thumb);
+				filename = itdb_thumb_get_filename (
+				        db_get_device(db),
+				        thumb);
 				if (filename)
 				{
 					thumbs = g_hash_table_lookup (filenamehash, filename);
@@ -609,8 +611,9 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 				}
 			}
 		}
+		break;
     case DB_TYPE_PHOTO:
-	for (gl=db->db.photodb->photos; gl; gl=gl->next)
+	for (gl=db_get_photodb(db)->photos; gl; gl=gl->next)
 	{
 		Itdb_Thumb *thumb;
 		Itdb_Artwork *artwork = gl->data;
@@ -619,8 +622,9 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 				info->type);
 		if (thumb && thumb->filename && (thumb->size != 0))
 		{
-			filename = itdb_thumb_get_filename (db->db.photodb->device,
-					thumb);
+			filename = itdb_thumb_get_filename (
+			        db_get_device (db),
+			        thumb);
 			if (filename)
 			{
 				thumbs = g_hash_table_lookup (filenamehash, filename);
@@ -629,6 +633,9 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 			}
 		}
 	}
+	break;
+    default:
+	g_return_val_if_reached (FALSE);
     }
 
     /* Check for files present on the iPod but no longer referenced by
@@ -714,7 +721,7 @@ itdb_write_ithumb_files (Itdb_DB *db)
 	}
 	switch (db->db_type) {
 	case DB_TYPE_ITUNES:
-		for (it = db->db.itdb->tracks; it != NULL; it = it->next) {
+		for (it = db_get_itunesdb(db)->tracks; it != NULL; it = it->next) {
 			Itdb_Track *track;
 
 			track = it->data;
@@ -724,7 +731,7 @@ itdb_write_ithumb_files (Itdb_DB *db)
 		}
 		break;
 	case DB_TYPE_PHOTO:
-		for (it = db->db.photodb->photos; it != NULL; it = it->next) {
+		for (it = db_get_photodb(db)->photos; it != NULL; it = it->next) {
 			Itdb_Artwork *photo;
 
 			photo = it->data;
@@ -733,6 +740,8 @@ itdb_write_ithumb_files (Itdb_DB *db)
 			g_list_foreach (writers, write_thumbnail, photo);
 		}
 		break;
+	default:
+	        g_return_val_if_reached (-1);
 	}
 	
 	g_list_foreach (writers, (GFunc)ithumb_writer_free, NULL);

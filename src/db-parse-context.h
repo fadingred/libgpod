@@ -28,6 +28,8 @@
 
 #include <sys/types.h>
 #include "itdb.h"
+#include "itdb_private.h"
+
 struct _DBParseContext {
 	const unsigned char *buffer;
 	const unsigned char *cur_pos;

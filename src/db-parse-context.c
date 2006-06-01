@@ -179,16 +179,7 @@ db_parse_context_new_from_file (const char *filename, Itdb_DB *db)
 	buffer = NULL;
 	ctx = NULL;
 
-	switch (db->db_type) {
-	case DB_TYPE_ITUNES:
-		device = db->db.itdb->device;
-		break;
-	case DB_TYPE_PHOTO:
-		device = db->db.photodb->device;
-		break;
-	default:
-	        g_return_val_if_reached (NULL);
-	}
+	device = db_get_device (db);
 	g_return_val_if_fail (device, NULL);
 
 	fd = open (filename, O_RDONLY);

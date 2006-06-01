@@ -3,6 +3,26 @@
 	* src/db-artwork-writer.c (write_mhni): fix segfault caused by
 	  wrong access of enum inside Itdb_DB
 
+	* src/itdb.h:
+	  src/itdb_private.h:
+	  moved Itdb_DB to private part.
+
+	* src/itdb.h:
+	  src/itdb_private.h:
+	  src/itdb_itunesdb:
+	  New: db_get_itunesdb(), db_get_photodb()
+
+	* src/db-artwork-parser.c
+	  src/db-artwork-writer.c
+	  src/db-image-parser.c
+	  src/db-image-parser.h
+	  src/db-parse-context.c
+	  src/db-parse-context.h
+	  src/itdb_endianness.h
+	  src/itdb_itunesdb.c
+	  src/ithumb-writer.c:
+	  Remove all direct access to Itdb_DB->db. enum
+
 2006-05-31  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* configure.ac:

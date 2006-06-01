@@ -102,14 +102,8 @@ ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_DB *db)
 	img->width  = get_gint16_db (db, mhni->image_width);
 	img->height = get_gint16_db (db, mhni->image_height);
 
-	switch (db->db_type) {
-	case DB_TYPE_ITUNES:
-		device = db->db.itdb->device;
-		break;
-	case DB_TYPE_PHOTO:
-		device = db->db.photodb->device;
-		break;
-	}
+	device = db_get_device (db);
+	g_return_val_if_fail (device, NULL);
 
 	corr_id = get_gint32_db (db, mhni->correlation_id);
 	img->type = image_type_from_corr_id (device, corr_id);
