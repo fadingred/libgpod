@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-05-30 21:59:40 jcs>
+/* Time-stamp: <2006-06-01 22:09:17 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -4821,13 +4821,11 @@ Itdb_Device *db_get_device(Itdb_DB *db)
 
     switch (db->db_type) {
     case DB_TYPE_ITUNES:
-		g_return_val_if_fail (db->db.itdb->device, NULL);
 		return db->db.itdb->device;
     case DB_TYPE_PHOTO:
-		g_return_val_if_fail (db->db.photodb->device, NULL);
 		return db->db.photodb->device;
     }
-	return NULL;
+    g_return_val_if_reached (NULL);
 }
 
 

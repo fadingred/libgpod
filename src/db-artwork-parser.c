@@ -335,7 +335,7 @@ parse_mhii (DBParseContext *ctx, GError *error)
 			g_free (mhod_ctx);
 			mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 		}
-    	ctx->db->db.photodb->photos = g_list_append (ctx->db->db.photodb->photos, artwork);
+		ctx->db->db.photodb->photos = g_list_append (ctx->db->db.photodb->photos, artwork);
 		break;
 	case DB_TYPE_ITUNES:
 #ifdef NOT_DEFINED_DEBUG_ARTWORKDB
@@ -387,7 +387,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 
 	dump_mhba (mhba);
 
-    photo_album = g_new0 (Itdb_PhotoAlbum, 1);
+	photo_album = g_new0 (Itdb_PhotoAlbum, 1);
 	photo_album->num_images = get_gint32( mhba->num_mhias, ctx->byte_order);
 	photo_album->album_id = get_gint32( mhba->playlist_id, ctx->byte_order);
 	photo_album->master = get_gint32( mhba->master, ctx->byte_order);
@@ -419,7 +419,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 		g_free (mhia_ctx);
 		mhia_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	}
-    ctx->db->db.photodb->photoalbums = g_list_append (ctx->db->db.photodb->photoalbums, photo_album);
+	ctx->db->db.photodb->photoalbums = g_list_append (ctx->db->db.photodb->photoalbums, photo_album);
 	return 0;
 }
 

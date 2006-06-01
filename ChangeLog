@@ -1,3 +1,8 @@
+2006-06-01  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-artwork-writer.c (write_mhni): fix segfault caused by
+	  wrong access of enum inside Itdb_DB
+
 2006-05-31  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* configure.ac:

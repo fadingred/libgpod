@@ -453,7 +453,8 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 	mhni->ithmb_offset 			= get_gint32 (thumb->offset, buffer->byte_order);
 
 	/* Work out the image padding */
-    format = itdb_device_get_artwork_formats (db->db.photodb->device);
+	format = itdb_device_get_artwork_formats (db_get_device (db));
+        g_return_val_if_fail (format, 0);
 	while( format->type != thumb->type && format->type != -1 )
 		format++;
 	mhni->vertical_padding = get_gint16 (
