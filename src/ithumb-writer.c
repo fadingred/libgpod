@@ -47,6 +47,7 @@ struct _iThumbWriter {
 	FILE *f;
         gchar *filename;
 	Itdb_ArtworkFormat *img_info;
+        DbType db_type;
         guint byte_order;
 	GHashTable *cache;
 };
@@ -58,7 +59,8 @@ typedef struct _iThumbWriter iThumbWriter;
  * square
  */
 static guint16 *
-pack_RGB_565 (GdkPixbuf *pixbuf, iThumbWriter *writer )
+pack_RGB_565 (GdkPixbuf *pixbuf, iThumbWriter *writer,
+	      gint horizontal_padding, gint vertical_padding)
 {
 	guchar *pixels;
 	guint16 *result;
@@ -68,8 +70,6 @@ pack_RGB_565 (GdkPixbuf *pixbuf, iThumbWriter *writer )
 	gint height;
 	gint w;
 	gint h;
-	gint horizontal_padding;
-	gint vertical_padding;
 	gint byte_order;
 
 	g_object_get (G_OBJECT (pixbuf), 
@@ -81,7 +81,7 @@ pack_RGB_565 (GdkPixbuf *pixbuf, iThumbWriter *writer )
 	 * hardcoded in libipoddevice code, so dst_width * dst_height * 2 can't
 	 * overflow, even on an iPod containing malicious data
 	 */
-	result = g_malloc0 ( writer->img_info->width * writer->img_info->height * 2);
+	result = g_malloc0 (writer->img_info->width * writer->img_info->height * 2);
 
 	/* Swap the byte order on full screen nano photos */
 	byte_order = writer->byte_order;
@@ -92,10 +92,8 @@ pack_RGB_565 (GdkPixbuf *pixbuf, iThumbWriter *writer )
 			byte_order = G_LITTLE_ENDIAN; 
 	}
 
-	horizontal_padding = (writer->img_info->width - width)/2;
-	vertical_padding = (writer->img_info->height - height)/2;
-
 	for (h = 0; h < height; h++) {
+	        gint line = (h+vertical_padding)*writer->img_info->width;
 		for (w = 0; w < width; w++) {
 			gint r;
 			gint g;
@@ -111,8 +109,8 @@ pack_RGB_565 (GdkPixbuf *pixbuf, iThumbWriter *writer )
 			r = (r << RED_SHIFT) & RED_MASK;
 			g = (g << GREEN_SHIFT) & GREEN_MASK;
 			b = (b << BLUE_SHIFT) & BLUE_MASK;
-			result[(h+vertical_padding)*writer->img_info->width + w + horizontal_padding]
-						=  get_gint16 (r | g | b, byte_order);
+			result[line + w + horizontal_padding] =
+			    get_gint16 (r | g | b, byte_order);
 		}
 	}
 	return result;
@@ -236,28 +234,51 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 		  "height", &height,
 		  NULL);
 
-    thumb->width = width;
-    thumb->height = height;
-    thumb->offset = writer->cur_offset;
-    thumb->size = writer->img_info->width * writer->img_info->height * 2;
-
     /* FIXME: under certain conditions (probably related to
      * writer->offset getting too big), this should be :F%04u_2.ithmb
      * and so on
      */
-	if( thumb->type == ITDB_THUMB_PHOTO_LARGE 
-			|| thumb->type == ITDB_THUMB_PHOTO_SMALL
-			|| thumb->type == ITDB_THUMB_PHOTO_FULL_SCREEN )
-	{
-		thumb->filename = g_strdup_printf (":Thumbs:F%04u_1.ithmb", 
-				writer->img_info->correlation_id);
+    if( thumb->type == ITDB_THUMB_PHOTO_LARGE ||
+	thumb->type == ITDB_THUMB_PHOTO_SMALL ||
+	thumb->type == ITDB_THUMB_PHOTO_FULL_SCREEN )
+    {
+	thumb->filename = g_strdup_printf (":Thumbs:F%04u_1.ithmb", 
+					   writer->img_info->correlation_id);
+	
+    } else {
+	thumb->filename = g_strdup_printf (":F%04u_1.ithmb", 
+					   writer->img_info->correlation_id);
+    }
 
-	} else {
-		thumb->filename = g_strdup_printf (":F%04u_1.ithmb", 
-				writer->img_info->correlation_id);
-	}
-	pixels = pack_RGB_565 (pixbuf, writer );
-	g_object_unref (G_OBJECT (pixbuf));
+    switch (writer->db_type)
+    {
+    case DB_TYPE_PHOTO:
+	thumb->horizontal_padding = (writer->img_info->width - width)/2;
+	thumb->vertical_padding = (writer->img_info->height - height)/2;
+	break;
+    case DB_TYPE_ITUNES:
+	/* IPOD_COVER_LARGE will be centered automatically using
+	   the info in mhni->width/height. Free space around
+	   IPOD_COVER_SMALL will be used to display track
+	   information -> no padding (tested on iPod
+	   Nano). mhni->hor_/ver_padding is working */
+	thumb->horizontal_padding = 0;
+	thumb->vertical_padding = 0;
+	break;
+    default:
+	g_return_val_if_reached (FALSE);
+    }
+
+    /* The thumbnail width/height is inclusive padding */
+    thumb->width = thumb->horizontal_padding + width;
+    thumb->height = thumb->vertical_padding + height;
+    thumb->offset = writer->cur_offset;
+    thumb->size = writer->img_info->width * writer->img_info->height * 2;
+
+    pixels = pack_RGB_565 (pixbuf, writer,
+			   thumb->horizontal_padding,
+			   thumb->vertical_padding);
+    g_object_unref (G_OBJECT (pixbuf));
 
     if (pixels == NULL)
     {
@@ -298,9 +319,9 @@ write_thumbnail (gpointer _writer, gpointer _artwork)
 
 static iThumbWriter *
 ithumb_writer_new (const char *mount_point,
-			const Itdb_ArtworkFormat *info,
-			DbType db_type,
-			guint byte_order)
+		   const Itdb_ArtworkFormat *info,
+		   DbType db_type,
+		   guint byte_order)
 {
 	char *filename;
 	iThumbWriter *writer;
@@ -313,6 +334,7 @@ ithumb_writer_new (const char *mount_point,
 					       g_free, NULL);
 
 	writer->byte_order = byte_order;
+	writer->db_type = db_type;
 
 	filename = ipod_image_get_ithmb_filename (mount_point, 
 						  info->correlation_id,
@@ -704,9 +726,9 @@ itdb_write_ithumb_files (Itdb_DB *db)
 		    ithmb_rearrange_existing_thumbnails (db,
 							     format );
 			writer = ithumb_writer_new (mount_point, 
-							format,
-							db->db_type, 
-							device->byte_order);
+						    format,
+						    db->db_type, 
+						    device->byte_order);
 			if (writer != NULL) {
 				writers = g_list_prepend (writers, writer);
 			}

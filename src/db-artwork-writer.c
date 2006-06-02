@@ -432,7 +432,6 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 	unsigned int total_bytes;
 	int bytes_written;
 	iPodBuffer *sub_buffer;
-	const Itdb_ArtworkFormat *format;
 
 	if (thumb == NULL) {
 		return -1;
@@ -458,17 +457,10 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 	mhni->ithmb_offset =   get_gint32 (thumb->offset,
 					   buffer->byte_order);
 
-	/* Work out the image padding */
-	format = itdb_get_artwork_info_from_type (
-	    db_get_device(db), thumb->type);
-        g_return_val_if_fail (format, 0);
-
-	mhni->vertical_padding = get_gint16 (
-	    format->height - thumb->height,
-	    buffer->byte_order);
-	mhni->horizontal_padding = get_gint16 (
-	    format->width - thumb->width,
-	    buffer->byte_order);
+	mhni->vertical_padding =
+	    get_gint16 (thumb->vertical_padding, buffer->byte_order);
+	mhni->horizontal_padding = 
+	    get_gint16 (thumb->horizontal_padding, buffer->byte_order);
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {

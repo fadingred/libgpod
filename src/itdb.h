@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-01 23:07:57 jcs>
+/* Time-stamp: <2006-06-03 02:25:03 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -110,6 +110,8 @@ struct _Itdb_Thumb {
     guint32 size;
     gint16 width;
     gint16 height;
+    gint16 horizontal_padding;
+    gint16 vertical_padding;
 };
 
 typedef enum { 

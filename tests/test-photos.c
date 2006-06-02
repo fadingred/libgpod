@@ -51,7 +51,6 @@ dump_thumbs (Itdb_PhotoDB *db, Itdb_Artwork *artwork,
 {
 	GList *it;
 	gint i = 0;
-puts (album_name);
 
 	for (it = artwork->thumbnails; it != NULL; it = it->next, i++) {
 		Itdb_Thumb *thumb;

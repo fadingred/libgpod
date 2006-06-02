@@ -101,6 +101,10 @@ ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_DB *db)
 	img->offset = get_guint32_db (db, mhni->ithmb_offset);
 	img->width  = get_gint16_db (db, mhni->image_width);
 	img->height = get_gint16_db (db, mhni->image_height);
+	img->horizontal_padding  =
+	    get_gint16_db (db, mhni->horizontal_padding);
+	img->vertical_padding =
+	    get_gint16_db (db, mhni->vertical_padding);
 
 	device = db_get_device (db);
 	g_return_val_if_fail (device, NULL);

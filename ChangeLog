@@ -1,7 +1,21 @@
 2006-06-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
-	* tests/test-photos.c: added possibility to dump all photos into a
-	  directory:
+        * src/db-artwork-writer.c
+	  src/db-image-parser.c
+	  src/itdb.h
+	  src/ithumb-writer.c: Hopefully do padding right:
+
+	   - read padding fields from mhni header and store them with
+	     each thumbnail 
+	   - calculate padding for PhotoDB only (padding for iTunesDB
+	     Artwork does not seem to be necessary)
+	   - include the padding into the total width/height
+
+	   It seems to work well on my iPod Nano -- feedback appreciated.
+
+	* tests/test-photos.c: added possibility to dump all photos into
+	  a directory:
+
 	  tests/test-photos dump <mountpoint> <output_dir>
 
 	* src/itdb_artwork.c: changed byte order for full screen iPod
