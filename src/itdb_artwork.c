@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-05-26 20:49:27 jcs>
+/* Time-stamp: <2006-06-03 01:57:04 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -379,20 +379,31 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 {
 	void *pixels565;
 	guchar *pixels;
+	guint byte_order;
+	const Itdb_ArtworkFormat *img_info;
 
 	g_return_val_if_fail (device, NULL);
 	g_return_val_if_fail (thumb, NULL);
-
-	/* no rgb pixel data available (FIXME: calculate from real
-	 * image file) */
-	if (thumb->size == 0)  return NULL;
-
+	g_return_val_if_fail (thumb->size != 0, NULL);
+	img_info = itdb_get_artwork_info_from_type (device, thumb->type);
+	g_return_val_if_fail (img_info, NULL);
+	
 	pixels565 = get_pixel_data (device, thumb);
 	if (pixels565 == NULL) {
 		return NULL;
 	}
-	
-	pixels = unpack_RGB_565 (pixels565, thumb->size, device->byte_order);
+
+	byte_order = device->byte_order; 
+	/* Swap the byte order on full screen nano photos */
+	if (img_info->correlation_id == 1023)
+	{
+	    if (byte_order == G_LITTLE_ENDIAN)
+		byte_order = G_BIG_ENDIAN;
+	    else
+		byte_order = G_LITTLE_ENDIAN; 
+	}
+
+	pixels = unpack_RGB_565 (pixels565, thumb->size, byte_order);
 	g_free (pixels565);
 
 	return pixels;
