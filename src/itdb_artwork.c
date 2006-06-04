@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-03 01:57:04 jcs>
+/* Time-stamp: <2006-06-04 17:30:39 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -39,6 +39,7 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #endif
 #include <glib/gi18n-lib.h>
+#include <stdlib.h>
 
 /**
  * itdb_artwork_new:
@@ -503,6 +504,15 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
     else
     {
 	/* pixbuf is already on the iPod -> read from there */
+	GdkPixbuf *pixbuf_full;
+	GdkPixbuf *pixbuf_sub;
+	gint pad_x = thumb->horizontal_padding;
+	gint pad_y = thumb->vertical_padding;
+	gint width = thumb->width;
+	gint height = thumb->height;
+
+/*	printf ("hp%d vp%d w%d h%d\n",
+	       pad_x, pad_y, width, height);*/
 
 	if (img_info == NULL)
 	{
@@ -517,17 +527,46 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 	    return NULL;
 	}
 
-	pixbuf = gdk_pixbuf_new_from_data (pixels,
-					   GDK_COLORSPACE_RGB,
-					   FALSE,
-					   8, thumb->width,
-					   thumb->height,
-					   img_info->width*3,
-					   (GdkPixbufDestroyNotify)g_free,
-					   NULL);
-
+	pixbuf_full =
+	    gdk_pixbuf_new_from_data (pixels,
+				      GDK_COLORSPACE_RGB,
+				      FALSE, 8,
+				      img_info->width, img_info->height,
+				      img_info->width*3,
+				      (GdkPixbufDestroyNotify)g_free,
+				      NULL);
 	/* !! do not g_free(pixels) here: it will be freed when doing a
 	 * gdk_pixbuf_unref() on the GdkPixbuf !! */
+
+	/* Remove padding from the pixmap and/or cut the pixmap to the
+	   right size. */
+
+	/* Negative offsets indicate that part of the image was cut
+	   off at the left/top. thumb->width/height include that part
+	   of the image. Positive offsets indicate that part of the
+	   thumbnail are padded in black. thumb->width/height also
+	   include that part of the image -> reduce width and height
+	   by the absolute value of the padding */
+	width = width - abs (pad_x);
+	height = height - abs (pad_y);
+	/* And throw out "negative" padding */
+	if (pad_x < 0)		pad_x = 0;
+	if (pad_y < 0)		pad_y = 0;
+	/* Width/height might still be larger than
+	   img_info->width/height, indicating that part of the image
+	   was cut off at the right/bottom (similar to negative
+	   padding above). Adjust width/height accordingly. */
+	if (pad_x + width > img_info->width)
+	    width = img_info->width - pad_x;
+	if (pad_y + height > img_info->height)
+	    height = img_info->height - pad_y;
+
+	pixbuf_sub = gdk_pixbuf_new_subpixbuf (pixbuf_full,
+					       pad_x, pad_y,
+					       width, height);
+	pixbuf = gdk_pixbuf_copy (pixbuf_sub);
+	gdk_pixbuf_unref (pixbuf_full);
+	gdk_pixbuf_unref (pixbuf_sub);
     }
 
     return pixbuf;

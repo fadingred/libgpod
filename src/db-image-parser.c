@@ -62,7 +62,8 @@ image_type_from_corr_id (Itdb_Device *device, gint16 corr_id)
 
 
 G_GNUC_INTERNAL const Itdb_ArtworkFormat *
-itdb_get_artwork_info_from_type (Itdb_Device *device, int image_type)
+itdb_get_artwork_info_from_type (Itdb_Device *device,
+				 ItdbThumbType image_type)
 {
 	const Itdb_ArtworkFormat *formats;
 	
@@ -112,18 +113,13 @@ ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_DB *db)
 	corr_id = get_gint32_db (db, mhni->correlation_id);
 	img->type = image_type_from_corr_id (device, corr_id);
 
-	if (   img->type != IPOD_COVER_SMALL
-		&& img->type != IPOD_COVER_LARGE
-		&& img->type != IPOD_PHOTO_SMALL
-		&& img->type != IPOD_PHOTO_LARGE
-		&& img->type != IPOD_PHOTO_FULL_SCREEN
-		&& img->type != IPOD_PHOTO_TV_SCREEN)
+	if (img->type == -1)
 	{
-		g_warning ("Unexpected cover type in mhni: type %d, size: %ux%u (%d), offset: %d\n", 
-			   img->type, img->width, img->height, 
-			   corr_id, img->offset);
-		g_free (img);
-		return NULL;
+	    g_warning (_("Unexpected image type in mhni: size: %ux%u (%d), offset: %d\n"), 
+		       img->width, img->height, 
+		       corr_id, img->offset);
+	    g_free (img);
+	    return NULL;
 	}
 
 	return img;

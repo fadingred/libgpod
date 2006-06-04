@@ -273,8 +273,8 @@ gboolean itdb_photodb_add_photo (Itdb_PhotoDB *db,
 	/* Add a thumbnail for every supported format */
 	format = itdb_device_get_artwork_formats(db->device);
 	for( result = TRUE; format->type != -1 && result == TRUE; format++) {
-		if( format->type == IPOD_COVER_SMALL
-				|| format->type == IPOD_COVER_LARGE )
+	    if((format->type == ITDB_THUMB_COVER_SMALL) ||
+	       (format->type == ITDB_THUMB_COVER_LARGE))
 			continue;
 		result = itdb_artwork_add_thumbnail (artwork,
 				format->type,

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-04-04 00:08:14 jcs>
+/* Time-stamp: <2006-06-04 18:08:42 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -35,16 +35,16 @@
 
 static gboolean is_video_ipod (Itdb_Device *device) 
 {
-    const Itdb_IpodModel *model;
+    const Itdb_IpodInfo *info;
 
     g_return_val_if_fail (device, FALSE);
 
-    model = itdb_device_get_ipod_model (device);
+    info = itdb_device_get_ipod_info (device);
 
-    if (!model) return FALSE;
+    if (!info) return FALSE;
 
-    if ((model->model_type == MODEL_TYPE_VIDEO_WHITE) ||
-	(model->model_type == MODEL_TYPE_VIDEO_BLACK))
+    if ((info->ipod_model == ITDB_IPOD_MODEL_VIDEO_WHITE) ||
+	(info->ipod_model == ITDB_IPOD_MODEL_VIDEO_BLACK))
 	return TRUE;
     else
 	return FALSE;

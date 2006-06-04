@@ -20,6 +20,7 @@
  * 
  *  This product is not supported/written/published by Apple!
  *
+ *  $Id$
  */
 
 #ifndef IMAGE_PARSER_H
@@ -47,7 +48,8 @@ G_GNUC_INTERNAL Itdb_Thumb *ipod_image_new_from_mhni (MhniHeader *mhni,
 
 G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_DB *db);
 
-G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_get_artwork_info_from_type (
-    Itdb_Device *ipod, int image_type);
+G_GNUC_INTERNAL
+const Itdb_ArtworkFormat *itdb_get_artwork_info_from_type (
+    Itdb_Device *ipod, ItdbThumbType image_type);
 
 #endif

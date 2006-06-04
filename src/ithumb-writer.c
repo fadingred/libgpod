@@ -718,11 +718,11 @@ itdb_write_ithumb_files (Itdb_DB *db)
 		iThumbWriter *writer;
 
 		switch (format->type) {
-		case IPOD_COVER_SMALL:
-		case IPOD_COVER_LARGE:
-		case IPOD_PHOTO_SMALL:
-		case IPOD_PHOTO_LARGE:
-		case IPOD_PHOTO_FULL_SCREEN:
+		case ITDB_THUMB_COVER_SMALL:
+		case ITDB_THUMB_COVER_LARGE:
+		case ITDB_THUMB_PHOTO_SMALL:
+		case ITDB_THUMB_PHOTO_LARGE:
+		case ITDB_THUMB_PHOTO_FULL_SCREEN:
 		    ithmb_rearrange_existing_thumbnails (db,
 							     format );
 			writer = ithumb_writer_new (mount_point, 

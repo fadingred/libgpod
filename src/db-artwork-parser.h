@@ -20,6 +20,7 @@
  * 
  *  This product is not supported/written/published by Apple!
  *
+ *  $Id$
  */
 
 
@@ -36,4 +37,6 @@ G_GNUC_INTERNAL char *ipod_db_get_artwork_db_path (const char *mount_point);
 G_GNUC_INTERNAL char *ipod_db_get_photos_db_path (const char *mount_point);
 G_GNUC_INTERNAL int ipod_parse_photo_db (Itdb_PhotoDB *photodb); 
 G_GNUC_INTERNAL int ipod_write_photo_db (Itdb_PhotoDB *db);
+G_GNUC_INTERNAL gboolean ipod_supports_cover_art (Itdb_Device *device);
+G_GNUC_INTERNAL gboolean ipod_supports_photos (Itdb_Device *device);
 #endif

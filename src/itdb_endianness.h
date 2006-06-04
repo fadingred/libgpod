@@ -14,13 +14,16 @@
  *  
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this code; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307 USA
  * 
  *  iTunes and iPod are trademarks of Apple
  * 
  *  This product is not supported/written/published by Apple!
  *
+ *  $Id$
  */
+
 #ifndef __ITDB_ENDIANNESS_H__
 #define __ITDB_ENDIANNESS_H__
 
@@ -66,4 +69,24 @@ DB_TO_CPU_GET_DB(guint32, GUINT32)
 DB_TO_CPU_GET_DB(gint32, GINT32)
 DB_TO_CPU_GET_DB(gint16, GINT16)
 DB_TO_CPU_GET_DB(gint64, GINT64)
+
+/* OK, for 'normal' people an effective summary of what this file is
+ * doing:
+ *
+ * The following inline functions are defined:
+ *
+ * guint32 get_guint32 (guint32 val, guint byte_order);
+ * guint32 get_gint32 (gint32 val, guint byte_order);
+ * guint32 get_gint16 (gint16 val, guint byte_order);
+ * guint32 get_gint64 (gint64 val, guint byte_order);
+ * guint32 get_guint32_db (guint32 val, guint byte_order);
+ * guint32 get_gint32_db (gint32 val, guint byte_order);
+ * guint32 get_gint16_db (gint16 val, guint byte_order);
+ * guint32 get_gint64_db (gint64 val, guint byte_order);
+ *
+
+ * They are used to retrieve integer data from or store integer data
+ * to the iPod's databases which may use a different byte order
+ * (@byte_order) than the host system on which this library runs on.
+ */
 #endif

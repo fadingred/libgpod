@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-01 23:31:27 jcs>
+/* Time-stamp: <2006-06-05 01:22:23 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -24,7 +24,8 @@
 |
 |  You should have received a copy of the GNU Lesser General Public
 |  License along with this code; if not, write to the Free Software
-|  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+|  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+|  USA
 |
 |  iTunes and iPod are trademarks of Apple
 |
@@ -5657,7 +5658,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     gchar *pbuf;
     gint i, dirnum;
     FILE *sysinfo = NULL;
-    Itdb_IpodModel const *model = NULL;
+    Itdb_IpodInfo const *info = NULL;
     gboolean calconnotes, devicefile;
     gchar *podpath;
 
@@ -5667,22 +5668,22 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     g_return_val_if_fail (mp, FALSE);
 
     /* Retrieve the model from the device information */
-    model = itdb_device_get_ipod_model(device);
+    info = itdb_device_get_ipod_info(device);
 
     /* Set up special treatment for shuffle and mobile */
-    switch(model->model_type)
+    switch(info->ipod_model)
     {
-    case MODEL_TYPE_SHUFFLE:
+    case ITDB_IPOD_MODEL_SHUFFLE:
 	podpath = g_strdup ("iPod_Control");
 	calconnotes = FALSE;
 	devicefile = TRUE;
 	break;
-    case MODEL_TYPE_MOBILE_1:
+    case ITDB_IPOD_MODEL_MOBILE_1:
 	podpath = g_build_filename ("iTunes", "iTunes_Control", NULL);
 	calconnotes = FALSE;
 	devicefile = TRUE;
 	break;
-    case MODEL_TYPE_UNKNOWN:
+    case ITDB_IPOD_MODEL_UNKNOWN:
 	podpath = g_strdup ("iPod_Control");
 	calconnotes = TRUE;
 	devicefile = TRUE;
@@ -5730,8 +5731,8 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     /* Build Artwork directory only for devices requiring artwork
      * (assume that 'unknown models' are new and will support
      * artwork) */
-    if (itdb_device_get_artwork_formats(device) ||
-	(model->model_type == MODEL_TYPE_UNKNOWN))
+    if (ipod_supports_cover_art(device) ||
+	(info->ipod_model == ITDB_IPOD_MODEL_UNKNOWN))
     {
 	pbuf = g_build_filename (mp, podpath, "Artwork", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
@@ -5743,8 +5744,24 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	g_free (pbuf);
     }
 
+    /* Build Photo directory only for devices requiring it */
+    if (ipod_supports_photos(device) ||
+	(info->ipod_model == ITDB_IPOD_MODEL_UNKNOWN))
+    {
+	pbuf = g_build_filename (mp, "Photos", "Thumbs", NULL);
+	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+	{
+	    if (mkdir_with_parents(pbuf, 0777) != 0)
+	    {
+		goto error_dir;
+	    }
+	}
+	g_free (pbuf);
+    }
+    
+
     /* Build the directories that hold the music files */
-    dirnum = model->musicdirs;
+    dirnum = info->musicdirs;
     if (dirnum == 0)
     {   /* do a guess */
 	struct statvfs stat;
@@ -5831,7 +5848,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	    if(sysinfo != NULL)
 	    {
 		fprintf(sysinfo, "ModelNumStr:%s", 
-			model->model_number);
+			info->model_number);
 		fclose(sysinfo);
 	    }
 	    else

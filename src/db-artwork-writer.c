@@ -1105,7 +1105,7 @@ ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 }
 
 int
-ipod_write_photo_db (Itdb_PhotoDB *db)
+ipod_write_photo_db (Itdb_PhotoDB *photodb)
 {
     return -1;
 }

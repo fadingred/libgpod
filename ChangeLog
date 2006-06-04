@@ -1,4 +1,67 @@
+2006-06-05  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * src/db-artwork-parser.h
+	  src/db-artwork-parserc (ipod_supports_cover_art): made
+	  available G_GNUC_INTERNAL.
+	  Added ipod_supports_photos().
+
+	* src/itdb_itunesdb.c (itdb_create_directories):
+	  Create Photos directory.
+
+
+2006-06-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-image-parser.c
+	  src/itdb_artwork.c
+	  src/itdb_device.c
+	  src/itdb_photoalbum.c
+	  src/itdb_track.c
+	  src/ithumb-writer.c: Phased out private
+	  IPOD_COVER_SMALL... enum in favor of identical public enum
+	  "ItdbThumbType" ITDB_THUMB_COVER_SMALL...
+
+	* src/db-image-parser.c (ipod_image_new_from_mhni):
+	  Accept all thumbnail types we know about (i.e. type != -1).
+
+	* src/db-artwork-debug.h
+	  src/db-artwork-parser.h
+	  src/db-image-parser.h
+	  src/db-parse-context.h
+	  src/glib-compat.h
+	  src/itdb_endianness.h: Added CVS "$Id:" line, added copyright
+	  notices where missing, added explanations to itdb_endianess.h
+	  ;-)
+
+	* src/itdb_itunesdb.c
+	  src/itdb_track.c
+	  src/itdb_device.c
+	  src/itdb_device.h
+	  Made naming consistent and suitable for export:
+	    Itdb_IpodModel -> Itdb_IpodInfo
+	    ipod_model_table -> ipod_info_table
+	    itdb_device_get_model_info() -> itdb_device_get_ipod_info()
+	    MODEL_TYPE_... -> ITDB_IPOD_MODEL_...
+	    nth_GENERATION -> ITDB_IPOD_GENERATION_nth
+
+	  Exported Itdb_IpodModel, Itdb_IpodGeneration, Itdb_IpodInfo,
+	  itdb_device_get_ipod_info().
+
+	* src/itdb_device.c: new API:
+	  itdb_info_get_ipod_info_table(),
+	  itdb_info_get_ipod_model_name()
+
+	* src/itdb.h
+	  src/itdb_artwork.c:
+	  Removed unused field ->type in Itdb_Artwork and corresponding
+	  enum ItdbArtworkType.
+
 2006-06-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_artwork.c (itdb_thumb_get_gdk_pixbuf): handle thumbnail
+	  padding correctly -- who would have thought that iTunes
+	  indicates _negative_ padding at times... Please use the
+	  test-photos program to check out whether or not your photos show
+	  up correctly without black bars or funny colors.
 
         * src/db-artwork-writer.c
 	  src/db-image-parser.c

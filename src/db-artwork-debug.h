@@ -20,6 +20,7 @@
  * 
  *  This product is not supported/written/published by Apple!
  *
+ *  $Id$
  */
 #ifndef DB_ARTWORK_DEBUG_H
 #define DB_ARTWORK_DEBUG_H

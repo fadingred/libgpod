@@ -71,16 +71,28 @@ Data structure holding information about the iPod (model, mount point, ...)
 @Returns: 
 
 
-<!-- ##### STRUCT Itdb_IpodModel ##### -->
+<!-- ##### ENUM Itdb_IpodModel ##### -->
 <para>
 
 </para>
 
-@model_number: 
-@capacity: 
-@model_type: 
-@generation: 
-@musicdirs: 
+@ITDB_IPOD_MODEL_INVALID: 
+@ITDB_IPOD_MODEL_UNKNOWN: 
+@ITDB_IPOD_MODEL_COLOR: 
+@ITDB_IPOD_MODEL_COLOR_U2: 
+@ITDB_IPOD_MODEL_REGULAR: 
+@ITDB_IPOD_MODEL_REGULAR_U2: 
+@ITDB_IPOD_MODEL_MINI: 
+@ITDB_IPOD_MODEL_MINI_BLUE: 
+@ITDB_IPOD_MODEL_MINI_PINK: 
+@ITDB_IPOD_MODEL_MINI_GREEN: 
+@ITDB_IPOD_MODEL_MINI_GOLD: 
+@ITDB_IPOD_MODEL_SHUFFLE: 
+@ITDB_IPOD_MODEL_NANO_WHITE: 
+@ITDB_IPOD_MODEL_NANO_BLACK: 
+@ITDB_IPOD_MODEL_VIDEO_WHITE: 
+@ITDB_IPOD_MODEL_VIDEO_BLACK: 
+@ITDB_IPOD_MODEL_MOBILE_1: 
 
 <!-- ##### STRUCT Itdb_ArtworkFormat ##### -->
 <para>
@@ -91,40 +103,4 @@ Data structure holding information about the iPod (model, mount point, ...)
 @width: 
 @height: 
 @correlation_id: 
-
-<!-- ##### ENUM Itdb_Generation ##### -->
-<para>
-
-</para>
-
-@UNKNOWN_GENERATION: 
-@FIRST_GENERATION: 
-@SECOND_GENERATION: 
-@THIRD_GENERATION: 
-@FOURTH_GENERATION: 
-@FIFTH_GENERATION: 
-@MOBILE_GENERATION: 
-
-<!-- ##### ENUM Itdb_ModelType ##### -->
-<para>
-
-</para>
-
-@MODEL_TYPE_INVALID: 
-@MODEL_TYPE_UNKNOWN: 
-@MODEL_TYPE_COLOR: 
-@MODEL_TYPE_COLOR_U2: 
-@MODEL_TYPE_REGULAR: 
-@MODEL_TYPE_REGULAR_U2: 
-@MODEL_TYPE_MINI: 
-@MODEL_TYPE_MINI_BLUE: 
-@MODEL_TYPE_MINI_PINK: 
-@MODEL_TYPE_MINI_GREEN: 
-@MODEL_TYPE_MINI_GOLD: 
-@MODEL_TYPE_SHUFFLE: 
-@MODEL_TYPE_NANO_WHITE: 
-@MODEL_TYPE_NANO_BLACK: 
-@MODEL_TYPE_VIDEO_WHITE: 
-@MODEL_TYPE_VIDEO_BLACK: 
-@MODEL_TYPE_MOBILE_1: 
 

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-05-30 21:53:34 jcs>
+/* Time-stamp: <2006-06-04 18:44:50 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -46,7 +46,6 @@
 
 G_BEGIN_DECLS
 
-typedef struct _Itdb_IpodModel Itdb_IpodModel;
 typedef struct _Itdb_ArtworkFormat Itdb_ArtworkFormat;
 
 struct _Itdb_Device
@@ -63,66 +62,13 @@ struct _Itdb_Device
 
 struct _Itdb_ArtworkFormat
 {
-	gint  type;
+	ItdbThumbType type;
 	gint16 width;
 	gint16 height;
 	gint16 correlation_id;
 };
 
-struct _Itdb_IpodModel {
-	const gchar *model_number;
-	const guint64 capacity;
-	guint model_type;
-	guint generation;
-        /* number of music (Fnn) dirs created by iTunes. The exact
-	   number seems to be version dependent. Therefore, the
-	   numbers here represent a mixture of reported values and
-	   common sense. */
-        guint musicdirs;
-};
-
-typedef enum {
-	UNKNOWN_GENERATION,
-	FIRST_GENERATION,
-	SECOND_GENERATION,
-	THIRD_GENERATION,
-	FOURTH_GENERATION,
-	FIFTH_GENERATION,
-	MOBILE_GENERATION
-} Itdb_Generation;
-
-typedef enum {
-	MODEL_TYPE_INVALID,
-	MODEL_TYPE_UNKNOWN,
-	MODEL_TYPE_COLOR,
-	MODEL_TYPE_COLOR_U2,
-	MODEL_TYPE_REGULAR,
-	MODEL_TYPE_REGULAR_U2,
-	MODEL_TYPE_MINI,
-	MODEL_TYPE_MINI_BLUE,
-	MODEL_TYPE_MINI_PINK,
-	MODEL_TYPE_MINI_GREEN,
-	MODEL_TYPE_MINI_GOLD,
-	MODEL_TYPE_SHUFFLE,
-	MODEL_TYPE_NANO_WHITE,
-	MODEL_TYPE_NANO_BLACK,
-	MODEL_TYPE_VIDEO_WHITE,
-	MODEL_TYPE_VIDEO_BLACK,
-	MODEL_TYPE_MOBILE_1
-} Itdb_ModelType;
-
-
-enum { 
-	IPOD_COVER_SMALL,
-	IPOD_COVER_LARGE,
-	IPOD_PHOTO_SMALL,
-	IPOD_PHOTO_LARGE,
-	IPOD_PHOTO_FULL_SCREEN,
-	IPOD_PHOTO_TV_SCREEN
-};
-
 G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_device_get_artwork_formats (Itdb_Device *device);
-G_GNUC_INTERNAL const Itdb_IpodModel *itdb_device_get_ipod_model (Itdb_Device *device);
 G_GNUC_INTERNAL gint itdb_device_musicdirs_number (Itdb_Device *device);
 G_GNUC_INTERNAL void itdb_device_autodetect_endianess (Itdb_Device *device);
 G_END_DECLS

@@ -323,7 +323,6 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	switch (ctx->db->db_type) {
 	case DB_TYPE_PHOTO:
 		artwork = g_new0( Itdb_Artwork, 1 );
-		artwork->type = ITDB_PHOTO;
 		artwork->artwork_size = get_gint32 (mhii->orig_img_size, ctx->byte_order);
 		artwork->id = get_gint32 (mhii->image_id, ctx->byte_order);
 		artwork->creation_date = itdb_time_mac_to_host( get_gint32 (mhii->digitised_date, ctx->byte_order) );
@@ -614,7 +613,7 @@ ipod_db_get_artwork_db_path (const char *mount_point)
 	return filename;
 }
 
-static gboolean
+G_GNUC_INTERNAL gboolean
 ipod_supports_cover_art (Itdb_Device *device)
 {
 	const Itdb_ArtworkFormat *formats;
@@ -628,16 +627,58 @@ ipod_supports_cover_art (Itdb_Device *device)
 		return FALSE;
 	}
 	
-	while (formats->type != -1) {
-		if ((formats->type == IPOD_COVER_SMALL) 
-		    || (formats->type == IPOD_COVER_LARGE)) {
-			return TRUE;
-		}
-		formats++;
+	while (formats->type != -1)
+	{
+	    switch (formats->type)
+	    {
+	    case ITDB_THUMB_COVER_SMALL:
+	    case ITDB_THUMB_COVER_LARGE:
+		return TRUE;
+	    case ITDB_THUMB_PHOTO_SMALL:
+	    case ITDB_THUMB_PHOTO_LARGE:
+	    case ITDB_THUMB_PHOTO_FULL_SCREEN:
+	    case ITDB_THUMB_PHOTO_TV_SCREEN:
+		break;
+	    }
+	    formats++;
 	}
 
 	return FALSE;
 }
+
+G_GNUC_INTERNAL gboolean
+ipod_supports_photos (Itdb_Device *device)
+{
+	const Itdb_ArtworkFormat *formats;
+
+	if (device == NULL) {
+		return FALSE;
+	}
+
+	formats = itdb_device_get_artwork_formats (device);
+	if (formats == NULL) {
+		return FALSE;
+	}
+	
+	while (formats->type != -1)
+	{
+	    switch (formats->type)
+	    {
+	    case ITDB_THUMB_COVER_SMALL:
+	    case ITDB_THUMB_COVER_LARGE:
+		break;
+	    case ITDB_THUMB_PHOTO_SMALL:
+	    case ITDB_THUMB_PHOTO_LARGE:
+	    case ITDB_THUMB_PHOTO_FULL_SCREEN:
+	    case ITDB_THUMB_PHOTO_TV_SCREEN:
+		return TRUE;
+	    }
+	    formats++;
+	}
+
+	return FALSE;
+}
+
 
 int
 ipod_parse_artwork_db (Itdb_iTunesDB *itdb)

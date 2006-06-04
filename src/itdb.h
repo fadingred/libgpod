@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-03 02:25:03 jcs>
+/* Time-stamp: <2006-06-04 19:21:02 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -65,6 +65,7 @@ typedef struct _Itdb_PhotoDB Itdb_PhotoDB;
 typedef struct _Itdb_Playlist Itdb_Playlist;
 typedef struct _Itdb_PhotoAlbum Itdb_PhotoAlbum;
 typedef struct _Itdb_Track Itdb_Track;
+typedef struct _Itdb_IpodInfo Itdb_IpodInfo;
 
 
 /* ------------------------------------------------------------ *\
@@ -114,15 +115,9 @@ struct _Itdb_Thumb {
     gint16 vertical_padding;
 };
 
-typedef enum { 
-    ITDB_COVERART,
-    ITDB_PHOTO
-} ItdbArtworkType;
-
 struct _Itdb_Artwork {
     GList *thumbnails;    /* list of Itdb_Thumbs */
     guint32 artwork_size; /* Size in bytes of the original source image */
-    ItdbArtworkType type; /* Cover art or photo */
     guint32 id;           /* Artwork id used by photoalbums, starts at
 			   * 0x40... libgpod will set this on sync. */
     gint32 creation_date; /* Date the image was created */
@@ -133,6 +128,60 @@ struct _Itdb_Artwork {
     ItdbUserDataDuplicateFunc userdata_duplicate;
     /* function called to free userdata */
     ItdbUserDataDestroyFunc userdata_destroy;
+};
+
+
+/* ------------------------------------------------------------ *\
+ *
+ * iPod model-relevant definitions
+ *
+\* ------------------------------------------------------------ */
+
+typedef enum {
+    ITDB_IPOD_GENERATION_UNKNOWN,
+    ITDB_IPOD_GENERATION_FIRST,
+    ITDB_IPOD_GENERATION_SECOND,
+    ITDB_IPOD_GENERATION_THIRD,
+    ITDB_IPOD_GENERATION_FOURTH,
+    ITDB_IPOD_GENERATION_FIFTH,
+    ITDB_IPOD_GENERATION_MOBILE
+} Itdb_IpodGeneration;
+
+typedef enum {
+    ITDB_IPOD_MODEL_INVALID,
+    ITDB_IPOD_MODEL_UNKNOWN,
+    ITDB_IPOD_MODEL_COLOR,
+    ITDB_IPOD_MODEL_COLOR_U2,
+    ITDB_IPOD_MODEL_REGULAR,
+    ITDB_IPOD_MODEL_REGULAR_U2,
+    ITDB_IPOD_MODEL_MINI,
+    ITDB_IPOD_MODEL_MINI_BLUE,
+    ITDB_IPOD_MODEL_MINI_PINK,
+    ITDB_IPOD_MODEL_MINI_GREEN,
+    ITDB_IPOD_MODEL_MINI_GOLD,
+    ITDB_IPOD_MODEL_SHUFFLE,
+    ITDB_IPOD_MODEL_NANO_WHITE,
+    ITDB_IPOD_MODEL_NANO_BLACK,
+    ITDB_IPOD_MODEL_VIDEO_WHITE,
+    ITDB_IPOD_MODEL_VIDEO_BLACK,
+    ITDB_IPOD_MODEL_MOBILE_1
+} Itdb_IpodModel;
+
+struct _Itdb_IpodInfo {
+       /* model_number is abbreviated: if the first character is not
+	  numeric, it is ommited. e.g. "MA350 -> A350", "M9829 -> 9829" */
+	const gchar *model_number;
+        const double capacity;  /* in GB */
+	const Itdb_IpodModel ipod_model;
+	const Itdb_IpodGeneration ipod_generation;
+        /* Number of music (Fnn) dirs created by iTunes. The exact
+	   number seems to be version dependent. Therefore, the
+	   numbers here represent a mixture of reported values and
+	   common sense. Note: this number does not necessarily
+	   represent the number of dirs present on a particular
+	   iPod. It is used when setting up a new iPod from
+	   scratch. */
+        const guint musicdirs;
 };
 
 
@@ -814,6 +863,10 @@ void itdb_device_free (Itdb_Device *device);
 void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp);
 gboolean itdb_device_read_sysinfo (Itdb_Device *device);
 gchar *itdb_device_get_sysinfo (Itdb_Device *device, const gchar *field);
+const Itdb_IpodInfo *itdb_device_get_ipod_info (Itdb_Device *device);
+const Itdb_IpodInfo *itdb_info_get_ipod_info_table (void);
+const gchar *itdb_info_get_ipod_model_name (Itdb_IpodModel model);
+const gchar *itdb_info_get_ipod_generation_name (Itdb_IpodGeneration generation);
 
 /* track functions */
 Itdb_Track *itdb_track_new (void);
