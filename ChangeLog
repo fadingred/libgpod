@@ -8,6 +8,12 @@
 	* src/itdb_itunesdb.c (itdb_create_directories):
 	  Create Photos directory.
 
+	* src/itdb.h
+	  src/itdb_device.c
+	  Rename itdb_info_get_ipod_model_name() ->
+	         itdb_info_get_ipod_model_name_string()
+		 itdb_info_get_ipod_generation_name() ->
+		 itdb_info_get_ipod_generation_string()
 
 2006-06-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

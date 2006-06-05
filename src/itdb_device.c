@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-04 19:22:40 jcs>
+/* Time-stamp: <2006-06-06 00:13:09 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -598,14 +598,14 @@ const Itdb_IpodInfo *itdb_info_get_ipod_info_table (void)
 
 
 /**
- * itdb_info_get_ipod_model_name:
+ * itdb_info_get_ipod_model_string:
  *
  * Return the iPod's generic model name, like "Color", "Nano"...
  *
  * Return value: a pointer to the model name. This is a static string
  * and must not be g_free()d.
  **/
-const gchar *itdb_info_get_ipod_model_name (Itdb_IpodModel model)
+const gchar *itdb_info_get_ipod_model_name_string (Itdb_IpodModel model)
 {
     gint i=0;
 
@@ -621,7 +621,7 @@ const gchar *itdb_info_get_ipod_model_name (Itdb_IpodModel model)
 
 
 /**
- * itdb_info_get_ipod_generation_name:
+ * itdb_info_get_ipod_generation_string:
  *
  * Return the iPod's generic generation name, like "First Generation",
  * "Mobile Phone"...
@@ -629,7 +629,7 @@ const gchar *itdb_info_get_ipod_model_name (Itdb_IpodModel model)
  * Return value: a pointer to the generation name. This is a static
  * string and must not be g_free()d.
  **/
-const gchar *itdb_info_get_ipod_generation_name (Itdb_IpodGeneration generation)
+const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generation)
 {
     gint i=0;
 
