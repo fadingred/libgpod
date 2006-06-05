@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-05 01:22:23 jcs>
+/* Time-stamp: <2006-06-06 00:44:28 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -5847,7 +5847,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	    sysinfo = fopen(pbuf, "w");
 	    if(sysinfo != NULL)
 	    {
-		fprintf(sysinfo, "ModelNumStr:%s", 
+		fprintf(sysinfo, "ModelNumStr: %s", 
 			info->model_number);
 		fclose(sysinfo);
 	    }
