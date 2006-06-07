@@ -368,6 +368,12 @@ gboolean itdb_photodb_write (Itdb_PhotoDB *photodb, GError **error)
 
     result = ipod_write_photo_db (photodb);
 
+    /* Write SysInfo file if it has changed */
+    if (!(*error) && photodb->device->sysinfo_changed)
+    {
+	itdb_device_write_sysinfo (photodb->device, error);
+    }
+
     if (result == -1)
 	return FALSE;
     else

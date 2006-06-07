@@ -26,6 +26,7 @@ Data structure holding information about the iPod (model, mount point, ...)
 @musicdirs: 
 @byte_order: 
 @sysinfo: 
+@sysinfo_changed: 
 
 <!-- ##### FUNCTION itdb_device_new ##### -->
 <para>

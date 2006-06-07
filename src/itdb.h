@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-06 00:13:08 jcs>
+/* Time-stamp: <2006-06-07 00:56:08 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -862,7 +862,10 @@ Itdb_Device *itdb_device_new (void);
 void itdb_device_free (Itdb_Device *device);
 void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp);
 gboolean itdb_device_read_sysinfo (Itdb_Device *device);
+gboolean itdb_device_write_sysinfo (Itdb_Device *device, GError **error);
 gchar *itdb_device_get_sysinfo (Itdb_Device *device, const gchar *field);
+void itdb_device_set_sysinfo (Itdb_Device *device,
+			      const gchar *field, const gchar *value);
 const Itdb_IpodInfo *itdb_device_get_ipod_info (Itdb_Device *device);
 const Itdb_IpodInfo *itdb_info_get_ipod_info_table (void);
 const gchar *itdb_info_get_ipod_model_name_string (Itdb_IpodModel model);

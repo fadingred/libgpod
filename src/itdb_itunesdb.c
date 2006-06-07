@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-06 00:44:28 jcs>
+/* Time-stamp: <2006-06-08 00:35:09 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -4259,6 +4259,7 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 	g_free (itdb->filename);
 	itdb->filename = fn;
     }
+
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
     sync ();
@@ -4313,6 +4314,12 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 
     if (result == TRUE)
 	result = itdb_rename_files (itdb_get_mountpoint (itdb), error);
+
+    /* Write SysInfo file if it has changed */
+    if (!(*error) && itdb->device->sysinfo_changed)
+    {
+	itdb_device_write_sysinfo (itdb->device, error);
+    }
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
@@ -5306,7 +5313,7 @@ gchar *itdb_get_device_dir (const gchar *mountpoint)
  * itdb_get_artwork_dir:
  * @mountpoint: the iPod mountpoint
  *
- * Retrieve the Artwork directory (containing the SysInfo file) by
+ * Retrieve the Artwork directory (containing the ArtworDB) by
  * first calling itdb_get_control_dir() and then adding 'Artwork'
  *
  * Return value: path to the Artwork directory or NULL of
@@ -5462,8 +5469,8 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	/* Assign iPod device reference to new database */
 	itdb_set_mountpoint(itdb, mountpoint);
 	
-	/* Rather than reread sysinfo file (that may not exist if
-	 * shuffle, use parameter to load into the sysinfo hash.
+
+	/* Insert model_number into sysinfo file if present
 	 * The model number can be extracted in a couple of ways:
 	 *		- use the read_sysinfo_file function
 	 * 		- use libipoddevice and hal to get the model
@@ -5471,9 +5478,11 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
          *                read the sysinfo file, complemented by some
 	 *	          guessing).
 	 */
-	g_hash_table_insert (itdb->device->sysinfo,
-			     g_strdup ("ModelNumStr"),
-			     g_strdup (model_number));
+	if (model_number)
+	{
+	    itdb_device_set_sysinfo (itdb->device,
+				     "ModelNumStr", model_number);
+	}
 	
 	/* Create the remaining directories resident on blank ipod */
 	writeok = itdb_create_directories(itdb->device, error);
@@ -5657,7 +5666,6 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     gboolean result;
     gchar *pbuf;
     gint i, dirnum;
-    FILE *sysinfo = NULL;
     Itdb_IpodInfo const *info = NULL;
     gboolean calconnotes, devicefile;
     gchar *podpath;
@@ -5830,6 +5838,8 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     /* Construct a Device directory file for special models */
     if (devicefile)
     {
+	gchar *model_number;
+
 	pbuf = g_build_filename (mp, podpath, "Device", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
@@ -5840,23 +5850,18 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
    	}
 	g_free (pbuf);
 
+	model_number = itdb_device_get_sysinfo (device, "ModelNumStr");
    	/* Construct a SysInfo file */
-	pbuf = g_build_filename (mp, podpath, "Device", "SysInfo", NULL);
-	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
+	if (model_number && (strlen (model_number) != 0))
 	{
-	    sysinfo = fopen(pbuf, "w");
-	    if(sysinfo != NULL)
+	    pbuf = NULL;
+	    if (!itdb_device_write_sysinfo (device, error))
 	    {
-		fprintf(sysinfo, "ModelNumStr: %s", 
-			info->model_number);
-		fclose(sysinfo);
-	    }
-	    else
-	    {
+		g_free (model_number);
 		goto error_dir;
 	    }
 	}
-	g_free (pbuf);
+	g_free (model_number);
     }
     pbuf = NULL;
 

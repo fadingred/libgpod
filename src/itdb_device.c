@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-06 00:13:09 jcs>
+/* Time-stamp: <2006-06-07 23:49:33 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -237,6 +237,7 @@ static void itdb_device_reset_sysinfo (Itdb_Device *device)
 	g_hash_table_destroy (device->sysinfo);
     device->sysinfo = g_hash_table_new_full (g_str_hash, g_str_equal,
 					     g_free, g_free);
+    device->sysinfo_changed = FALSE;
 }
 
 
@@ -343,13 +344,10 @@ gboolean itdb_device_read_sysinfo (Itdb_Device *device)
 		ptr = strchr (buf, ':');
 		if (ptr && (ptr!=buf))
 		{
-		    gchar *key, *value;
 		    *ptr = 0;
 		    ++ptr;
-		    key = g_strdup (buf);
-		    g_strstrip (ptr);
-		    value = g_strdup (ptr);
-		    g_hash_table_insert (device->sysinfo, key, value);
+		    itdb_device_set_sysinfo (device,
+					     buf, g_strstrip(ptr));
 		}
 	    }
 	    fclose (fd);
@@ -357,7 +355,75 @@ gboolean itdb_device_read_sysinfo (Itdb_Device *device)
 	g_free (sysinfo_path);
     }
     g_free (dev_path);
+    /* indicate that sysinfo is identical to what is on the iPod */
+    device->sysinfo_changed = FALSE;
     return result;
+}
+
+
+
+/* used by itdb_device_write_sysinfo() */
+static void write_sysinfo_entry (const gchar *key,
+				 const gchar *value,
+				 FILE *file)
+{
+    fprintf (file, "%s: %s\n", key, value);
+}
+
+
+
+/** 
+ * itdb_device_write_sysinfo:
+ * @device: an #Itdb_Device
+ *
+ * Fills the SysInfo file with information in device->sysinfo. Note:
+ * no directories are created if not already existent.
+ *
+ * Return value: TRUE if file could be read, FALSE otherwise 
+ **/
+gboolean itdb_device_write_sysinfo (Itdb_Device *device, GError **error)
+{
+    gchar *devicedir;
+    gboolean success = FALSE;
+
+    g_return_val_if_fail (device, FALSE);
+    g_return_val_if_fail (device->mountpoint, FALSE);
+
+    devicedir = itdb_get_device_dir (device->mountpoint);
+    if (devicedir)
+    {
+	gchar *sysfile = g_build_filename (devicedir, "SysInfo", NULL);
+	FILE *sysinfo = fopen (sysfile, "w");
+	if (sysinfo)
+	{
+	    if (device->sysinfo)
+	    {
+		g_hash_table_foreach (device->sysinfo,
+				      (GHFunc)write_sysinfo_entry,
+				      sysinfo);
+	    }
+	    fclose (sysinfo);
+	    success = TRUE;
+	}
+	else
+	{
+	    g_set_error (error, 0, -1,
+			 _("Could not open '%s' for writing."),
+			 sysfile);
+	}
+	g_free (sysfile);
+	g_free (devicedir);
+    }
+    else
+    {
+	g_set_error (error, 0, -1,
+		     _("Device directory does not exist."));
+    }
+
+    if (success)
+	device->sysinfo_changed = FALSE;
+
+    return success;
 }
 
 
@@ -378,6 +444,35 @@ gchar *itdb_device_get_sysinfo (Itdb_Device *device, const gchar *field)
     g_return_val_if_fail (field, NULL);
 
     return g_strdup (g_hash_table_lookup (device->sysinfo, field));
+}
+
+/**
+ * itdb_device_set_sysinfo:
+ * @device: an #Itdb_Device
+ * @field: field to set
+ * @value: value to set (or NULL to remove the field).
+ *
+ * Set specified field. It can later be written to the iPod using
+ * itdb_device_read_sysinfo
+ *
+ **/
+void itdb_device_set_sysinfo (Itdb_Device *device,
+			      const gchar *field, const gchar *value)
+{
+    g_return_if_fail (device);
+    g_return_if_fail (device->sysinfo);
+    g_return_if_fail (field);
+
+    if (field)
+    {
+	g_hash_table_insert (device->sysinfo,
+			     g_strdup (field), g_strdup (value));
+    }
+    else
+    {
+	g_hash_table_remove (device->sysinfo, field);
+    }
+    device->sysinfo_changed = TRUE;
 }
 
 

@@ -1,3 +1,22 @@
+2006-06-07  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h
+	  src/itdb_device.c:
+	  Added itdb_device_write_sysinfo() and itdb_device_set_sysinfo().
+
+	* src/itdb_itunesdb.c (itdb_create_directories):
+	  Use functions introduced above.
+
+	  (itdb_write): Write SynsInfo file when writing the iTunesDB if
+	  SysInfo hash has been changed by application.
+
+	* src/itdb_device.[ch]: mark sysinfo hash as changed/unchanged.
+
+	* src/itdb_photoalbum.c (itdb_photodb_write): Write SynsInfo file
+	  when writing the iTunesDB if SysInfo hash has been changed by
+	  application.
+
+
 2006-06-05  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/db-artwork-parser.h
@@ -16,7 +35,9 @@
 		 itdb_info_get_ipod_generation_string()
 
         * src/itdb_itunesdb.c (itdb_create_directories): add space after
-	  ":" when writing SysInfo file.
+	  ":" when writing SysInfo file, only write SysInfo file if
+	  model_number was given, write original model number, not
+	  abbreviated model number from info->model_number.
 
 2006-06-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

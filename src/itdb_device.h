@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-04 18:44:50 jcs>
+/* Time-stamp: <2006-06-07 23:48:37 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -57,7 +57,9 @@ struct _Itdb_Device
 			   * phone iTunesDBs)
 			   */
     GHashTable *sysinfo;  /* hash with value/key pairs of all entries
-			     in Device/SysInfo */
+			   * in Device/SysInfo */
+    gboolean sysinfo_changed; /* Has the sysinfo hash been changed by
+				 the user (itdb_set_sysinfo) */
 };
 
 struct _Itdb_ArtworkFormat
