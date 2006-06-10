@@ -1,3 +1,9 @@
+2006-06-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_device.c (itdb_device_get_ipod_info): compare more than
+	  4 characters of iPod model if the stored model number is more
+	  than 4 characters long.
+
 2006-06-07  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-07 23:49:33 jcs>
+/* Time-stamp: <2006-06-10 15:14:18 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -502,7 +502,8 @@ itdb_device_get_ipod_info (Itdb_Device *device)
 	
     for(i=2; ipod_info_table[i].model_number != NULL; i++)
     {
-	if(g_strncasecmp(p, ipod_info_table[i].model_number, 4) == 0)
+	if(g_strncasecmp(p, ipod_info_table[i].model_number, 
+			 strlen (ipod_info_table[i].model_number)) == 0)
 	{
 	    g_free(model_num);
 	    return &ipod_info_table[i];
