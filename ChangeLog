@@ -1,3 +1,11 @@
+2006-06-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c
+	  src/itdb.h:
+	  Added itdb_get_itunessd_path ().
+	  itdb_init_ipod() will no longer overwrite existing iTunesDB and
+	  iTunesSD.
+
 2006-06-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_device.c (itdb_device_get_ipod_info): compare more than

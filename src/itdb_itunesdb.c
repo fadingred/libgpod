@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-08 00:35:09 jcs>
+/* Time-stamp: <2006-06-24 19:52:24 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -4496,7 +4496,7 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error)
  * @filename: file to write to, cannot be NULL
  * @error: return location for a #GError or NULL
  *
- * Do the actual writing to the iTuneSsD 
+ * Do the actual writing to the iTunesSD 
  *
  * Return value: TRUE on success, FALSE on error, in which case @error is
  * set accordingly.
@@ -5353,6 +5353,32 @@ gchar *itdb_get_itunesdb_path (const gchar *mountpoint)
 }
 
 /**
+ * itdb_get_itunessd_path:
+ * @mountpoint: the iPod mountpoint
+ *
+ * Retrieve a path to the iTunesSD
+ *
+ * Return value: path to the iTunesSD or NULL if non-existent. Must g_free()
+ * after use.
+ **/
+gchar *itdb_get_itunessd_path (const gchar *mountpoint)
+{
+    gchar *itunes_dir, *path=NULL;
+
+    g_return_val_if_fail (mountpoint, NULL);
+
+    itunes_dir = itdb_get_itunes_dir (mountpoint);
+
+    if (itunes_dir)
+    {
+	path = itdb_get_path (itunes_dir, "iTunesSD");
+	g_free (itunes_dir);
+    }
+
+    return path;
+}
+
+/**
  * itdb_get_artworkdb_path:
  * @mountpoint: the iPod mountpoint
  *
@@ -5460,6 +5486,7 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	gboolean writeok;
 	Itdb_iTunesDB *itdb = NULL;
 	Itdb_Playlist *mpl = NULL;
+	gchar *path;
 	
 	g_return_val_if_fail (mountpoint, FALSE);
 						
@@ -5504,20 +5531,31 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	itdb_playlist_set_mpl(mpl);
 	itdb_playlist_add(itdb, mpl, -1);
 	
-	/* Write both the iTunesDB and iTunesSD files to the new ipod */
-	writeok = itdb_write(itdb, error);
-	if(! writeok)
+	/* Write both the iTunesDB and iTunesSD files to the new ipod,
+	 * unless they already exist */
+	path = itdb_get_itunesdb_path (mountpoint);
+	if (!path)
 	{
+	    writeok = itdb_write(itdb, error);
+	    if(! writeok)
+	    {
 	        itdb_free (itdb);
 		return FALSE;
+	    }
 	}
-	
-	writeok = itdb_shuffle_write(itdb, error);
-	if(! writeok)
+	g_free (path);
+
+	path = itdb_get_itunessd_path (mountpoint);
+	if (!path)
 	{
+	    writeok = itdb_shuffle_write(itdb, error);
+	    if(! writeok)
+	    {
 	        itdb_free (itdb);
 		return FALSE;
+	    }
 	}
+	g_free (path);
 	
 	itdb_free (itdb);
 	return TRUE;

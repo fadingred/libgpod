@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-07 00:56:08 jcs>
+/* Time-stamp: <2006-06-24 19:52:24 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -853,6 +853,7 @@ gchar *itdb_get_photos_dir (const gchar *mountpoint);
 gchar *itdb_get_photos_thumb_dir (const gchar *mountpoint);
 gchar *itdb_get_device_dir (const gchar *mountpoint);
 gchar *itdb_get_itunesdb_path (const gchar *mountpoint);
+gchar *itdb_get_itunessd_path (const gchar *mountpoint);
 gchar *itdb_get_artworkdb_path (const gchar *mountpoint);
 gchar *itdb_get_photodb_path (const gchar *mountpoint);
 gchar *itdb_get_path (const gchar *dir, const gchar *file);
