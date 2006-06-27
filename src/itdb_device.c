@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-10 15:14:18 jcs>
+/* Time-stamp: <2006-06-27 21:28:29 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -601,7 +601,7 @@ static guint endianess_check_path (const gchar *path, const gchar *hdr)
 			(buf[2] == hdr[1]) &&
 			(buf[3] == hdr[0]))
 		    {
-			byte_order = G_LITTLE_ENDIAN;
+			byte_order = G_BIG_ENDIAN;
 		    }
 		}
 	    }
@@ -654,10 +654,11 @@ itdb_device_autodetect_endianess (Itdb_Device *device)
 	    if (control_dir)
 	    {
 		gchar *cd_l = g_ascii_strdown (control_dir, -1);
+		/* check if cd_l ends on "itunes/itunes_control" */
 		if (strstr (cd_l, "itunes/itunes_control") ==
 		    (cd_l + strlen (cd_l) - strlen ("itunes/itunes_control")))
 		{
-		    device->byte_order = G_BIG_ENDIAN;
+		    byte_order = G_BIG_ENDIAN;
 		}
 		g_free (cd_l);
 		g_free (control_dir);

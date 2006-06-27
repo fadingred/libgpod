@@ -1,3 +1,8 @@
+2006-06-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_device.c: fixed endianness autodetection for big endian
+	  mobile phones. Thanks to Rached Ben Mustapha for the patch.
+
 2006-06-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c
