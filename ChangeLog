@@ -1,3 +1,8 @@
+2006-06-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (wcontents_write): added g_strerror in error
+	  messages.
+
 2006-06-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_device.c: fixed endianness autodetection for big endian

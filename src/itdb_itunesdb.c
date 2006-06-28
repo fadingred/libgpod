@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-24 19:52:24 jcs>
+/* Time-stamp: <2006-06-29 00:11:00 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -4095,8 +4095,8 @@ static gboolean wcontents_write (WContents *cts)
     {
 	cts->error = g_error_new (G_FILE_ERROR,
 				  g_file_error_from_errno (errno),
-				  _("Opening of '%s' for writing failed."),
-				  cts->filename);
+				  _("Opening of '%s' for writing failed (%s)."),
+				  cts->filename, g_strerror (errno));
 	return FALSE;
     }
     if (cts->contents && cts->pos)
@@ -4106,8 +4106,8 @@ static gboolean wcontents_write (WContents *cts)
 	{
 	    cts->error = g_error_new (G_FILE_ERROR,
 				      g_file_error_from_errno (errno),
-				      _("Writing to '%s' failed."),
-				      cts->filename);
+				      _("Writing to '%s' failed (%s)."),
+				      cts->filename, g_strerror (errno));
 	    close (fd);
 	    return FALSE;
 	}
