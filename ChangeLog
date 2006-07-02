@@ -1,3 +1,9 @@
+2006-07-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (itdb_init_ipod): only write iTunesSD
+	  (shuffle database) when initializing shuffle. Thanks to
+	  James Joyce for the patch.
+
 2006-06-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c (wcontents_write): added g_strerror in error

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-29 00:11:00 jcs>
+/* Time-stamp: <2006-07-02 13:26:31 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -5486,6 +5486,7 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	gboolean writeok;
 	Itdb_iTunesDB *itdb = NULL;
 	Itdb_Playlist *mpl = NULL;
+	Itdb_IpodInfo const *info = NULL;
 	gchar *path;
 	
 	g_return_val_if_fail (mountpoint, FALSE);
@@ -5496,7 +5497,6 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	/* Assign iPod device reference to new database */
 	itdb_set_mountpoint(itdb, mountpoint);
 	
-
 	/* Insert model_number into sysinfo file if present
 	 * The model number can be extracted in a couple of ways:
 	 *		- use the read_sysinfo_file function
@@ -5545,18 +5545,26 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	}
 	g_free (path);
 
-	path = itdb_get_itunessd_path (mountpoint);
-	if (!path)
+	/* Retrieve the model from the device information */
+	info = itdb_device_get_ipod_info(itdb->device);
+    
+	/* If model is a shuffle or the model is undetermined,
+	 * ie. @model_number is NULL, then create the itunesSD database
+	 */
+	if(!model_number || info->ipod_model == ITDB_IPOD_MODEL_SHUFFLE)
 	{
-	    writeok = itdb_shuffle_write(itdb, error);
-	    if(! writeok)
+	    path = itdb_get_itunessd_path (mountpoint);
+	    if (!path)
 	    {
-	        itdb_free (itdb);
-		return FALSE;
+	    	writeok = itdb_shuffle_write(itdb, error);
+	    	if(! writeok)
+	    	{
+	    	    itdb_free (itdb);
+		    return FALSE;
+	    	}
 	    }
+	    g_free (path);
 	}
-	g_free (path);
-	
 	itdb_free (itdb);
 	return TRUE;
 }
