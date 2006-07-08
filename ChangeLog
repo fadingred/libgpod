@@ -1,3 +1,8 @@
+2006-07-08  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (itdb_write): don't crash if error ==
+          NULL (SF tracker bugs item #1519048)
+
 2006-07-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c (itdb_init_ipod): only write iTunesSD

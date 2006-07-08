@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-07-02 13:26:31 jcs>
+/* Time-stamp: <2006-07-09 01:16:49 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -4313,12 +4313,13 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
     g_free (itunes_path);
 
     if (result == TRUE)
-	result = itdb_rename_files (itdb_get_mountpoint (itdb), error);
-
-    /* Write SysInfo file if it has changed */
-    if (!(*error) && itdb->device->sysinfo_changed)
     {
-	itdb_device_write_sysinfo (itdb->device, error);
+	/* Write SysInfo file if it has changed */
+	if (itdb->device->sysinfo_changed)
+	{
+	    itdb_device_write_sysinfo (itdb->device, error);
+	}
+	result = itdb_rename_files (itdb_get_mountpoint (itdb), error);
     }
 
     /* make sure all buffers are flushed as some people tend to
