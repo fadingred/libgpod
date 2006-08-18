@@ -98,14 +98,14 @@ ipod_buffer_grow_file (struct iPodMmapBuffer *mmap_buf, off_t new_size)
 	result = lseek (mmap_buf->fd, new_size, SEEK_SET);
 	if (result == (off_t)-1) {
 		g_print ("Failed to grow file to %lu: %s\n", 
-			 new_size, strerror (errno));
+                        (unsigned long)new_size, strerror (errno));
 		return -1;
 	}
 	result = 0;
 	result = write (mmap_buf->fd, &result, 1);
 	if (result != 1) {
 		g_print ("Failed to write a byte at %lu: %s\n", 
-			 new_size, strerror (errno));
+                        (unsigned long)new_size, strerror (errno));
 		return -1;
 	}
 
