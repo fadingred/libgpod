@@ -1,3 +1,15 @@
+2006-08-21  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* tests/test-ls.c: added option to list contents of local
+	  repository and specified playlist. Thanks to Richard Hyde for
+	  the patch.
+
+2006-08-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-artwork-writer.c (ipod_buffer_grow_file): printf(3) type
+	  warnings caused compile error with FreeBSD 6.0-stable/GCC
+	  3.4.4. Thanks to Mike Heffner for the patch.
+
 2006-07-08  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c (itdb_write): don't crash if error ==

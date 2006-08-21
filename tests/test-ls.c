@@ -28,10 +28,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <libintl.h>
 
 #include "itdb.h"
+
+#define LOCALDB "/.gtkpod/local_0.itdb"
 
 static void
 display_track (Itdb_Track *track, const char *prefix) 
@@ -71,20 +74,32 @@ int
 main (int argc, char *argv[])
 {
   GError *error=NULL;
+  const gchar *homeenv="HOME";
   Itdb_iTunesDB *itdb;
-  gchar *mountpoint = NULL;
+  gchar *mountpoint = NULL, *playlistname = NULL;
 
   if (argc >= 2)
       mountpoint = argv[1];
 
+    if (argc >= 3)
+      playlistname = argv[2];
+ 
   if (mountpoint == NULL)
   {
-      g_print ("Usage: %s <mountpoint>\n",  g_basename(argv[0]));
+      g_print ("Usage: %s <mountpoint>|-l [<playlistname>]\n\n"
+               "-l - List from the local repository (~" LOCALDB ")\n"
+	       "<playlistname> - name of the playlist to list (optional)\n",  
+                g_basename(argv[0]));
       exit (0);
   }
 
-  itdb = itdb_parse (mountpoint, &error);
-
+  if (strcmp(mountpoint, "-l") == 0) {
+      mountpoint = g_build_filename(g_getenv(homeenv), LOCALDB, NULL);
+      itdb = itdb_parse_file (mountpoint, &error);
+  }
+  else
+      itdb = itdb_parse (mountpoint, &error);
+  
   if (error)
   {
       if (error->message) {
@@ -103,7 +118,9 @@ main (int argc, char *argv[])
 	  Itdb_Playlist *playlist;
 
 	  playlist = (Itdb_Playlist *)it->data;
-	  display_playlist (playlist, "");
+	  
+	  if (playlistname == NULL || strcmp(playlist->name, playlistname) == 0) 
+	    display_playlist (playlist, "");
       }
 
       if (error)
