@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-17 13:45:02 jcs>
+/* Time-stamp: <2006-09-17 13:52:24 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -260,6 +260,10 @@ static const Itdb_ArtworkFormat *ipod_artwork_info_table[] = {
 	ipod_video_artwork_info,   /* Video (Black) */
 	ipod_mobile_1_artwork_info,/* Mobile (1)    */
 	ipod_video_artwork_info,   /* Video U2      */
+	ipod_nano_artwork_info,    /* Nano (Silver) */
+	ipod_nano_artwork_info,    /* Nano (Blue)   */
+	ipod_nano_artwork_info,    /* Nano (Green)  */
+	ipod_nano_artwork_info,    /* Nano (Pink)   */
 	NULL
 };
 
