@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-18 02:13:08 jcs>
+/* Time-stamp: <2006-09-18 02:23:53 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -543,13 +543,13 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 	{   /* use data stored in image_data */
 	    	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
 		g_return_val_if_fail (loader, FALSE);
+		gdk_pixbuf_loader_set_size (loader,
+					    width, height);
 		gdk_pixbuf_loader_write (loader,
 					 thumb->image_data,
 					 thumb->image_data_len,
 					 NULL);
 		gdk_pixbuf_loader_close (loader, NULL);
-		gdk_pixbuf_loader_set_size (loader,
-					    width, height);
 		pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
 		g_object_ref (pixbuf);
 		g_object_unref (loader);

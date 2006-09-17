@@ -228,14 +228,14 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     {   /* image data is stored in image_data and image_data_len */
 	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
 	g_return_val_if_fail (loader, FALSE);
+	gdk_pixbuf_loader_set_size (loader,
+				    writer->img_info->width, 
+				    writer->img_info->height);
 	gdk_pixbuf_loader_write (loader,
 				 thumb->image_data,
 				 thumb->image_data_len,
 				 NULL);
 	gdk_pixbuf_loader_close (loader, NULL);
-	gdk_pixbuf_loader_set_size (loader,
-				    writer->img_info->width, 
-				    writer->img_info->height);
 	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
 	g_object_ref (pixbuf);
 	g_object_unref (loader);
