@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-24 19:52:24 jcs>
+/* Time-stamp: <2006-09-17 13:45:03 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -144,6 +144,7 @@ typedef enum {
     ITDB_IPOD_GENERATION_THIRD,
     ITDB_IPOD_GENERATION_FOURTH,
     ITDB_IPOD_GENERATION_FIFTH,
+    ITDB_IPOD_GENERATION_SIXTH,
     ITDB_IPOD_GENERATION_MOBILE
 } Itdb_IpodGeneration;
 
@@ -164,7 +165,12 @@ typedef enum {
     ITDB_IPOD_MODEL_NANO_BLACK,
     ITDB_IPOD_MODEL_VIDEO_WHITE,
     ITDB_IPOD_MODEL_VIDEO_BLACK,
-    ITDB_IPOD_MODEL_MOBILE_1
+    ITDB_IPOD_MODEL_MOBILE_1,
+    ITDB_IPOD_MODEL_VIDEO_U2,
+    ITDB_IPOD_MODEL_NANO_SILVER,
+    ITDB_IPOD_MODEL_NANO_BLUE,
+    ITDB_IPOD_MODEL_NANO_GREEN,
+    ITDB_IPOD_MODEL_NANO_PINK
 } Itdb_IpodModel;
 
 struct _Itdb_IpodInfo {

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-27 21:28:29 jcs>
+/* Time-stamp: <2006-09-17 13:45:02 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -111,6 +111,9 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     /* Shuffle / Fourth Generation */
     {"9724", 0.5,ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_FOURTH,  3},
     {"9725", 1,  ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_FOURTH,  3},
+    /* Shuffle / Sixth Generation */
+    /* Square, connected to computer via cable */
+    {"A564", 1,  ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_SIXTH,  3},
 
     /* Nano / Fifth Generation */
     /* Buttons are integrated into the "touch wheel". */
@@ -128,6 +131,25 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"A003", 60, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_FIFTH,  50},
     {"A147", 60, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_FIFTH,  50},
 
+    /* Video / Sixth Generation */
+    /* Pretty much identical to fifth generation with better display,
+     * extended battery operation time and gap-free playback */
+    {"A444", 30, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_SIXTH,  50},
+    {"A446", 30, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_SIXTH,  50},
+    {"A664", 30, ITDB_IPOD_MODEL_VIDEO_U2,    ITDB_IPOD_GENERATION_SIXTH,  50},
+    {"A448", 80, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_SIXTH,  50},
+    {"A450", 80, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_SIXTH,  50},
+
+    /* Nano / Sixth Generation */
+    /* Pretty much identical to fifth generation with better display,
+     * extended battery operation time and gap-free playback */
+    {"A477",  2, ITDB_IPOD_MODEL_NANO_SILVER, ITDB_IPOD_GENERATION_SIXTH,   3},
+    {"A426",  4, ITDB_IPOD_MODEL_NANO_SILVER, ITDB_IPOD_GENERATION_SIXTH,   6},
+    {"A428",  4, ITDB_IPOD_MODEL_NANO_BLUE,   ITDB_IPOD_GENERATION_SIXTH,   6},
+    {"A487",  4, ITDB_IPOD_MODEL_NANO_GREEN,  ITDB_IPOD_GENERATION_SIXTH,   6},
+    {"A489",  4, ITDB_IPOD_MODEL_NANO_PINK,   ITDB_IPOD_GENERATION_SIXTH,   6},
+    {"A497",  8, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_SIXTH,  20},
+
     /* HP iPods, need contributions for this table */
     /* Buttons are integrated into the "touch wheel". */
     {"E436", 40, ITDB_IPOD_MODEL_REGULAR,     ITDB_IPOD_GENERATION_FOURTH, 50},
@@ -142,6 +164,8 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {NULL, 0, 0, 0, 0}
 };
 
+
+/* One entry for each of Itdb_IpodModel (itdb.h) */
 static const gchar *ipod_model_name_table [] = {
 	N_("Invalid"),
 	N_("Unknown"),
@@ -160,9 +184,15 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Video (White)"),
 	N_("Video (Black)"),
 	N_("Mobile (1)"),
+	N_("Video U2"),
+	N_("Nano (Silver)"),
+	N_("Nano (Blue)"),
+	N_("Nano (Green)"),
+	N_("Nano (Pink)"),
 	NULL
 };
 
+/* One entry for each of Itdb_IpodGeneration (itdb.h) */
 static const gchar *ipod_generation_name_table [] = {
 	N_("Unknown"),
 	N_("First Generation"),
@@ -170,6 +200,7 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Third Generation"),
 	N_("Fourth Generation"),
 	N_("Fifth Generation"),
+	N_("Sixth Generation"),
 	N_("Mobile Phone"),
 	NULL
 };
@@ -208,25 +239,28 @@ static const Itdb_ArtworkFormat ipod_mobile_1_artwork_info[] = {
 	{-1,                            -1,  -1,   -1}
 };
 
+
 /* This will be indexed using a value from the ITDB_IPOD_MODEL enum */
 static const Itdb_ArtworkFormat *ipod_artwork_info_table[] = {
-        NULL,                    /* Invalid       */
-	NULL,                    /* Unknown       */
-	ipod_color_artwork_info, /* Color         */
-	ipod_color_artwork_info, /* Color U2      */
-	NULL,                    /* Grayscale     */ 
-	NULL,                    /* Grayscale U2  */
-	NULL,                    /* Mini (Silver) */
-	NULL,                    /* Mini (Blue)   */
-	NULL,                    /* Mini (Pink)   */
-	NULL,                    /* Mini (Green)  */
-	NULL,                    /* Mini (Gold)   */
-	NULL,                    /* Shuffle       */
-	ipod_nano_artwork_info,  /* Nano (White)  */
-	ipod_nano_artwork_info,  /* Nano (Black)  */
-	ipod_video_artwork_info, /* Video (White) */
-	ipod_video_artwork_info, /* Video (Black) */
-	ipod_mobile_1_artwork_info /* Mobile (1)    */
+        NULL,                      /* Invalid       */
+	NULL,                      /* Unknown       */
+	ipod_color_artwork_info,   /* Color         */
+	ipod_color_artwork_info,   /* Color U2      */
+	NULL,                      /* Grayscale     */ 
+	NULL,                      /* Grayscale U2  */
+	NULL,                      /* Mini (Silver) */
+	NULL,                      /* Mini (Blue)   */
+	NULL,                      /* Mini (Pink)   */
+	NULL,                      /* Mini (Green)  */
+	NULL,                      /* Mini (Gold)   */
+	NULL,                      /* Shuffle       */
+	ipod_nano_artwork_info,    /* Nano (White)  */
+	ipod_nano_artwork_info,    /* Nano (Black)  */
+	ipod_video_artwork_info,   /* Video (White) */
+	ipod_video_artwork_info,   /* Video (Black) */
+	ipod_mobile_1_artwork_info,/* Mobile (1)    */
+	ipod_video_artwork_info,   /* Video U2      */
+	NULL
 };
 
 

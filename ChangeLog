@@ -1,3 +1,9 @@
+2006-09-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h
+	  src/itdb_device.c: added definitions for new sixth generation
+	  iPod Videos, iPod Nanos and iPod Shuffle.
+
 2006-08-21  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* tests/test-ls.c: added option to list contents of local
