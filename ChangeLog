@@ -1,3 +1,20 @@
+2006-09-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h
+	  src/itdb_artwork.c: added itdb_artwork_add_thumbnail_from_data().
+
+	* src/itdb.h
+	  src/itdb_track.c: added itdb_track_set_thumbnails_from_data().
+
+	* src/itdb.h
+	  src/itdb_photoalbum.c: added itdb_photodb_add_photo_from_data().
+
+	* src/itdb_artwork.c (itdb_thumb_get_gdk_pixbuf): added support to
+	  retreive thumbnail from raw data instead of file.
+
+	* src/ithumb-writer.c (ithumb_writer_write_thumbnail): added
+	  support to write thumbnail from raw data instead of file.
+
 2006-09-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h

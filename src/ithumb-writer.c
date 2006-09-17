@@ -195,9 +195,9 @@ static gboolean
 ithumb_writer_write_thumbnail (iThumbWriter *writer, 
 			       Itdb_Thumb *thumb)
 {
-    GdkPixbuf *pixbuf;
+    GdkPixbuf *pixbuf = NULL;
     guint16 *pixels;
-    gchar *filename;
+    gchar *filename = NULL;
     gint width, height;
 
     Itdb_Thumb *old_thumb;
@@ -205,24 +205,48 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     g_return_val_if_fail (writer, FALSE);
     g_return_val_if_fail (thumb, FALSE);
 
-    /* If the same filename was written before, just use the old
-       thumbnail to save space on the iPod */
-    old_thumb = g_hash_table_lookup (writer->cache, thumb->filename);
-    if (old_thumb != NULL)
-    {
-	g_free (thumb->filename);
-	memcpy (thumb, old_thumb, sizeof (Itdb_Thumb));
-	thumb->filename = g_strdup (old_thumb->filename);
-	return TRUE;
+    if (thumb->filename)
+    {   /* read image from filename */
+	/* If the same filename was written before, just use the old
+	   thumbnail to save space on the iPod */
+	old_thumb = g_hash_table_lookup (writer->cache, thumb->filename);
+	if (old_thumb != NULL)
+	{
+	    g_free (thumb->filename);
+	    memcpy (thumb, old_thumb, sizeof (Itdb_Thumb));
+	    thumb->filename = g_strdup (old_thumb->filename);
+	    return TRUE;
+	}
+
+	pixbuf = gdk_pixbuf_new_from_file_at_size (thumb->filename, 
+						   writer->img_info->width, 
+						   writer->img_info->height,
+						   NULL);
+
+    }
+    else if (thumb->image_data)
+    {   /* image data is stored in image_data and image_data_len */
+	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+	g_return_val_if_fail (loader, FALSE);
+	gdk_pixbuf_loader_write (loader,
+				 thumb->image_data,
+				 thumb->image_data_len,
+				 NULL);
+	gdk_pixbuf_loader_close (loader, NULL);
+	gdk_pixbuf_loader_set_size (loader,
+				    writer->img_info->width, 
+				    writer->img_info->height);
+	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+	g_object_ref (pixbuf);
+	g_object_unref (loader);
+
+	g_free (thumb->image_data);
+	thumb->image_data = NULL;
+	thumb->image_data_len = 0;
     }
 
-    filename = g_strdup (thumb->filename);
-
-    pixbuf = gdk_pixbuf_new_from_file_at_size (filename, 
-					       writer->img_info->width, 
-					       writer->img_info->height,
-					       NULL);
-    if (pixbuf == NULL) {
+    if (pixbuf == NULL)
+    {
 	return FALSE;
     }
 
@@ -233,6 +257,9 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 		  "width", &width,
 		  "height", &height,
 		  NULL);
+
+    filename = thumb->filename;
+    thumb->filename = NULL;
 
     /* FIXME: under certain conditions (probably related to
      * writer->offset getting too big), this should be :F%04u_2.ithmb
@@ -291,10 +318,14 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     }
     g_free (pixels);
     writer->cur_offset += thumb->size;
-    g_hash_table_insert (writer->cache, filename, thumb);
 
-    /* !! filename is g_free()d when destroying the hash table. Do not
-       do it here */
+    if (filename)
+    {
+	g_hash_table_insert (writer->cache, filename, thumb);
+
+	/* !! filename is g_free()d when destroying the hash table. Do not
+	   do it here */
+    }
 
     return TRUE;
 }

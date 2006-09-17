@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-17 13:45:03 jcs>
+/* Time-stamp: <2006-09-18 01:33:30 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -88,7 +88,7 @@ typedef enum {
 /* The Itdb_Thumb structure can represent two slightly different
    thumbnails:
 
-   - a thumbnail before it's transferred to the iPod.
+  a) a thumbnail before it's transferred to the iPod.
 
      offset and size are 0
 
@@ -98,15 +98,20 @@ typedef enum {
 
      type is set according to the type this thumbnail represents
 
-     filename point to a 'real' image file.
+     filename point to a 'real' image file OR image_data and
+     image_data_len are set.
  
-   - a thumbnail (big or small) stored on a database in the iPod.  In
+  b) a thumbnail (big or small) stored on a database in the iPod.  In
      these cases, id corresponds to the ID originally used in the
      database, filename points to a .ithmb file on the iPod
  */
 struct _Itdb_Thumb {
     ItdbThumbType type;
     gchar *filename;
+    guchar *image_data;      /* holds the thumbnail data of
+				non-transfered thumbnails when
+				filename == NULL */
+    gsize  image_data_len;   /* length of data */
     guint32 offset;
     guint32 size;
     gint16 width;
@@ -938,6 +943,9 @@ void itdb_spl_update_live (Itdb_iTunesDB *itdb);
 /* itdb_track_... */
 gboolean itdb_track_set_thumbnails (Itdb_Track *track,
 				    const gchar *filename);
+gboolean itdb_track_set_thumbnails_from_data (Itdb_Track *track,
+					      const guchar *image_data,
+					      gsize image_data_len);
 void itdb_track_remove_thumbnails (Itdb_Track *track);
 
 /* photoalbum functions */
@@ -945,6 +953,10 @@ Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error);
 gboolean itdb_photodb_add_photo (Itdb_PhotoDB *db,
 				 const gchar *albumname,
 				 const gchar *filename);
+gboolean itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
+					   const gchar *albumname,
+					   const guchar *image_data,
+					   gsize image_data_len);
 Itdb_PhotoAlbum *itdb_photodb_photoalbum_new (Itdb_PhotoDB *db,
 					      const gchar *album_name);
 Itdb_PhotoDB *itdb_photodb_new (void);
@@ -963,6 +975,10 @@ Itdb_Thumb *itdb_artwork_get_thumb_by_type (Itdb_Artwork *artwork,
 gboolean itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
 				     ItdbThumbType type,
 				     const gchar *filename);
+gboolean itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
+					       ItdbThumbType type,
+					       const guchar *image_data,
+					       gsize image_data_len);
 void itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork,
 				    Itdb_Thumb *thumb);
 void itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork);

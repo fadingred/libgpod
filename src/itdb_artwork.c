@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-04 17:30:39 jcs>
+/* Time-stamp: <2006-09-18 02:13:08 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -173,7 +173,7 @@ itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
 gboolean
 itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
 			    ItdbThumbType type,
-			    const char *filename)
+			    const gchar *filename)
 {
 #ifdef HAVE_GDKPIXBUF
 /* This operation doesn't make sense when we can't save thumbnail files */
@@ -192,6 +192,55 @@ itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
 
     thumb = itdb_thumb_new ();
     thumb->filename = g_strdup (filename);
+    thumb->type = type;
+    artwork->thumbnails = g_list_append (artwork->thumbnails, thumb);
+
+    return TRUE;
+#else
+    return FALSE;
+#endif
+}
+
+
+/**
+ * itdb_artwork_add_thumbnail_from_data
+ * @artwork: an #Itdb_Thumbnail
+ * @type: thumbnail size
+ * @image_data: data used to create the thumbnail (the raw contents of
+ *              an image file)
+ * @image_data_len: length of above data block
+ *
+ * Appends a thumbnail of type @type to existing thumbnails in
+ * @artwork. No data is processed yet. This will be done when @artwork
+ * is saved to disk.
+ *
+ * Return value: TRUE if the thumbnail could be successfully added, FALSE
+ * otherwise
+ **/
+gboolean
+itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
+				      ItdbThumbType type,
+				      const guchar *image_data,
+				      gsize image_data_len)
+{
+#ifdef HAVE_GDKPIXBUF
+/* This operation doesn't make sense when we can't save thumbnail files */
+    Itdb_Thumb *thumb;
+    GTimeVal time;
+
+    g_return_val_if_fail (artwork, FALSE);
+    g_return_val_if_fail (image_data, FALSE);
+
+    g_get_current_time (&time);
+
+    artwork->artwork_size  = image_data_len;
+    artwork->creation_date = time.tv_sec;
+
+    thumb = itdb_thumb_new ();
+    thumb->image_data = g_malloc (image_data_len);
+    thumb->image_data_len = image_data_len;
+    memcpy (thumb->image_data,  image_data, image_data_len);
+
     thumb->type = type;
     artwork->thumbnails = g_list_append (artwork->thumbnails, thumb);
 
@@ -484,9 +533,28 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 	    }
 	}
 
-	pixbuf = gdk_pixbuf_new_from_file_at_size (thumb->filename, 
-						   width, height,
-						   NULL);
+	if (thumb->filename)
+	{   /* read data from filename */
+	    pixbuf = gdk_pixbuf_new_from_file_at_size (thumb->filename, 
+						       width, height,
+						       NULL);
+	}
+	else if (thumb->image_data)
+	{   /* use data stored in image_data */
+	    	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+		g_return_val_if_fail (loader, FALSE);
+		gdk_pixbuf_loader_write (loader,
+					 thumb->image_data,
+					 thumb->image_data_len,
+					 NULL);
+		gdk_pixbuf_loader_close (loader, NULL);
+		gdk_pixbuf_loader_set_size (loader,
+					    width, height);
+		pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+		g_object_ref (pixbuf);
+		g_object_unref (loader);
+	}
+
 	if (!pixbuf)
 	    return NULL;
 
@@ -599,6 +667,7 @@ void itdb_thumb_free (Itdb_Thumb *thumb)
 {
     g_return_if_fail (thumb);
 
+    g_free (thumb->image_data);
     g_free (thumb->filename);
     g_free (thumb);
 }
@@ -623,5 +692,12 @@ Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb)
     memcpy (new_thumb, thumb, sizeof (Itdb_Thumb));
     new_thumb->filename = g_strdup (thumb->filename);
  
+    if (thumb->image_data)
+    {
+	/* image_data_len already copied with the memcpy above */
+	new_thumb->image_data = g_malloc (thumb->image_data_len);
+	memcpy (new_thumb->image_data, thumb->image_data,
+		new_thumb->image_data_len);
+    }
     return new_thumb;
 }

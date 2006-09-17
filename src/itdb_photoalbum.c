@@ -254,9 +254,11 @@ void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *pa)
     }
 }
 
-gboolean itdb_photodb_add_photo (Itdb_PhotoDB *db,
-				 const gchar *albumname,
-				 const gchar *filename)
+static gboolean itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
+						 const gchar *albumname,
+						 const gchar *filename,
+						 const guchar *image_data,
+						 gsize image_data_len)
 {
 	gboolean result;
 	Itdb_Artwork *artwork;
@@ -265,20 +267,32 @@ gboolean itdb_photodb_add_photo (Itdb_PhotoDB *db,
 	gint photo_id;
 
 	g_return_val_if_fail (db, FALSE);
-	g_return_val_if_fail (filename, FALSE);
+
 	artwork = itdb_artwork_new ();
 
 	photo_id = itdb_get_free_photo_id( db );
 	artwork->id = photo_id;
+
 	/* Add a thumbnail for every supported format */
 	format = itdb_device_get_artwork_formats(db->device);
-	for( result = TRUE; format->type != -1 && result == TRUE; format++) {
+	for( result = TRUE; format->type != -1 && result == TRUE; format++)
+	{
 	    if((format->type == ITDB_THUMB_COVER_SMALL) ||
 	       (format->type == ITDB_THUMB_COVER_LARGE))
 			continue;
+	    if (filename)
+	    {
 		result = itdb_artwork_add_thumbnail (artwork,
-				format->type,
-				filename);
+						     format->type,
+						     filename);
+	    }
+	    if (image_data)
+	    {
+		result = itdb_artwork_add_thumbnail_from_data (artwork,
+							       format->type,
+							       image_data,
+							       image_data_len);
+	    }
 	}
 
 	if (result != TRUE)
@@ -296,6 +310,32 @@ gboolean itdb_photodb_add_photo (Itdb_PhotoDB *db,
 
 	return result;
 }
+
+
+gboolean itdb_photodb_add_photo (Itdb_PhotoDB *db,
+				 const gchar *albumname,
+				 const gchar *filename)
+{
+    g_return_val_if_fail (db, FALSE);
+    g_return_val_if_fail (filename, FALSE);
+
+    return itdb_photodb_add_photo_internal (db, albumname, filename,
+					    NULL, 0);
+}
+
+
+gboolean itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
+					   const gchar *albumname,
+					   const guchar *image_data,
+					   gsize image_data_len)
+{
+    g_return_val_if_fail (db, FALSE);
+    g_return_val_if_fail (image_data, FALSE);
+
+    return itdb_photodb_add_photo_internal (db, albumname, NULL,
+					    image_data, image_data_len);
+}
+
 
 gboolean itdb_photodb_remove_photo (Itdb_PhotoDB *db,
 		const gint photo_id )

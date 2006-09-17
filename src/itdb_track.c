@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-04 18:08:42 jcs>
+/* Time-stamp: <2006-09-18 01:33:31 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -366,34 +366,41 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
 }
 
 
-/**
- * itdb_track_set_thumbnails:
- * @track: an #Itdb_Track
- * @filename: image file to use as a thumbnail
- *
- * Uses the image contained in @filename to generate iPod thumbnails. The image
- * can be in any format supported by gdk-pixbuf. To save memory, the thumbnails
- * will only be generated when necessary, ie when itdb_save() or a similar 
- * function is called.
- *
- * Return value: TRUE if the thumbnail could be added, FALSE otherwise.
- **/
-gboolean itdb_track_set_thumbnails (Itdb_Track *track,
-				    const gchar *filename)
-{
-    gboolean result;
+/* called by itdb_track_set_thumbnails() and
+   itdb_track_set_thumbnails_from_data() */
+static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
+						    const gchar *filename,
+						    const guchar *image_data,
+						    gsize image_data_len)
+{					     
+    gboolean result = FALSE;
 
     g_return_val_if_fail (track, FALSE);
-    g_return_val_if_fail (filename, FALSE);
 
     itdb_artwork_remove_thumbnails (track->artwork);
-    result = itdb_artwork_add_thumbnail (track->artwork,
-					 ITDB_THUMB_COVER_SMALL,
-					 filename);
-    if (result == TRUE)
+
+    if (filename)
+    {
 	result = itdb_artwork_add_thumbnail (track->artwork,
-					     ITDB_THUMB_COVER_LARGE,
+					     ITDB_THUMB_COVER_SMALL,
 					     filename);
+	if (result == TRUE)
+	    result = itdb_artwork_add_thumbnail (track->artwork,
+						 ITDB_THUMB_COVER_LARGE,
+						 filename);
+    }
+    if (image_data)
+    {
+	result = itdb_artwork_add_thumbnail_from_data (track->artwork,
+						       ITDB_THUMB_COVER_SMALL,
+						       image_data,
+						       image_data_len);
+	if (result == TRUE)
+	    result = itdb_artwork_add_thumbnail_from_data (track->artwork,
+							   ITDB_THUMB_COVER_LARGE,
+							   image_data,
+							   image_data_len);
+    }
 
     if (result == TRUE)
     {
@@ -417,6 +424,57 @@ gboolean itdb_track_set_thumbnails (Itdb_Track *track,
 
     return result;
 }
+
+
+/**
+ * itdb_track_set_thumbnails:
+ * @track: an #Itdb_Track
+ * @filename: image file to use as a thumbnail
+ *
+ * Uses the image contained in @filename to generate iPod thumbnails. The image
+ * can be in any format supported by gdk-pixbuf. To save memory, the thumbnails
+ * will only be generated when necessary, ie when itdb_save() or a similar 
+ * function is called.
+ *
+ * Return value: TRUE if the thumbnail could be added, FALSE otherwise.
+ **/
+gboolean itdb_track_set_thumbnails (Itdb_Track *track,
+				    const gchar *filename)
+{
+    g_return_val_if_fail (track, FALSE);
+    g_return_val_if_fail (filename, FALSE);
+
+    return itdb_track_set_thumbnails_internal (track, filename, NULL, 0);
+}
+
+
+
+
+/**
+ * itdb_track_set_thumbnails_from_data:
+ * @track: an #Itdb_Track
+ * @image_data: data used to create the thumbnail (the raw contents of
+ *              an image file)
+ * @image_data_len: length of above data block
+ *
+ * Uses @image_data to generate iPod thumbnails. The image can be in
+ * any format supported by gdk-pixbuf. To save memory, the thumbnails
+ * will only be generated when necessary, ie when itdb_save() or a
+ * similar function is called.
+ *
+ * Return value: TRUE if the thumbnail could be added, FALSE otherwise.
+ **/
+gboolean itdb_track_set_thumbnails_from_data (Itdb_Track *track,
+					      const guchar *image_data,
+					      gsize image_data_len)
+{
+    g_return_val_if_fail (track, FALSE);
+    g_return_val_if_fail (image_data, FALSE);
+
+    return itdb_track_set_thumbnails_internal (track, NULL,
+					       image_data, image_data_len);
+}
+
 
 /**
  * itdb_track_remove_thumbnails:
