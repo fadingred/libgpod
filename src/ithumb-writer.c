@@ -49,7 +49,6 @@ struct _iThumbWriter {
 	Itdb_ArtworkFormat *img_info;
         DbType db_type;
         guint byte_order;
-	GHashTable *cache;
 };
 typedef struct _iThumbWriter iThumbWriter;
 
@@ -197,27 +196,13 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 {
     GdkPixbuf *pixbuf = NULL;
     guint16 *pixels;
-    gchar *filename = NULL;
     gint width, height;
-
-    Itdb_Thumb *old_thumb;
 
     g_return_val_if_fail (writer, FALSE);
     g_return_val_if_fail (thumb, FALSE);
 
     if (thumb->filename)
     {   /* read image from filename */
-	/* If the same filename was written before, just use the old
-	   thumbnail to save space on the iPod */
-	old_thumb = g_hash_table_lookup (writer->cache, thumb->filename);
-	if (old_thumb != NULL)
-	{
-	    g_free (thumb->filename);
-	    memcpy (thumb, old_thumb, sizeof (Itdb_Thumb));
-	    thumb->filename = g_strdup (old_thumb->filename);
-	    return TRUE;
-	}
-
 	pixbuf = gdk_pixbuf_new_from_file_at_size (thumb->filename, 
 						   writer->img_info->width, 
 						   writer->img_info->height,
@@ -258,7 +243,7 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 		  "height", &height,
 		  NULL);
 
-    filename = thumb->filename;
+    g_free (thumb->filename);
     thumb->filename = NULL;
 
     /* FIXME: under certain conditions (probably related to
@@ -319,14 +304,6 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     g_free (pixels);
     writer->cur_offset += thumb->size;
 
-    if (filename)
-    {
-	g_hash_table_insert (writer->cache, filename, thumb);
-
-	/* !! filename is g_free()d when destroying the hash table. Do not
-	   do it here */
-    }
-
     return TRUE;
 }
 
@@ -361,9 +338,6 @@ ithumb_writer_new (const char *mount_point,
 
 	writer->img_info = g_memdup (info, sizeof (Itdb_ArtworkFormat));
 
-	writer->cache = g_hash_table_new_full (g_str_hash, g_str_equal, 
-					       g_free, NULL);
-
 	writer->byte_order = byte_order;
 	writer->db_type = db_type;
 
@@ -372,7 +346,6 @@ ithumb_writer_new (const char *mount_point,
 						  1, 
 						  db_type);
 	if (filename == NULL) {
-		g_hash_table_destroy (writer->cache);
 		g_free (writer->img_info);
 		g_free (writer);
 		return NULL;
@@ -381,7 +354,6 @@ ithumb_writer_new (const char *mount_point,
 	if (writer->f == NULL) {
 		g_print ("Error opening %s: %s\n", filename, strerror (errno));
 		g_free (filename);
-		g_hash_table_destroy (writer->cache);
 		g_free (writer->img_info);
 		g_free (writer);
 		return NULL;
@@ -401,7 +373,6 @@ ithumb_writer_free (iThumbWriter *writer)
 	{   /* Remove empty file */
 	    unlink (writer->filename);
 	}
-	g_hash_table_destroy (writer->cache);
 	g_free (writer->img_info);
 	g_free (writer->filename);
 	g_free (writer);

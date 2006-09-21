@@ -5,6 +5,10 @@
 
 	* src/itdb_device.c: changed number of directories for 6G 8GB iPod
 	  Nano to 14 after user report.
+
+	* src/ithumb-writer.c: removed re-using of thumbnail data in order
+	  to avoid incompatibility with iTunes (even though our way was
+	  more efficient...)
 	
 2006-09-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
