@@ -1,3 +1,8 @@
+2006-09-21  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c: time_added and time_modified where
+	  interchanged.
+
 2006-09-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h
