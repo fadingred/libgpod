@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-07-09 01:16:49 jcs>
+/* Time-stamp: <2006-09-21 20:12:24 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2071,7 +2071,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->type2 = get8int (cts, seek+29);
       track->compilation = get8int (cts, seek+30);
       track->rating = get8int (cts, seek+31);
-      track->time_added = get32lint(cts, seek+32); /* time added       */
+      track->time_modified = get32lint(cts, seek+32); /* time added       */
       track->size = get32lint(cts, seek+36);       /* file size        */
       track->tracklen = get32lint(cts, seek+40);   /* time             */
       track->track_nr = get32lint(cts, seek+44);   /* track number     */
@@ -2093,7 +2093,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       /* Apple Store/Audible User ID (for DRM'ed files only, set to 0
 	 otherwise). */
       track->drm_userid = get32lint (cts, seek+100);
-      track->time_modified = get32lint(cts, seek+104);/* last mod. time */
+      track->time_added = get32lint(cts, seek+104);/* last mod. time */
       track->bookmark_time = get32lint (cts, seek+108);/*time bookmarked*/
       track->dbid = get64lint (cts, seek+112);
       track->checked = get8int (cts, seek+120); /*Checked/Unchecked: 0/1*/
@@ -3263,7 +3263,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put8int (cts, track->type2);
   put8int   (cts, track->compilation);
   put8int   (cts, track->rating);
-  put32lint (cts, track->time_added); /* timestamp               */
+  put32lint (cts, track->time_modified); /* timestamp               */
   put32lint (cts, track->size);    /* filesize                   */
   put32lint (cts, track->tracklen);/* length of track in ms      */
   put32lint (cts, track->track_nr);/* track number               */
@@ -3283,7 +3283,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->cd_nr);   /* CD number                  */
   put32lint (cts, track->cds);     /* number of CDs              */
   put32lint (cts, track->drm_userid);
-  put32lint (cts, track->time_modified); /* timestamp            */
+  put32lint (cts, track->time_added); /* timestamp            */
   put32lint (cts, track->bookmark_time);
   put64lint (cts, track->dbid);
   if (track->checked)   put8int (cts, 1);

@@ -3,6 +3,9 @@
 	* src/itdb_itunesdb.c: time_added and time_modified where
 	  interchanged.
 
+	* src/itdb_device.c: changed number of directories for 6G 8GB iPod
+	  Nano to 14 after user report.
+	
 2006-09-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h

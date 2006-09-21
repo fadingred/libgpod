@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-17 13:52:24 jcs>
+/* Time-stamp: <2006-09-21 20:37:09 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -148,7 +148,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"A428",  4, ITDB_IPOD_MODEL_NANO_BLUE,   ITDB_IPOD_GENERATION_SIXTH,   6},
     {"A487",  4, ITDB_IPOD_MODEL_NANO_GREEN,  ITDB_IPOD_GENERATION_SIXTH,   6},
     {"A489",  4, ITDB_IPOD_MODEL_NANO_PINK,   ITDB_IPOD_GENERATION_SIXTH,   6},
-    {"A497",  8, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_SIXTH,  20},
+    {"A497",  8, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_SIXTH,  14},
 
     /* HP iPods, need contributions for this table */
     /* Buttons are integrated into the "touch wheel". */
