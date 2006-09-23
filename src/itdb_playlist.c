@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-05-30 00:29:18 jcs>
+/* Time-stamp: <2006-09-23 21:25:39 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -643,7 +643,7 @@ void itdb_spl_update (Itdb_Playlist *spl)
 	g_return_if_fail (t);
 	/* skip non-checked songs if we have to do so (this takes care
 	   of *all* the match_checked functionality) */
-	if (spl->splpref.matchcheckedonly && (t->checked == 0))
+	if (spl->splpref.matchcheckedonly && (t->checked != 0))
 	    continue;
 	/* first, match the rules */
 	if (spl->splpref.checkrules)

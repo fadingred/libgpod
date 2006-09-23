@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-22 00:04:45 jcs>
+/* Time-stamp: <2006-09-23 21:25:40 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -686,7 +686,7 @@ struct _Itdb_Track
   guint8  compilation;
   guint32 starttime;
   guint32 stoptime;
-  guint8  checked;
+  guint8  checked;           /* 0x0: checkmark on track is set 0x1: not set */
   guint64 dbid;              /* unique database ID */
   guint32 drm_userid;        /* Apple Store/Audible User ID (for DRM'ed
 				files only, set to 0 otherwise). */

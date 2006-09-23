@@ -38,6 +38,8 @@ Data structure to store iPod artwork (cover and photos)
 
 @type: 
 @filename: 
+@image_data: 
+@image_data_len: 
 @offset: 
 @size: 
 @width: 

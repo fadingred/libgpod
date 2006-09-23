@@ -94,6 +94,11 @@ Data structure holding information about the iPod (model, mount point, ...)
 @ITDB_IPOD_MODEL_VIDEO_WHITE: 
 @ITDB_IPOD_MODEL_VIDEO_BLACK: 
 @ITDB_IPOD_MODEL_MOBILE_1: 
+@ITDB_IPOD_MODEL_VIDEO_U2: 
+@ITDB_IPOD_MODEL_NANO_SILVER: 
+@ITDB_IPOD_MODEL_NANO_BLUE: 
+@ITDB_IPOD_MODEL_NANO_GREEN: 
+@ITDB_IPOD_MODEL_NANO_PINK: 
 
 <!-- ##### STRUCT Itdb_ArtworkFormat ##### -->
 <para>

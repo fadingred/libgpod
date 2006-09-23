@@ -4,6 +4,13 @@ If you install from CVS, call
 make
 make install
 
+To make a distribution tarball do
+
+./autogen.sh --enable-gtk-doc
+make
+make dist
+
+
 See the INSTALL and TROUBLESHOOTING file for more information.
 
 ----------------------------------------------------------------------
