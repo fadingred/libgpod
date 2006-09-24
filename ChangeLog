@@ -1,3 +1,7 @@
+2006-09-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* po/es.po: updated version by Alejandro Lamas Daviña
+
 2006-09-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h: explain 'checked' field in Itdb_Track declaration
