@@ -4,6 +4,8 @@
 
 	* configure.ac: bumped to 0.4.0 for release
 
+	* configure.ac: bumped to 0.4.1 as new CVS version
+
 2006-09-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h: explain 'checked' field in Itdb_Track declaration
