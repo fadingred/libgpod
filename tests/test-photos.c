@@ -119,6 +119,12 @@ main (int argc, char **argv)
 	g_print (_("\n"));
 	g_print (_("Usage to dump all photos to <output_dir>:\n"));
 	g_print (_("%s dump <mountpoint> <output_dir>\n"), argv[0]);
+	g_print (_("\n"));
+	g_print (_("Usage to delete a photo album:\n"));
+	g_print (_("%s delete <mountpoint> <albumname>\n"), argv[0]);
+	g_print (_("\n"));
+	g_print (_("Usage to rename a photo album:\n"));
+	g_print (_("%s rename <mountpoint> <albumname> <new_albumname>\n"), argv[0]);
         return 1;
     }
     setlocale (LC_ALL, "");
@@ -157,6 +163,50 @@ main (int argc, char **argv)
 	}
         dump_albums (db, argv[3]);
 	itdb_photodb_free (db);
+    }
+    else if (strcmp (argv[1], "delete") == 0)
+    {
+        db = itdb_photodb_parse (argv[2], &error);
+        if (db == NULL)
+        {
+            if (error)
+            {
+                g_print (_("Error reading iPod photo database.(%s)\n"), error->message);
+                g_error_free (error);
+                error = NULL;
+            }
+            else
+                g_print (_("Error reading iPod photo database.\n"));
+
+            return 1;
+        }
+        itdb_photodb_remove_photoalbum( db, argv[3] );
+        g_print (_("Writing to the photo database.\n"));
+	itdb_photodb_write (db, &error);
+        g_print (_("Freeing the photo database.\n"));
+        itdb_photodb_free (db);
+    }
+    else if (strcmp (argv[1], "rename") == 0)
+    {
+        db = itdb_photodb_parse (argv[2], &error);
+        if (db == NULL)
+        {
+            if (error)
+            {
+                g_print (_("Error reading iPod photo database.(%s)\n"), error->message);
+                g_error_free (error);
+                error = NULL;
+            }
+            else
+                g_print (_("Error reading iPod photo database.\n"));
+
+            return 1;
+        }
+        itdb_photodb_rename_photoalbum( db, argv[3], argv[4] );
+        g_print (_("Writing to the photo database.\n"));
+	itdb_photodb_write (db, &error);
+        g_print (_("Freeing the photo database.\n"));
+        itdb_photodb_free (db);
     }
     else
     {

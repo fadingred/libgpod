@@ -367,6 +367,90 @@ gboolean itdb_photodb_remove_photo (Itdb_PhotoDB *db,
 	return result;
 }
 
+/**
+ * itdb_photodb_remove_photoalbum
+ * @photodb: the #Itdb_PhotoDB to apply changes to
+ * @album_name: the name of the photoalbum to remove from the database
+ *
+ * Return value: TRUE on success, FALSE if the album specified by @album_name could not
+ *               be found in the database.
+ */
+gboolean itdb_photodb_remove_photoalbum (Itdb_PhotoDB *db, const gchar *album_name)
+{
+        gboolean result = TRUE;
+        GList *it;
+
+        g_return_val_if_fail (db, FALSE);
+        g_return_val_if_fail (album_name, FALSE);
+
+        /* Remove all the photos within that album from the library */
+        for (it = db->photoalbums; it != NULL; it = it->next )
+        {
+                Itdb_PhotoAlbum *album;
+                GList *it2;
+
+                album = (Itdb_PhotoAlbum*)it->data;
+                g_return_val_if_fail (album, FALSE);
+                /* Have we found the desired album? */
+                if ( strcmp (album->name, album_name) == 0 )
+                {
+                        /* iterate over the photos within that album and remove them from the database */
+                        for (it2 = album->members; it2 != NULL; it2 = it2->next )
+                        {
+                                gint photo_id = GPOINTER_TO_INT(it2->data);
+                                g_print (_("Deleting photo with id: %d\n"), photo_id);
+                                result = itdb_photodb_remove_photo (db, photo_id);
+                                if (result == FALSE)
+                                        break;
+                        }
+                        /* remove the album only if all members were successfully removed */
+                        if (result == TRUE )
+                        {
+                            g_print (_("Successfuly remove album photos, removing album (%s) now.\n"), album_name );
+                            db->photoalbums = g_list_remove (db->photoalbums, album);
+                        }
+                        return result;
+                }
+        }
+        /* If we made it here, then there was no album by that name */
+        return FALSE;
+}
+
+/**
+ * itdb_photodb_rename_photoalbum:
+ * @album_name: The album name (in the database, @db) to be renamed
+ * @new_album_name: The name which @album_name will be renamed to
+ * 
+ * Rename the album given by @album_name to @new_album_name
+ *
+ * Return TRUE if successful, or FALSE if the album @album_name could not be found
+ */
+gboolean itdb_photodb_rename_photoalbum (Itdb_PhotoDB *db,
+		        const gchar *album_name, const gchar *new_album_name)
+{
+	GList *it;
+
+	g_return_val_if_fail (db, FALSE);
+	g_return_val_if_fail (album_name, FALSE);
+	g_return_val_if_fail (new_album_name, FALSE);
+
+	for (it = db->photoalbums; it != NULL; it = it->next )
+	{
+		Itdb_PhotoAlbum *album;
+
+		album = (Itdb_PhotoAlbum*)it->data;
+		g_return_val_if_fail (album, FALSE);
+		/* Have we found the desired album? */
+		if (strcmp (album->name, album_name) == 0 )
+		{
+			strcpy (album->name,new_album_name);
+			return TRUE;
+		}
+	}
+	/* Obviously the source album wasn't found */
+	return FALSE;
+}
+
 Itdb_PhotoAlbum *itdb_photodb_photoalbum_new (Itdb_PhotoDB *db,
 		const gchar *album_name)
 {

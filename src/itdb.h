@@ -965,6 +965,10 @@ gboolean itdb_photodb_write (Itdb_PhotoDB *db, GError **error);
 void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *pa);
 gboolean itdb_photodb_remove_photo (Itdb_PhotoDB *db,
         const gint photo_id );
+gboolean itdb_photodb_remove_photoalbum (Itdb_PhotoDB *db, 
+        const gchar *album_name);
+gboolean itdb_photodb_rename_photoalbum (Itdb_PhotoDB *db,
+	const gchar *album_name, const gchar *new_album_name);
 
 /* itdb_artwork_... */
 Itdb_Artwork *itdb_artwork_new (void);

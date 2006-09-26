@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: sv\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-09-24 18:02+0900\n"
-"PO-Revision-Date: 2006-05-26 00:41+0900\n"
+"PO-Revision-Date: 2006-09-25 21:57+0200\n"
 "Last-Translator: Stefan Asserhäll <stefan.asserhall@comhem.se>\n"
 "Language-Team: Svenska <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
-"X-Generator: KBabel 1.11.2\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: ../src/db-artwork-parser.c:133
 #, c-format
@@ -36,7 +36,7 @@ msgstr "Oväntat mhsd index: %d\n"
 #: ../src/db-image-parser.c:118
 #, c-format
 msgid "Unexpected image type in mhni: size: %ux%u (%d), offset: %d\n"
-msgstr ""
+msgstr "Oväntad bildtyp i mhni: storlek: %ux%u (%d), position: %d\n"
 
 #: ../src/itdb_artwork.c:306
 #, c-format
@@ -63,128 +63,128 @@ msgstr ""
 
 #: ../src/itdb_device.c:170
 msgid "Invalid"
-msgstr ""
+msgstr "Ogiltig"
 
 #: ../src/itdb_device.c:171 ../src/itdb_device.c:197
 msgid "Unknown"
-msgstr ""
+msgstr "Okänd"
 
 #: ../src/itdb_device.c:172
 msgid "Color"
-msgstr ""
+msgstr "Färg"
 
 #: ../src/itdb_device.c:173
 msgid "Color U2"
-msgstr ""
+msgstr "Färg U2"
 
 #: ../src/itdb_device.c:174
 msgid "Grayscale"
-msgstr ""
+msgstr "Gråskala"
 
 #: ../src/itdb_device.c:175
 msgid "Grayscale U2"
-msgstr ""
+msgstr "Gråskala U2"
 
 #: ../src/itdb_device.c:176
 msgid "Mini (Silver)"
-msgstr ""
+msgstr "Mini (silver)"
 
 #: ../src/itdb_device.c:177
 msgid "Mini (Blue)"
-msgstr ""
+msgstr "Mini (blå)"
 
 #: ../src/itdb_device.c:178
 msgid "Mini (Pink)"
-msgstr ""
+msgstr "Mini (rosa)"
 
 #: ../src/itdb_device.c:179
 msgid "Mini (Green)"
-msgstr ""
+msgstr "Mini (grön)"
 
 #: ../src/itdb_device.c:180
 msgid "Mini (Gold)"
-msgstr ""
+msgstr "Mini (guld)"
 
 #: ../src/itdb_device.c:181
 msgid "Shuffle"
-msgstr ""
+msgstr "Shuffle"
 
 #: ../src/itdb_device.c:182
 msgid "Nano (White)"
-msgstr ""
+msgstr "Nano (vit)"
 
 #: ../src/itdb_device.c:183
 msgid "Nano (Black)"
-msgstr ""
+msgstr "Nano (svart)"
 
 #: ../src/itdb_device.c:184
 msgid "Video (White)"
-msgstr ""
+msgstr "Video (vit)"
 
 #: ../src/itdb_device.c:185
 msgid "Video (Black)"
-msgstr ""
+msgstr "Video (svart)"
 
 #: ../src/itdb_device.c:186
 msgid "Mobile (1)"
-msgstr ""
+msgstr "Mobil (1)"
 
 #: ../src/itdb_device.c:187
 msgid "Video U2"
-msgstr ""
+msgstr "Video U2"
 
 #: ../src/itdb_device.c:188
 msgid "Nano (Silver)"
-msgstr ""
+msgstr "Nano (silver)"
 
 #: ../src/itdb_device.c:189
 msgid "Nano (Blue)"
-msgstr ""
+msgstr "Nano (blå)"
 
 #: ../src/itdb_device.c:190
 msgid "Nano (Green)"
-msgstr ""
+msgstr "Nano (grön)"
 
 #: ../src/itdb_device.c:191
 msgid "Nano (Pink)"
-msgstr ""
+msgstr "Nano (rosa)"
 
 #: ../src/itdb_device.c:198
 msgid "First Generation"
-msgstr ""
+msgstr "Första generationen"
 
 #: ../src/itdb_device.c:199
 msgid "Second Generation"
-msgstr ""
+msgstr "Andra generationen"
 
 #: ../src/itdb_device.c:200
 msgid "Third Generation"
-msgstr ""
+msgstr "Tredje generationen"
 
 #: ../src/itdb_device.c:201
 msgid "Fourth Generation"
-msgstr ""
+msgstr "Fjärde generationen"
 
 #: ../src/itdb_device.c:202
 msgid "Fifth Generation"
-msgstr ""
+msgstr "Femte generationen"
 
 #: ../src/itdb_device.c:203
 msgid "Sixth Generation"
-msgstr ""
+msgstr "Sjätte generationen"
 
 #: ../src/itdb_device.c:204
 msgid "Mobile Phone"
-msgstr ""
+msgstr "Mobiltelefon"
 
 #: ../src/itdb_device.c:449
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open '%s' for writing."
-msgstr "Fel när '%s' skulle öppnas för skrivning (%s)."
+msgstr "Kunde inte öppna '%s' för skrivning."
 
 #: ../src/itdb_device.c:458
 msgid "Device directory does not exist."
-msgstr ""
+msgstr "Enhetskatalog finns inte."
 
 #: ../src/itdb_itunesdb.c:371
 #, c-format
@@ -243,13 +243,11 @@ msgstr ""
 #: ../src/itdb_itunesdb.c:1514
 #, c-format
 msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
-msgstr ""
-"iTunes databas skadad: Datalängd 0 för data på position %ld i filen '%s'."
+msgstr "iTunes databas skadad: Datalängd 0 för data på position %ld i filen '%s'."
 
 #: ../src/itdb_itunesdb.c:1527
 #, c-format
-msgid ""
-"iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
+msgid "iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
 msgstr ""
 "iTunes databas skadad: Någon sektion '%s' hittades inte i sektion '%s' med "
 "början på %ld."
@@ -259,8 +257,7 @@ msgstr ""
 msgid ""
 "header length of '%s' smaller than expected (%d < %d) at offset %ld in file "
 "'%s'."
-msgstr ""
-"Huvudlängd för '%s' mindre än väntat (%d < %d) på position %ld i filen '%s'."
+msgstr "Huvudlängd för '%s' mindre än väntat (%d < %d) på position %ld i filen '%s'."
 
 #: ../src/itdb_itunesdb.c:1626
 #, c-format
@@ -333,8 +330,7 @@ msgstr "OTG-spellistefil ('%s'): Huvudlängd mindre än väntat (%d < 20)"
 
 #: ../src/itdb_itunesdb.c:2323
 #, c-format
-msgid ""
-"OTG playlist file file ('%s'): entry length smaller than expected (%d<4)."
+msgid "OTG playlist file file ('%s'): entry length smaller than expected (%d<4)."
 msgstr "OTG-spellistefil ('%s'): Postlängd mindre än väntat (%d < 4)"
 
 #: ../src/itdb_itunesdb.c:2358
@@ -409,9 +405,9 @@ msgid "Cannot write mhod of type %d\n"
 msgstr "Kan inte skriva mhod av typen %d\n"
 
 #: ../src/itdb_itunesdb.c:4098
-#, fuzzy, c-format
+#, c-format
 msgid "Opening of '%s' for writing failed (%s)."
-msgstr "Fel när '%s' skulle öppnas för skrivning."
+msgstr "Fel när '%s' skulle öppnas för skrivning (%s)."
 
 #: ../src/itdb_itunesdb.c:4109 ../src/itdb_itunesdb.c:4120
 #, c-format
@@ -470,17 +466,17 @@ msgstr "Fel när '%s' skulle stängas (%s)."
 
 #: ../src/itdb_itunesdb.c:5526
 msgid "iPod"
-msgstr ""
+msgstr "iPod"
 
 #: ../src/itdb_itunesdb.c:5919
 #, c-format
 msgid "Problem creating iPod directory or file: '%s'."
-msgstr ""
+msgstr "Problem att skapa iPod-katalog eller fil: '%s'."
 
 #: ../src/itdb_photoalbum.c:25
-#, fuzzy, c-format
+#, c-format
 msgid "Photos directory not found: '%s' (or similar)."
-msgstr "Styrkatalog hittades inte: '%s' (eller liknande)."
+msgstr "Fotokatalog hittades inte: '%s' (eller liknande)."
 
 #. New action!
 #: ../src/itdb_playlist.c:78
@@ -490,49 +486,48 @@ msgstr "Okänd åtgärd (%d) i smart spellista kommer att ignoreras.\n"
 
 #: ../tests/test-photos.c:116
 msgid "Usage to add photos:\n"
-msgstr ""
+msgstr "Användning för att lägga till foton:\n"
 
 #: ../tests/test-photos.c:117
 #, c-format
 msgid "%s <mountpoint> <albumname> <filename(s)>\n"
-msgstr ""
+msgstr "%s <monteringsplats> <albumnamn> <filnamn>\n"
 
 #: ../tests/test-photos.c:118
-msgid ""
-"albumname should be set to 'master' to add photos to the master photo album\n"
-msgstr ""
+msgid "albumname should be set to 'master' to add photos to the master photo album\n"
+msgstr "albumnamn ska vara 'master' för att lägga till foton i huvudfotoalbumet\n"
 
 #: ../tests/test-photos.c:119
 msgid "\n"
-msgstr ""
+msgstr "\n"
 
 #: ../tests/test-photos.c:120
 msgid "Usage to dump all photos to <output_dir>:\n"
-msgstr ""
+msgstr "Användning för att lagra alla foton i <utdatakatalog>:\n"
 
 #: ../tests/test-photos.c:121
 #, c-format
 msgid "%s dump <mountpoint> <output_dir>\n"
-msgstr ""
+msgstr "%s dump <monteringsplats> <utdatakatalog>\n"
 
 #: ../tests/test-photos.c:133
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating '%s' (mkdir)\n"
-msgstr "Fel vid borttagning av '%s' (%s)."
+msgstr "Fel när '%s' skulle skapas (mkdir)\n"
 
 #: ../tests/test-photos.c:139
 #, c-format
 msgid "Error: '%s' is not a directory\n"
-msgstr ""
+msgstr "Fel: '%s' är inte en katalog\n"
 
 #: ../tests/test-photos.c:148
-#, fuzzy, c-format
+#, c-format
 msgid "Error reading iPod photo database (%s).\n"
-msgstr "Fel vid byte av namn på '%s' till '%s' (%s)."
+msgstr "Fel vid vid läsning av iPod fotodatabas (%s).\n"
 
 #: ../tests/test-photos.c:154
 msgid "Error reading iPod photo database.\n"
-msgstr ""
+msgstr "Fel vid läsning av iPod fotodatabas.\n"
 
 #: ../tests/test-photos.c:168
 #, c-format
@@ -540,11 +535,10 @@ msgid ""
 "Error reading iPod photo database (%s).\n"
 "Will attempt to create a new database.\n"
 msgstr ""
+"Fel vid läsning av iPod fotodatabas (%s).\n"
+"Försöker skapa en ny databas.\n"
 
 #: ../tests/test-photos.c:174
-msgid ""
-"Error reading iPod photo database, will attempt to create a new database\n"
-msgstr ""
+msgid "Error reading iPod photo database, will attempt to create a new database\n"
+msgstr "Fel vid läsning av iPod fotodatabas, försöker skapa en ny databas\n"
 
-#~ msgid "Writing to '%s' failed."
-#~ msgstr "Fel vid skrivning till '%s'."
