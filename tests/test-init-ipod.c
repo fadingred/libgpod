@@ -27,7 +27,7 @@
 
 #include <locale.h>
 #include <glib-object.h>
-#include <glib/gi18n-lib.h>
+#include <glib/gi18n.h>
 
 
 static void usage (const char *argv0)
