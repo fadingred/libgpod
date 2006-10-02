@@ -26,7 +26,7 @@
 #include "itdb.h"
 
 #include <locale.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
+#include <glib-object.h>
 #include <glib/gi18n-lib.h>
 
 

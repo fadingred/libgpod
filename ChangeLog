@@ -1,3 +1,10 @@
+2006-10-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* tests/Makefile.am
+	  tests/test-init-ipod.c: fix compilation error when building with
+	  --disable-gdk-pixbuf. Thanks to David Philippi and Christophe
+	  Fergeau.
+
 2006-09-26  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* po/sv.po: updated version by Stefan Asserhall

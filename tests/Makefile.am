@@ -23,6 +23,9 @@ test_itdb_LDADD =
 test_ls_SOURCES = test-ls.c
 test_ls_LDADD = 
 
+test_init_ipod_SOURCES = test-init-ipod.c
+test_init_ipod_LDADD = 
+
 if HAVE_TAGLIB
 test_rebuild_db_SOURCES = test-rebuild-db.cc
 test_rebuild_db_LDADD = $(TAGLIB_LIBS)
@@ -35,8 +38,6 @@ test_thumbnails_CFLAGS = $(AM_CFLAGS)
 
 test_photos_SOURCES = test-photos.c
 test_photos_CFLAGS = $(AM_CFLAGS)
-
-test_init_ipod_SOURCES = test-init-ipod.c
 
 test_write_thumbnails_SOURCES = test-write-covers.c
 test_write_thumbnails_CFLAGS = $(AM_CFLAGS)
