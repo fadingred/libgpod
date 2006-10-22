@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-23 21:25:39 jcs>
+/* Time-stamp: <2006-10-22 17:42:28 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1232,8 +1232,9 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
     }
     if (pl->sortorder == 0)  pl->sortorder = ITDB_PSO_MANUAL;
     if (pl->timestamp == 0)  pl->timestamp = itdb_time_get_mac_time ();
-    if (pos == -1)  itdb->playlists = g_list_append (itdb->playlists, pl);
-    else  itdb->playlists = g_list_insert (itdb->playlists, pl, pos);
+
+    /* pos == -1 appends at the end of the list */
+    itdb->playlists = g_list_insert (itdb->playlists, pl, pos);
 }
 
 
@@ -1335,8 +1336,7 @@ void itdb_playlist_add_track (Itdb_Playlist *pl,
 
     track->itdb = pl->itdb;
 
-    if (pos == -1)  pl->members = g_list_append (pl->members, track);
-    else  pl->members = g_list_insert (pl->members, track, pos);
+    pl->members = g_list_insert (pl->members, track, pos);
 }
 
 

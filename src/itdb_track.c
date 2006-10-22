@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-18 01:33:31 jcs>
+/* Time-stamp: <2006-10-22 17:42:23 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -234,8 +234,7 @@ void itdb_track_add (Itdb_iTunesDB *itdb, Itdb_Track *track, gint32 pos)
 
     itdb_track_set_defaults (track);
 
-    if (pos == -1)  itdb->tracks = g_list_append (itdb->tracks, track);
-    else  itdb->tracks = g_list_insert (itdb->tracks, track, pos);
+    itdb->tracks = g_list_insert (itdb->tracks, track, pos);
 }
 
 /**

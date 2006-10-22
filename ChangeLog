@@ -1,5 +1,11 @@
 2006-10-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+        * src/itdb_playlist.c (itdb_playlist_add, itdb_playlist_add_track):
+	  src/itdb_track.c (itdb_track_add): simplify code by using
+	  g_list_insert().
+
+2006-10-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* tests/Makefile.am
 	  tests/test-init-ipod.c: fix compilation error when building with
 	  --disable-gdk-pixbuf. Thanks to David Philippi and Christophe
