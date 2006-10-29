@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-10-29 19:15:33 jcs>
+/* Time-stamp: <2006-10-30 01:15:39 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -386,7 +386,8 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 	if (g_stat  (filename, &statbuf) != 0)
 	{
 	    g_set_error (error, 0, -1,
-			 _("Could not access file '%s'. Photo not added."));
+			 _("Could not access file '%s'. Photo not added."),
+			 filename);
 	    return NULL;
 	}
     }
