@@ -79,7 +79,7 @@ static int
 parse_mhia (DBParseContext *ctx, Itdb_PhotoAlbum *photo_album, GError *error)
 {
 	MhiaHeader *mhia;
-	gint image_id;
+	guint32 image_id;
 
 	mhia = db_parse_context_get_m_header (ctx, MhiaHeader, "mhia");
 	if (mhia == NULL) {
@@ -88,7 +88,7 @@ parse_mhia (DBParseContext *ctx, Itdb_PhotoAlbum *photo_album, GError *error)
 	dump_mhia (mhia);
 	image_id = get_gint32 (mhia->image_id, ctx->byte_order);
 	photo_album->members = g_list_append (photo_album->members,
-					      GINT_TO_POINTER(image_id));
+					      GUINT_TO_POINTER(image_id));
 	db_parse_context_set_total_len (ctx,
 					get_gint32_db (ctx->db, mhia->total_len));
 	return 0;
@@ -402,7 +402,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 	photo_album = g_new0 (Itdb_PhotoAlbum, 1);
 	photo_album->num_images = get_gint32( mhba->num_mhias, ctx->byte_order);
 	photo_album->album_id = get_gint32( mhba->playlist_id, ctx->byte_order);
-	photo_album->master = get_gint32( mhba->master, ctx->byte_order);
+	photo_album->album_type = get_gint32( mhba->album_type, ctx->byte_order);
 	photo_album->prev_album_id = get_gint32( mhba->prev_playlist_id, ctx->byte_order);
 
 	cur_offset = ctx->header_len;
@@ -766,6 +766,9 @@ ipod_parse_photo_db (Itdb_PhotoDB *photodb)
 	char *filename;
 	Itdb_DB db;
 
+	GList *gl;
+	GHashTable *hash;
+
 	db.db.photodb = photodb;
 	db.db_type = DB_TYPE_PHOTO;
 
@@ -784,6 +787,35 @@ ipod_parse_photo_db (Itdb_PhotoDB *photodb)
 	parse_mhfd (ctx, NULL);
 	db_parse_context_destroy (ctx, TRUE);
 
+	/* Now we need to replace references to artwork_ids in the
+	 * photo albums with references to the actual artwork
+	 * structure. Since we cannot guarantee that the list with the
+	 * photos is read before the album list, we cannot safely do
+	 * this at the time of reading the ids. */
+
+	/* Create a hash for faster lookup */
+	hash = g_hash_table_new (g_int_hash, g_int_equal);
+	for (gl=photodb->photos; gl; gl=gl->next)
+	{
+	    Itdb_Artwork *photo = gl->data;
+	    g_return_val_if_fail (photo, -1);
+	    g_hash_table_insert (hash, &photo->id, photo);
+/*	    printf ("id: %d, photo: %p\n", photo->id, photo);*/
+	}
+	for (gl=photodb->photoalbums; gl; gl=gl->next)
+	{
+	    GList *glp;
+	    Itdb_PhotoAlbum *album = gl->data;
+	    g_return_val_if_fail (album, -1);
+	    for (glp=album->members; glp; glp=glp->next)
+	    {
+		guint image_id = GPOINTER_TO_UINT (glp->data);
+		Itdb_Artwork *photo = g_hash_table_lookup (hash, &image_id);
+/*		printf ("id: %d, photo: %p\n", image_id, photo);*/
+		glp->data = photo;
+	    }
+	}
+	g_hash_table_destroy (hash);
 	return 0;
 }
 

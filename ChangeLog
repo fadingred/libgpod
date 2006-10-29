@@ -1,8 +1,65 @@
-2006-10-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2006-10-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	Major rework of picture support.
+	
+	* src/db-artwork-parser.c, src/db-artwork-writer.c, src/itdb.h,
+	  src/db-itunes-parser.h: renamed 'master' to 'album_type' in
+	  MhbaHeader and Itdb_PhotoAlbum.
+
+	* src/db-artwork-parser.c, src/db-artwork-writer.c,
+	  src/itdb_photoalbum.c: Itdb_Photoalbum->members are now pointers
+	  to the corresponding Itdb_Artwork instead of image_ids.
+
+	* src/itdb_photoalbum.c: album_ids and image_ids are set just
+	  before writing the PhotoDB in itdb_photodb_write().
+
+	* src/itdb_photoalbum.c: new interface, basically use as follows:
+
+	  itdb_photodb_parse():
+	    Read an existing PhotoDB.
+
+          itdb_photodb_create():
+            Create a new Itdb_PhotoDB structure. The Photo Library Album is
+	    (first album) is created automatically.
+
+          itdb_photodb_add_photo(), itdb_photodb_add_photo_from_data():
+	    Add a photo to the PhotoDB (from file or from a chunk of
+	    memory). It is automatically added to the Photo Library Album
+	    (first album), which is created if it does not exist already.
+
+	  itdb_photodb_photoalbum_craete():
+	    Create and add a new photoalbum.
+
+	  itdb_photodb_photoalbum_add_photo():
+	    Add a photo (Itdb_Artwork) to an existing photoalbum.
+
+	  itdb_photodb_photoalbum_remove():
+	    Remove an existing photoalbum. Pictures can be kept in the
+	    Photo Library or automatically removed as well.
+
+	  itdb_photodb_remove_photo():
+	    Remove a photo either from a photoalbum or completely from the
+	    database.
+
+	  itdb_photodb_write():
+	    Write out your PhotoDB.
+
+	  itdb_photodb_free():
+	    Free all memory taken by the PhotoDB.
+
+	  itdb_photodb_photoalbum_by_name():
+	    Find the first photoalbum with a given name.
 
         * src/itdb_playlist.c (itdb_playlist_add, itdb_playlist_add_track):
 	  src/itdb_track.c (itdb_track_add): simplify code by using
 	  g_list_insert().
+
+	* tests/test-photos.c: change to new interface, add new commands
+	  'list' to list photo IDs in the database, 'remove' to remove IDs
+	  from an album or the iPod, or remove entire photoalbums from the
+	  iPod.
+
+	* src/db-itunes-parser.h: added comments to _MhbaHeader definition.
 
 2006-10-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

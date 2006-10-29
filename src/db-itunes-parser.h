@@ -612,22 +612,26 @@ struct _MhbaHeader {
 	unsigned char header_id[4];
 	gint32 header_len;
 	gint32 total_len;
-	gint32 num_mhods; /* number of Data Objects in the List, probably always 1 */
-	gint32 num_mhias; /* number of pictures in the album */
-	gint32 playlist_id; /* starts out at $64 and increments by 1 */
-	gint32 unknown2; /* unknown, seems to be always 0 */
-	gint16 unknown3; /* unknown, seems to be always 0 */
-	gchar master;
-	/* FIXME: not sure if I have these right; iPod doesn't seem to listen to them */
-	guint8 playmusic;
-	guint8 repeat;
-	guint8 random;
-	guint8 show_titles;
-	guint8 transition_direction;
-	gint32 slide_duration;
-	gint32 transition_duration;
-	gint32 unknown4;
-	gint32 unknown5;
+	gint32 num_mhods;  /* number of Data Objects in the List,
+			      probably always 1 */
+	gint32 num_mhias;  /* number of pictures in the album */
+	gint32 playlist_id;/* starts out at $64 and increments by 1 */
+	gint32 unknown2;   /* unknown, seems to be always 0 */
+	gint16 unknown3;   /* unknown, seems to be always 0 */
+	gchar album_type;  /* 1 = master photo list ("Photo Library"),
+			      2 = normal album, sometimes 4 and 5 */
+	guint8 playmusic;  /* play music during slideshow (from iPhoto setting) */
+	guint8 repeat;     /* repeat the slideshow (from iPhoto setting) */
+	guint8 random;     /* show the slides in random order (from iPhoto
+			      setting) */
+        guint8 show_titles;/* show slide captions (from iPhoto setting) */
+	guint8 transition_direction; /* 0=none, 1=left-to-right,
+			      2=right-to-left, 3=top-to-bottom,
+			      4=bottom-to-top (from iPhoto setting) */
+        gint32 slide_duration; /* in seconds (from iPhoto setting) */
+	gint32 transition_duration; /* in milliseconds (from iPhoto setting) */
+	gint32 unk044;
+	gint32 unk048;
 	gint64 song_id;
 	gint32 prev_playlist_id; /* the id of the previous playlist */
 	unsigned char padding[];
@@ -656,7 +660,7 @@ struct _MhiaHeader {
 	gint32 total_len; /* probably the size of the header and all child records;
 			   * as there aren't any child records this is equal to header length */
 	gint32 unknown1; /* seems to be zero */
-	gint32 image_id; /* the id of the mhii record this mhia refers to */
+	guint32 image_id; /* the id of the mhii record this mhia refers to */
 	unsigned char padding[];
 };
 

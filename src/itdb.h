@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-23 21:25:40 jcs>
+/* Time-stamp: <2006-10-29 15:03:21 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -66,74 +66,6 @@ typedef struct _Itdb_Playlist Itdb_Playlist;
 typedef struct _Itdb_PhotoAlbum Itdb_PhotoAlbum;
 typedef struct _Itdb_Track Itdb_Track;
 typedef struct _Itdb_IpodInfo Itdb_IpodInfo;
-
-
-/* ------------------------------------------------------------ *\
- *
- * Thumbnail-relevant definitions
- *
-\* ------------------------------------------------------------ */
-
-/* Types of thumbnails in Itdb_Image */
-typedef enum { 
-    ITDB_THUMB_COVER_SMALL,
-    ITDB_THUMB_COVER_LARGE,
-    ITDB_THUMB_PHOTO_SMALL,
-    ITDB_THUMB_PHOTO_LARGE,
-    ITDB_THUMB_PHOTO_FULL_SCREEN,
-    ITDB_THUMB_PHOTO_TV_SCREEN
-} ItdbThumbType;
-
-
-/* The Itdb_Thumb structure can represent two slightly different
-   thumbnails:
-
-  a) a thumbnail before it's transferred to the iPod.
-
-     offset and size are 0
-
-     width and height, if unequal 0, will indicate the size on the
-     iPod. width and height are set the first time a pixbuf is
-     requested for this thumbnail.
-
-     type is set according to the type this thumbnail represents
-
-     filename point to a 'real' image file OR image_data and
-     image_data_len are set.
- 
-  b) a thumbnail (big or small) stored on a database in the iPod.  In
-     these cases, id corresponds to the ID originally used in the
-     database, filename points to a .ithmb file on the iPod
- */
-struct _Itdb_Thumb {
-    ItdbThumbType type;
-    gchar *filename;
-    guchar *image_data;      /* holds the thumbnail data of
-				non-transfered thumbnails when
-				filename == NULL */
-    gsize  image_data_len;   /* length of data */
-    guint32 offset;
-    guint32 size;
-    gint16 width;
-    gint16 height;
-    gint16 horizontal_padding;
-    gint16 vertical_padding;
-};
-
-struct _Itdb_Artwork {
-    GList *thumbnails;    /* list of Itdb_Thumbs */
-    guint32 artwork_size; /* Size in bytes of the original source image */
-    guint32 id;           /* Artwork id used by photoalbums, starts at
-			   * 0x40... libgpod will set this on sync. */
-    gint32 creation_date; /* Date the image was created */
-    /* below is for use by application */
-    guint64 usertype;
-    gpointer userdata;
-    /* function called to duplicate userdata */
-    ItdbUserDataDuplicateFunc userdata_duplicate;
-    /* function called to free userdata */
-    ItdbUserDataDestroyFunc userdata_destroy;
-};
 
 
 /* ------------------------------------------------------------ *\
@@ -459,24 +391,84 @@ struct _SPLRules
 
 /* ------------------------------------------------------------ *\
  *
- * iTunesDB, Playlists, Tracks
+ * iTunesDB, Playlists, Tracks, PhotoDB, Artwork, Thumbnails
  *
 \* ------------------------------------------------------------ */
 
 /* one star is how much (track->rating) */
 #define ITDB_RATING_STEP 20
 
+/* Types of thumbnails in Itdb_Image */
+typedef enum { 
+    ITDB_THUMB_COVER_SMALL,
+    ITDB_THUMB_COVER_LARGE,
+    ITDB_THUMB_PHOTO_SMALL,
+    ITDB_THUMB_PHOTO_LARGE,
+    ITDB_THUMB_PHOTO_FULL_SCREEN,
+    ITDB_THUMB_PHOTO_TV_SCREEN
+} ItdbThumbType;
+
+
+/* The Itdb_Thumb structure can represent two slightly different
+   thumbnails:
+
+  a) a thumbnail before it's transferred to the iPod.
+
+     offset and size are 0
+
+     width and height, if unequal 0, will indicate the size on the
+     iPod. width and height are set the first time a pixbuf is
+     requested for this thumbnail.
+
+     type is set according to the type this thumbnail represents
+
+     filename point to a 'real' image file OR image_data and
+     image_data_len are set.
+ 
+  b) a thumbnail (big or small) stored on a database in the iPod.  In
+     these cases, id corresponds to the ID originally used in the
+     database, filename points to a .ithmb file on the iPod
+ */
+struct _Itdb_Thumb {
+    ItdbThumbType type;
+    gchar *filename;
+    guchar *image_data;      /* holds the thumbnail data of
+				non-transfered thumbnails when
+				filename == NULL */
+    gsize  image_data_len;   /* length of data */
+    guint32 offset;
+    guint32 size;
+    gint16 width;
+    gint16 height;
+    gint16 horizontal_padding;
+    gint16 vertical_padding;
+};
+
+struct _Itdb_Artwork {
+    GList *thumbnails;    /* list of Itdb_Thumbs */
+    guint32 artwork_size; /* Size in bytes of the original source image */
+    guint32 id;           /* Artwork id used by photoalbums, starts at
+			   * 0x40... libgpod will set this on sync. */
+    gint32 creation_date; /* Date the image was created */
+    /* below is for use by application */
+    guint64 usertype;
+    gpointer userdata;
+    /* functions called to duplicate/free userdata */
+    ItdbUserDataDuplicateFunc userdata_duplicate;
+    ItdbUserDataDestroyFunc userdata_destroy;
+};
+
+
 struct _Itdb_PhotoDB
 {
-    GList *photos;
-    GList *photoalbums;
+    GList *photos;      /* (Itdb_Artwork *)     */
+    GList *photoalbums; /* (Itdb_PhotoAlbum *)  */
     Itdb_Device *device;/* iPod device info     */
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
-    /* function called to duplicate userdata */
+    /* functions called to duplicate/free userdata */
     ItdbUserDataDuplicateFunc userdata_duplicate;
-    /* function called to free userdata */
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
@@ -491,26 +483,26 @@ struct _Itdb_iTunesDB
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
-    /* function called to duplicate userdata */
+    /* functions called to duplicate/free userdata */
     ItdbUserDataDuplicateFunc userdata_duplicate;
-    /* function called to free userdata */
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
 struct _Itdb_PhotoAlbum
 {
     gchar *name;          /* name of photoalbum in UTF8            */
-    GList *members;       /* photos in album (Track *)             */
+    GList *members;       /* photos in album (Itdb_Artwork *)      */
     gint  num_images;     /* number of photos in album             */
-    gint  master;         /* 0x01 for master, 0x00 otherwise       */
-    gint  album_id;
-    gint  prev_album_id;
+    gint  album_type;     /* 0x01 for master (Photo Library),
+			     0x02 otherwise                        */
+    /* set automatically at time of writing the PhotoDB */
+    gint32  album_id;
+    gint32  prev_album_id;
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
-    /* function called to duplicate userdata */
+    /* functions called to duplicate/free userdata */
     ItdbUserDataDuplicateFunc userdata_duplicate;
-    /* function called to free userdata */
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
@@ -550,9 +542,8 @@ struct _Itdb_Playlist
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
-    /* function called to duplicate userdata */
+    /* functions called to duplicate/free userdata */
     ItdbUserDataDuplicateFunc userdata_duplicate;
-    /* function called to free userdata */
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
@@ -732,7 +723,7 @@ struct _Itdb_Track
 			 0x000c, AAC songs are always 0x0033, Audible
 			 files are 0x0029, WAV files are 0x0. itdb
 			 will attempt to set this value when adding a
-			 track. */  
+			 track. */ 
   guint16 unk146;     /* unknown, but appears to be 1 if played at
 			 least once in iTunes and 0 otherwise. */
   guint32 unk148;     /* unknown - used for Apple Store DRM songs
@@ -791,9 +782,8 @@ struct _Itdb_Track
   /* below is for use by application */
   guint64 usertype;
   gpointer userdata;
-  /* function called to duplicate userdata */
+  /* functions called to duplicate/free userdata */
   ItdbUserDataDuplicateFunc userdata_duplicate;
-  /* function called to free userdata */
   ItdbUserDataDestroyFunc userdata_destroy;
 };
 /* (gtkpod note: don't forget to add fields read from the file to
@@ -939,7 +929,7 @@ void itdb_spl_update (Itdb_Playlist *spl);
 void itdb_spl_update_all (Itdb_iTunesDB *itdb);
 void itdb_spl_update_live (Itdb_iTunesDB *itdb);
 
-/* thumbnails functions */
+/* thumbnails functions for coverart */
 /* itdb_track_... */
 gboolean itdb_track_set_thumbnails (Itdb_Track *track,
 				    const gchar *filename);
@@ -948,25 +938,38 @@ gboolean itdb_track_set_thumbnails_from_data (Itdb_Track *track,
 					      gsize image_data_len);
 void itdb_track_remove_thumbnails (Itdb_Track *track);
 
-/* photoalbum functions */
+/* photoalbum functions -- see itdb_photoalbum.c for instructions on
+ * how to use. */
 Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error);
-gboolean itdb_photodb_add_photo (Itdb_PhotoDB *db,
-				 const gchar *albumname,
-				 const gchar *filename);
-gboolean itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
-					   const gchar *albumname,
-					   const guchar *image_data,
-					   gsize image_data_len);
-Itdb_PhotoAlbum *itdb_photodb_photoalbum_new (Itdb_PhotoDB *db,
-					      const gchar *album_name);
-Itdb_PhotoDB *itdb_photodb_new (void);
+Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db, const gchar *filename,
+				      GError **error);
+Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
+						const guchar *image_data,
+						gsize image_data_len,
+						GError **error);
+void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
+					Itdb_PhotoAlbum *album,
+					Itdb_Artwork *photo);
+Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
+						 const gchar *albumname,
+						 gint pos);
+Itdb_PhotoDB *itdb_photodb_create (const gchar *mountpoint);
 void itdb_photodb_free (Itdb_PhotoDB *photodb);
 gboolean itdb_photodb_write (Itdb_PhotoDB *db, GError **error);
-void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *pa);
-gboolean itdb_photodb_remove_photo (Itdb_PhotoDB *db,
-        const gint photo_id );
+void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
+				Itdb_PhotoAlbum *album,
+				Itdb_Artwork *photo);
+void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
+				     Itdb_PhotoAlbum *album,
+				     gboolean remove_pics);
+Itdb_PhotoAlbum *itdb_photodb_photoalbum_by_name(Itdb_PhotoDB *db,
+						 const gchar *albumname );
 
-/* itdb_artwork_... */
+/* itdb_artwork_... -- you probably won't need many of these (probably
+ * with the exception of itdb_artwork_get_thumb_by_type() and
+ * itdb_thumb_get_gdk_pixbuf() probably). Use the itdb_photodb_...()
+ * functions when adding photos, and the itdb_track_...() functions
+ * when adding coverart to audio. */
 Itdb_Artwork *itdb_artwork_new (void);
 Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork);
 void itdb_artwork_free (Itdb_Artwork *artwork);
@@ -983,7 +986,7 @@ void itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork,
 				    Itdb_Thumb *thumb);
 void itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork);
 /* itdb_thumb_... */
-/* the following funciton returns a pointer to a GdkPixbuf if
+/* the following function returns a pointer to a GdkPixbuf if
    gdk-pixbuf is installed -- a NULL pointer otherwise. */
 gpointer itdb_thumb_get_gdk_pixbuf (Itdb_Device *device,
 				    Itdb_Thumb *thumb);
@@ -997,7 +1000,7 @@ guint64 itdb_time_get_mac_time (void);
 time_t itdb_time_mac_to_host (guint64 mactime);
 guint64 itdb_time_host_to_mac (time_t time);
 
-/* Initialise a blank ipod */
+/* Initialize a blank ipod */
 gboolean itdb_init_ipod (const gchar *mountpoint,
 			 const gchar *model_number,
 			 const gchar *ipod_name,

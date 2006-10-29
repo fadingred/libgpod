@@ -685,7 +685,7 @@ write_mhba (Itdb_PhotoAlbum *photo_album, iPodBuffer *buffer)
 	}
 	mhba->num_mhods = get_gint32(1, buffer->byte_order);
 	mhba->playlist_id = get_gint32(photo_album->album_id, buffer->byte_order);
-	mhba->master = get_gint32(photo_album->master, buffer->byte_order);
+	mhba->album_type = get_gint32(photo_album->album_type, buffer->byte_order);
 	mhba->prev_playlist_id = get_gint32(photo_album->prev_album_id, buffer->byte_order);
 	mhba->num_mhias = get_gint32(photo_album->num_images, buffer->byte_order);
 	total_bytes = get_gint32 (mhba->header_len, buffer->byte_order);
@@ -704,13 +704,14 @@ write_mhba (Itdb_PhotoAlbum *photo_album, iPodBuffer *buffer)
 	total_bytes += bytes_written;
 
 	for (it = photo_album->members; it != NULL; it = it->next) {
-		gint image_id = GPOINTER_TO_INT(it->data);
+	        Itdb_Artwork *photo = it->data;
+		g_return_val_if_fail (photo, -1);
 
 		sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 		if (sub_buffer == NULL) {
 		    return -1;
 		}
-		bytes_written = write_mhia (image_id, sub_buffer);
+		bytes_written = write_mhia (photo->id, sub_buffer);
 		ipod_buffer_destroy (sub_buffer);
 		if (bytes_written == -1) {
 		    return -1;
