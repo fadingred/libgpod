@@ -61,6 +61,20 @@
 
 	* src/db-itunes-parser.h: added comments to _MhbaHeader definition.
 
+	Added additional functionality for photo albums
+
+	* src/db-artwork-parser.c
+	  src/db-artwork-writer.c
+	  src/db-itunes-parser.c:
+	  src/itdb.h: added additional fields to MhbaHeader and
+	  Itdb_PhotoAlbum (playmusic, repeat, random, show_titles,
+	  transition_direction, slide duration, transition_duration,
+	  unk024, unk028, unk044, unk048, song_id. These fields are read
+	  and written from the PhotoDB now. Also corrected error for
+	  "album type" which was read and written as int32 even though it
+	  was a int8. Removed num_images from Itdb_PhotoAlbum -- instead
+	  count images at time of writing.
+	
 2006-10-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* tests/Makefile.am

@@ -671,7 +671,7 @@ write_mhia (gint image_id, iPodBuffer *buffer)
 }
 
 static int
-write_mhba (Itdb_PhotoAlbum *photo_album, iPodBuffer *buffer)
+write_mhba (Itdb_PhotoAlbum *album, iPodBuffer *buffer)
 {
 	GList *it;
 	MhbaHeader *mhba;
@@ -684,10 +684,27 @@ write_mhba (Itdb_PhotoAlbum *photo_album, iPodBuffer *buffer)
 		return -1;
 	}
 	mhba->num_mhods = get_gint32(1, buffer->byte_order);
-	mhba->playlist_id = get_gint32(photo_album->album_id, buffer->byte_order);
-	mhba->album_type = get_gint32(photo_album->album_type, buffer->byte_order);
-	mhba->prev_playlist_id = get_gint32(photo_album->prev_album_id, buffer->byte_order);
-	mhba->num_mhias = get_gint32(photo_album->num_images, buffer->byte_order);
+	mhba->num_mhias = get_gint32(g_list_length (album->members),
+				     buffer->byte_order);
+	mhba->album_id = get_gint32(album->album_id, buffer->byte_order);
+	mhba->unk024 = get_gint32(album->unk024, buffer->byte_order);
+	mhba->unk028 = get_gint16(album->unk028, buffer->byte_order);
+	mhba->album_type = album->album_type;
+	mhba->playmusic = album->playmusic;
+	mhba->repeat = album->repeat;
+	mhba->random = album->random;
+	mhba->show_titles = album->show_titles;
+	mhba->transition_direction = album->transition_direction;
+	mhba->slide_duration = get_gint32(album->slide_duration,
+					  buffer->byte_order);
+	mhba->transition_duration = get_gint32(album->transition_duration,
+					       buffer->byte_order);
+	mhba->unk044 = get_gint32(album->unk044, buffer->byte_order);
+	mhba->unk048 = get_gint32(album->unk048, buffer->byte_order);
+	mhba->song_id = get_gint64(album->song_id, buffer->byte_order);
+	mhba->prev_album_id = get_gint32(album->prev_album_id,
+					 buffer->byte_order);
+
 	total_bytes = get_gint32 (mhba->header_len, buffer->byte_order);
 
 	/* FIXME: Write other mhods */
@@ -696,14 +713,14 @@ write_mhba (Itdb_PhotoAlbum *photo_album, iPodBuffer *buffer)
 	if (sub_buffer == NULL) {
 	    return -1;
 	}
-	bytes_written = write_mhod_type_1 (photo_album->name, sub_buffer);
+	bytes_written = write_mhod_type_1 (album->name, sub_buffer);
 	ipod_buffer_destroy (sub_buffer);
 	if (bytes_written == -1) {
 	    return -1;
 	} 
 	total_bytes += bytes_written;
 
-	for (it = photo_album->members; it != NULL; it = it->next) {
+	for (it = album->members; it != NULL; it = it->next) {
 	        Itdb_Artwork *photo = it->data;
 		g_return_val_if_fail (photo, -1);
 
@@ -740,13 +757,13 @@ write_mhla (Itdb_DB *db, iPodBuffer *buffer)
 	    unsigned int bytes_written;
 
 	    for (it = db_get_photodb(db)->photoalbums; it != NULL; it = it->next) {
-		Itdb_PhotoAlbum *photo_album = (Itdb_PhotoAlbum *)it->data;
+		Itdb_PhotoAlbum *album = (Itdb_PhotoAlbum *)it->data;
 
 		sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 		if (sub_buffer == NULL) {
 		    return -1;
 		}
-		bytes_written = write_mhba (photo_album, sub_buffer);
+		bytes_written = write_mhba (album, sub_buffer);
 		ipod_buffer_destroy (sub_buffer);
 		if (bytes_written == -1) {
 		    return -1;

@@ -405,9 +405,9 @@ main (int argc, char **argv)
     {
 	return do_remove (argc, argv);
     }
+
     g_print (_("Unknown command '%s'\n"), argv[1]);
     usage (argc, argv);
-
-    return 0;
+    return 1;
 }
 

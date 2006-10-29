@@ -1,6 +1,6 @@
-/* Time-stamp: <2006-10-29 15:03:21 jcs>
+/* Time-stamp: <2006-10-29 19:18:27 jcs>
 |
-|  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
+|  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
 |  URL: http://www.gtkpod.org/
@@ -490,11 +490,29 @@ struct _Itdb_iTunesDB
 
 struct _Itdb_PhotoAlbum
 {
-    gchar *name;          /* name of photoalbum in UTF8            */
-    GList *members;       /* photos in album (Itdb_Artwork *)      */
-    gint  num_images;     /* number of photos in album             */
-    gint  album_type;     /* 0x01 for master (Photo Library),
-			     0x02 otherwise                        */
+    gchar *name;                 /* name of photoalbum in UTF8            */
+    GList *members;              /* photos in album (Itdb_Artwork *)      */
+    guint8 album_type;           /* 0x01 for master (Photo Library),
+				    0x02 otherwise (sometimes 4 and 5)    */
+    guint8 playmusic;            /* play music during slideshow (from
+				    iPhoto setting)                       */
+    guint8 repeat;               /* repeat the slideshow (from iPhoto
+				    setting)                              */
+    guint8 random;               /* show the slides in random order
+			            (from iPhoto setting)                 */
+    guint8 show_titles;          /* show slide captions (from iPhoto
+				    setting)                              */
+    guint8 transition_direction; /* 0=none, 1=left-to-right,
+				    2=right-to-left, 3=top-to-bottom,
+				    4=bottom-to-top (from iPhoto setting) */
+    gint32 slide_duration;       /* in seconds (from iPhoto setting)      */
+    gint32 transition_duration;  /* in milliseconds (from iPhoto setting) */
+    gint64 song_id;              /* dbid2 of track in iTunesDB to play
+				    during slideshow (from iPhoto setting)*/
+    gint32 unk024;               /* unknown, seems to be always 0         */
+    gint16 unk028;               /* unknown, seems to be always 0         */
+    gint32 unk044;               /* unknown, seems to always be 0         */
+    gint32 unk048;               /* unknown, seems to always be 0         */
     /* set automatically at time of writing the PhotoDB */
     gint32  album_id;
     gint32  prev_album_id;

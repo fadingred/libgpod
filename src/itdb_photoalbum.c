@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-10-22 20:19:45 jcs>
+/* Time-stamp: <2006-10-29 19:15:33 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -528,7 +528,6 @@ void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
 	    while (g_list_find (_album->members, photo))
 	    {
 		_album->members = g_list_remove (_album->members, photo);
-		--_album->num_images;
 	    }
         }
         /* Remove the photo from the image list */
@@ -540,7 +539,6 @@ void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
     else
     {
         album->members = g_list_remove (album->members, photo);
-        --album->num_images;
     }
 }
 
@@ -630,7 +628,6 @@ void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
     g_return_if_fail (photo);
 
     album->members = g_list_append (album->members, photo);
-    ++album->num_images;
 }
 
 

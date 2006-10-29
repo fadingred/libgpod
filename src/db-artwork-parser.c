@@ -386,7 +386,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 	ArtworkDB_MhodHeader *mhod;
 	DBParseContext *mhod_ctx;
 	DBParseContext *mhia_ctx;
-	Itdb_PhotoAlbum *photo_album;
+	Itdb_PhotoAlbum *album;
 	Itdb_PhotoDB *photodb;
 	int num_children;
 	off_t cur_offset;
@@ -399,11 +399,25 @@ parse_mhba (DBParseContext *ctx, GError *error)
 
 	dump_mhba (mhba);
 
-	photo_album = g_new0 (Itdb_PhotoAlbum, 1);
-	photo_album->num_images = get_gint32( mhba->num_mhias, ctx->byte_order);
-	photo_album->album_id = get_gint32( mhba->playlist_id, ctx->byte_order);
-	photo_album->album_type = get_gint32( mhba->album_type, ctx->byte_order);
-	photo_album->prev_album_id = get_gint32( mhba->prev_playlist_id, ctx->byte_order);
+	album = g_new0 (Itdb_PhotoAlbum, 1);
+	album->album_id = get_gint32(mhba->album_id, ctx->byte_order);
+	album->unk024 = get_gint32(mhba->unk024, ctx->byte_order);
+	album->unk028 = get_gint16(mhba->unk028, ctx->byte_order);
+	album->album_type = mhba->album_type;
+	album->playmusic = mhba->playmusic;
+	album->repeat = mhba->repeat;
+	album->random = mhba->random;
+	album->show_titles = mhba->show_titles;
+	album->transition_direction = mhba->transition_direction;
+	album->slide_duration = get_gint32(mhba->slide_duration,
+					   ctx->byte_order);
+	album->transition_duration = get_gint32(mhba->transition_duration,
+						ctx->byte_order);
+	album->unk044 = get_gint32(mhba->unk044, ctx->byte_order);
+	album->unk048 = get_gint32(mhba->unk048, ctx->byte_order);
+	album->song_id = get_gint64(mhba->song_id, ctx->byte_order);
+	album->prev_album_id = get_gint32(mhba->prev_album_id,
+					  ctx->byte_order);
 
 	cur_offset = ctx->header_len;
 	mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
@@ -415,7 +429,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 			return -1;
 		}
 		db_parse_context_set_total_len (mhod_ctx,  get_gint32(mhod->total_len, ctx->byte_order));
-		photo_album->name = g_strdup( (char *)((MhodHeaderArtworkType1*)mhod)->string );
+		album->name = g_strdup( (char *)((MhodHeaderArtworkType1*)mhod)->string );
 		cur_offset += mhod_ctx->total_len;
 		dump_mhod_type_1 ((MhodHeaderArtworkType1*)mhod);
 		g_free (mhod_ctx);
@@ -425,7 +439,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 	mhia_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	num_children = get_gint32 (mhba->num_mhias, ctx->byte_order);
 	while ((num_children > 0) && (mhia_ctx != NULL)) {
-		parse_mhia (mhia_ctx, photo_album, NULL);
+		parse_mhia (mhia_ctx, album, NULL);
 		num_children--;
 		cur_offset += mhia_ctx->total_len;
 		g_free (mhia_ctx);
@@ -434,7 +448,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 	photodb = db_get_photodb (ctx->db);
 	g_return_val_if_fail (photodb, -1);
 	photodb->photoalbums = g_list_append (photodb->photoalbums,
-					      photo_album);
+					      album);
 	return 0;
 }
 

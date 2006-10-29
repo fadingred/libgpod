@@ -1,4 +1,5 @@
-/*
+/*  Time-stamp: <2006-10-29 19:18:28 jcs>
+ *
  *  Copyright (C) 2005 Christophe Fergeau
  *
  * 
@@ -20,6 +21,7 @@
  * 
  *  This product is not supported/written/published by Apple!
  *
+ * $Id$
  */
 
 
@@ -615,10 +617,10 @@ struct _MhbaHeader {
 	gint32 num_mhods;  /* number of Data Objects in the List,
 			      probably always 1 */
 	gint32 num_mhias;  /* number of pictures in the album */
-	gint32 playlist_id;/* starts out at $64 and increments by 1 */
-	gint32 unknown2;   /* unknown, seems to be always 0 */
-	gint16 unknown3;   /* unknown, seems to be always 0 */
-	gchar album_type;  /* 1 = master photo list ("Photo Library"),
+	gint32 album_id;   /* starts out at $64 and increments by 1 */
+	gint32 unk024;     /* unknown, seems to be always 0 */
+	gint16 unk028;     /* unknown, seems to be always 0 */
+	guint8 album_type; /* 1 = master photo list ("Photo Library"),
 			      2 = normal album, sometimes 4 and 5 */
 	guint8 playmusic;  /* play music during slideshow (from iPhoto setting) */
 	guint8 repeat;     /* repeat the slideshow (from iPhoto setting) */
@@ -630,10 +632,11 @@ struct _MhbaHeader {
 			      4=bottom-to-top (from iPhoto setting) */
         gint32 slide_duration; /* in seconds (from iPhoto setting) */
 	gint32 transition_duration; /* in milliseconds (from iPhoto setting) */
-	gint32 unk044;
-	gint32 unk048;
-	gint64 song_id;
-	gint32 prev_playlist_id; /* the id of the previous playlist */
+        gint32 unk044;     /* unknown, seems to always be 0 */
+	gint32 unk048;     /* unknown, seems to always be 0 */
+	gint64 song_id;    /* dbid2 of track in iTunesDB to play during
+			      slideshow (from iPhoto setting) */
+	gint32 prev_album_id; /* the id of the previous photoalbum */
 	unsigned char padding[];
 };
 
