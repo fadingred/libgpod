@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-10-30 01:15:39 jcs>
+/* Time-stamp: <2006-10-31 21:49:36 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -71,7 +71,8 @@
        Free all memory taken by the PhotoDB.
 
    itdb_photodb_photoalbum_by_name():
-       Find the first photoalbum with a given name.
+       Find the first photoalbum with a given name or the Photo
+       Library Album if called with no name.
 
 
    If you cannot add photos because your iPod is not recognized, you
@@ -243,7 +244,7 @@ Itdb_PhotoDB *itdb_photodb_create (const gchar *mountpoint)
     Itdb_PhotoDB *photodb = itdb_photodb_new ();
     Itdb_PhotoAlbum *album;
 
-    album = itdb_photodb_photoalbum_create (photodb, _("Photo Libarary"), -1);
+    album = itdb_photodb_photoalbum_create (photodb, _("Photo Library"), -1);
     album->album_type = 1; /* Photo Library */
 
     if (mountpoint)
@@ -433,7 +434,7 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
     album = itdb_photodb_photoalbum_by_name (db, NULL);
     if (!album)
     {
-	album = itdb_photodb_photoalbum_create (db, _("Photo Libarary"), -1);
+	album = itdb_photodb_photoalbum_create (db, _("Photo Library"), -1);
 	album->album_type = 1; /* Photo Library */
     }
     itdb_photodb_photoalbum_add_photo (db, album, artwork);
