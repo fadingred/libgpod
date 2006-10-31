@@ -7,30 +7,26 @@ AM_CONFIG_HEADER(config.h)
 
 # Making releases:
 #   LIBGPOD_MICRO_VERSION += 1;
-#   LIBGPOD_INTERFACE_AGE += 1;
-# if any functions have been added, set LIBGPOD_INTERFACE_AGE to 0.
-# if backwards compatibility has been broken,
-# set LIBGPOD_BINARY_AGE and LIBGPOD_INTERFACE_AGE to 0.
+#   LIBGPOD_SO_VERSION - see comments
 #
 LIBGPOD_MAJOR_VERSION=0
 LIBGPOD_MINOR_VERSION=4
 LIBGPOD_MICRO_VERSION=1
-LIBGPOD_INTERFACE_AGE=0
 # If you need a modifier for the version number. 
 # Normally empty, but can be used to make "fixup" releases.
 LIBGPOD_EXTRAVERSION=
 
-dnl libtool versioning from libgnome
-
-LIBGPOD_CURRENT=`expr 100 '*' $LIBGPOD_MINOR_VERSION + $LIBGPOD_MICRO_VERSION - $LIBGPOD_INTERFACE_AGE`
-LIBGPOD_BINARY_AGE=`expr 100 '*' $LIBGPOD_MINOR_VERSION + $LIBGPOD_MICRO_VERSION`
-LIBGPOD_REVISION=$LIBGPOD_INTERFACE_AGE
-LIBGPOD_AGE=`expr $LIBGPOD_BINARY_AGE - $LIBGPOD_INTERFACE_AGE`
 LIBGPOD_VERSION=$LIBGPOD_MAJOR_VERSION.$LIBGPOD_MINOR_VERSION.$LIBGPOD_MICRO_VERSION$LIBGPOD_EXTRAVERSION
 
-AC_SUBST(LIBGPOD_CURRENT)
-AC_SUBST(LIBGPOD_REVISION)
-AC_SUBST(LIBGPOD_AGE)
+dnl libtool versioning
+# +1 : 0 : +1  == adds new functions to the interface
+# +1 : 0 : 0   == changes or removes functions (changes include both
+#                 changes to the signature and the semantic)
+#  ? :+1 : ?   == just internal changes
+# CURRENT : REVISION : AGE
+LIBGPOD_SO_VERSION=1:0:0
+
+AC_SUBST(LIBGPOD_SO_VERSION)
 AC_SUBST(LIBGPOD_VERSION)
 
 AM_INIT_AUTOMAKE(libgpod, $LIBGPOD_VERSION)

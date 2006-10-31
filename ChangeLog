@@ -2,6 +2,9 @@
 
         * src/itdb_photoalbum.c: fixed typo (Libarary -> Library).
 
+	* configure.ac, src/Makefile.am: new soname versioning
+	  scheme. Thanks to Todd Zullinger and Frank Lichtenheld.
+
 2006-10-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	Major rework of picture support.

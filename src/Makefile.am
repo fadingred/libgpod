@@ -27,8 +27,7 @@ libgpod_la_SOURCES = \
 
 libgpod_la_headers = itdb.h
 libgpod_la_noinst_headers = itdb_private.h hal-common.h
-libgpod_la_LDFLAGS = -version-info $(LIBGPOD_CURRENT):$(LIBGPOD_REVISION):$(LIBGPOD_AGE) \
-        -no-undefined
+libgpod_la_LDFLAGS = -version-info $(LIBGPOD_SO_VERSION) -no-undefined
 
 libgpodincludedir = $(includedir)/gpod-1.0/gpod
 libgpodinclude_HEADERS = $(libgpod_la_headers)
