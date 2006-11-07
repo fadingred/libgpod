@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-10-22 17:42:23 jcs>
+/* Time-stamp: <2006-11-07 20:54:45 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -169,17 +169,17 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	 * proven that setting unk208 to non-0 doesn't upset older
 	 * ipod models
 	 */
-	if (tr->unk208 == 0)
+	if (tr->mediatype == 0)
 	{
 	    if (haystack (tr->filetype, m4v_desc))
 	    {
 		/* set type to video (0x00000002) */
-		tr->unk208 = 0x00000002;
+		tr->mediatype = 0x00000002;
 	    }
 	    else
 	    {
 		/* set type to audio */
-		tr->unk208 = 0x00000001;
+		tr->mediatype = 0x00000001;
 	    }
 	}
     }

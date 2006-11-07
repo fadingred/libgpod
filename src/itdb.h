@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-10-29 19:18:27 jcs>
+/* Time-stamp: <2006-11-07 20:51:08 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -766,7 +766,9 @@ struct _Itdb_Track
 			 (middle button) with further information
 			 about the track will be shown. */
   guint64 dbid2;      /* not clear. if not set, itdb will set this to
-			 the same value as dbid when adding a track */
+			 the same value as dbid when adding a
+			 track. (With iTunes, since V0x12, this field
+			 value differs from the dbid one.) */
   guint8 lyrics_flag; /* set to 0x01 if lyrics are present in MP3 tag
 			 ("ULST"), 0x00 otherwise */
   guint8 movie_flag;  /* set to 0x01 if it's a movie file, 0x00
@@ -775,15 +777,48 @@ struct _Itdb_Track
 			   on the iPod (bullet) once played it is set to
 			   0x01. Non-podcasts have this set to 0x01. */
   guint8 unk179;      /* unknown (always 0x00 so far) */
-  guint32 unk180, unk184;
-  guint32 samplecount;/* Number of samples in the song. First observed
+  guint32 unk180;
+  guint32 pregap;     /* Number of samples of silence before the songs
+			 starts (for gapless playback). */
+  guint64 samplecount;/* Number of samples in the song. First observed
 			 in dbversion 0x0d, and only for AAC and WAV
-			 files (not MP3?!?). */
-  guint32 unk192, unk196, unk200;
-  guint32 unk204;     /*  unknown - added in dbversion 0x0c, first
-			  values observed in 0x0d. Observed to be 0x0
-			  or 0x1. */
-  guint32 unk208, unk212, unk216, unk220, unk224;
+			 files (for gapless playback). */
+  guint32 unk196;
+  guint32 postgap;    /* Number of samples of silence at the end of
+			 the song (for gapless playback). */
+  guint32 unk204;     /* unknown - added in dbversion 0x0c, first
+			 values observed in 0x0d. Observed to be 0x0
+			 or 0x1. */
+  guint32 mediatype;  /* It seems that this field denotes the type of
+		         the file on (e.g.) the 5g video iPod. It must
+			 be set to 0x00000001 for audio files, and set
+			 to 0x00000002 for video files. If set to
+			 0x00, the files show up in both, the audio
+			 menus ("Songs", "Artists", etc.) and the
+			 video menus ("Movies", "Music Videos",
+			 etc.). It appears to be set to 0x20 for music
+			 videos, and if set to 0x60 the file shows up
+			 in "TV Shows" rather than "Movies". 
+
+			 The following list summarizes all observed types:
+
+			 * 0x00 00 00 00 - Audio/Video
+			 * 0x00 00 00 01 - Audio
+			 * 0x00 00 00 02 - Video
+			 * 0x00 00 00 04 - Podcast
+			 * 0x00 00 00 06 - Video Podcast
+			 * 0x00 00 00 08 - Audiobook
+			 * 0x00 00 00 20 - Music Video
+			 * 0x00 00 00 40 - TV Show (shows up ONLY in TV Shows
+			 * 0x00 00 00 60 - TV Show (shows up in the
+			                            Music lists as well) */
+  guint32 season_nr;  /* the season number of the track, for TV shows only. */
+  guint32 episode_nr; /* the episode number of the track, for TV shows
+			 only - although not displayed on the iPod,
+			 the episodes are sorted by episode number. */
+  guint32 unk220;     /* Has something to do with protected files -
+			 set to 0x0 for non-protected files. */
+  guint32 unk224;
   guint32 unk228, unk232, unk236, unk240;
 
     /* Chapter data: defines where the chapter stops are in the track,

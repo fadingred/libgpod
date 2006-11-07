@@ -1,3 +1,18 @@
+2006-11-08  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb.h:
+	  itdb_itunesdb.c:
+	  itdb_track.c:
+	  renamed some formerly unknown Itdb_Track entries and added
+	  comments:
+	   - unk184->pregap
+	   - samplecount: guint32 -> guint64.
+	   - unk192->(removed)
+	   - unk200->postgap
+	   - unk208->mediatype
+	   - unk212->season_nr
+	   - unk216->episode_nr
+
 2006-10-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/itdb_photoalbum.c: fixed typo (Libarary -> Library).

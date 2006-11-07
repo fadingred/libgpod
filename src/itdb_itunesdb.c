@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-21 20:12:24 jcs>
+/* Time-stamp: <2006-11-07 20:53:26 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -2126,15 +2126,14 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->mark_unplayed = get8int (cts, seek+178);
       track->unk179 = get8int (cts, seek+179);
       track->unk180 = get32lint (cts, seek+180);
-      track->unk184 = get32lint (cts, seek+184);
-      track->samplecount = get32lint (cts, seek+188);
-      track->unk192 = get32lint (cts, seek+192);
+      track->pregap = get32lint (cts, seek+184);
+      track->samplecount = get64lint (cts, seek+188);
       track->unk196 = get32lint (cts, seek+196);
-      track->unk200 = get32lint (cts, seek+200);
+      track->postgap = get32lint (cts, seek+200);
       track->unk204 = get32lint (cts, seek+204);
-      track->unk208 = get32lint (cts, seek+208);
-      track->unk212 = get32lint (cts, seek+212);
-      track->unk216 = get32lint (cts, seek+216);
+      track->mediatype = get32lint (cts, seek+208);
+      track->season_nr = get32lint (cts, seek+212);
+      track->episode_nr = get32lint (cts, seek+216);
       track->unk220 = get32lint (cts, seek+220);
       track->unk224 = get32lint (cts, seek+224);
       track->unk228 = get32lint (cts, seek+228);
@@ -3313,15 +3312,14 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put8int (cts, track->mark_unplayed);
   put8int (cts, track->unk179);
   put32lint (cts, track->unk180);
-  put32lint (cts, track->unk184);
-  put32lint (cts, track->samplecount);
-  put32lint (cts, track->unk192);
+  put32lint (cts, track->pregap);
+  put64lint (cts, track->samplecount);
   put32lint (cts, track->unk196);
-  put32lint (cts, track->unk200);
+  put32lint (cts, track->postgap);
   put32lint (cts, track->unk204);
-  put32lint (cts, track->unk208);
-  put32lint (cts, track->unk212);
-  put32lint (cts, track->unk216);
+  put32lint (cts, track->mediatype);
+  put32lint (cts, track->season_nr);
+  put32lint (cts, track->episode_nr);
   put32lint (cts, track->unk220);
   put32lint (cts, track->unk224);
   put32lint (cts, track->unk228);
