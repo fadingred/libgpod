@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-07 20:51:08 jcs>
+/* Time-stamp: <2006-11-11 16:29:02 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -445,11 +445,20 @@ struct _Itdb_Thumb {
 };
 
 struct _Itdb_Artwork {
-    GList *thumbnails;    /* list of Itdb_Thumbs */
-    guint32 artwork_size; /* Size in bytes of the original source image */
-    guint32 id;           /* Artwork id used by photoalbums, starts at
-			   * 0x40... libgpod will set this on sync. */
-    gint32 creation_date; /* Date the image was created */
+    GList *thumbnails;     /* list of Itdb_Thumbs */
+    guint32 id;            /* Artwork id used by photoalbums, starts at
+			    * 0x40... libgpod will set this on sync. */
+    gint32  unk028;
+    guint32 rating;        /* Rating from iPhoto * 20 (PhotoDB only) */
+    gint32  unk036;
+    guint32 creation_date; /* Date the image file was created
+			      (creation date of image file (Mac type,
+			      PhotoDB only) */
+    guint32 digitized_date;/* Date the image was taken (EXIF
+			      information, Mac type, PhotoDB only) */
+    guint32 artwork_size;  /* Size in bytes of the original source
+			      image (PhotoDB only -- don't touch in
+			      case of ArtworkDB!) */
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;

@@ -42,7 +42,6 @@
 
 typedef int (*ParseListItem)(DBParseContext *ctx, GError *error);
 
-#ifndef NOT_DEFINED_DEBUG_ARTWORKDB
 static Itdb_Track *
 get_song_by_dbid (Itdb_iTunesDB *db, guint64 id)
 {
@@ -58,7 +57,6 @@ get_song_by_dbid (Itdb_iTunesDB *db, guint64 id)
 	}
 	return NULL;
 }
-#endif
 
 
 static int
@@ -195,42 +193,11 @@ parse_photo_mhni (DBParseContext *ctx, Itdb_Artwork *artwork, GError *error)
 }
 
 static int
-parse_mhni (DBParseContext *ctx, iPodSong *song, GError *error)
-{
-	MhniHeader *mhni;
-	DBParseContext *mhod_ctx; 
-	Itdb_Thumb *thumb;
-
-	mhni = db_parse_context_get_m_header (ctx, MhniHeader, "mhni");
-	if (mhni == NULL) {
-		return -1;
-	}
-	db_parse_context_set_total_len (ctx, get_gint32 (mhni->total_len, ctx->byte_order));
-	dump_mhni (mhni);
-	thumb = ipod_image_new_from_mhni (mhni, ctx->db);
-	if (thumb == NULL) {
-		return 0;
-	}
-
-	song->artwork->thumbnails =
-		g_list_append (song->artwork->thumbnails, thumb);
-
-	mhod_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
-	if (mhod_ctx == NULL) {
-	  return -1;
-	}
-	parse_mhod_3 (mhod_ctx, thumb, error);
-	g_free (mhod_ctx);
-
-	return 0;
-}
-
-static int
 parse_photo_mhod (DBParseContext *ctx, Itdb_Artwork *artwork, GError *error)
 {
 	ArtworkDB_MhodHeader *mhod;
 	DBParseContext *mhni_ctx;
-	int type;
+	gint32 type;
 
 	mhod = db_parse_context_get_m_header (ctx, ArtworkDB_MhodHeader, "mhod");
 	if (mhod == NULL) {
@@ -238,13 +205,7 @@ parse_photo_mhod (DBParseContext *ctx, Itdb_Artwork *artwork, GError *error)
 	}
 	db_parse_context_set_total_len (ctx, get_gint32 (mhod->total_len, ctx->byte_order));
 
-	/* The MHODs found in the ArtworkDB and Photo Database files are
-	 * significantly different than those found in the iTunesDB.
-	 * For example, the "type" is split like this:
-	 * - low 3 bytes are actual type;
-	 * - high byte is padding length of string (0-3).
-	 */
-	type = get_gint16 (mhod->type, ctx->byte_order) & 0x00FFFFFF;
+	type = get_gint16 (mhod->type, ctx->byte_order);
 
 	if ( type == MHOD_ARTWORK_TYPE_ALBUM_NAME) {
 		dump_mhod_type_1 ((MhodHeaderArtworkType1 *)mhod);
@@ -265,116 +226,85 @@ parse_photo_mhod (DBParseContext *ctx, Itdb_Artwork *artwork, GError *error)
 	return 0;
 }
 static int
-parse_mhod (DBParseContext *ctx, iPodSong *song, GError *error)
-{
-	ArtworkDB_MhodHeader *mhod;
-	DBParseContext *mhni_ctx;
-	int type;
-	gint32 total_len;
-
-	mhod = db_parse_context_get_m_header (ctx, ArtworkDB_MhodHeader, "mhod");
-	if (mhod == NULL) {
-		return -1;
-	}
-	total_len = get_gint32 (mhod->total_len, ctx->byte_order);
-	db_parse_context_set_total_len (ctx, total_len);
-
-	type = get_gint16 (mhod->type, ctx->byte_order);
-
-	if ( type == MHOD_ARTWORK_TYPE_ALBUM_NAME) {
-		dump_mhod_type_1 ((MhodHeaderArtworkType1 *)mhod);
-	} else {
-		dump_mhod (mhod);
-	}
-
-	/* if this is a container... */
-	if (type == MHOD_ARTWORK_TYPE_THUMBNAIL) {
-		mhni_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
-		if (mhni_ctx == NULL) {
-			return -1;
-		}
-		parse_mhni (mhni_ctx, song, NULL);
-		g_free (mhni_ctx);
-	}
-
-	return 0;
-}
-
-
-static int
 parse_mhii (DBParseContext *ctx, GError *error)
 {
 	MhiiHeader *mhii;
 	DBParseContext *mhod_ctx;
 	int num_children;
 	off_t cur_offset;
-	iPodSong *song;
+	iPodSong *song = NULL;
 	Itdb_Artwork *artwork;
 	Itdb_PhotoDB *photodb;
 	Itdb_iTunesDB *itunesdb;
+	guint64 dbid;
 
 	mhii = db_parse_context_get_m_header (ctx, MhiiHeader, "mhii");
-	if (mhii == NULL) {
-		return -1;
+	if (mhii == NULL)
+	{
+	    return -1;
 	}
 	db_parse_context_set_total_len (ctx, get_gint32 (mhii->total_len, ctx->byte_order));
 	dump_mhii (mhii);
 
-	switch (ctx->db->db_type) {
+	switch (ctx->db->db_type)
+	{
 	case DB_TYPE_PHOTO:
-		artwork = g_new0( Itdb_Artwork, 1 );
-		artwork->artwork_size = get_gint32 (mhii->orig_img_size, ctx->byte_order);
-		artwork->id = get_gint32 (mhii->image_id, ctx->byte_order);
-		artwork->creation_date = itdb_time_mac_to_host( get_gint32 (mhii->digitised_date, ctx->byte_order) );
-
-		cur_offset = ctx->header_len;
-		mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
-		num_children = get_gint32 (mhii->num_children, ctx->byte_order);
-		while ((num_children > 0) && (mhod_ctx != NULL)) {
-			parse_photo_mhod (mhod_ctx, artwork, NULL);
-			num_children--;
-			cur_offset += mhod_ctx->total_len;
-			g_free (mhod_ctx);
-			mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
-		}
-		photodb = db_get_photodb (ctx->db);
-		g_return_val_if_fail (photodb, -1);
-		photodb->photos = g_list_append (photodb->photos,
-						 artwork);
-		break;
+	    photodb = db_get_photodb (ctx->db);
+	    g_return_val_if_fail (photodb, -1);
+	    artwork = g_new0 (Itdb_Artwork, 1);
+	    photodb->photos = g_list_append (photodb->photos, artwork);
+	    break;
 	case DB_TYPE_ITUNES:
-#ifdef NOT_DEFINED_DEBUG_ARTWORKDB
-		song = NULL;
-#else
-		itunesdb = db_get_itunesdb (ctx->db);
-		g_return_val_if_fail (itunesdb, -1);
-		song = get_song_by_dbid (itunesdb,
-					 get_gint64 (mhii->song_id,
-						     ctx->byte_order));
-		if (song == NULL) {
-			return -1;
-		}
-		song->artwork->artwork_size = get_gint32 (mhii->orig_img_size, ctx->byte_order);
-		if ((song->artwork_size+song->artwork_count) !=
-				song->artwork->artwork_size) {
-			g_warning (_("iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)"), song->artwork_size, song->artwork_count, song->artwork->artwork_size);
-		}
-		song->artwork->id = get_gint32 (mhii->image_id, ctx->byte_order);
-#endif
-
-		cur_offset = ctx->header_len;
-		mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
-		num_children = get_gint32 (mhii->num_children, ctx->byte_order);
-		while ((num_children > 0) && (mhod_ctx != NULL)) {
-			parse_mhod (mhod_ctx, song, NULL);
-			num_children--;
-			cur_offset += mhod_ctx->total_len;
-			g_free (mhod_ctx);
-			mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
-		}
-		break;
+	    itunesdb = db_get_itunesdb (ctx->db);
+	    g_return_val_if_fail (itunesdb, -1);
+	    dbid = get_gint64 (mhii->song_id, ctx->byte_order);
+	    song = get_song_by_dbid (itunesdb, dbid);
+	    if (song == NULL)
+	    {
+		gchar *strval = g_strdup_printf("%" G_GINT64_FORMAT, dbid);
+		g_print (_("Could not find corresponding track (dbid: %s) for artwork entry.\n"), strval);
+		g_free (strval);
+		return -1;
+	    }
+	    artwork = song->artwork;
+	    g_return_val_if_fail (artwork, -1);
+	    break;
 	default:
-	       g_return_val_if_reached (-1);
+	    g_return_val_if_reached (-1);
+	}
+
+	artwork->id = get_gint32 (mhii->image_id, ctx->byte_order);
+	artwork->unk028 = get_gint32 (mhii->unknown4, ctx->byte_order);
+	artwork->rating = get_gint32 (mhii->rating, ctx->byte_order);
+	artwork->unk036 = get_gint32 (mhii->unknown6, ctx->byte_order);
+	artwork->creation_date = get_gint32 (mhii->orig_date, ctx->byte_order);
+	artwork->digitized_date = get_gint32 (mhii->digitized_date,
+					      ctx->byte_order);
+	artwork->artwork_size = get_gint32 (mhii->orig_img_size,
+					    ctx->byte_order);
+
+	if (song)
+	{
+	    if ((song->artwork_size+song->artwork_count) !=
+		artwork->artwork_size)
+	    {
+		g_warning (_("iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)\n"),
+			   song->artwork_size,
+			   song->artwork_count,
+			   song->artwork->artwork_size);
+	    }
+	}
+
+	cur_offset = ctx->header_len;
+	mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
+	num_children = get_gint32 (mhii->num_children, ctx->byte_order);
+	while ((num_children > 0) && (mhod_ctx != NULL))
+	{
+	    parse_photo_mhod (mhod_ctx, artwork, NULL);
+	    num_children--;
+	    cur_offset += mhod_ctx->total_len;
+	    g_free (mhod_ctx);
+	    mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	}
 	return 0;
 }

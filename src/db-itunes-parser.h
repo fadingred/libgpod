@@ -1,4 +1,4 @@
-/*  Time-stamp: <2006-10-29 19:18:28 jcs>
+/*  Time-stamp: <2006-11-11 20:38:32 jcs>
  *
  *  Copyright (C) 2005 Christophe Fergeau
  *
@@ -333,7 +333,7 @@ struct _ArtworkDB_MhodHeader {
 	 * phones with iPod support).
 	 */
 	gint16 type;
-    gint16 unknown014;
+        gint16 unknown014;
 	gint32 unknown1;
 	gint32 unknown2;
 };
@@ -575,10 +575,10 @@ struct _MhiiHeader {
 	gint32 image_id;
 	gint64 song_id;
 	gint32 unknown4;
-	gint32 unknown5;
+	gint32 rating;
 	gint32 unknown6;
 	gint32 orig_date;
-	gint32 digitised_date;
+	gint32 digitized_date;
 	gint32 orig_img_size;
 	unsigned char padding[];
 } __attribute__((__packed__));

@@ -1,3 +1,26 @@
+2006-11-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb.h: Itdb_Artwork:
+	  - added unk028, unk036 and rating
+	  - added digitized_data timestamp
+	  - changed creation_date from gint32 to guint32
+
+	* db-itunes-parser.h:
+	  db-artwork-debug.c: MhiiHeader:
+	  - renamed unknown5 to rating
+	  - renamed digitised_date to digitized_date for conformity
+
+	* db-artwork-writer.c (write_mhli): sanity check to avoid access
+	  of NULL pointer.
+	  (write_mhii): write unk028, rating, unk036, digitized_data
+
+	* db-artwork_parser.c (parse_mhii):
+	  - parse unk028, rating, unk036, digitized data.
+	  - unified reading of DB_TYPE_PHOTO and DB_TYPE_ITUNES, got rid
+	    of parse_mhod() and parse_mhni().
+
+
+	
 2006-11-08  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb.h:

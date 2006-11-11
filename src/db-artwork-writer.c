@@ -541,23 +541,26 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 	switch( buffer->db_type) {
 	case DB_TYPE_ITUNES:
 		song = (Itdb_Track *)data;
+		artwork = song->artwork;
 		mhii->song_id = get_gint64 (song->dbid, buffer->byte_order);
-		mhii->image_id = get_guint32 (song->artwork->id, buffer->byte_order);
-		mhii->orig_img_size = get_gint32 (song->artwork->artwork_size, 
-				buffer->byte_order);
-		it = song->artwork->thumbnails;
 		break;
 	case DB_TYPE_PHOTO:
 		artwork = (Itdb_Artwork *)data;
 		mhii->song_id = get_gint64 (artwork->id + 2, buffer->byte_order);
-		mhii->image_id = get_guint32 (artwork->id, buffer->byte_order);
-		mhii->orig_date = get_guint32 (itdb_time_host_to_mac( artwork->creation_date )
-				, buffer->byte_order);
-		mhii->digitised_date = get_guint32 (itdb_time_host_to_mac( artwork->creation_date )
-				, buffer->byte_order);
-		it = artwork->thumbnails;
 		break;
+	default:
+	        g_return_val_if_reached (-1);
 	}
+	mhii->image_id = get_guint32 (artwork->id, buffer->byte_order);
+	mhii->unknown4 = get_gint32 (artwork->unk028, buffer->byte_order);
+	mhii->rating = get_gint32 (artwork->rating, buffer->byte_order);
+	mhii->unknown6 = get_gint32 (artwork->unk036, buffer->byte_order);
+	mhii->orig_date = get_guint32 (artwork->creation_date, buffer->byte_order);
+	mhii->digitized_date = get_guint32 (artwork->digitized_date,
+					    buffer->byte_order);
+	mhii->orig_img_size = get_gint32 (artwork->artwork_size, 
+					  buffer->byte_order);
+	it = artwork->thumbnails;
 	num_children = 0;
 	while (it != NULL) {
 		iPodBuffer *sub_buffer;
@@ -628,7 +631,7 @@ write_mhli (Itdb_DB *db, iPodBuffer *buffer )
 
 		if (buffer->db_type == DB_TYPE_ITUNES) {
 			song = (Itdb_Track*)it->data;
-			if (song->artwork->id == 0) {
+			if (!song->artwork || (song->artwork->id == 0)) {
 				it = it->next;
 				continue;
 			}

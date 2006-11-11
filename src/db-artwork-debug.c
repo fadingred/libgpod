@@ -148,10 +148,10 @@ dump_mhii (MhiiHeader *mhii)
 	g_print ("\tImage ID: %08x\n", GINT_FROM_LE (mhii->image_id));
 	g_print ("\tSong ID: %016llx\n", GINT64_FROM_LE (mhii->song_id));
 	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhii->unknown4));
-	g_print ("\tUnknown5: %08x\n", GINT_FROM_LE (mhii->unknown5));
+	g_print ("\tRating: %08x\n", GINT_FROM_LE (mhii->rating));
 	g_print ("\tUnknown6: %08x\n", GINT_FROM_LE (mhii->unknown6));
 	g_print ("\tOrig Date: %08x\n", GINT_FROM_LE (mhii->orig_date));
-	g_print ("\tDigitised Date: %08x\n", GINT_FROM_LE (mhii->digitised_date));
+	g_print ("\tDigitised Date: %08x\n", GINT_FROM_LE (mhii->digitized_date));
 	g_print ("\tImage size: %d bytes\n", GINT_FROM_LE (mhii->orig_img_size));
 }
 
