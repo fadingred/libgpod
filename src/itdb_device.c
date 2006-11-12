@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-21 20:37:09 jcs>
+/* Time-stamp: <2006-11-12 23:07:06 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -205,38 +205,38 @@ static const gchar *ipod_generation_name_table [] = {
 	NULL
 };
 
-static const Itdb_ArtworkFormat ipod_color_artwork_info[] = {
-	{ITDB_THUMB_COVER_SMALL,        56,  56, 1017},
-	{ITDB_THUMB_COVER_LARGE,       140, 140, 1016},
-	{ITDB_THUMB_PHOTO_SMALL,        42,  30, 1009},
-	{ITDB_THUMB_PHOTO_LARGE,       130,  88, 1015},
-	{ITDB_THUMB_PHOTO_FULL_SCREEN, 220, 176, 1013},
-	{ITDB_THUMB_PHOTO_TV_SCREEN,   720, 480, 1019},
-	{-1,                            -1,  -1,   -1}
+static const Itdb_ArtworkFormat ipod_photo_artwork_info[] = {
+    {ITDB_THUMB_COVER_SMALL,       56,  56, 1017, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_COVER_LARGE,      140, 140, 1016, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_SMALL,       42,  30, 1009, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_LARGE,      130,  88, 1015, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_FULL_SCREEN,220, 176, 1013, THUMB_FORMAT_RGB565_BE_90},
+    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1019, THUMB_FORMAT_UYVY},
+    {-1,                           -1,  -1,   -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_nano_artwork_info[] = {
-	{ITDB_THUMB_COVER_SMALL,        42,  42, 1031},
-	{ITDB_THUMB_COVER_LARGE,       100, 100, 1027},
-	{ITDB_THUMB_PHOTO_LARGE,        42,  37, 1032},
-	{ITDB_THUMB_PHOTO_FULL_SCREEN, 176, 132, 1023},
-	{-1,                            -1,  -1,   -1}
+    {ITDB_THUMB_COVER_SMALL,       42,  42, 1031, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_COVER_LARGE,      100, 100, 1027, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_LARGE,       42,  37, 1032, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_FULL_SCREEN,176, 132, 1023, THUMB_FORMAT_RGB565_BE},
+    {-1,                           -1,  -1,   -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_video_artwork_info[] = {
-	{ITDB_THUMB_COVER_SMALL,       100, 100, 1028},
-	{ITDB_THUMB_COVER_LARGE,       200, 200, 1029},
-	{ITDB_THUMB_PHOTO_SMALL,        50,  41, 1036},
-	{ITDB_THUMB_PHOTO_LARGE,       130,  88, 1015},
-	{ITDB_THUMB_PHOTO_FULL_SCREEN, 320, 240, 1024},
-	{ITDB_THUMB_PHOTO_TV_SCREEN,   720, 480, 1019},
-	{-1,                            -1,  -1,   -1}
+    {ITDB_THUMB_COVER_SMALL,      100, 100, 1028, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_COVER_LARGE,      200, 200, 1029, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_SMALL,       50,  41, 1036, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_LARGE,      130,  88, 1015, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_FULL_SCREEN,320, 240, 1024, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1019, THUMB_FORMAT_UYVY},
+    {-1,                           -1,  -1,   -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_mobile_1_artwork_info[] = {
-	{ITDB_THUMB_COVER_SMALL,        50,  50, 2002},
-	{ITDB_THUMB_COVER_LARGE,       150, 150, 2003},
-	{-1,                            -1,  -1,   -1}
+    {ITDB_THUMB_COVER_SMALL,       50,  50, 2002, THUMB_FORMAT_RGB565_BE},
+    {ITDB_THUMB_COVER_LARGE,      150, 150, 2003, THUMB_FORMAT_RGB565_BE},
+    {-1,                           -1,  -1,   -1, -1}
 };
 
 
@@ -244,8 +244,8 @@ static const Itdb_ArtworkFormat ipod_mobile_1_artwork_info[] = {
 static const Itdb_ArtworkFormat *ipod_artwork_info_table[] = {
         NULL,                      /* Invalid       */
 	NULL,                      /* Unknown       */
-	ipod_color_artwork_info,   /* Color         */
-	ipod_color_artwork_info,   /* Color U2      */
+	ipod_photo_artwork_info,   /* Color         */
+	ipod_photo_artwork_info,   /* Color U2      */
 	NULL,                      /* Grayscale     */ 
 	NULL,                      /* Grayscale U2  */
 	NULL,                      /* Mini (Silver) */

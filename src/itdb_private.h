@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-01 23:31:27 jcs>
+/* Time-stamp: <2006-11-12 22:17:17 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -34,6 +34,7 @@
 #  include <config.h>
 #endif
 #include "glib-compat.h"
+#include "itdb_device.h"
 #include "itdb.h"
 
 /* always use itdb_playlist_is_mpl() to check for MPL! */
@@ -148,4 +149,5 @@ G_GNUC_INTERNAL Itdb_Device *db_get_device(Itdb_DB *db);
 G_GNUC_INTERNAL gint itdb_get_free_photo_id ( Itdb_PhotoDB *db );
 G_GNUC_INTERNAL Itdb_iTunesDB *db_get_itunesdb (Itdb_DB *db);
 G_GNUC_INTERNAL Itdb_PhotoDB *db_get_photodb (Itdb_DB *db);
+G_GNUC_INTERNAL gint itdb_thumb_get_byteorder (ItdbThumbFormat format);
 #endif

@@ -14,6 +14,28 @@
 	  will NOT be truncated. Patches are welcome (probably add code at
 	  the end of ithumb_rearrange_thumbnail_file()) :-) 
 
+	* itdb_artwork.c: added support for UYVY format for iPod Video and
+	  iPod Photo TV output. Code adapted from the GPixPod project.
+
+	  (itdb_thumb_get_byteorder): return the byte order for the
+	  current thumbnail (internal function).
+
+	* itdb_device.[hc]: added thumbnail storage format to the
+	  Itdb_ArtworkFormat image information. Currently the following
+	  are defined:
+	    THUMB_FORMAT_UYVY
+	    THUMB_FORMAT_RGB565_LE
+	    THUMB_FORMAT_RGB565_BE
+	    THUMB_FORMAT_RGB565_BE_90
+	    THUMB_FORMAT_RGB565_LE_90
+	  THUMB_FORMAT_RGB565_LE_90 does not appear to be used by any iPod
+	  model. THUMB_FORMAT_RGB565_BE_90 is used for full screen iPod
+	  Photo photos but currently is handeled the same as
+	  THUMB_FORMAT_RGB565_BE pending input from iPod Photo users.
+
+	* ithumb-writer.c: added support for UYVY format for iPod Video and
+	  iPod Photo TV output. Code adapted from the GPixPod project.
+
 2006-11-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb.h: Itdb_Artwork:

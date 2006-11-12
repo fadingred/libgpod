@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-06-07 23:48:37 jcs>
+/* Time-stamp: <2006-11-12 23:03:35 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -47,6 +47,17 @@
 G_BEGIN_DECLS
 
 typedef struct _Itdb_ArtworkFormat Itdb_ArtworkFormat;
+typedef enum _ItdbThumbFormat ItdbThumbFormat;
+
+enum _ItdbThumbFormat
+{
+    THUMB_FORMAT_UYVY,
+    THUMB_FORMAT_RGB565_LE,
+    THUMB_FORMAT_RGB565_LE_90,
+    THUMB_FORMAT_RGB565_BE,
+    THUMB_FORMAT_RGB565_BE_90,
+};
+
 
 struct _Itdb_Device
 {
@@ -68,6 +79,7 @@ struct _Itdb_ArtworkFormat
 	gint16 width;
 	gint16 height;
 	gint16 correlation_id;
+        ItdbThumbFormat format;
 };
 
 G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_device_get_artwork_formats (Itdb_Device *device);

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-09-18 02:23:53 jcs>
+/* Time-stamp: <2006-11-12 23:17:20 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -29,6 +29,7 @@
 
 #include <config.h>
 
+#include "itdb_device.h"
 #include "itdb_private.h"
 #include "db-image-parser.h"
 #include "itdb_endianness.h"
@@ -364,6 +365,84 @@ unpack_RGB_565 (guint16 *pixels, guint bytes_len, guint byte_order)
 }
 
 
+/* limit8bit() and unpack_UYVY() adapted from imgconvert.c from the
+ * GPixPod project (www.gpixpod.org) */
+static gint limit8bit (float x)
+{
+    if(x >= 255)
+    {
+	return 255;
+    }
+    if(x <= 0)
+    {
+	return 0;
+    }
+    return x;
+}
+static guchar *
+unpack_UYVY (guchar *yuvdata, gint bytes_len, gint width, gint height)
+{
+    gint imgsize = width*3*height;
+    guchar* rgbdata;
+    gint halfimgsize = imgsize/2;
+    gint halfyuv = halfimgsize/3*2;
+    gint x = 0;
+    gint z = 0;
+    gint z2 = 0;
+    gint u0, y0, v0, y1, u1, y2, v1, y3;
+    gint h = 0;
+
+    g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
+    g_return_val_if_fail (width * height * 2 == bytes_len, NULL);
+
+    rgbdata =  g_malloc(imgsize);
+
+    while(h < height)
+    {
+	gint w = 0;
+	if((h % 2) == 0)
+	{
+	    while(w < width)
+	    {
+		u0 = yuvdata[z];
+		y0 = yuvdata[z+1];
+		v0 = yuvdata[z+2];
+		y1 = yuvdata[z+3];
+		rgbdata[x] = limit8bit((y0-16)*1.164 + (v0-128)*1.596);/*R0*/
+		rgbdata[x+1] = limit8bit((y0-16)*1.164 - (v0-128)*0.813 - (u0-128)*0.391);/*G0*/
+		rgbdata[x+2] = limit8bit((y0-16)*1.164 + (u0-128)*2.018);/*B0*/
+		rgbdata[x+3] = limit8bit((y0-16)*1.164 + (v0-128)*1.596);/*R1*/
+		rgbdata[x+4] = limit8bit((y1-16)*1.164 - (v0-128)*0.813 - (u0-128)*0.391);/*G1*/
+		rgbdata[x+5] = limit8bit((y1-16)*1.164 + (u0-128)*2.018);/*B1*/
+		w += 2;
+		z += 4;
+		x += 6;
+	    }
+	}
+	else
+	{
+	    while(w < width)
+	    {
+		u1 = yuvdata[halfyuv+z2];
+		y2 = yuvdata[halfyuv+z2+1];
+		v1 = yuvdata[halfyuv+z2+2];
+		y3 = yuvdata[halfyuv+z2+3];
+		rgbdata[x] = limit8bit((y2-16)*1.164 + (v1-128)*1.596);
+		rgbdata[x+1] = limit8bit((y2-16)*1.164 - (v1-128)*0.813 - (u1-128)*0.391);
+		rgbdata[x+2] = limit8bit((y2-16)*1.164 + (u1-128)*2.018);
+		rgbdata[x+3] = limit8bit((y2-16)*1.164 + (v1-128)*1.596);
+		rgbdata[x+4] = limit8bit((y3-16)*1.164 - (v1-128)*0.813 - (u1-128)*0.391);
+		rgbdata[x+5] = limit8bit((y3-16)*1.164 + (u1-128)*2.018);
+		w += 2;
+		z2 += 4;
+		x += 6;
+	    }
+	}
+	h++;
+    }
+    return rgbdata;
+}
+
 static guchar *
 get_pixel_data (Itdb_Device *device, Itdb_Thumb *thumb)
 {
@@ -427,9 +506,8 @@ get_pixel_data (Itdb_Device *device, Itdb_Thumb *thumb)
 static guchar *
 itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 {
-	void *pixels565;
-	guchar *pixels;
-	guint byte_order;
+	void *pixels_raw;
+	guchar *pixels=NULL;
 	const Itdb_ArtworkFormat *img_info;
 
 	g_return_val_if_fail (device, NULL);
@@ -438,23 +516,29 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	img_info = itdb_get_artwork_info_from_type (device, thumb->type);
 	g_return_val_if_fail (img_info, NULL);
 	
-	pixels565 = get_pixel_data (device, thumb);
-	if (pixels565 == NULL) {
+	pixels_raw = get_pixel_data (device, thumb);
+	if (pixels_raw == NULL) {
 		return NULL;
 	}
 
-	byte_order = device->byte_order; 
-	/* Swap the byte order on full screen nano photos */
-	if (img_info->correlation_id == 1023)
+	switch (img_info->format)
 	{
-	    if (byte_order == G_LITTLE_ENDIAN)
-		byte_order = G_BIG_ENDIAN;
-	    else
-		byte_order = G_LITTLE_ENDIAN; 
+	case THUMB_FORMAT_RGB565_LE_90:
+	case THUMB_FORMAT_RGB565_BE_90:
+	    /* FIXME: actually the previous two might require
+	       different treatment (used on iPod Photo for the full
+	       screen photo thumbnail) */
+	case THUMB_FORMAT_RGB565_LE:
+	case THUMB_FORMAT_RGB565_BE:
+	    pixels = unpack_RGB_565 (pixels_raw, thumb->size,
+				     itdb_thumb_get_byteorder (img_info->format));
+	    break;
+	case THUMB_FORMAT_UYVY:
+	    pixels = unpack_UYVY (pixels_raw, thumb->size,
+				  img_info->width, img_info->height);
+	    break;
 	}
-
-	pixels = unpack_RGB_565 (pixels565, thumb->size, byte_order);
-	g_free (pixels565);
+	g_free (pixels_raw);
 
 	return pixels;
 
@@ -700,4 +784,22 @@ Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb)
 		new_thumb->image_data_len);
     }
     return new_thumb;
+}
+
+
+G_GNUC_INTERNAL gint
+itdb_thumb_get_byteorder (const ItdbThumbFormat format)
+{
+    switch (format)
+    {
+    case THUMB_FORMAT_RGB565_LE:
+    case THUMB_FORMAT_RGB565_LE_90:
+	return G_LITTLE_ENDIAN;
+    case THUMB_FORMAT_RGB565_BE:
+    case THUMB_FORMAT_RGB565_BE_90:
+	return G_BIG_ENDIAN;
+    case THUMB_FORMAT_UYVY:
+	return -1;
+    }
+    g_return_val_if_reached (-1);
 }
