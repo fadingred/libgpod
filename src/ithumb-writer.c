@@ -1,6 +1,9 @@
-/*
+/*  Time-stamp: <2006-11-12 19:07:29 jcs>
+ *
  *  Copyright (C) 2005 Christophe Fergeau
  *
+ *  URL: http://www.gtkpod.org/libgpod.html
+ *  URL: http://gtkpod.sourceforge.net/
  * 
  *  The code contained in this file is free software; you can redistribute
  *  it and/or modify it under the terms of the GNU Lesser General Public
@@ -20,6 +23,7 @@
  * 
  *  This product is not supported/written/published by Apple!
  *
+ *  $Id$
  */
 
 #include <config.h>
@@ -42,11 +46,17 @@
 #include <fcntl.h>
 
 
+#define ITHUMB_MAX_SIZE (500L*1000L*1000L)
+/* for testing: */
+/*#define ITHUMB_MAX_SIZE (1L*1000L*1000L)*/
+
 struct _iThumbWriter {
 	off_t cur_offset;
 	FILE *f;
+        gchar *mountpoint;
         gchar *filename;
-	Itdb_ArtworkFormat *img_info;
+        gint current_file_index;
+	const Itdb_ArtworkFormat *img_info;
         DbType db_type;
         guint byte_order;
 };
@@ -172,7 +182,7 @@ ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gin
 	}
 	}
 
-	buf = g_strdup_printf ("F%04u_%d.ithmb", correlation_id, index);
+	buf = g_strdup_printf ("F%d_%d.ithmb", correlation_id, index);
 
 	filename = itdb_get_path (artwork_dir, buf);
 
@@ -196,7 +206,7 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 {
     GdkPixbuf *pixbuf = NULL;
     guint16 *pixels;
-    gint width, height;
+    gint width, height; /* must be gint -- see comment below */
 
     g_return_val_if_fail (writer, FALSE);
     g_return_val_if_fail (thumb, FALSE);
@@ -208,6 +218,8 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 						   writer->img_info->height,
 						   NULL);
 
+	g_free (thumb->filename);
+	thumb->filename = NULL;
     }
     else if (thumb->image_data)
     {   /* image data is stored in image_data and image_data_len */
@@ -243,23 +255,22 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 		  "height", &height,
 		  NULL);
 
-    g_free (thumb->filename);
-    thumb->filename = NULL;
-
-    /* FIXME: under certain conditions (probably related to
-     * writer->offset getting too big), this should be :F%04u_2.ithmb
-     * and so on
-     */
-    if( thumb->type == ITDB_THUMB_PHOTO_LARGE ||
-	thumb->type == ITDB_THUMB_PHOTO_SMALL ||
-	thumb->type == ITDB_THUMB_PHOTO_FULL_SCREEN )
+    switch (thumb->type)
     {
-	thumb->filename = g_strdup_printf (":Thumbs:F%04u_1.ithmb", 
-					   writer->img_info->correlation_id);
-	
-    } else {
-	thumb->filename = g_strdup_printf (":F%04u_1.ithmb", 
-					   writer->img_info->correlation_id);
+    case ITDB_THUMB_PHOTO_LARGE:
+    case ITDB_THUMB_PHOTO_SMALL:
+    case ITDB_THUMB_PHOTO_FULL_SCREEN:
+    case ITDB_THUMB_PHOTO_TV_SCREEN:
+	thumb->filename = g_strdup_printf (":Thumbs:F%d_%d.ithmb", 
+					   writer->img_info->correlation_id,
+					   writer->current_file_index);
+	break;
+    case ITDB_THUMB_COVER_LARGE:
+    case ITDB_THUMB_COVER_SMALL:
+	thumb->filename = g_strdup_printf (":F%d_%d.ithmb", 
+					   writer->img_info->correlation_id,
+					   writer->current_file_index);
+	break;
     }
 
     switch (writer->db_type)
@@ -307,6 +318,47 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     return TRUE;
 }
 
+static gboolean
+ithumb_writer_update (iThumbWriter *writer)
+{
+    while ((writer->f == NULL) || (writer->cur_offset >= ITHUMB_MAX_SIZE))
+    {
+	if (writer->f)
+	{
+	    fclose (writer->f);
+	    writer->f = NULL;
+	}
+	g_free (writer->filename);
+	writer->filename = NULL;
+
+	/* increment index for filename */
+	++writer->current_file_index;
+
+	writer->filename =
+	    ipod_image_get_ithmb_filename (writer->mountpoint, 
+					   writer->img_info->correlation_id,
+					   writer->current_file_index, 
+					   writer->db_type);
+	if (writer->filename == NULL)
+	{
+	    return FALSE;
+	}
+	writer->f = fopen (writer->filename, "ab");
+	if (writer->f == NULL)
+	{
+	    g_print ("Error opening %s: %s\n", writer->filename, strerror (errno));
+	    g_free (writer->filename);
+	    writer->filename = NULL;
+	    return FALSE;
+	}
+	writer->cur_offset = ftell (writer->f);
+    }
+
+    return TRUE;
+}
+
+
+
 static void
 write_thumbnail (gpointer _writer, gpointer _artwork)
 {
@@ -321,9 +373,30 @@ write_thumbnail (gpointer _writer, gpointer _artwork)
 	   thumbnail file */
 	if (thumb && (thumb->size == 0))
 	{
-	    ithumb_writer_write_thumbnail (writer, thumb);
+	    /* check if new thumbnail file has to be started */
+	    if (ithumb_writer_update (writer))
+		ithumb_writer_write_thumbnail (writer, thumb);
 	}
 }
+
+
+static void
+ithumb_writer_free (iThumbWriter *writer)
+{
+	g_return_if_fail (writer != NULL);
+	if (writer->f)
+	{
+	    fclose (writer->f);
+	    if (writer->filename && (writer->cur_offset == 0))
+	    {   /* Remove empty file */
+		unlink (writer->filename);
+	    }
+	}
+	g_free (writer->filename);
+	g_free (writer->mountpoint);
+	g_free (writer);
+}
+
 
 static iThumbWriter *
 ithumb_writer_new (const char *mount_point,
@@ -331,53 +404,25 @@ ithumb_writer_new (const char *mount_point,
 		   DbType db_type,
 		   guint byte_order)
 {
-	char *filename;
 	iThumbWriter *writer;
 
 	writer = g_new0 (iThumbWriter, 1);
 
-	writer->img_info = g_memdup (info, sizeof (Itdb_ArtworkFormat));
+	writer->img_info = info;
 
 	writer->byte_order = byte_order;
 	writer->db_type = db_type;
+	writer->mountpoint = g_strdup (mount_point);
+	writer->current_file_index = 0;
 
-	filename = ipod_image_get_ithmb_filename (mount_point, 
-						  info->correlation_id,
-						  1, 
-						  db_type);
-	if (filename == NULL) {
-		g_free (writer->img_info);
-		g_free (writer);
-		return NULL;
+	if (!ithumb_writer_update (writer))
+	{
+	    ithumb_writer_free (writer);
+	    return NULL;
 	}
-	writer->f = fopen (filename, "ab");
-	if (writer->f == NULL) {
-		g_print ("Error opening %s: %s\n", filename, strerror (errno));
-		g_free (filename);
-		g_free (writer->img_info);
-		g_free (writer);
-		return NULL;
-	}
-	writer->cur_offset = ftell (writer->f);
-	writer->filename=filename;
-	
+
 	return writer;
 }
-
-static void
-ithumb_writer_free (iThumbWriter *writer)
-{
-	g_return_if_fail (writer != NULL);
-	fclose (writer->f);
-	if (writer->cur_offset == 0)
-	{   /* Remove empty file */
-	    unlink (writer->filename);
-	}
-	g_free (writer->img_info);
-	g_free (writer->filename);
-	g_free (writer);
-}
-
 
 gint offset_sort (gconstpointer a, gconstpointer b);
 gint offset_sort (gconstpointer a, gconstpointer b)
@@ -609,7 +654,7 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 					  g_free, NULL);
 
     /* Create a hash with all filenames used for thumbnails.
-       This will usually be a number of "F%04d_%d.ithmb" files. A
+       This will usually be a number of "F%d_%d.ithmb" files. A
        GList is kept with pointers to all images in a given file which
        allows to adjust the offset pointers */
 	switch (db->db_type) {
@@ -665,7 +710,7 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
     /* Check for files present on the iPod but no longer referenced by
        thumbs */
 
-    for (i=0; i<10; ++i)
+    for (i=0; i<50; ++i)
     {
 	filename = ipod_image_get_ithmb_filename (mountpoint,
 						  info->correlation_id,
@@ -682,6 +727,15 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 	g_free (filename);
     }
 
+    /* I'm using the _foreach_remove variant here because the
+       thumbnail GList may get changed while calling
+       ithumb_rearrange_thumbnail_file but cannot be written back into
+       the hash table. Using the _foreach_remove variant here will
+       ensure that it will not be possible to access the invalid
+       thumbnail GList. The only proper operation after the
+       _foreach_remove is a call to g_hash_table_destroy().
+       For the same reasons the thumb GList gets free'd in
+       ithumb_rearrange_thumbnail_file() */
     g_hash_table_foreach_remove (filenamehash,
 				 ithumb_rearrange_thumbnail_file, &result);
     g_hash_table_destroy (filenamehash);
@@ -725,8 +779,8 @@ itdb_write_ithumb_files (Itdb_DB *db)
 		case ITDB_THUMB_PHOTO_SMALL:
 		case ITDB_THUMB_PHOTO_LARGE:
 		case ITDB_THUMB_PHOTO_FULL_SCREEN:
-		    ithmb_rearrange_existing_thumbnails (db,
-							     format );
+		case ITDB_THUMB_PHOTO_TV_SCREEN:
+		        ithmb_rearrange_existing_thumbnails (db, format );
 			writer = ithumb_writer_new (mount_point, 
 						    format,
 						    db->db_type, 
@@ -734,8 +788,6 @@ itdb_write_ithumb_files (Itdb_DB *db)
 			if (writer != NULL) {
 				writers = g_list_prepend (writers, writer);
 			}
-			break;
-		default:
 			break;
 		}
 		format++;

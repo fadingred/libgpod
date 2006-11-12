@@ -1,3 +1,19 @@
+2006-11-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* ithumb-writer.c (itdb_write_ithumb_files):
+	  ITDB_THUMB_PHOTO_TV_SCREEN type thumbnails were not "rearranged"
+	  (i.e. deleted photos were not removed).
+
+	  (ipod_image_get_ithmb_filename, ithmb_writer_write_thumbnail):
+	  changed "F%u04_%d.ithmb" to "F%d_%d.ithmb" as this format string
+	  is used by the iPod.
+
+	  NEW: start new thumbnail file F%d_2/3/4... if the size of the
+	  current thumbnail file is larger than ITHUMB_MAX_SIZE (currently
+	  500 MB). Existing thumbnail files with a length larger than this
+	  will NOT be truncated. Patches are welcome (probably add code at
+	  the end of ithumb_rearrange_thumbnail_file()) :-) 
+
 2006-11-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb.h: Itdb_Artwork:
