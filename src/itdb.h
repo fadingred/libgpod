@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-11 16:29:02 jcs>
+/* Time-stamp: <2006-11-23 23:27:35 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -431,17 +431,18 @@ typedef enum {
  */
 struct _Itdb_Thumb {
     ItdbThumbType type;
-    gchar *filename;
-    guchar *image_data;      /* holds the thumbnail data of
-				non-transfered thumbnails when
-				filename == NULL */
-    gsize  image_data_len;   /* length of data */
+    gchar   *filename;
+    guchar  *image_data;      /* holds the thumbnail data of
+				 non-transfered thumbnails when
+				 filename == NULL */
+    gsize   image_data_len;   /* length of data */
+    gint    rotation;         /* angle (0, 90, 180, 270) to rotate the image */
     guint32 offset;
     guint32 size;
-    gint16 width;
-    gint16 height;
-    gint16 horizontal_padding;
-    gint16 vertical_padding;
+    gint16  width;
+    gint16  height;
+    gint16  horizontal_padding;
+    gint16  vertical_padding;
 };
 
 struct _Itdb_Artwork {
@@ -1004,10 +1005,11 @@ void itdb_track_remove_thumbnails (Itdb_Track *track);
  * how to use. */
 Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error);
 Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db, const gchar *filename,
-				      GError **error);
+				      gint rotation, GError **error);
 Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
 						const guchar *image_data,
 						gsize image_data_len,
+						gint rotation,
 						GError **error);
 void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
 					Itdb_PhotoAlbum *album,
@@ -1039,11 +1041,13 @@ Itdb_Thumb *itdb_artwork_get_thumb_by_type (Itdb_Artwork *artwork,
 					    ItdbThumbType type);
 gboolean itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
 				     ItdbThumbType type,
-				     const gchar *filename);
+				     const gchar *filename,
+				     gint rotation, GError **error);
 gboolean itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
 					       ItdbThumbType type,
 					       const guchar *image_data,
-					       gsize image_data_len);
+					       gsize image_data_len,
+					       gint rotation, GError **error);
 void itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork,
 				    Itdb_Thumb *thumb);
 void itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork);

@@ -265,7 +265,8 @@ static int do_add (int argc, char **argv)
     {
 	Itdb_Artwork *photo;
 	
-	photo = itdb_photodb_add_photo (db, argv[i], &error);
+	photo = itdb_photodb_add_photo (db, argv[i], GDK_PIXBUF_ROTATE_NONE,
+					&error);
 	if (photo == NULL)
 	{
 	    if (error)

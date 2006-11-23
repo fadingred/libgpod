@@ -124,12 +124,7 @@ other songs is not something that is tranparently handled, ie you'll
 need to add code either to libgpod or to gtkpod to make that work
 properly.
 
-As for Photo Database handling (which is not dealt with currently), I
-agree it doesn't make sense to associate its parsing with an
-Itdb_ItunesDB object, and that a 'parallel' api mimicking somewhat the
-Track/Playlist stuff with Photo/Album entities would need to be
-designed, but I didn't work on that since, and I probably won't short
-term.
+...
 
 People wanting more info can find lots of details on
 http://ipodlinux.org/ITunesDB#Artwork_Database
@@ -137,3 +132,5 @@ http://ipodlinux.org/ITunesDB#Artwork_Database
 I hope that's helpful,
 
 Christophe
+
+----------------------------------------------------------------------

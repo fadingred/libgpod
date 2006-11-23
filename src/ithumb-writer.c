@@ -1,4 +1,4 @@
-/*  Time-stamp: <2006-11-13 00:03:30 jcs>
+/*  Time-stamp: <2006-11-23 23:45:01 jcs>
  *
  *  Copyright (C) 2005 Christophe Fergeau
  *
@@ -304,13 +304,32 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     gint width, height; /* must be gint -- see comment below */
 
     g_return_val_if_fail (writer, FALSE);
+    g_return_val_if_fail (writer->img_info, FALSE);
     g_return_val_if_fail (thumb, FALSE);
+
+    /* Make sure @rotation is valid (0, 90, 180, 270) */
+    thumb->rotation = thumb->rotation % 360;
+    thumb->rotation /= 90;
+    thumb->rotation *= 90;
+
+    /* If we rotate by 90 or 270 degrees interchange the width and
+     * height */
+
+    if ((thumb->rotation == 0) || (thumb->rotation == 180))
+    {
+	width = writer->img_info->width;
+	height = writer->img_info->height;
+    }
+    else
+    {
+	width = writer->img_info->height;
+	height = writer->img_info->width;
+    }
 
     if (thumb->filename)
     {   /* read image from filename */
 	pixbuf = gdk_pixbuf_new_from_file_at_size (thumb->filename, 
-						   writer->img_info->width, 
-						   writer->img_info->height,
+						   width, height,
 						   NULL);
 
 	g_free (thumb->filename);
@@ -321,8 +340,7 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
 	g_return_val_if_fail (loader, FALSE);
 	gdk_pixbuf_loader_set_size (loader,
-				    writer->img_info->width, 
-				    writer->img_info->height);
+				    width, height);
 	gdk_pixbuf_loader_write (loader,
 				 thumb->image_data,
 				 thumb->image_data_len,
@@ -341,6 +359,17 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     {
 	return FALSE;
     }
+
+    /* Rotate if necessary */
+    if (thumb->rotation != 0)
+    {
+	GdkPixbuf *new_pixbuf = gdk_pixbuf_rotate_simple (pixbuf, thumb->rotation);
+	g_object_unref (pixbuf);
+	pixbuf = new_pixbuf;
+    }
+
+    /* Clean up */
+    thumb->rotation = 0;
 
     /* !! cannot write directly to &thumb->width/height because
        g_object_get() returns a gint, but thumb->width/height are

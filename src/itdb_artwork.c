@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-12 23:17:20 jcs>
+/* Time-stamp: <2006-11-23 23:27:35 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -163,18 +163,27 @@ itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
  * @artwork: an #Itdb_Thumbnail
  * @type: thumbnail size
  * @filename: image file to use to create the thumbnail
+ * @rotation: angle by which the image should be rotated
+ * counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error: return location for a #GError or NULL
  *
  * Appends a thumbnail of type @type to existing thumbnails in @artwork. No 
  * data is read from @filename yet, the file will be when @artwork is saved to
  * disk. @filename must still exist when that happens.
  *
+ * For the rotation angle you can also use the gdk constants
+ * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
+ * ..._CLOCKWISE.
+ *
  * Return value: TRUE if the thumbnail could be successfully added, FALSE
- * otherwise
+ * otherwise. @error is set appropriately.
  **/
 gboolean
 itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
 			    ItdbThumbType type,
-			    const gchar *filename)
+			    const gchar *filename,
+			    gint rotation,
+			    GError **error)
 {
 #ifdef HAVE_GDKPIXBUF
 /* This operation doesn't make sense when we can't save thumbnail files */
@@ -185,6 +194,9 @@ itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
     g_return_val_if_fail (filename, FALSE);
 
     if (g_stat  (filename, &statbuf) != 0) {
+	g_set_error (error, 0, -1,
+		     _("Could not access file '%s'."),
+		     filename);
 	return FALSE;
     }
 
@@ -194,10 +206,13 @@ itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
     thumb = itdb_thumb_new ();
     thumb->filename = g_strdup (filename);
     thumb->type = type;
+    thumb->rotation = rotation;
     artwork->thumbnails = g_list_append (artwork->thumbnails, thumb);
 
     return TRUE;
 #else
+    g_set_error (error, 0, -1,
+		 _("Artwork support not compiled into libgpod."));
     return FALSE;
 #endif
 }
@@ -210,19 +225,28 @@ itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
  * @image_data: data used to create the thumbnail (the raw contents of
  *              an image file)
  * @image_data_len: length of above data block
+ * @rotation: angle by which the image should be rotated
+ * counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error: return location for a #GError or NULL
  *
  * Appends a thumbnail of type @type to existing thumbnails in
  * @artwork. No data is processed yet. This will be done when @artwork
  * is saved to disk.
  *
+ * For the rotation angle you can also use the gdk constants
+ * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
+ * ..._CLOCKWISE.
+ *
  * Return value: TRUE if the thumbnail could be successfully added, FALSE
- * otherwise
+ * otherwise. @error is set appropriately.
  **/
 gboolean
 itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
 				      ItdbThumbType type,
 				      const guchar *image_data,
-				      gsize image_data_len)
+				      gsize image_data_len,
+				      gint rotation,
+				      GError **error)
 {
 #ifdef HAVE_GDKPIXBUF
 /* This operation doesn't make sense when we can't save thumbnail files */
@@ -243,10 +267,13 @@ itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
     memcpy (thumb->image_data,  image_data, image_data_len);
 
     thumb->type = type;
+    thumb->rotation = rotation;
     artwork->thumbnails = g_list_append (artwork->thumbnails, thumb);
 
     return TRUE;
 #else
+    g_set_error (error, 0, -1,
+		 _("Artwork support not compiled into libgpod."));
     return FALSE;
 #endif
 }

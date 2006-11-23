@@ -1,3 +1,36 @@
+2006-11-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* When adding photos to the iPod the user may or may not want to
+	  rotate the picture shown on the iPod screen, for example
+	  deending on EXIF rotation value. This can now be achieved by
+	  passing a new parameter 'rotation' to itdb_photodb_add_photo()
+	  or itdb_photodb_add_photo_from_data(). (Valid values: 0, 90, 180,
+	  270, rotation is counter-clockwise). These two functions now
+	  also accept a GError pointer. As a consequence Itdb_Thumb had to
+	  be extended with a field for the rotation value and
+	  itdb_artwork_add_thumbnail have been extended to accept
+	  @rotation and @error as well.
+
+	  The actual rotation is carried out in
+	  ithumb-writer.c/ithumb_writer_write_thumbnail() using
+	  gdk_pixbuf_rotate_simple() and require gdk-pixbuf V2.6 or
+	  higher.
+
+	  In contrast, itdb_track_set_thumbnails() and
+	  itdb_track_set_thumbnails_from_data have been left unchanged,
+	  even though they could be extended to accept @rotation and
+	  @error easily. Please let me know if this is wanted.
+
+	* configure.ac
+	  src/itdb.h
+	  src/itdb_artwork.c
+	  src/itdb_photoalbum.c
+	  src/itdb_track.c
+	  src/ithumb-writer.c: implemented changes outlined above.
+
+	* tests/test-photos.c: added @rotation and @error to the
+	  itdb_photodb_add_photo() call.
+
 2006-11-12  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* ithumb-writer.c (itdb_write_ithumb_files):

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-07 20:54:45 jcs>
+/* Time-stamp: <2006-11-23 23:32:16 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -370,7 +370,9 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
 static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
 						    const gchar *filename,
 						    const guchar *image_data,
-						    gsize image_data_len)
+						    gsize image_data_len,
+						    gint rotation,
+						    GError **error)
 {					     
     gboolean result = FALSE;
 
@@ -382,23 +384,25 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
     {
 	result = itdb_artwork_add_thumbnail (track->artwork,
 					     ITDB_THUMB_COVER_SMALL,
-					     filename);
+					     filename, rotation, error);
 	if (result == TRUE)
 	    result = itdb_artwork_add_thumbnail (track->artwork,
 						 ITDB_THUMB_COVER_LARGE,
-						 filename);
+						 filename, rotation, error);
     }
     if (image_data)
     {
 	result = itdb_artwork_add_thumbnail_from_data (track->artwork,
 						       ITDB_THUMB_COVER_SMALL,
 						       image_data,
-						       image_data_len);
+						       image_data_len,
+						       rotation, error);
 	if (result == TRUE)
 	    result = itdb_artwork_add_thumbnail_from_data (track->artwork,
 							   ITDB_THUMB_COVER_LARGE,
 							   image_data,
-							   image_data_len);
+							   image_data_len,
+							   rotation, error);
     }
 
     if (result == TRUE)
@@ -443,7 +447,8 @@ gboolean itdb_track_set_thumbnails (Itdb_Track *track,
     g_return_val_if_fail (track, FALSE);
     g_return_val_if_fail (filename, FALSE);
 
-    return itdb_track_set_thumbnails_internal (track, filename, NULL, 0);
+    return itdb_track_set_thumbnails_internal (track, filename, NULL, 0,
+					       0, NULL);
 }
 
 
@@ -471,7 +476,8 @@ gboolean itdb_track_set_thumbnails_from_data (Itdb_Track *track,
     g_return_val_if_fail (image_data, FALSE);
 
     return itdb_track_set_thumbnails_internal (track, NULL,
-					       image_data, image_data_len);
+					       image_data, image_data_len,
+					       0, NULL);
 }
 
 

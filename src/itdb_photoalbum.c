@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-10-31 21:49:36 jcs>
+/* Time-stamp: <2006-11-23 23:29:44 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -333,6 +333,7 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 						      const gchar *filename,
 						      const guchar *image_data,
 						      gsize image_data_len,
+						      gint rotation,
 						      GError **error)
 {
 #ifdef HAVE_GDKPIXBUF
@@ -408,14 +409,18 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 	{
 	    result = itdb_artwork_add_thumbnail (artwork,
 						 format->type,
-						 filename);
+						 filename,
+						 rotation,
+						 error);
 	}
 	if (image_data)
 	{
 	    result = itdb_artwork_add_thumbnail_from_data (artwork,
 							   format->type,
 							   image_data,
-							   image_data_len);
+							   image_data_len,
+							   rotation,
+							   error);
 	}
     }
 
@@ -453,45 +458,63 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
  * itdb_photodb_add_photo:
  * @db: the #Itdb_PhotoDB to add the photo to.
  * @filename: file with the photo to add.
+ * @rotation: angle by which the image should be rotated
+ * counterclockwise. Valid values are 0, 90, 180 and 270.
  * @error: return location for a #GError or NULL
  * 
  * Add a photo to the PhotoDB. The photo is automatically added to the
  * first Photoalbum, which by default contains a list of all photos in
  * the database. If no Photoalbums exist one is created automatically.
  *
+ * For the rotation angle you can also use the gdk constants
+ * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
+ * ..._CLOCKWISE.
+ *
  * Return value: a pointer to the added photo.
  **/
 Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db,
 				      const gchar *filename,
+				      gint rotation,
 				      GError **error)
 {
     g_return_val_if_fail (db, FALSE);
     g_return_val_if_fail (filename, FALSE);
 
-    return itdb_photodb_add_photo_internal (db, filename, NULL, 0, error);
+    return itdb_photodb_add_photo_internal (db, filename, NULL, 0, rotation, error);
 }
 
 
 /**
  * itdb_photodb_add_photo_from_data:
  * @db: the #Itdb_PhotoDB to add the photo to.
- * @filename: file with the photo to add.
+ * @image_data: chunk of memory containing the image data (for example
+ * a jpg file)
+ * @image_data_len: length of above chunk of memory
+ * @rotation: angle by which the image should be rotated
+ * counterclockwise. Valid values are 0, 90, 180 and 270.
  * @error: return location for a #GError or NULL
  * 
  * Add a photo to the PhotoDB. The photo is automatically added to the
  * first Photoalbum, which by default contains a list of all photos in
  * the database. If no Photoalbums exist one is created automatically.
+ *
+ * For the rotation angle you can also use the gdk constants
+ * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
+ * ..._CLOCKWISE.
+ *
+ * Return value: a pointer to the added photo.
  **/
 Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
 						const guchar *image_data,
 						gsize image_data_len,
+						gint rotation,
 						GError **error)
 {
     g_return_val_if_fail (db, FALSE);
     g_return_val_if_fail (image_data, FALSE);
 
     return itdb_photodb_add_photo_internal (db, NULL, image_data, image_data_len,
-					    error);
+					    rotation, error);
 }
 
 

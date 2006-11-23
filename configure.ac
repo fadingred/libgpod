@@ -74,7 +74,7 @@ AC_ARG_ENABLE(gdk-pixbuf, [AC_HELP_STRING([--disable-gdk-pixbuf],[ArtworkDB will
 esac], have_gdkpixbuf=yes)
 AH_TEMPLATE([HAVE_GDKPIXBUF], [Whether gdk-pixbuf is installed, ArtworkDB writing support will be disabled if it can't be found])
 if test x$have_gdkpixbuf = xyes; then
-   PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-2.0, have_gdkpixbuf=yes, have_gdkpixbuf=no)
+   PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-2.0 >= 2.6.0, have_gdkpixbuf=yes, have_gdkpixbuf=no)
    if test x"$have_gdkpixbuf" = xyes; then
       AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF, 1)
    fi
