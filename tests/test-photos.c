@@ -265,8 +265,8 @@ static int do_add (int argc, char **argv)
     {
 	Itdb_Artwork *photo;
 	
-	photo = itdb_photodb_add_photo (db, argv[i], GDK_PIXBUF_ROTATE_NONE,
-					&error);
+	photo = itdb_photodb_add_photo (db, argv[i],
+					-1, GDK_PIXBUF_ROTATE_NONE, &error);
 	if (photo == NULL)
 	{
 	    if (error)
@@ -281,7 +281,7 @@ static int do_add (int argc, char **argv)
 	{
 	    if (album)
 	    {
-		itdb_photodb_photoalbum_add_photo (db, album, photo);
+		itdb_photodb_photoalbum_add_photo (db, album, photo, -1);
 	    }
 	}
     }

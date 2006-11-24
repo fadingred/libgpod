@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-23 23:27:35 jcs>
+/* Time-stamp: <2006-11-24 12:57:54 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1005,15 +1005,18 @@ void itdb_track_remove_thumbnails (Itdb_Track *track);
  * how to use. */
 Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error);
 Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db, const gchar *filename,
-				      gint rotation, GError **error);
+				      gint position, gint rotation,
+				      GError **error);
 Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
 						const guchar *image_data,
 						gsize image_data_len,
+						gint position,
 						gint rotation,
 						GError **error);
 void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
 					Itdb_PhotoAlbum *album,
-					Itdb_Artwork *photo);
+					Itdb_Artwork *photo,
+					gint position);
 Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
 						 const gchar *albumname,
 						 gint pos);

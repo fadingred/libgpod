@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-23 23:29:44 jcs>
+/* Time-stamp: <2006-11-24 12:59:36 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -333,6 +333,7 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 						      const gchar *filename,
 						      const guchar *image_data,
 						      gsize image_data_len,
+						      gint position,
 						      gint rotation,
 						      GError **error)
 {
@@ -433,16 +434,17 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
     }
 
     /* Add artwork to the list of photos */
-    db->photos = g_list_append (db->photos, artwork);
+    /* (it would be sufficient to append to the end) */
+    db->photos = g_list_insert (db->photos, artwork, position);
 
-    /* Add artwork to the first playlist */
+    /* Add artwork to the first album */
     album = itdb_photodb_photoalbum_by_name (db, NULL);
     if (!album)
     {
 	album = itdb_photodb_photoalbum_create (db, _("Photo Library"), -1);
 	album->album_type = 1; /* Photo Library */
     }
-    itdb_photodb_photoalbum_add_photo (db, album, artwork);
+    itdb_photodb_photoalbum_add_photo (db, album, artwork, position);
 
     return artwork;
 #else
@@ -458,6 +460,8 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
  * itdb_photodb_add_photo:
  * @db: the #Itdb_PhotoDB to add the photo to.
  * @filename: file with the photo to add.
+ * @position: position where to insert the new photo (-1 to append at
+ * the end)
  * @rotation: angle by which the image should be rotated
  * counterclockwise. Valid values are 0, 90, 180 and 270.
  * @error: return location for a #GError or NULL
@@ -474,13 +478,15 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
  **/
 Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db,
 				      const gchar *filename,
+				      gint position,
 				      gint rotation,
 				      GError **error)
 {
     g_return_val_if_fail (db, FALSE);
     g_return_val_if_fail (filename, FALSE);
 
-    return itdb_photodb_add_photo_internal (db, filename, NULL, 0, rotation, error);
+    return itdb_photodb_add_photo_internal (db, filename, NULL, 0,
+					    position, rotation, error);
 }
 
 
@@ -490,6 +496,8 @@ Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db,
  * @image_data: chunk of memory containing the image data (for example
  * a jpg file)
  * @image_data_len: length of above chunk of memory
+ * @position: position where to insert the new photo (-1 to append at
+ * the end)
  * @rotation: angle by which the image should be rotated
  * counterclockwise. Valid values are 0, 90, 180 and 270.
  * @error: return location for a #GError or NULL
@@ -507,6 +515,7 @@ Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db,
 Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
 						const guchar *image_data,
 						gsize image_data_len,
+						gint position,
 						gint rotation,
 						GError **error)
 {
@@ -514,7 +523,7 @@ Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
     g_return_val_if_fail (image_data, FALSE);
 
     return itdb_photodb_add_photo_internal (db, NULL, image_data, image_data_len,
-					    rotation, error);
+					    position, rotation, error);
 }
 
 
@@ -635,6 +644,8 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
  * @db: the #Itdb_PhotoDB to act on
  * @album: the #Itdb_PhotoAlbum to add the photo to
  * @photo: a pointer to the photo (#Itdb_Artwork) to add to the album
+ * @position: position where to insert the new photo (-1 to append at
+ * the end)
  *
  * Adds a photo already in the library to the specified album
  * @album. Photos are automatically added to the first album (Photo
@@ -646,13 +657,14 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 
 void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
 					Itdb_PhotoAlbum *album,
-					Itdb_Artwork *photo)
+					Itdb_Artwork *photo,
+					gint position)
 {
     g_return_if_fail (db);
     g_return_if_fail (album);
     g_return_if_fail (photo);
 
-    album->members = g_list_append (album->members, photo);
+    album->members = g_list_insert (album->members, photo, position);
 }
 
 

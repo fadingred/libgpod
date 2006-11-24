@@ -1,3 +1,13 @@
+2006-11-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h
+	  src/itdb_photoalbum.c (itdb_photodb_add_photo,
+	  itdb_photodb_add_photo_from_data,
+	  itdb_photodb_photoalbum_add_photo): add 'position' where photo
+	  should be inserted.
+
+	* tests/test-photos.c: implemented new API (append at the end).
+
 2006-11-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* When adding photos to the iPod the user may or may not want to
