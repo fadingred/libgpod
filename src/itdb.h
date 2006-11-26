@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-24 12:57:54 jcs>
+/* Time-stamp: <2006-11-24 20:51:44 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -545,24 +545,8 @@ struct _Itdb_Playlist
     gint  num;            /* number of tracks in playlist          */
     GList *members;       /* tracks in playlist (Track *)          */
     gboolean is_spl;      /* smart playlist?                       */
-    guint32 timestamp;    /* some timestamp                        */
+    guint32 timestamp;    /* timestamp of playlist creation        */
     guint64 id;           /* playlist ID                           */
-    guint32 mhodcount;    /* This appears to be the number of string
-			     MHODs (type < 50) associated with this
-			     playlist (typically 0x01). Doesn't seem
-			     to be signficant unless you include Type
-			     52 MHODs. libgpod sets this to 1 when
-			     syncing */
-    guint16 libmhodcount; /* The number of Type 52 MHODs associated
-			     with this playlist. If you don't create
-			     Type 52 MHODs, this can be
-			     zero. Otherwise, if you have Type 52
-			     MHODs associated with this playlist and
-			     set this to zero, no songs appear on the
-			     iPod. jcsjcs: with iTunes 4.9 this seems
-			     to be set to 1 even without any Type 52
-			     MHODs present. libgpod sets this to 1
-			     when syncing */
     guint32 sortorder;    /* How to sort playlist -- see below     */
     guint32 podcastflag;  /* ITDB_PL_FLAG_NORM/_PODCAST            */
     SPLPref splpref;      /* smart playlist prefs                  */

@@ -1,3 +1,15 @@
+2006-11-26  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/ithumb-writer.c (ithumb_writer_write_thumbnail): handle
+	  corrupted image data in a way that does not crash libgpod nor
+	  causes the ArtworkDB or PhotoDB to be corrupted. Currently a
+	  completely red pixmap is created as a substitute. Somewhat more
+	  artistic than I am may want to create a "corrupted image data"
+	  pixmap we can imbed into the code.
+
+	* src/itdb_artwork.c (itdb_thumb_get_gdk_pixbuf): fix failed
+	  assertion when image data is illegal.
+
 2006-11-24  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h
@@ -7,6 +19,11 @@
 	  should be inserted.
 
 	* tests/test-photos.c: implemented new API (append at the end).
+
+	* src/itdb.h
+	  src/itdb_itunesdb.c: removed mhodcount and libmhodcount from
+	  Itdb_Playlist as these are only used internally and reset during
+	  syncing.
 
 2006-11-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

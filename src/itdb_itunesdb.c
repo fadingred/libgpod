@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-07 20:53:26 jcs>
+/* Time-stamp: <2006-11-24 20:50:01 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1873,8 +1873,8 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   plitem->flag3 = get8int (cts, mhyp_seek+23);
   plitem->timestamp = get32lint (cts, mhyp_seek+24);
   plitem->id = get64lint (cts, mhyp_seek+28);
-  plitem->mhodcount = get32lint (cts, mhyp_seek+36);
-  plitem->libmhodcount = get16lint (cts, mhyp_seek+40);
+/*  plitem->mhodcount = get32lint (cts, mhyp_seek+36);   */
+/*  plitem->libmhodcount = get16lint (cts, mhyp_seek+40);*/
   plitem->podcastflag = get16lint (cts, mhyp_seek+42);
   plitem->sortorder = get32lint (cts, mhyp_seek+44);
 
@@ -3993,11 +3993,11 @@ static gboolean write_playlist (FExport *fexp,
     put8int (cts, pl->flag3);      /* unknown                   */
     put32lint (cts, pl->timestamp);/* some timestamp            */
     put64lint (cts, pl->id);       /* 64 bit ID                 */
-    pl->mhodcount = 1;             /* we only write one mhod type < 50 */
-    put32lint (cts, pl->mhodcount);
-    pl->libmhodcount = 1;          /* we don't write mhod type 52, and
-				      "1" seems to be the default */
-    put16lint (cts, pl->libmhodcount);
+    put32lint (cts, 1);            /* mhodcount: we only write
+				    * one mhod type < 50        */
+    put16lint (cts, 1);            /* libmhodcount: we don't write
+				      mhod type 52, and "1" seems to
+				      be the default            */
     put16lint (cts, pl->podcastflag);
     put32lint (cts, pl->sortorder);
     put32_n0 (cts, 15);            /* ?                         */
