@@ -1,4 +1,4 @@
-/*  Time-stamp: <2006-11-23 23:45:01 jcs>
+/*  Time-stamp: <2006-11-26 23:30:08 jcs>
  *
  *  Copyright (C) 2005 Christophe Fergeau
  *
@@ -347,7 +347,8 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 				 NULL);
 	gdk_pixbuf_loader_close (loader, NULL);
 	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-	g_object_ref (pixbuf);
+	if (pixbuf)
+	    g_object_ref (pixbuf);
 	g_object_unref (loader);
 
 	g_free (thumb->image_data);
@@ -357,7 +358,11 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 
     if (pixbuf == NULL)
     {
-	return FALSE;
+	/* This is quite bad... if we just return FALSE the ArtworkDB
+	   gets messed up. For now let's insert a red thumbnail until
+	   someone comes up with a "broken thumbnail" design */
+	pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, FALSE, 8, width, height);
+	gdk_pixbuf_fill (pixbuf, 0xff000000);
     }
 
     /* Rotate if necessary */
@@ -366,10 +371,9 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 	GdkPixbuf *new_pixbuf = gdk_pixbuf_rotate_simple (pixbuf, thumb->rotation);
 	g_object_unref (pixbuf);
 	pixbuf = new_pixbuf;
+	/* Clean up */
+	thumb->rotation = 0;
     }
-
-    /* Clean up */
-    thumb->rotation = 0;
 
     /* !! cannot write directly to &thumb->width/height because
        g_object_get() returns a gint, but thumb->width/height are

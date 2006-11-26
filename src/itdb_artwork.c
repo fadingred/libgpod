@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-23 23:27:35 jcs>
+/* Time-stamp: <2006-11-26 23:31:45 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -662,12 +662,15 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 					 NULL);
 		gdk_pixbuf_loader_close (loader, NULL);
 		pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-		g_object_ref (pixbuf);
+		if (pixbuf)
+		    g_object_ref (pixbuf);
 		g_object_unref (loader);
 	}
 
 	if (!pixbuf)
+	{
 	    return NULL;
+	}
 
 	/* !! cannot write directly to &thumb->width/height because
 	   g_object_get() returns a gint, but thumb->width/height are
