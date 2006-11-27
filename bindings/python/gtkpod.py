@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import sha
 import os
 import socket
