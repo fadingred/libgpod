@@ -1,0 +1,43 @@
+There are two ways to use the python libgpod bindings.  Both methods use the
+same namespace (gpod) for convenience.  Just "import gpod" to get started using
+either of them.
+
+The first method provides a 'Pythonic' API.  Most uses of this API will start by
+opening the database with gpod.Database() and then calling methods on the
+returned object.  For example, to read an iTunesDB from an iPod at /mnt/ipod
+and print the title for the tracks in the database:
+
+    import gpod
+    db = gpod.Database('/mnt/ipod')
+    for track in db:
+        print track['title']
+
+Please see ipod.py for the implementation details and the scripts in the
+examples directory for some ideas on how to use the bindings.
+
+
+The second method uses the same API as the C implementation.  Prefix the C
+function names with gpod.  For example, to read an iTunesDB from an iPod at
+/mnt/ipod and display the titles for each track:
+
+    import gpod
+    db = gpod.itdb_parse('/mnt/ipod', None)
+    tracks = gpod.sw_get_tracks(db)
+    for track in tracks:
+        print track.title
+
+See the libgpod C API documentation for the details and available functions.
+
+Note: The C API is translated to Python using SWIG (Simplified Wrapper and
+Interface Generator).  This automated translation sometimes exposes functions
+which return data types that are not useful in Python and require helper
+functions in the bindings.  An example is listing playlists; the C API would
+return a GList which means nothing to Python, so a helper function is provided
+that returns a Python list.  These helper functions are prefixed with sw_ to
+denote that they are not native libgpod functions.
+
+The current helper functions are:
+
+@WRAPPER_LIST@
+
+Please see the example scripts for ideas on how to use these functions.

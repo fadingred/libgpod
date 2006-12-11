@@ -14,6 +14,9 @@ CLEANFILES =		\
 	gpod_wrap.c	\
 	gpod_wrap.o
 
+MAINTAINERCLEANFILES =	\
+	README
+
 if HAVE_PYTHON
 MODULE_CFLAGS	= `$(PKG_CONFIG) --cflags $(top_srcdir)/libgpod-1.0.pc` $(PYTHON_INCLUDES)
 MODULE_LIBS	= `$(PKG_CONFIG) --libs $(top_srcdir)/libgpod-1.0.pc` -L$(top_srcdir)/src/.libs
@@ -40,6 +43,14 @@ install-pythonDATA: $(python_DATA)
 
 uninstall-pythonDATA: $(python_DATA)
 	rm -rf $(DESTDIR)$(pythondir)/gpod
+
+README: README.in gpod.i
+	WRAPPER_LIST=`grep 'PyObject\* sw_[^_].*;' gpod.i | awk -F "[ (]" '{ print $$2 }' | tr '\n' ' ' | sort -u`; \
+	sed \
+	    -e "s/@WRAPPER_LIST@/$${WRAPPER_LIST}/" \
+	    -e "/^sw_/ s/ $$//" \
+	    -e "/^sw_/ s/ /\n/g" \
+	    $< > $@
 
 test:
 	cd tests && python tests.py
