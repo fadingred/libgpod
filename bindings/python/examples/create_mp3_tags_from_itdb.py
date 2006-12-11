@@ -32,7 +32,7 @@ import gpod
 import eyeD3
 
 # please specify your iPod mountpoint here..
-IPOD_MOUNT = '/media/ipod/'
+IPOD_MOUNT = '/mnt/ipod/'
 
 itdb = gpod.itdb_parse( IPOD_MOUNT, None)
 
