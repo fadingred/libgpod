@@ -35,14 +35,14 @@ _gpod.so: gpod_wrap.o
 	$(CC) $(MODULE_LIBS) @PYTHON_LDFLAGS@ gpod_wrap.o -o $@
 
 install-pythonDATA: $(python_DATA)
-	$(mkinstalldirs) $(DESTDIR)$(pythondir)/gpod
-	$(INSTALL_PROGRAM) _gpod.so  $(DESTDIR)$(pythondir)/gpod/_gpod.so
-	$(INSTALL_DATA) *.py         $(DESTDIR)$(pythondir)/gpod/
-	$(PYTHON) -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pythondir)/gpod/", ddir="$(pythondir)/gpod/")'
-	$(PYTHON) -O -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pythondir)/gpod/", ddir="$(pythondir)/gpod/")'
+	$(mkinstalldirs) $(DESTDIR)$(pyexecdir)/gpod
+	$(INSTALL_PROGRAM) _gpod.so  $(DESTDIR)$(pyexecdir)/gpod/_gpod.so
+	$(INSTALL_DATA) *.py         $(DESTDIR)$(pyexecdir)/gpod/
+	$(PYTHON) -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pyexecdir)/gpod/", ddir="$(pyexecdir)/gpod/")'
+	$(PYTHON) -O -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pyexecdir)/gpod/", ddir="$(pyexecdir)/gpod/")'
 
 uninstall-pythonDATA: $(python_DATA)
-	rm -rf $(DESTDIR)$(pythondir)/gpod
+	rm -rf $(DESTDIR)$(pyexecdir)/gpod
 
 README: README.in gpod.i
 	WRAPPER_LIST=`grep 'PyObject\* sw_[^_].*;' gpod.i | awk -F "[ (]" '{ print $$2 }' | tr '\n' ' ' | sort -u`; \
