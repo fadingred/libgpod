@@ -45,7 +45,7 @@ uninstall-pythonDATA: $(python_DATA)
 	rm -rf $(DESTDIR)$(pyexecdir)/gpod
 
 README: README.in gpod.i
-	WRAPPER_LIST=`grep 'PyObject\* sw_[^_].*;' gpod.i | awk -F "[ (]" '{ print $$2 }' | tr '\n' ' ' | sort -u`; \
+	WRAPPER_LIST=`grep 'PyObject\* sw_[^_].*;' gpod.i | awk -F "[ (]" '{ print $$2 }' | sort -u | tr '\n' ' '`; \
 	sed \
 	    -e "s/@WRAPPER_LIST@/$${WRAPPER_LIST}/" \
 	    -e "/^sw_/ s/ $$//" \
