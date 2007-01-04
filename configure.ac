@@ -161,6 +161,7 @@ AC_SUBST(LIBGPOD_LIBS)
 AC_OUTPUT([
 Makefile
 bindings/Makefile
+bindings/python/gpod.i
 bindings/python/Makefile
 bindings/python/examples/Makefile
 docs/Makefile

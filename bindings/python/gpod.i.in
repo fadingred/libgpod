@@ -1,4 +1,4 @@
-/* File : gpod.i */
+/* File : gpod.i.in */
 
 /*
  Copyright (C) 2005 Nick Piper <nick-gtkpod at nickpiper co uk>
@@ -30,13 +30,13 @@ Please send any fixes, improvements or suggestions to
 
 %module gpod
 %{
-#include "../../src/db-artwork-debug.h" 
-#include "../../src/db-artwork-parser.h" 
-#include "../../src/db-image-parser.h" 
-#include "../../src/db-itunes-parser.h" 
-#include "../../src/db-parse-context.h" 
-#include "../../src/itdb.h" 
-#include "../../src/itdb_private.h"
+#include "db-artwork-debug.h" 
+#include "db-artwork-parser.h" 
+#include "db-image-parser.h" 
+#include "db-itunes-parser.h" 
+#include "db-parse-context.h" 
+#include "itdb.h" 
+#include "itdb_private.h"
 
 PyObject* sw_get_tracks(Itdb_iTunesDB *itdb) {
   PyObject    *list;
@@ -280,4 +280,4 @@ PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl);
 PyObject* sw_set_track_userdata(Itdb_Track *track, PyObject *data);
 PyObject* sw_get_track_userdata(Itdb_Track *track);
 
-%include "../../src/itdb.h"
+%include "@top_srcdir@/src/itdb.h"
