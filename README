@@ -13,7 +13,8 @@ Gtkpod-devel@lists.sourceforge.net (you may ask to be CC in the
 answer).
 
 ----------------------------------------------------------------------
-Quick HOWTO use libgpod
+
+Quick HOWTO use libgpod for audio
 
 itdb_parse(): read the iTunesDB and ArtbookDB
 itdb_write(): write the iTunesDB and ArtbookDB
@@ -82,55 +83,60 @@ gtkpod-devel at lists dot sourceforge dot net
 Jörg Schuler (jcsjcs at users dot sourceforge dot net)
 
 ----------------------------------------------------------------------
-Note about photo databases:
 
-First thing, there are 2 different artwork databases on the iPod
-Photo/Color, the ArtworkDB file which stores information about cover art
-(thumbnails) for the songs stored on the iPod, and the Photo Database
-which is used to store random photos not associated with songs on the
-iPod. 
+Quick HOWTO use libgpod for photos
 
-The main target I had in mind when writing artwork support was cover art
-thumbnails for songs. The parsing code should be reusable for generic
-Photo Database support, but there are probably some tweaks to do, and
-some stuff isn't handled, for example Photo Albums (roughtly equivalent
-to a playlist) which aren't used in the ArtworkDB (they are only
-useful/meaningful in the Photo Database)
+   itdb_photodb_parse():
+       Read an existing PhotoDB.
 
-Even though the cover art data is stored in a separate file (ArtworkDB),
-it's intrisically linked with a song in the iTunesDB files through the
-'dbid' 64 bit field in the mhit iTunesDB records (it's meant to be
-displayed along when the song is being played, so it makes sense to
-associate them).
+   itdb_photodb_create():
+       Create a new Itdb_PhotoDB structure. The Photo Library Album is
+       (first album) is created automatically.
 
-What ipod_parse_photo_db is to parse this ArtworkDB file to gather info
-about the song thumbnails. It then fills the 'thumbnails' field in
-Itdb_Track which is a list of Itdb_Image. The Itdb_Image structure
-contains a few basic information about the image (I'll let you check its
-definition in itdb.h for more details), but it doesn't store the pixel
-data since this is stored separately, and I feared loading all the cover
-thumbnails automatically would be too memory hungry. So an
-itdb_image_get_rgb_data function is provided to trigger the load of the
-pixel data when it's useful.
+   itdb_photodb_add_photo(), itdb_photodb_add_photo_from_data():
+       Add a photo to the PhotoDB (from file or from a chunk of
+       memory). It is automatically added to the Photo Library Album
+       (first album), which is created if it does not exist already.
 
-The 2 test programs I added are meant to be small samples of how this
-stuff works, one of them parses the ArtworkDB and outputs all the
-thumbnails it finds in /tmp as .png files, the other one is used to
-randomly associate images as thumbnails to all songs in the database,
-it's meant to show how to write thumbnails. If you add support for that
-to gtkpod, be aware that currently adding cover thumbnails to a few
-songs on an iPod which already has cover thumbnails assigned to some
-other songs is not something that is tranparently handled, ie you'll
-need to add code either to libgpod or to gtkpod to make that work
-properly.
+   itdb_photodb_photoalbum_craete():
+       Create and add a new photoalbum.
 
-...
+   itdb_photodb_photoalbum_add_photo():
+       Add a photo (Itdb_Artwork) to an existing photoalbum.
 
-People wanting more info can find lots of details on
-http://ipodlinux.org/ITunesDB#Artwork_Database
+   itdb_photodb_photoalbum_remove():
+       Remove an existing photoalbum. Pictures can be kept in the
+       Photo Library or automatically removed as well.
 
-I hope that's helpful,
+   itdb_photodb_remove_photo():
+       Remove a photo either from a photoalbum or completely from the database.
 
-Christophe
+   itdb_photodb_write():
+       Write out your PhotoDB.
+
+   itdb_photodb_free():
+       Free all memory taken by the PhotoDB.
+
+   itdb_photodb_photoalbum_by_name():
+       Find the first photoalbum with a given name or the Photo
+       Library Album if called with no name.
+
+
+If you cannot add photos because your iPod is not recognized, you may
+have to set the iPod model by calling
+
+itdb_device_set_sysinfo (db->device, "ModelNumStr", model);
+
+For example, "MA450" would stand for an 80 GB 6th generation iPod
+Video. See itdb_device.c for a list of supported models.
+
+This information will be written to the iPod when the PhotoDB is saved
+(itdb_device_write_sysinfo() is called).
+
+Have a look at the following test-photos test program in the tests/
+subdirectory for an example of how to use the interface.
+
+
+Jörg Schuler (jcsjcs at users dot sourceforge dot net)
 
 ----------------------------------------------------------------------
