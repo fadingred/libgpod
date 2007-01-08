@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-24 20:50:01 jcs>
+/* Time-stamp: <2007-01-06 20:47:47 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -844,7 +844,8 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
     entry_length = get32lint (cts, 8);
     CHECK_ERROR (fimp, FALSE);
     /* all the entries I know are 0x0c (firmware 1.3) or 0x10
-     * (firmware 2.0) or 0x14 (iTunesDB version 0x0d) in length */
+     * (firmware 2.0), 0x14 (iTunesDB version 0x0d) or 0x1c (iTunesDB
+     * version 0x13) in length */
     if (entry_length < 0x0c)
     {
 	g_set_error (&fimp->error,
@@ -862,13 +863,13 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	struct playcount *playcount = g_new0 (struct playcount, 1);
 	glong seek = header_length + i*entry_length;
 
+	check_seek (cts, seek, entry_length);
+	CHECK_ERROR (fimp, FALSE);	
+
 	fimp->playcounts = g_list_append (fimp->playcounts, playcount);
 	playcount->playcount = get32lint (cts, seek);
-	CHECK_ERROR (fimp, FALSE);
 	playcount->time_played = get32lint (cts, seek+4);
-	CHECK_ERROR (fimp, FALSE);
 	playcount->bookmark_time = get32lint (cts, seek+8);
-	CHECK_ERROR (fimp, FALSE);
 	/* NOTE:
 	 *
 	 * The iPod (firmware 1.3, 2.0, ...?) doesn't seem to use the
@@ -883,7 +884,6 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	if (entry_length >= 0x10)
 	{
 	    playcount->rating = get32lint (cts, seek+12);
-	    CHECK_ERROR (fimp, FALSE);
 	}
 	else
 	{
@@ -893,11 +893,13 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	if (entry_length >= 0x14)
 	{
 	    playcount->pc_unk16 = get32lint (cts, seek+16);
-	    CHECK_ERROR (fimp, FALSE);
 	}
-	else
+	/* skip_count and last_skipped only exists if the entry length
+	   is at least 0x1c */
+	if (entry_length >= 0x1c)
 	{
-	    playcount->pc_unk16 = 0;
+	    playcount->skipcount = get32lint (cts, seek+20);
+	    playcount->last_skipped = get32lint (cts, seek+24);
 	}
     }
     return TRUE;
@@ -1170,7 +1172,7 @@ Itdb_iTunesDB *itdb_new (void)
     g_once (&g_type_init_once, (GThreadFunc)g_type_init, NULL);
     itdb = g_new0 (Itdb_iTunesDB, 1);
     itdb->device = itdb_device_new ();
-    itdb->version = 0x09;
+    itdb->version = 0x13;
     itdb->id = ((guint64)g_random_int () << 32) |
 	((guint64)g_random_int ());
     return itdb;
@@ -2114,8 +2116,8 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
   }
   if (header_len >= 0xf4)
   {
-      track->unk156 = get32lint (cts, seek+156);
-      track->unk160 = get32lint (cts, seek+160);
+      track->skipcount = get32lint (cts, seek+156);
+      track->last_skipped = get32lint (cts, seek+160);
       track->has_artwork = get8int (cts, seek+164);
       track->skip_when_shuffling = get8int (cts, seek+165);
       track->remember_playback_position = get8int (cts, seek+166);
@@ -2140,6 +2142,14 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->unk232 = get32lint (cts, seek+232);
       track->unk236 = get32lint (cts, seek+236);
       track->unk240 = get32lint (cts, seek+240);
+  }
+  if (header_len >= 0x148)
+  {
+      track->unk244 = get32lint (cts, seek+244);
+      track->gapless_data = get32lint (cts, seek+248);
+      track->unk252 = get32lint (cts, seek+252);
+      track->gapless_track_flag = get16lint (cts, seek+256);
+      track->gapless_album_flag = get16lint (cts, seek+258);
   }
 
   track->transferred = TRUE;                   /* track is on iPod! */
@@ -2255,6 +2265,10 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	  track->mark_unplayed = 0x01;
       }
       track->recent_playcount = playcount->playcount;
+
+      track->skipcount += playcount->skipcount;
+      track->recent_skipcount = playcount->skipcount;
+
       g_free (playcount);
   }
   itdb_track_add (fimp->itdb, track, -1);
@@ -3191,8 +3205,14 @@ static void mk_mhbd (FExport *fexp, guint32 children)
 		     0x0a: iTunes 4.5
 		     0x0b: iTunes 4.7
 		     0x0c: iTunes 4.71/4.8 (required for shuffle)
-                     0x0d: iTunes 4.9 */
-  fexp->itdb->version = 0x0d;
+                     0x0d: iTunes 4.9
+                     0x0e: iTunes 5
+		     0x0f: iTunes 6
+		     0x10: iTunes 6.0.1(?)
+		     0x11: iTunes 6.0.2
+                     0x12 = iTunes 6.0.5.
+		     0x13 = iTunes 7 */
+  fexp->itdb->version = 0x13;
   put32lint (cts, fexp->itdb->version);
   put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
@@ -3251,7 +3271,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   g_return_if_fail (track);
 
   put_header (cts, "mhit");
-  put32lint (cts, 0xf4);  /* header size */
+  put32lint (cts, 0x148);/* header size */
   put32lint (cts, -1);   /* size of whole mhit -- fill in later */
   put32lint (cts, -1);   /* nr of mhods in this mhit -- later   */
   put32lint (cts, track->id); /* track index number */
@@ -3300,8 +3320,8 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->unk148);
   put32lint (cts, track->unk152);
   /* since iTunesDB version 0x0c */
-  put32lint (cts, track->unk156);
-  put32lint (cts, track->unk160);
+  put32lint (cts, track->skipcount);
+  put32lint (cts, track->last_skipped);
   put8int (cts, track->has_artwork);
   put8int (cts, track->skip_when_shuffling);
   put8int (cts, track->remember_playback_position);
@@ -3326,6 +3346,12 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->unk232);
   put32lint (cts, track->unk236);
   put32lint (cts, track->unk240);
+  put32lint (cts, track->unk244);
+  put32lint (cts, track->gapless_data);
+  put32lint (cts, track->unk252);
+  put16lint (cts, track->gapless_track_flag);
+  put16lint (cts, track->gapless_album_flag);
+  put32_n0 (cts, 17); /* padding */
 }
 
 

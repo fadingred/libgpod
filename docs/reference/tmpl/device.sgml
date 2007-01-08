@@ -109,4 +109,5 @@ Data structure holding information about the iPod (model, mount point, ...)
 @width: 
 @height: 
 @correlation_id: 
+@format: 
 

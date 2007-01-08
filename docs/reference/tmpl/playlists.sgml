@@ -33,8 +33,6 @@ Data structure to represent an iPod playlist
 @is_spl: 
 @timestamp: 
 @id: 
-@mhodcount: 
-@libmhodcount: 
 @sortorder: 
 @podcastflag: 
 @splpref: 

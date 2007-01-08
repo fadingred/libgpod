@@ -1,3 +1,18 @@
+2007-01-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* tests/Makefile.am: cleanup
+
+	* src/itdb.h
+	  src/itdb_itunesdb.c: renamed unk156 to skipcount and unk160 to
+	  last_skipped.
+	  Added unk244, gapless_data, unk252, gapless_track_flag,
+	  gapless_album_flag, recent_skipcount.
+	  Added handling of skipcount and last_skipped to playount file
+	  handling.
+
+	* src/itdb_private.h: added skipcount and last_skipped to struct
+	  playcount.
+
 2007-01-04  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* configure.ac

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-24 20:51:44 jcs>
+/* Time-stamp: <2007-01-06 20:47:00 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -741,7 +741,12 @@ struct _Itdb_Track
   guint32 unk148;     /* unknown - used for Apple Store DRM songs
 			 (always 0x01010100?), zero otherwise */
   guint32 unk152;     /* unknown */
-  guint32 unk156, unk160;
+  guint32 skipcount;  /* Number of times the track has been skipped.
+			 Formerly unk156 (added in dbversion 0x0c) */
+  guint32 recent_skipcount; /* number of times track was skipped since
+			       last sync */
+  guint32 last_skipped;/* Date/time last skipped. Formerly unk160
+			 (added in dbversion 0x0c) */
   guint8 has_artwork; /* 0x01: artwork is present. 0x02: no artwork is
 			 present for this track (used by the iPod to
 			 decide whether to display Artwork or not) */
@@ -813,7 +818,19 @@ struct _Itdb_Track
   guint32 unk220;     /* Has something to do with protected files -
 			 set to 0x0 for non-protected files. */
   guint32 unk224;
-  guint32 unk228, unk232, unk236, unk240;
+  guint32 unk228, unk232, unk236, unk240, unk244;
+  guint32 gapless_data;/* some magic number needed for gapless playback
+			  (added in dbversion 0x13) It has been observed
+			  that gapless playback does not work if this is
+			  set to zero. This number is related to the the
+			  filesize in bytes, but it is a couple of bytes
+			  less than the filesize. Maybe ID3 tags
+			  etc... taken off? */
+  guint32 unk252;
+  guint16 gapless_track_flag; /* if 1, this track has gapless playback data
+			         (added in dbversion 0x13) */
+  guint16 gapless_album_flag; /* if 1, this track does not use crossfading
+			         in iTunes (added in dbversion 0x13) */
 
     /* Chapter data: defines where the chapter stops are in the track,
        as well as what info should be displayed for each section of

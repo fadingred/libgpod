@@ -23,9 +23,13 @@ Data structure to store iPod artwork (cover and photos)
 </para>
 
 @thumbnails: 
-@artwork_size: 
 @id: 
+@unk028: 
+@rating: 
+@unk036: 
 @creation_date: 
+@digitized_date: 
+@artwork_size: 
 @usertype: 
 @userdata: 
 @userdata_duplicate: 
@@ -40,6 +44,7 @@ Data structure to store iPod artwork (cover and photos)
 @filename: 
 @image_data: 
 @image_data_len: 
+@rotation: 
 @offset: 
 @size: 
 @width: 
@@ -92,6 +97,8 @@ Data structure to store iPod artwork (cover and photos)
 @artwork: 
 @type: 
 @filename: 
+@rotation: 
+@error: 
 @Returns: 
 
 

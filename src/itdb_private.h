@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-12 22:17:17 jcs>
+/* Time-stamp: <2007-01-06 20:46:59 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -87,6 +87,8 @@ struct playcount {
     guint32 bookmark_time;
     gint32 rating;
     gint32 pc_unk16;     /* unknown field in Play Counts file */
+    guint32 skipcount;
+    guint32 last_skipped;
     gint32 st_unk06;     /* unknown field in iTunesStats file */
     gint32 st_unk09;     /* unknown field in iTunesStats file */
 };
