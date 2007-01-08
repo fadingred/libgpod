@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-01-06 20:47:00 jcs>
+/* Time-stamp: <2007-01-08 21:59:10 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -551,6 +551,8 @@ struct _Itdb_Playlist
     guint32 podcastflag;  /* ITDB_PL_FLAG_NORM/_PODCAST            */
     SPLPref splpref;      /* smart playlist prefs                  */
     SPLRules splrules;    /* rules for smart playlists             */
+    gpointer reserved1;   /* reserved for MHOD100 implementation   */
+    gpointer reserved2;   /* reserved for MHOD100 implementation   */
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
