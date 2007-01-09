@@ -22,6 +22,8 @@ libgpod_la_SOURCES = \
 	itdb_device.c \
 	itdb_device.h \
 	itdb_endianness.h \
+	pixmaps.c \
+	pixmaps.h \
 	glib-compat.h
 
 

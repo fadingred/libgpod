@@ -1,4 +1,4 @@
-/*  Time-stamp: <2006-11-26 23:30:08 jcs>
+/*  Time-stamp: <2007-01-09 22:00:03 jcs>
  *
  *  Copyright (C) 2005 Christophe Fergeau
  *
@@ -34,11 +34,11 @@
 
 #include "itdb_private.h"
 #include "itdb_endianness.h"
+#include "pixmaps.h"
 
 #include <errno.h>
 #include <locale.h>
 #include <string.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -359,10 +359,29 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     if (pixbuf == NULL)
     {
 	/* This is quite bad... if we just return FALSE the ArtworkDB
-	   gets messed up. For now let's insert a red thumbnail until
-	   someone comes up with a "broken thumbnail" design */
-	pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, FALSE, 8, width, height);
-	gdk_pixbuf_fill (pixbuf, 0xff000000);
+	   gets messed up. */
+	pixbuf = gdk_pixbuf_from_pixdata (&questionmark_pixdata, FALSE, NULL);
+
+	if (pixbuf)
+	{
+	    GdkPixbuf *pixbuf2;
+	    pixbuf2 = gdk_pixbuf_scale_simple (pixbuf,
+					       writer->img_info->width,
+					       writer->img_info->height,
+					       GDK_INTERP_BILINEAR);
+	    g_object_unref (pixbuf);
+	    pixbuf = pixbuf2;
+	}
+	else
+	{
+	    /* Somethin went wrong. let's insert a red thumbnail */
+	    pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, FALSE, 8,
+				     writer->img_info->width,
+				     writer->img_info->height);
+	    gdk_pixbuf_fill (pixbuf, 0xff000000);
+	}
+	/* avoid rotation */
+	thumb->rotation = 0;
     }
 
     /* Rotate if necessary */

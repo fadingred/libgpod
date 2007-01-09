@@ -1,3 +1,14 @@
+2007-01-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/pixmaps.c
+	  src/pixmaps.h: New files containing last-resort pixmap in case
+	  thumbnail/photo could not be added. Will not produce code
+	  if the gdk-pixubf library is not present.
+
+	* src/ithumb-writer.c: use above pixmap instead of red canvas.
+
+	* src/Makefile.am: added pixmaps.[ch]
+
 2007-01-08  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* README: updated information about photo support
