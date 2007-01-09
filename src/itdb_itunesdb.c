@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-01-06 20:47:47 jcs>
+/* Time-stamp: <2007-01-09 23:46:31 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -169,6 +169,22 @@ enum MHOD_ID {
 /* Subtitle (usually the same as Description). Introduced in db
    version 0x0d. */
   MHOD_ID_SUBTITLE = 18,
+/* Show (for TV Shows only). Introduced in db version 0x0d? */
+  MHOD_ID_TVSHOW = 19, 
+/* Episode # (for TV Shows only). Introduced in db version 0x0d? */
+  MHOD_ID_TVEPISODE = 20,
+/* TV Network (for TV Shows only). Introduced in db version 0x0d? */
+  MHOD_ID_TVNETWORK = 21,
+/* Album Artist. Introduced in db version 0x13? */
+  MHOD_ID_ALBUMARTIST = 22,
+/* This only seems to appear if the Artist has "The" in front of it
+  (like "The Monkies") in which case it will be in the format "Artist,
+  The" and is followed by 5 0x01 UTF-16 characters. Introduced in db
+  version 0x13? */
+/*  MHOD_ID_ARTISTTHE = 23,   later */
+/* Appears to be a list of keywords pertaining to a track. Introduced
+   in db version 0x13? */
+  MHOD_ID_KEYWORDS = 24,
   MHOD_ID_SPLPREF = 50,  /* settings for smart playlist */
   MHOD_ID_SPLRULES = 51, /* rules for smart playlist     */
   MHOD_ID_LIBPLAYLISTINDEX = 52,  /* Library Playlist Index */
@@ -1468,7 +1484,6 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
    cts->error is set appropriately. */
 static gchar *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *mty)
 {
-    gchar *result = NULL;
     MHODData mhoddata;
 
     *mty = get_mhod_type (cts, seek, ml);
@@ -1490,19 +1505,28 @@ static gchar *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *
     case MHOD_ID_PODCASTURL:
     case MHOD_ID_PODCASTRSS:
     case MHOD_ID_SUBTITLE:
+    case MHOD_ID_TVSHOW:
+    case MHOD_ID_TVEPISODE:
+    case MHOD_ID_TVNETWORK:
+    case MHOD_ID_ALBUMARTIST:
+    case MHOD_ID_KEYWORDS:
 	mhoddata = get_mhod (cts, seek, ml);
 	if ((*ml != -1) && mhoddata.valid)
-	    result = mhoddata.data.string;
-	break;
+	    return mhoddata.data.string;
+	else
+	    return NULL;
     case MHOD_ID_SPLPREF:
     case MHOD_ID_SPLRULES:
     case MHOD_ID_LIBPLAYLISTINDEX:
     case MHOD_ID_PLAYLIST:
     case MHOD_ID_CHAPTERDATA:
 	/* these do not have a string entry */
-	break;
+	return NULL;
     }
-    return result;
+#if ITUNESDB_MHIT_DEBUG
+    fprintf (stderr, "Ignoring unknown MHOD of type %d at offset %ld\n", *mty, seek);
+#endif
+    return NULL;
 }
 
 
@@ -1944,6 +1968,11 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	  case MHOD_ID_PODCASTURL:
 	  case MHOD_ID_PODCASTRSS:
 	  case MHOD_ID_SUBTITLE:
+	  case MHOD_ID_TVSHOW:
+	  case MHOD_ID_TVEPISODE:
+	  case MHOD_ID_TVNETWORK:
+	  case MHOD_ID_ALBUMARTIST:
+	  case MHOD_ID_KEYWORDS:
 	  case MHOD_ID_CHAPTERDATA:
 	      /* these are not expected here */
 	      break;
@@ -2207,9 +2236,26 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	  case MHOD_ID_SUBTITLE:
 	      track->subtitle = entry_utf8;
 	      break;
-	  default: /* unknown entry -- discard */
-	      g_warning ("Unknown string mhod type %d at %lx inside mhit starting at %lx\n",
-			 type, seek, mhit_seek);
+	  case MHOD_ID_TVSHOW:
+	      track->tvshow = entry_utf8;
+	      break;
+	  case MHOD_ID_TVEPISODE:
+	      track->tvepisode = entry_utf8;
+	      break;
+	  case MHOD_ID_TVNETWORK:
+	      track->tvnetwork = entry_utf8;
+	      break;
+	  case MHOD_ID_ALBUMARTIST:
+	      track->albumartist = entry_utf8;
+	      break;
+	  case MHOD_ID_KEYWORDS:
+	      track->keywords = entry_utf8;
+	      break;
+	  case MHOD_ID_SPLPREF:
+	  case MHOD_ID_SPLRULES:
+	  case MHOD_ID_LIBPLAYLISTINDEX:
+	  case MHOD_ID_PLAYLIST:
+	  case MHOD_ID_CHAPTERDATA:
 	      g_free (entry_utf8);
 	      break;
 	  }
@@ -3393,6 +3439,11 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
   case MHOD_ID_GROUPING:
   case MHOD_ID_DESCRIPTION:
   case MHOD_ID_SUBTITLE:
+  case MHOD_ID_TVSHOW:
+  case MHOD_ID_TVEPISODE:
+  case MHOD_ID_TVNETWORK:
+  case MHOD_ID_ALBUMARTIST:
+  case MHOD_ID_KEYWORDS:
       g_return_if_fail (mhod->data.string);
       /* normal iTunesDBs seem to take utf16 strings), endian-inversed
 	 iTunesDBs seem to take utf8 strings */
@@ -3780,6 +3831,41 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	{
 	    mhod.type = MHOD_ID_SUBTITLE;
 	    mhod.data.string = track->subtitle;
+	    mk_mhod (cts, &mhod);
+	    ++mhod_num;
+	}
+	if (track->tvshow && *track->tvshow)
+	{
+	    mhod.type = MHOD_ID_TVSHOW;
+	    mhod.data.string = track->tvshow;
+	    mk_mhod (cts, &mhod);
+	    ++mhod_num;
+	}
+	if (track->tvepisode && *track->tvepisode)
+	{
+	    mhod.type = MHOD_ID_TVEPISODE;
+	    mhod.data.string = track->tvepisode;
+	    mk_mhod (cts, &mhod);
+	    ++mhod_num;
+	}
+	if (track->tvnetwork && *track->tvnetwork)
+	{
+	    mhod.type = MHOD_ID_TVNETWORK;
+	    mhod.data.string = track->tvnetwork;
+	    mk_mhod (cts, &mhod);
+	    ++mhod_num;
+	}
+	if (track->albumartist && *track->albumartist)
+	{
+	    mhod.type = MHOD_ID_ALBUMARTIST;
+	    mhod.data.string = track->albumartist;
+	    mk_mhod (cts, &mhod);
+	    ++mhod_num;
+	}
+	if (track->keywords && *track->keywords)
+	{
+	    mhod.type = MHOD_ID_KEYWORDS;
+	    mhod.data.string = track->keywords;
 	    mk_mhod (cts, &mhod);
 	    ++mhod_num;
 	}

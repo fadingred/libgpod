@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-01-08 21:59:10 jcs>
+/* Time-stamp: <2007-01-09 23:44:56 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -651,6 +651,14 @@ struct _Itdb_Track
   gchar   *podcastrss;       /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *chapterdata;      /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *subtitle;         /* see note for MHOD_ID in itdb_itunesdb.c */
+/* the following 6 are new in libgpod 0.4.2... */
+  gchar   *tvshow;           /* see note for MHOD_ID in itdb_itunesdb.c */
+  gchar   *tvepisode;        /* see note for MHOD_ID in itdb_itunesdb.c */
+  gchar   *tvnetwork;        /* see note for MHOD_ID in itdb_itunesdb.c */
+  gchar   *albumartist;      /* see note for MHOD_ID in itdb_itunesdb.c */
+  gchar   *keywords;         /* see note for MHOD_ID in itdb_itunesdb.c */
+  gchar   *reserved;         /* will probably be used for artistthe     */
+/* ... to here */
   guint32 id;                /* unique ID of track     */
   gint32  size;              /* size of file in bytes  */
   gint32  tracklen;          /* Length of track in ms  */

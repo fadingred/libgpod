@@ -9,6 +9,11 @@
 
 	* src/Makefile.am: added pixmaps.[ch]
 
+	* src/itdb.h
+	  src/itdb_itunesdb.c: added tvshow, tvepisode, tvnetwork,
+	  albumartist, keywords, reseved to Itdb_Track. 'reserved' can
+	  later be used to support 'Artist, The'.
+
 2007-01-08  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* README: updated information about photo support
