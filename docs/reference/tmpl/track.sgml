@@ -6,7 +6,8 @@ Data structure to store metadata about an iPod track
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+These functions and structures are for storing and retrieving
+information about an iPod track.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -38,6 +39,12 @@ Data structure to store metadata about an iPod track
 @podcastrss: 
 @chapterdata: 
 @subtitle: 
+@tvshow: 
+@tvepisode: 
+@tvnetwork: 
+@albumartist: 
+@keywords: 
+@reserved: 
 @id: 
 @size: 
 @tracklen: 

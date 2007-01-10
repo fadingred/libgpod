@@ -3,6 +3,24 @@
 	* bindings/python/Makefile.am: correct 'make dist' failure (patch
 	  by Todd Zullinger)
 
+	* docs/reference/libgpod-docs.xml
+          docs/reference/libgpod-sections.txt
+          docs/reference/tmpl/Internal.sgml
+          docs/reference/tmpl/artwork.sgml
+          docs/reference/tmpl/device.sgml
+          docs/reference/tmpl/itunesdb-copying.sgml
+          docs/reference/tmpl/itunesdb-db.sgml
+          docs/reference/tmpl/itunesdb-lowlevel.sgml
+          docs/reference/tmpl/itunesdb-time.sgml
+          docs/reference/tmpl/playlists.sgml
+          docs/reference/tmpl/smart-playlists.sgml
+          docs/reference/tmpl/track.sgml
+          src/itdb.h
+          src/itdb_device.c
+          src/itdb_itunesdb.c
+          src/itdb_photoalbum.c: applied Todd Zullinger's patch fixing
+	  warnings when building the documentation.
+
 2007-01-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/pixmaps.c

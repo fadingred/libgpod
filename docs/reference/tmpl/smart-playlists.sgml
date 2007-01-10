@@ -2,16 +2,16 @@
 Smart Playlists
 
 <!-- ##### SECTION Short_Description ##### -->
-Data structures used to manipulate iPod smart playlists
+Data structure to represent an iPod smart playlist
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+These functions and structures are for dealing with smart playlists.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-
+<link linkend="libgpod-Playlists">Playlists</link>
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->

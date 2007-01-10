@@ -413,6 +413,7 @@ static void write_sysinfo_entry (const gchar *key,
 /** 
  * itdb_device_write_sysinfo:
  * @device: an #Itdb_Device
+ * @error: return location for a #GError or NULL
  *
  * Fills the SysInfo file with information in device->sysinfo. Note:
  * no directories are created if not already existent.
@@ -733,7 +734,8 @@ const Itdb_IpodInfo *itdb_info_get_ipod_info_table (void)
 
 
 /**
- * itdb_info_get_ipod_model_string:
+ * itdb_info_get_ipod_model_name_string:
+ * @model: an #Itdb_IpodModel
  *
  * Return the iPod's generic model name, like "Color", "Nano"...
  *
@@ -757,6 +759,7 @@ const gchar *itdb_info_get_ipod_model_name_string (Itdb_IpodModel model)
 
 /**
  * itdb_info_get_ipod_generation_string:
+ * @generation: an #Itdb_IpodGeneration
  *
  * Return the iPod's generic generation name, like "First Generation",
  * "Mobile Phone"...

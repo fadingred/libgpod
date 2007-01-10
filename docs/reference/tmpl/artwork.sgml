@@ -2,11 +2,11 @@
 Artwork
 
 <!-- ##### SECTION Short_Description ##### -->
-Data structure to store iPod artwork (cover and photos)
+Data structure to store iPod artwork (album covers and photos)
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+These functions and structures are for adding, changing, and removing artwork.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->

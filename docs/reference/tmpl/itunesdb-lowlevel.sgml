@@ -6,7 +6,8 @@ Low-level functions which shouldn't be needed in normal situations
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+These functions are not normally needed but are avalable to allow for finer
+control over the iPod database.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->

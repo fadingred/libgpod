@@ -893,7 +893,7 @@ GQuark     itdb_file_error_quark      (void);
 /* functions for reading/writing database, general itdb functions */
 Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error);
 Itdb_iTunesDB *itdb_parse_file (const gchar *filename, GError **error);
-gboolean itdb_write (Itdb_iTunesDB *db, GError **error);
+gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error);
 gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 			  GError **error);
 gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error);

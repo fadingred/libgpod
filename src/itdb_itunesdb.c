@@ -287,11 +287,15 @@ static void fcontents_free (FContents *cts)
  * @root: in local encoding
  * @components: in utf8
  *
+ * Resolve the path to a track on the iPod
+ *
  * We start by assuming that the ipod mount point exists.  Then, for
  * each component c of track-&gt;ipod_path, we try to find an entry d in
  * good_path that is case-insensitively equal to c.  If we find d, we
  * append d to good_path and make the result the new good_path.
  * Otherwise, we quit and return NULL.
+ *
+ * Return value: path to track on the iPod or NULL.
  **/
 gchar * itdb_resolve_path (const gchar *root,
 			   const gchar * const * components)
@@ -5577,9 +5581,9 @@ guint64 itdb_time_host_to_mac (time_t time)
  * itdb_init_ipod:
  * @mountpoint:   the iPod mountpoint
  * @model_number: the iPod model number
- * @model_type:   the type of iPod, eg. regular, shuffle
  * @ipod_name:    the name to give to the iPod. Will be displayed in
  *                gtkpod or itunes
+ * @error:        return location for a #GError or NULL
  *
  * Initialise an iPod device from scratch. The function attempts to
  * create a blank database, complete with master playlist and device

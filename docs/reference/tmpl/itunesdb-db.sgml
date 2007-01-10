@@ -6,7 +6,8 @@ Functions to create, read, write the iPod database
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+These functions are for creating, reading, writing, and deleting the iPod
+database and getting the total number of tracks and playlists.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->

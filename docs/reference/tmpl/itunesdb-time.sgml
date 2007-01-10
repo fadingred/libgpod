@@ -6,7 +6,7 @@ Helper functions to convert between Epoch time and Mac (iPod) time
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+The functions provide conversion between Epoch time and Mac (iPod) time
 </para>
 
 <!-- ##### SECTION See_Also ##### -->

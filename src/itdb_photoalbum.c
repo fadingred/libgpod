@@ -578,13 +578,12 @@ void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
 
 /**
  * itdb_photodb_photoalbum_by_name:
- * Return a pointer to the first photoalbum named @albumname
- *
  * @db: the #Itdb_PhotoDB to retrieve the album from
  * @albumname: the name of the photoalbum to get or NULL for the
  * master photoalbum.
  *
- * Returns the photoalbum if found, else NULL
+ * Return value: a pointer to the first photoalbum named @albumname,
+ * else NULL
  */
 Itdb_PhotoAlbum *itdb_photodb_photoalbum_by_name (Itdb_PhotoDB *db, const gchar *albumname)
 {

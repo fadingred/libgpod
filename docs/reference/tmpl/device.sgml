@@ -2,11 +2,11 @@
 Device
 
 <!-- ##### SECTION Short_Description ##### -->
-Data structure holding information about the iPod (model, mount point, ...)
+Data structure holding information about the iPod (model, mount point, etc.)
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+These functions are for reading and setting information about the iPod.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->

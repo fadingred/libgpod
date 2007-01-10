@@ -36,8 +36,12 @@ itdb_get_itunes_dir
 itdb_get_music_dir
 itdb_get_artwork_dir
 itdb_get_device_dir
+itdb_get_photos_dir
 itdb_get_itunesdb_path
+itdb_get_itunessd_path
 itdb_get_artworkdb_path
+itdb_get_photodb_path
+itdb_get_photos_thumb_dir
 itdb_get_path
 
 itdb_resolve_path
@@ -72,6 +76,7 @@ itdb_track_id_tree_create
 itdb_track_id_tree_destroy
 itdb_track_id_tree_by_id
 itdb_track_set_thumbnails
+itdb_track_set_thumbnails_from_data
 itdb_track_remove_thumbnails
 ITDB_RATING_STEP
 </SECTION>
@@ -146,10 +151,17 @@ itdb_device_free
 itdb_device_set_mountpoint
 itdb_device_read_sysinfo
 itdb_device_get_sysinfo
+itdb_device_set_sysinfo
+itdb_device_write_sysinfo
+itdb_device_get_ipod_info
+itdb_info_get_ipod_info_table
+itdb_info_get_ipod_generation_string
+itdb_info_get_ipod_model_name_string
+itdb_init_ipod
+Itdb_IpodGeneration
+Itdb_IpodInfo
 Itdb_IpodModel
 Itdb_ArtworkFormat
-Itdb_Generation
-Itdb_ModelType
 </SECTION>
 
 <SECTION>
@@ -162,6 +174,7 @@ itdb_artwork_new
 itdb_artwork_duplicate
 itdb_artwork_free
 itdb_artwork_add_thumbnail
+itdb_artwork_add_thumbnail_from_data
 itdb_artwork_remove_thumbnail
 itdb_artwork_remove_thumbnails
 itdb_artwork_get_thumb_by_type
@@ -247,6 +260,7 @@ DB_TO_CPU_GET_DB
 ItdbFileError
 ITDB_FILE_ERROR
 itdb_file_error_quark
+itdb_get_artwork_info_from_type
 
 SPLACTION_LAST_HOURS_VALUE
 SPLACTION_LAST_MINUTES_VALUE

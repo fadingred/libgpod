@@ -69,6 +69,7 @@
     <title>iPod database components</title>
     <xi:include href="xml/track.xml"/>
     <xi:include href="xml/playlists.xml"/>
+    <xi:include href="xml/smart-playlists.xml"/>
     <xi:include href="xml/artwork.xml"/>
     <xi:include href="xml/device.xml"/>
   </chapter>
