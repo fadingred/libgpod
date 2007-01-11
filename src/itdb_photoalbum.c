@@ -51,7 +51,7 @@
        memory). It is automatically added to the Photo Library Album
        (first album), which is created if it does not exist already.
 
-   itdb_photodb_photoalbum_craete():
+   itdb_photodb_photoalbum_create():
        Create and add a new photoalbum.
 
    itdb_photodb_photoalbum_add_photo():
@@ -198,11 +198,10 @@ gchar *itdb_get_photos_thumb_dir (const gchar *mountpoint)
 
 /**
  * itdb_photodb_parse:
- *
- * Parses the photo database of an iPod mounted at @mp.
- *
  * @mp: mountpoint of the iPod
  * @error: will contain the error description when an error occured.
+ *
+ * Parses the photo database of an iPod mounted at @mp.
  *
  * Return value: the imported PhotoDB or NULL in case of an error.
  **/
@@ -229,7 +228,6 @@ Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error)
 
 /**
  * itdb_photodb_create:
- *
  * @mountpoint: mountpoint or NULL.
  *
  * Creates a new Itdb_PhotoDB. If mountpoint is NULL, you will have to
@@ -582,6 +580,9 @@ void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
  * @albumname: the name of the photoalbum to get or NULL for the
  * master photoalbum.
  *
+ * Find the first photoalbum with a given name or the Photo Library
+ * Album if called with no name.
+ *
  * Return value: a pointer to the first photoalbum named @albumname,
  * else NULL
  */
@@ -603,7 +604,7 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_by_name (Itdb_PhotoDB *db, const gchar 
 }
 
 /**
- * itdb_photodb_remove_photoalbum:
+ * itdb_photodb_photoalbum_remove:
  * @db: the #Itdb_PhotoDB to apply changes to
  * @album: the album to be removed from the database
  * @remove_pics: TRUE to remove pics in that album permanently from
@@ -670,9 +671,11 @@ void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
 /**
  * itdb_photodb_photoalbum_create:
  * @db: The database to create a new album in
- * @album_name: the name of the new album
+ * @albumname: the name of the new album
  * @pos: position where to insert the newly created album (-1 for
  * append to end).
+ *
+ * Create and add a new photoalbum.
  *
  * Return value: the album which was created and added.
  */

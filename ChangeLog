@@ -1,3 +1,19 @@
+2007-01-11  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* README
+	  docs/reference/libgpod-docs.xml
+	  docs/reference/libgpod-sections.txt
+	  docs/reference/tmpl/artwork.sgml
+	  docs/reference/tmpl/device.sgml
+	  docs/reference/tmpl/itunesdb-db.sgml
+	  docs/reference/tmpl/itunesdb-lowlevel.sgml
+	  docs/reference/tmpl/photodb.sgml
+	  docs/reference/tmpl/track.sgml
+	  src/itdb.h
+	  src/itdb_photoalbum.c: Add PhotoDB functions to the docs.
+	  Incorporate usage overviews from README into the docs.
+	  Fix a few doc comments to allow gtk-doc to parse them.
+
 2007-01-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* bindings/python/Makefile.am: correct 'make dist' failure (patch

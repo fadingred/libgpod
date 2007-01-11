@@ -63,6 +63,15 @@ control over the iPod database.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_get_photos_dir ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_get_itunesdb_path ##### -->
 <para>
 
@@ -72,7 +81,34 @@ control over the iPod database.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_get_itunessd_path ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_get_artworkdb_path ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_get_photodb_path ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_get_photos_thumb_dir ##### -->
 <para>
 
 </para>

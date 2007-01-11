@@ -1033,7 +1033,7 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
 						 gint pos);
 Itdb_PhotoDB *itdb_photodb_create (const gchar *mountpoint);
 void itdb_photodb_free (Itdb_PhotoDB *photodb);
-gboolean itdb_photodb_write (Itdb_PhotoDB *db, GError **error);
+gboolean itdb_photodb_write (Itdb_PhotoDB *photodb, GError **error);
 void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
 				Itdb_PhotoAlbum *album,
 				Itdb_Artwork *photo);

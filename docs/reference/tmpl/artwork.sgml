@@ -2,16 +2,18 @@
 Artwork
 
 <!-- ##### SECTION Short_Description ##### -->
-Data structure to store iPod artwork (album covers and photos)
+Data structure to store iPod artwork (album covers)
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-These functions and structures are for adding, changing, and removing artwork.
+These functions and structures are for adding, changing, and removing
+album/track artwork.  For working with photos, see the
+<link linkend="photodb">Photo database</link> section.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-
+<link linkend="photodb">Photo database</link>
 </para>
 
 <!-- ##### SECTION Stability_Level ##### -->
@@ -97,6 +99,20 @@ These functions and structures are for adding, changing, and removing artwork.
 @artwork: 
 @type: 
 @filename: 
+@rotation: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_artwork_add_thumbnail_from_data ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@type: 
+@image_data: 
+@image_data_len: 
 @rotation: 
 @error: 
 @Returns: 

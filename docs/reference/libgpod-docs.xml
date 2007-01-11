@@ -52,25 +52,54 @@
     </legalnotice>
 
     <abstract>
-      <para>This manual documents the interfaces of the libgpod
-      library and has some short notes to help get you up to speed
-      with using the library.</para>
+      <para>
+      This manual documents the interfaces of the libgpod library and
+      has some short notes to help get you up to speed with using the
+      library.
+      </para>
+      <para>
+      Please see the programs in the <ulink type="http"
+      url="http://gtkpod.cvs.sourceforge.net/gtkpod/libgpod/tests/">tests/</ulink>
+      directory of the source distribution for some usage examples.  A more
+      complete example can be found in the source for <ulink type="http"
+      url="http://www.gtkpod.org"> Gtkpod</ulink>.  You can also ask questions
+      on the developer's mailing list: <ulink
+      url="mailto:gtkpod-devel@lists.sourceforge.net">gtkpod-devel@lists.sourceforge.net</ulink>.
+      </para>
     </abstract>
   </bookinfo>
 
-  <chapter>
+  <part id="itunesdb">
     <title>iPod database</title>
+    <partintro>
+      <para>
+      The iPod database functions are used for adding audio and video
+      to the iPod.
+      </para>
+    </partintro>
+
     <xi:include href="xml/itunesdb-db.xml"/>
     <xi:include href="xml/itunesdb-copying.xml"/>
     <xi:include href="xml/itunesdb-time.xml"/>
     <xi:include href="xml/itunesdb-lowlevel.xml"/>
-  </chapter>
-  <chapter>
-    <title>iPod database components</title>
-    <xi:include href="xml/track.xml"/>
-    <xi:include href="xml/playlists.xml"/>
-    <xi:include href="xml/smart-playlists.xml"/>
-    <xi:include href="xml/artwork.xml"/>
-    <xi:include href="xml/device.xml"/>
-  </chapter>
+    <chapter>
+      <title>iPod database components</title>
+      <xi:include href="xml/track.xml"/>
+      <xi:include href="xml/playlists.xml"/>
+      <xi:include href="xml/smart-playlists.xml"/>
+      <xi:include href="xml/artwork.xml"/>
+      <xi:include href="xml/device.xml"/>
+    </chapter>
+  </part>
+
+  <part id="photodb">
+    <title>Photo database</title>
+    <partintro>
+      <para>
+      The Photo database functions are used for adding pictures to
+      the iPod.
+      </para>
+    </partintro>
+    <xi:include href="xml/photodb.xml"/>
+  </part>
 </book>

@@ -1,0 +1,248 @@
+<!-- ##### SECTION Title ##### -->
+Photo database
+
+<!-- ##### SECTION Short_Description ##### -->
+Functions to create, read, write the photo database
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+These functions are for creating, reading, and writing the photo
+database.
+</para>
+<para>
+Overview of using the Photo database:
+</para>
+<para>
+itdb_photodb_parse():
+Read an existing PhotoDB.
+</para>
+<para>
+itdb_photodb_create():
+Create a new #Itdb_PhotoDB structure. The Photo Library Album is
+(first album) is created automatically.
+</para>
+<para>
+itdb_photodb_add_photo(), itdb_photodb_add_photo_from_data():
+Add a photo to the PhotoDB (from file or from a chunk of
+memory). It is automatically added to the Photo Library Album
+(first album), which is created if it does not exist already.
+</para>
+<para>
+itdb_photodb_photoalbum_create():
+Create and add a new photoalbum.
+</para>
+<para>
+itdb_photodb_photoalbum_add_photo():
+Add a photo (#Itdb_Artwork) to an existing photoalbum.
+</para>
+<para>
+itdb_photodb_photoalbum_remove():
+Remove an existing photoalbum. Pictures can be kept in the
+Photo Library or automatically removed as well.
+</para>
+<para>
+itdb_photodb_remove_photo():
+Remove a photo either from a photoalbum or completely from the database.
+</para>
+<para>
+itdb_photodb_write():
+Write out your PhotoDB.
+</para>
+<para>
+itdb_photodb_free():
+Free all memory taken by the PhotoDB.
+</para>
+<para>
+itdb_photodb_photoalbum_by_name():
+Find the first photoalbum with a given name or the Photo
+Library Album if called with no name.
+</para>
+<para>
+If you cannot add photos because your iPod is not recognized,
+you may have to set the iPod model by calling
+</para>
+<para>
+itdb_device_set_sysinfo (db->device, "ModelNumStr", model);
+</para>
+<para>
+For example, "MA450" would stand for an 80 GB 6th generation iPod Video. See
+<ulink type="http"
+url="http://gtkpod.cvs.sourceforge.net/*checkout*/gtkpod/libgpod/src/itdb_device.c">itdb_device.c</ulink>
+for a list of supported models.
+</para>
+<para>
+This information will be written to the iPod when the PhotoDB is
+saved (itdb_device_write_sysinfo() is called).
+</para>
+<para>
+Have a look at the <ulink type="http"
+url="http://gtkpod.cvs.sourceforge.net/*checkout*/gtkpod/libgpod/tests/test-photos.c">test-photos</ulink>
+test program in the <ulink type="http"
+url="http://gtkpod.cvs.sourceforge.net/gtkpod/libgpod/tests/">tests/</ulink>
+directory of the libgpod source for an example of how to use the interface.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT Itdb_PhotoAlbum ##### -->
+<para>
+
+</para>
+
+@name: 
+@members: 
+@album_type: 
+@playmusic: 
+@repeat: 
+@random: 
+@show_titles: 
+@transition_direction: 
+@slide_duration: 
+@transition_duration: 
+@song_id: 
+@unk024: 
+@unk028: 
+@unk044: 
+@unk048: 
+@album_id: 
+@prev_album_id: 
+@usertype: 
+@userdata: 
+@userdata_duplicate: 
+@userdata_destroy: 
+
+<!-- ##### STRUCT Itdb_PhotoDB ##### -->
+<para>
+
+</para>
+
+@photos: 
+@photoalbums: 
+@device: 
+@usertype: 
+@userdata: 
+@userdata_duplicate: 
+@userdata_destroy: 
+
+<!-- ##### FUNCTION itdb_photodb_add_photo ##### -->
+<para>
+
+</para>
+
+@db: 
+@filename: 
+@position: 
+@rotation: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_photodb_add_photo_from_data ##### -->
+<para>
+
+</para>
+
+@db: 
+@image_data: 
+@image_data_len: 
+@position: 
+@rotation: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_photodb_create ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_photodb_free ##### -->
+<para>
+
+</para>
+
+@photodb: 
+
+
+<!-- ##### FUNCTION itdb_photodb_parse ##### -->
+<para>
+
+</para>
+
+@mp: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_photodb_photoalbum_add_photo ##### -->
+<para>
+
+</para>
+
+@db: 
+@album: 
+@photo: 
+@position: 
+
+
+<!-- ##### FUNCTION itdb_photodb_photoalbum_by_name ##### -->
+<para>
+
+</para>
+
+@db: 
+@albumname: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_photodb_photoalbum_create ##### -->
+<para>
+
+</para>
+
+@db: 
+@albumname: 
+@pos: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_photodb_photoalbum_remove ##### -->
+<para>
+
+</para>
+
+@db: 
+@album: 
+@remove_pics: 
+
+
+<!-- ##### FUNCTION itdb_photodb_remove_photo ##### -->
+<para>
+
+</para>
+
+@db: 
+@album: 
+@photo: 
+
+
+<!-- ##### FUNCTION itdb_photodb_write ##### -->
+<para>
+
+</para>
+
+@photodb: 
+@error: 
+@Returns: 
+
+

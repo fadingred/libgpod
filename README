@@ -98,7 +98,7 @@ Quick HOWTO use libgpod for photos
        memory). It is automatically added to the Photo Library Album
        (first album), which is created if it does not exist already.
 
-   itdb_photodb_photoalbum_craete():
+   itdb_photodb_photoalbum_create():
        Create and add a new photoalbum.
 
    itdb_photodb_photoalbum_add_photo():
