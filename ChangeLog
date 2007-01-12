@@ -2,6 +2,8 @@
 
 	* src/itdb_itunesdb.c: TV shows patch from Mario Rossi
 
+	* bindings/python/Makefile.am: fix more make distcheck issues
+
 2007-01-11  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* README

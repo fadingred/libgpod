@@ -27,31 +27,24 @@ README: README.in gpod.i
 	    $< > $@
 
 if HAVE_PYTHON
-MODULE_CFLAGS   = `$(PKG_CONFIG) --cflags $(top_builddir)/libgpod-1.0.pc` $(PYTHON_INCLUDES)
-MODULE_LIBS     = `$(PKG_CONFIG) --libs $(top_builddir)/libgpod-1.0.pc` -L$(top_srcdir)/src/.libs
-python_DATA     = gpod.py _gpod.so
+BUILT_SOURCES = gpod_wrap.c
+SWIG_SOURCES = gpod.i
+LIBGPOD_CFLAGS += -fno-strict-aliasing
+INCLUDES = -I$(top_srcdir)/src
 
-gpod_wrap.c: gpod.i
-	$(SWIG) -python -o $@ gpod.i
+gpoddir = $(pyexecdir)/gpod
+gpod_PYTHON =  __init__.py gpod.py gtkpod.py ipod.py
+gpod_LTLIBRARIES = _gpod.la
+_gpod_la_SOURCES = gpod_wrap.c $(SWIG_SOURCES)
+_gpod_la_CPPFLAGS = $(PYTHON_INCLUDES) $(LIBGPOD_CFLAGS) $(INCLUDES)
+_gpod_la_LDFLAGS = -module -avoid-version
+_gpod_la_LIBADD = $(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la
 
-gpod.py: gpod.i
-	$(SWIG) -python -o $@ gpod.i
+gpod_wrap.c: $(SWIG_SOURCES)
+	$(SWIG) -python $(INCLUDES) -o $@ $<
 
-gpod_wrap.o: gpod_wrap.c
-	$(CC) -I$(top_srcdir)/src $(MODULE_CFLAGS) -c -fpic gpod_wrap.c
-
-_gpod.so: gpod_wrap.o
-	$(CC) $(MODULE_LIBS) @PYTHON_LDFLAGS@ gpod_wrap.o -o $@
-
-install-pythonDATA: $(python_DATA)
-	$(mkinstalldirs) $(DESTDIR)$(pyexecdir)/gpod
-	$(INSTALL_PROGRAM) _gpod.so  $(DESTDIR)$(pyexecdir)/gpod/_gpod.so
-	$(INSTALL_DATA) *.py         $(DESTDIR)$(pyexecdir)/gpod/
-	$(PYTHON) -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pyexecdir)/gpod/", ddir="$(pyexecdir)/gpod/")'
-	$(PYTHON) -O -c 'from compileall import compile_dir; compile_dir("$(DESTDIR)$(pyexecdir)/gpod/", ddir="$(pyexecdir)/gpod/")'
-
-uninstall-pythonDATA: $(python_DATA)
-	rm -rf $(DESTDIR)$(pyexecdir)/gpod
+gpod.py: $(SWIG_SOURCES)
+	$(SWIG) -python -o $@ $<
 
 test:
 	cd tests && python tests.py
