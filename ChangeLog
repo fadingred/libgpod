@@ -1,3 +1,7 @@
+2007-01-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c: TV shows patch from Mario Rossi
+
 2007-01-11  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* README
