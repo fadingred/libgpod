@@ -28,22 +28,23 @@ README: README.in gpod.i
 
 if HAVE_PYTHON
 BUILT_SOURCES = gpod_wrap.c
-SWIG_SOURCES = gpod.i
+SWIG_INTERFACES = gpod.i
 LIBGPOD_CFLAGS += -fno-strict-aliasing
 INCLUDES = -I$(top_srcdir)/src
 
 gpoddir = $(pyexecdir)/gpod
-gpod_PYTHON =  __init__.py gpod.py gtkpod.py ipod.py
+gpod_PYTHON =  __init__.py gtkpod.py ipod.py
+nodist_gpod_PYTHON = gpod.py
 gpod_LTLIBRARIES = _gpod.la
-_gpod_la_SOURCES = gpod_wrap.c $(SWIG_SOURCES)
+nodist__gpod_la_SOURCES = gpod_wrap.c
 _gpod_la_CPPFLAGS = $(PYTHON_INCLUDES) $(LIBGPOD_CFLAGS) $(INCLUDES)
 _gpod_la_LDFLAGS = -module -avoid-version
 _gpod_la_LIBADD = $(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la
 
-gpod_wrap.c: $(SWIG_SOURCES)
+gpod_wrap.c: $(SWIG_INTERFACES) $(nodist_gpod_PYTHON)
 	$(SWIG) -python $(INCLUDES) -o $@ $<
 
-gpod.py: $(SWIG_SOURCES)
+gpod.py: $(SWIG_INTERFACES)
 	$(SWIG) -python -o $@ $<
 
 test:

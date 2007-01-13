@@ -1,3 +1,10 @@
+2007-01-13  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/Makefile.am: don't include any swig built
+	  files in the tarballs.
+	  s/SWIG_SOURCES/SWIG_INTERFACES/ to avoid a warning from
+	  automake about unused sources.
+
 2007-01-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c: TV shows patch from Mario Rossi
