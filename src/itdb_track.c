@@ -260,6 +260,11 @@ void itdb_track_free (Itdb_Track *track)
     g_free (track->podcasturl);
     g_free (track->podcastrss);
     g_free (track->subtitle);
+    g_free (track->tvshow);
+    g_free (track->tvepisode);
+    g_free (track->tvnetwork);
+    g_free (track->albumartist);
+    g_free (track->keywords);
     g_free (track->ipod_path);
     g_free (track->chapterdata_raw);
     itdb_artwork_remove_thumbnails (track->artwork);
@@ -344,6 +349,11 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
     tr_dup->podcasturl = g_strdup (tr->podcasturl);
     tr_dup->podcastrss = g_strdup (tr->podcastrss);
     tr_dup->subtitle = g_strdup (tr->subtitle);
+    tr_dup->tvshow = g_strdup (tr->tvshow);
+    tr_dup->tvepisode = g_strdup (tr->tvepisode);
+    tr_dup->tvnetwork = g_strdup (tr->tvnetwork);
+    tr_dup->albumartist = g_strdup (tr->albumartist);
+    tr_dup->keywords = g_strdup (tr->keywords);
     tr_dup->ipod_path = g_strdup (tr->ipod_path);
 
     /* Copy chapterdata */

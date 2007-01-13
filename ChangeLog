@@ -8,6 +8,9 @@
 	* src/itdb_itunesdb.c: add a few more MHOD types that Jorg
 	  suggested
 
+        * src/itdb_track.c: add more tv show fixes from Mario Rossi.
+	  add missing albumartist and keywords pointed out by Jorg.
+
 2007-01-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c: TV shows patch from Mario Rossi
