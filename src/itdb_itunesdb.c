@@ -1310,6 +1310,8 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
   case MHOD_ID_TVSHOW:
   case MHOD_ID_TVEPISODE:
   case MHOD_ID_TVNETWORK:
+  case MHOD_ID_ALBUMARTIST:
+  case MHOD_ID_KEYWORDS:
       /* type of string: 0x02: UTF8, 0x01 or 0x00: UTF16 LE */
       string_type = get32lint (cts, seek);
       xl = get32lint (cts, seek+4);   /* length of string */

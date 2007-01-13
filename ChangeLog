@@ -5,6 +5,9 @@
 	  s/SWIG_SOURCES/SWIG_INTERFACES/ to avoid a warning from
 	  automake about unused sources.
 
+	* src/itdb_itunesdb.c: add a few more MHOD types that Jorg
+	  suggested
+
 2007-01-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c: TV shows patch from Mario Rossi
