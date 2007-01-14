@@ -8,6 +8,10 @@
 
 	* po/*.po: run 'make update-po'
 
+	* src/itdb_itunesdb.c: added instructions on how to add new string
+	  fields like 'tvepisode', 'tvshow' without forgetting half of the
+	  places that need to be touched.
+
 2007-01-13  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/Makefile.am: don't include any swig built

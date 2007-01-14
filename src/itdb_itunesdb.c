@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-01-09 23:46:31 jcs>
+/* Time-stamp: <2007-01-15 01:55:47 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -133,9 +133,37 @@
 #define ITUNESDB_COPYBLK (1024*1024*4)      /* blocksize for cp () */
 
 
+/* NOTE for developers:
+
+   Sometimes new MHOD string fields are added by Apple in the
+   iTunesDB. In that case you need to modify the code in the following
+   places:
+
+   itdb_itunesdb.c:
+   - enum MHOD_ID
+   - get_mhod(): inside the switch() statement. Currently no compiler
+     warning is given.
+   - get_mhod_string(): inside the switch() statement. A compiler warning
+     will help you find it.
+   - get_playlist(): inside the switch() statement. A compiler warning
+     will help you find it.
+   - get_mhit(): inside the switch() statement. A compiler warning
+     will help you find it.
+   - mk_mhod(): inside the switch() statement. A compiler warning
+     will help you find it.
+   - write_mhsd_tracks(): inside the for() loop.
+
+   itdb_track.c:
+   - itdb_track_free()
+   - itdb_track_duplicate()
+
+   itdb_playlists.c:
+   Analogous to itdb_track.c in case the string is part of the playlist
+   description.
+*/
+
 /* Note: some of the comments for the MHOD_IDs are copied verbatim
  * from http://ipodlinux.org/ITunesDB */
-
 enum MHOD_ID {
   MHOD_ID_TITLE = 1,
   MHOD_ID_PATH = 2,   /* file path on iPod (special format) */
