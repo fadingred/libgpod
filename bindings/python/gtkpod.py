@@ -47,20 +47,23 @@ def write(filename, db, itunesdb_file):
         file.write('\n')
 
     write_pair("itunesdb_hash", sha1_hash(itunesdb_file))
-    write_pair("version", "0.88.1")
+    write_pair("version", "0.99.9")
 
     for track in db:
         write_pair("id", track['id'])
         if not track['userdata']:
             track['userdata'] = {}
-        track['userdata']['filename_ipod'] = track.ipod_filename()
+        track['userdata']['filename_ipod'] = track['ipod_path']
         try:
-            del track['userdata']['md5_hash']
-        except IndexError:
-            pass
-        if track['userdata'].has_key('filename_locale') and not track['userdata'].has_key('md5_hash'):
+            hash_name = 'sha1_hash'
+            del track['userdata'][hash_name]
+        except KeyError:
+            # recent gpod uses sha1_hash, older uses md5_hash            
+            hash_name = 'md5_hash'
+            del track['userdata'][hash_name]
+        if track['userdata'].has_key('filename_locale') and not track['userdata'].has_key(hash_name):
             if os.path.exists(track['userdata']['filename_locale']):
-                track['userdata']['md5_hash'] = sha1_hash(
+                track['userdata'][hash_name] = sha1_hash(
                     track['userdata']['filename_locale'])
         [write_pair(i[0],i[1]) for i in track['userdata'].items()]
 
@@ -115,7 +118,13 @@ def parse(filename, db, itunesdb_file=None):
             tracks_by_id[id]['userdata'] = ext_block
     else:
         for track in db:
+            # make a dict to allow us to find each track by the sha1_hash
             tracks_by_sha[sha1_hash(track.ipod_filename())] = track
         for ext_block in ext_data.values():
-            tracks_by_sha[ext_block['md5_hash']]['userdata'] = ext_block
+            try:
+                track = tracks_by_sha[ext_block['sha1_hash']]
+            except KeyError:
+                # recent gpod uses sha1_hash, older uses md5_hash
+                track = tracks_by_sha[ext_block['md5_hash']]                
+            track['userdata'] = ext_block
 
