@@ -101,7 +101,8 @@ class Database:
         else:
             if index < 0:
                 index += len(self)
-            return Track(proxied_track=gpod.sw_get_track(self._itdb.tracks, index))
+            return Track(proxied_track=gpod.sw_get_track(self._itdb.tracks, index),
+                         ownerdb=self)
 
     def __len__(self):
         return gpod.sw_get_list_len(self._itdb.tracks)
@@ -116,6 +117,7 @@ class Database:
         track.copy_to_ipod()
         gpod.itdb_playlist_add_track(gpod.itdb_playlist_mpl(self._itdb),
                                      track._track, -1)
+        track.__database = self # so the db doesn't get gc'd
 
     def __del__(self):
         gpod.itdb_free(self._itdb)
@@ -129,6 +131,7 @@ class Database:
         """
 
         gpod.itdb_track_add(self._itdb, track._track, pos)
+        track.__database = self # so the db doesn't get gc'd
 
     def remove(self, item, harddisk=False, ipod=True):
         """Remove a playlist or track from a database.
@@ -211,6 +214,7 @@ class Database:
             self.Podcasts.add(track)
         else:
             self.Master.add(track)
+        track.__database = self # so the db doesn't get gc'd            
         return track
 
     def copy_delayed_files(self,callback=False):
@@ -280,7 +284,7 @@ class Track:
                            "usertype")
 
     def __init__(self, filename=None, from_file=None,
-                 proxied_track=None, podcast=False):
+                 proxied_track=None, podcast=False, ownerdb=None):
         """Create a Track object.
 
         If from_file or filename is set, the file specified will be
@@ -332,6 +336,7 @@ class Track:
             self.set_podcast(podcast)
         elif proxied_track:
             self._track = proxied_track
+            self.__database = ownerdb # so the db doesn't get gc'd
         else:
             self._track = gpod.itdb_track_new()
             self.set_podcast(podcast)
@@ -641,7 +646,8 @@ class Playlist:
         else:
             if index < 0:
                 index += len(self)
-            return Track(proxied_track=gpod.sw_get_track(self._pl.members, index))
+            return Track(proxied_track=gpod.sw_get_track(self._pl.members, index),
+                         ownerdb=self)
 
     def __len__(self):
         #return self._pl.num # Always 0 ?
