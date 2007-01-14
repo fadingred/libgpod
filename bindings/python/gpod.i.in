@@ -38,6 +38,21 @@ Please send any fixes, improvements or suggestions to
 #include "itdb.h" 
 #include "itdb_private.h"
 
+/* include prototypes for all functions so builds using
+ * -Wmissing-prototypes don't fail. */
+PyObject* sw_get_tracks(Itdb_iTunesDB *itdb);
+PyObject* sw_get_track(GList *list, gint index);
+PyObject* sw_get_rule(GList *list, gint index);
+PyObject* sw_get_playlist(GList *list, gint index);
+PyObject* sw_get_list_len(GList *list);
+PyObject* sw_get_playlists(Itdb_iTunesDB *itdb);
+PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl);
+PyObject* sw_set_track_userdata(Itdb_Track *track, PyObject *data);
+PyObject* sw_get_track_userdata(Itdb_Track *track);
+PyObject *sw__track_extra_duplicate (PyObject *data);
+void sw__track_extra_destroy (PyObject *data);
+void SWIG_init(void);
+
 PyObject* sw_get_tracks(Itdb_iTunesDB *itdb) {
   PyObject    *list;
   gint        i;
