@@ -340,7 +340,7 @@ static int do_remove (int argc, char **argv)
 	/* Remove photoalbum altogether, but preserve pics */
 	if (album == NULL)
 	{
-	    g_print (_("Cannot remove Photo Libarary playlist. Aborting.\n"));
+	    g_print (_("Cannot remove Photo Library playlist. Aborting.\n"));
 	    itdb_photodb_free (db);
 	    return 1;
 	}

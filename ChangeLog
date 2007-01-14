@@ -1,3 +1,8 @@
+2007-01-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* tests/test-photos.c:
+	  src/itdb_photoalbum.c: fixed two typos in message strings.
+
 2007-01-13  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/Makefile.am: don't include any swig built

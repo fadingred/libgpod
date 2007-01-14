@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-24 12:59:36 jcs>
+/* Time-stamp: <2007-01-15 01:02:46 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -447,7 +447,7 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
     return artwork;
 #else
     g_set_error (error, 0, -1,
-		 _("Library compiled without gkdpixbuf support. Picture support is disabled."));
+		 _("Library compiled without gdk-pixbuf support. Picture support is disabled."));
     return NULL;
 #endif
 }
