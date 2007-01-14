@@ -3,12 +3,15 @@
 import sha
 import os
 import socket
+import types
+import locale
 
 # This file is originally stolen from pypod-0.5.0
 # http://superduper.net/index.py?page=pypod
 # I hope that's ok, both works are GPL.
 
 hostname = socket.gethostname()
+defaultencoding = locale.getpreferredencoding()
 
 class ParseError(Exception):
     """Exception for parse errors."""
@@ -42,7 +45,18 @@ def write(filename, db, itunesdb_file):
     file = open(filename, "w")
 
     def write_pair(name, value):
-        value = unicode(value).encode("utf-8")
+        if isinstance(value,types.UnicodeType):
+            # encode as UTF-8
+            value = value.encode("utf-8")
+        elif isinstance(value,types.StringType):
+            # assume it's in our default locale, so decode
+            # then re-encode as UTF-8
+            value = unicode(value,
+                            defaultencoding).encode("utf-8")
+        else:
+            value = str(value)
+            
+            
         file.write("=".join([name, value]))
         file.write('\n')
 
