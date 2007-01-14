@@ -53,14 +53,19 @@ def write(filename, db, itunesdb_file):
         write_pair("id", track['id'])
         if not track['userdata']:
             track['userdata'] = {}
-        track['userdata']['filename_ipod'] = track['ipod_path']
+        if track['ipod_path']:
+            track['userdata']['filename_ipod'] = track['ipod_path']
+        hash_name = 'sha1_hash'
         try:
-            hash_name = 'sha1_hash'
             del track['userdata'][hash_name]
         except KeyError:
             # recent gpod uses sha1_hash, older uses md5_hash            
-            hash_name = 'md5_hash'
-            del track['userdata'][hash_name]
+            try:
+                del track['userdata'][hash_name]
+                hash_name = 'md5_hash'
+            except KeyError:
+                # we'll just write a sha1_hash then
+                pass
         if track['userdata'].has_key('filename_locale') and not track['userdata'].has_key(hash_name):
             if os.path.exists(track['userdata']['filename_locale']):
                 track['userdata'][hash_name] = sha1_hash(
