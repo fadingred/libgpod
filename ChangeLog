@@ -3,6 +3,11 @@
 	* tests/test-photos.c:
 	  src/itdb_photoalbum.c: fixed two typos in message strings.
 
+	* po/es.po: updated Spanish catalog -- thanks to Alejandro Lamas
+	  Daviña
+
+	* po/*.po: run 'make update-po'
+
 2007-01-13  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/Makefile.am: don't include any swig built
