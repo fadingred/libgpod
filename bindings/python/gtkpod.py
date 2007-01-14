@@ -1,3 +1,5 @@
+"""Read and write Gtkpod extended info files."""
+
 import sha
 import os
 import socket
@@ -9,12 +11,15 @@ import socket
 hostname = socket.gethostname()
 
 class ParseError(Exception):
+    """Exception for parse errors."""
     pass
 
 class SyncError(Exception):
+    """Exception for sync errors."""
     pass
 
 def sha1_hash(filename):
+    """Return an SHA1 hash on the first 16k of a file."""
     import struct
     # only hash the first 16k
     hash_len = 4*4096
@@ -25,6 +30,15 @@ def sha1_hash(filename):
     return hash.hexdigest()
 
 def write(filename, db, itunesdb_file):
+    """Save extended info to a file.
+
+    db is a gpod.Database instance
+
+    Extended info is written for the iTunesDB specified in
+    itunesdb_file
+
+    """
+
     file = open(filename, "w")
 
     def write_pair(name, value):
@@ -53,6 +67,15 @@ def write(filename, db, itunesdb_file):
     write_pair("id", "xxx")
 
 def parse(filename, db, itunesdb_file=None):
+    """Load extended info from a file.
+
+    db is a gpod.Database instance
+
+    If itunesdb_file is set and it's hash is valid some expensive
+    checks are skipped.
+
+    """
+
     tracks_by_id  = {}
     tracks_by_sha = {}    
     id = 0

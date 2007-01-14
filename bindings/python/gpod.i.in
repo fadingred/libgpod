@@ -28,7 +28,17 @@ Please send any fixes, improvements or suggestions to
 
 */
 
-%module gpod
+%define DOCSTRING
+"This module gives access to an iPod's content. It provides an easy to
+use API to retrieve the list of files and playlists stored on an iPod,
+modify them, and save them back to the iPod.
+
+This module implements the libgpod C API as directly as possible in
+Python.  See the main gpod module for a more traditional Python
+interface."
+%enddef
+
+%module(docstring=DOCSTRING) gpod
 %{
 #include "db-artwork-debug.h" 
 #include "db-artwork-parser.h" 
@@ -162,6 +172,8 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb) {
  
  
 %}
+
+%include "gpod_doc.i"
 
 # be nicer to decode these utf8 strings into Unicode objects in the C
 # layer. Here we are leaving it to the Python side, and just giving

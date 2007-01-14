@@ -4,6 +4,8 @@ EXTRA_DIST =                \
         README.in           \
         __init__.py         \
         gpod.i.in           \
+        gpod_doc.i.in       \
+        gtkdoc-to-swig.xsl  \
         gtkpod.py           \
         ipod.py
 
@@ -12,6 +14,7 @@ CLEANFILES =                \
         *.pyo               \
         _gpod.so            \
         gpod.py             \
+        gpod_doc.i          \
         gpod_wrap.*
 
 DISTCLEANFILES =            \
@@ -28,7 +31,7 @@ README: README.in gpod.i
 
 if HAVE_PYTHON
 BUILT_SOURCES = gpod_wrap.c
-SWIG_INTERFACES = gpod.i
+SWIG_INTERFACES = gpod.i gpod_doc.i
 LIBGPOD_CFLAGS += -fno-strict-aliasing
 INCLUDES = -I$(top_srcdir)/src
 
@@ -40,6 +43,14 @@ nodist__gpod_la_SOURCES = gpod_wrap.c
 _gpod_la_CPPFLAGS = $(PYTHON_INCLUDES) $(LIBGPOD_CFLAGS) $(INCLUDES)
 _gpod_la_LDFLAGS = -module -avoid-version
 _gpod_la_LIBADD = $(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la
+
+gpod_doc.i: $(srcdir)/gpod_doc.i.in $(srcdir)/gtkdoc-to-swig.xsl
+	cat $< > $@
+if ENABLE_GTK_DOC
+	-for xml in $(top_srcdir)/docs/reference/xml/*.xml; do \
+	    xsltproc $(srcdir)/gtkdoc-to-swig.xsl $$xml; \
+	done >> $@
+endif
 
 gpod_wrap.c: $(SWIG_INTERFACES) $(nodist_gpod_PYTHON)
 	$(SWIG) -python $(INCLUDES) -o $@ $<
