@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gtkpod 0.40\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-01-15 01:20+0900\n"
+"POT-Creation-Date: 2007-01-15 13:43+0900\n"
 "PO-Revision-Date: 2006-02-14 16:48+0900\n"
 "Last-Translator: Kentaro Fukuchi <fukuchi@users.sourceforge.net>\n"
 "Language-Team: n/a\n"
@@ -19,50 +19,52 @@ msgstr ""
 #: ../src/db-artwork-parser.c:131
 #, c-format
 msgid "Unexpected mhod3 string type: %d\n"
-msgstr ""
+msgstr "予期せぬ mhod3 string type です: %d\n"
 
 #: ../src/db-artwork-parser.c:265
 #, c-format
 msgid "Could not find corresponding track (dbid: %s) for artwork entry.\n"
-msgstr ""
+msgstr "アートワークに対応する曲 (dbid: %s) が見つかりません.\n"
 
 #: ../src/db-artwork-parser.c:291
 #, c-format
 msgid "iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)\n"
 msgstr ""
+"iTunesDB 内の情報と ArtworkDB のアートワークのサイズが一致しません (%d+%d != "
+"%d)\n"
 
 #: ../src/db-artwork-parser.c:459
 #, c-format
 msgid "Unexpected mhsd index: %d\n"
-msgstr ""
+msgstr "予期せぬ mhsd index: %d\n"
 
 #: ../src/db-image-parser.c:118
 #, c-format
 msgid "Unexpected image type in mhni: size: %ux%u (%d), offset: %d\n"
-msgstr ""
+msgstr "mhni に予期せぬイメージタイプ: size: %ux%u (%d), offset: %d\n"
 
 #: ../src/itdb_artwork.c:198
-#, fuzzy, c-format
+#, c-format
 msgid "Could not access file '%s'."
-msgstr "ファイルが見つかりません: '%s'"
+msgstr "ファイル '%s' にアクセスできませんでした."
 
 #: ../src/itdb_artwork.c:215 ../src/itdb_artwork.c:276
 msgid "Artwork support not compiled into libgpod."
-msgstr ""
+msgstr "libgpod にアートワークのサポートが組み込まれていません."
 
 #: ../src/itdb_artwork.c:334
 #, c-format
 msgid "Illegal filename: '%s'.\n"
-msgstr ""
+msgstr "不正なファイル名: '%s'.\n"
 
 #: ../src/itdb_artwork.c:340
 msgid "Mountpoint not set.\n"
-msgstr ""
+msgstr "マウント場所が設定されていません.\n"
 
 #: ../src/itdb_artwork.c:493
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find on iPod: '%s'\n"
-msgstr "ファイルが見つかりません: '%s'"
+msgstr "iPod の中に見当たりません: '%s'\n"
 
 #: ../src/itdb_artwork.c:701
 #, c-format
@@ -70,14 +72,16 @@ msgid ""
 "Unable to retreive thumbnail (appears to be on iPod, but no image info "
 "available): type: %d, filename: '%s'\n"
 msgstr ""
+"サムネイルを取得できません (iPod の中にある筈ですが, 画像情報が見つかりませ"
+"ん): type: %d, filename: '%s'\n"
 
 #: ../src/itdb_device.c:170
 msgid "Invalid"
-msgstr ""
+msgstr "異常"
 
 #: ../src/itdb_device.c:171 ../src/itdb_device.c:197
 msgid "Unknown"
-msgstr ""
+msgstr "不明"
 
 #: ../src/itdb_device.c:172
 msgid "Color"
@@ -97,23 +101,23 @@ msgstr ""
 
 #: ../src/itdb_device.c:176
 msgid "Mini (Silver)"
-msgstr ""
+msgstr "Mini (銀)"
 
 #: ../src/itdb_device.c:177
 msgid "Mini (Blue)"
-msgstr ""
+msgstr "Mini (青)"
 
 #: ../src/itdb_device.c:178
 msgid "Mini (Pink)"
-msgstr ""
+msgstr "Mini (ピンク)"
 
 #: ../src/itdb_device.c:179
 msgid "Mini (Green)"
-msgstr ""
+msgstr "Mini (緑)"
 
 #: ../src/itdb_device.c:180
 msgid "Mini (Gold)"
-msgstr ""
+msgstr "Mini (金)"
 
 #: ../src/itdb_device.c:181
 msgid "Shuffle"
@@ -121,19 +125,19 @@ msgstr ""
 
 #: ../src/itdb_device.c:182
 msgid "Nano (White)"
-msgstr ""
+msgstr "Nano (白)"
 
 #: ../src/itdb_device.c:183
 msgid "Nano (Black)"
-msgstr ""
+msgstr "Nano (黒)"
 
 #: ../src/itdb_device.c:184
 msgid "Video (White)"
-msgstr ""
+msgstr "Video (白)"
 
 #: ../src/itdb_device.c:185
 msgid "Video (Black)"
-msgstr ""
+msgstr "Video (黒)"
 
 #: ../src/itdb_device.c:186
 msgid "Mobile (1)"
@@ -145,367 +149,368 @@ msgstr ""
 
 #: ../src/itdb_device.c:188
 msgid "Nano (Silver)"
-msgstr ""
+msgstr "Nano (銀)"
 
 #: ../src/itdb_device.c:189
 msgid "Nano (Blue)"
-msgstr ""
+msgstr "Nano (青)"
 
 #: ../src/itdb_device.c:190
 msgid "Nano (Green)"
-msgstr ""
+msgstr "Nano (緑)"
 
 #: ../src/itdb_device.c:191
 msgid "Nano (Pink)"
-msgstr ""
+msgstr "Nano (ピンク)"
 
 #: ../src/itdb_device.c:198
 msgid "First Generation"
-msgstr ""
+msgstr "1G"
 
 #: ../src/itdb_device.c:199
 msgid "Second Generation"
-msgstr ""
+msgstr "2G"
 
 #: ../src/itdb_device.c:200
 msgid "Third Generation"
-msgstr ""
+msgstr "3G"
 
 #: ../src/itdb_device.c:201
 msgid "Fourth Generation"
-msgstr ""
+msgstr "4G"
 
 #: ../src/itdb_device.c:202
 msgid "Fifth Generation"
-msgstr ""
+msgstr "5G"
 
 #: ../src/itdb_device.c:203
 msgid "Sixth Generation"
-msgstr ""
+msgstr "6G"
 
 #: ../src/itdb_device.c:204
 msgid "Mobile Phone"
-msgstr ""
+msgstr "携帯電話"
 
 #: ../src/itdb_device.c:450
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open '%s' for writing."
-msgstr "'%s' を書き込み用に開くことができません。(%s)"
+msgstr "'%s' を書き込み用に開くことができません."
 
 #: ../src/itdb_device.c:459
 msgid "Device directory does not exist."
-msgstr ""
+msgstr "デバイスディレクトリが見つかりません."
 
-#: ../src/itdb_itunesdb.c:391
+#: ../src/itdb_itunesdb.c:419
 #, c-format
 msgid "Illegal seek to offset %ld (length %ld) in file '%s'."
-msgstr "不正なシーク: '%3$s', オフセット %1$ld, 長さ (%2$ld)"
+msgstr "不正なシーク: '%3$s', オフセット %1$ld (長さ %2$ld)"
 
-#: ../src/itdb_itunesdb.c:845
+#: ../src/itdb_itunesdb.c:873
 #, c-format
 msgid "Not a Play Counts file: '%s' (missing mhdp header)."
 msgstr "再生回数ファイルではありません: '%s' (mhdp ヘッダが無い)"
 
-#: ../src/itdb_itunesdb.c:860
+#: ../src/itdb_itunesdb.c:888
 #, c-format
 msgid "Play Counts file ('%s'): header length smaller than expected (%d<96)."
-msgstr "再生回数ファイル ('%s'): ヘッダの長さが足りません。(%d<96)"
+msgstr "再生回数ファイル ('%s'): ヘッダの長さが足りません (%d<96)."
 
-#: ../src/itdb_itunesdb.c:874
+#: ../src/itdb_itunesdb.c:902
 #, c-format
 msgid "Play Counts file ('%s'): entry length smaller than expected (%d<12)."
-msgstr "再生回数ファイル ('%s'): エントリの長さが足りません。(%d<12)"
+msgstr "再生回数ファイル ('%s'): エントリの長さが足りません (%d<12)."
 
-#: ../src/itdb_itunesdb.c:953
+#: ../src/itdb_itunesdb.c:981
 #, c-format
 msgid "iTunesStats file ('%s'): entry length smaller than expected (%d<18)."
-msgstr "iTunesStats ファイル ('%s'): エントリの長さが足りません。(%d<18)"
+msgstr "iTunesStats ファイル ('%s'): エントリの長さが足りません (%d<18)."
 
-#: ../src/itdb_itunesdb.c:1272
+#: ../src/itdb_itunesdb.c:1300
 #, c-format
 msgid "iTunesDB corrupt: no MHOD at offset %ld in file '%s'."
 msgstr ""
-"iTunesDB が壊れています: MHOD が見付かりません。(ファイル '%2$s', オフセット "
-"%1$ld)"
+"iTunesDB が壊れています: MHOD が見つかりません (ファイル '%2$s', オフセット %"
+"1$ld)."
 
-#: ../src/itdb_itunesdb.c:1434
+#: ../src/itdb_itunesdb.c:1462
 #, c-format
 msgid ""
 "Length of smart playlist rule field (%d) not as expected. Trying to continue "
 "anyhow.\n"
 msgstr ""
-"スマートプレイリストのルールの長さ (%d) が期待される長さと異なります。処理を"
-"続けます。\n"
+"スマートプレイリストのルールの長さ (%d) が期待される長さと異なります. 処理を"
+"続けます.\n"
 
-#: ../src/itdb_itunesdb.c:1466
+#: ../src/itdb_itunesdb.c:1494
 #, c-format
 msgid "iTunesDB corrupt: no SLst at offset %ld in file '%s'."
 msgstr ""
-"iTunesDB が壊れています: SLst が見付かりません。(ファイル '%2$s', オフセット "
-"%1$ld)"
+"iTunesDB が壊れています: SLst が見付かりません (ファイル '%2$s', オフセット %"
+"1$ld)."
 
-#: ../src/itdb_itunesdb.c:1479
+#: ../src/itdb_itunesdb.c:1507
 #, c-format
 msgid ""
 "Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n"
 "\n"
 msgstr ""
-"iTunesDB の読み込み中に、未知の MHOD タイプ (%d) を発見しました。無視しま"
-"す。\n"
+"iTunesDB の読み込み中に, 未知の MHOD タイプ (%d) を発見しました. 無視しま"
+"す.\n"
 "\n"
 
-#: ../src/itdb_itunesdb.c:1549
+#: ../src/itdb_itunesdb.c:1577
 #, c-format
 msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
 msgstr ""
-"iTunesDB が壊れています: hunk の長さが 0 です。(ファイル '%2$s', オフセット %"
-"1$ld)"
+"iTunesDB が壊れています: hunk の長さが 0 です (ファイル '%2$s', オフセット %1"
+"$ld)."
 
-#: ../src/itdb_itunesdb.c:1562
+#: ../src/itdb_itunesdb.c:1590
 #, c-format
 msgid ""
 "iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
 msgstr ""
 "iTunesDB が壊れています: %3$ld の位置にあるセクション '%2$s' の中にセクショ"
-"ン '%1$s' はありません。"
+"ン '%1$s' が見つかりません."
 
-#: ../src/itdb_itunesdb.c:1576
+#: ../src/itdb_itunesdb.c:1604
 #, c-format
 msgid ""
 "header length of '%s' smaller than expected (%d < %d) at offset %ld in file "
 "'%s'."
 msgstr ""
 "'%1$s' のヘッダの長さが足りません (%2$d < %3$d) (ファイル '%5$s', オフセット "
-"%4$ld)"
+"%4$ld)."
 
-#: ../src/itdb_itunesdb.c:1661
+#: ../src/itdb_itunesdb.c:1689
 #, c-format
 msgid "Not a iTunesDB: '%s' (missing mhdb header)."
-msgstr "iTunesDB ではありません: '%s' (mhdb ヘッダが無い)"
+msgstr "iTunesDB ではありません: '%s' (mhdb ヘッダが無い)."
 
-#: ../src/itdb_itunesdb.c:1678
+#: ../src/itdb_itunesdb.c:1706
 #, c-format
 msgid ""
 "iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). "
 "Aborting."
-msgstr "iTunesDB ('%s'): mhsd のヘッダの長さが足りません(%d<32)。中止します。"
+msgstr "iTunesDB ('%s'): mhsd のヘッダの長さが足りません (%d<32). 中止します."
 
-#: ../src/itdb_itunesdb.c:1699
+#: ../src/itdb_itunesdb.c:1727
 #, c-format
 msgid "iTunesDB '%s' corrupt: mhsd expected at %ld."
-msgstr "iTunesDB '%s' が壊れています: mhsd が %ld の位置に見付かりません。"
+msgstr "iTunesDB '%s' が壊れています: mhsd が %ld の位置に見つかりません."
 
-#: ../src/itdb_itunesdb.c:1816
+#: ../src/itdb_itunesdb.c:1844
 #, c-format
 msgid "Number of MHODs in mhip at %ld inconsistent in file '%s'."
 msgstr ""
-"mhip の中の MHOD の数が食い違っています。(ファイル '%2$s', オフセット %1$ld)"
+"mhip 中の MHOD の数が食い違っています (ファイル '%2$s', オフセット %1$ld)."
 
-#: ../src/itdb_itunesdb.c:1834
+#: ../src/itdb_itunesdb.c:1862
 #, c-format
 msgid "Itdb_Track ID '%d' not found.\n"
-msgstr "Itdb_Track ID '%d' が見付かりません。\n"
+msgstr "Itdb_Track ID '%d' が見つかりません.\n"
 
-#: ../src/itdb_itunesdb.c:1996
+#: ../src/itdb_itunesdb.c:2024
 #, c-format
 msgid "Number of MHODs in mhyp at %ld inconsistent in file '%s'."
 msgstr ""
-"mhyp の中の MHOD の数が食い違っています。(ファイル '%2$s', オフセット %1$ld)"
+"mhyp 中の MHOD の数が食い違っています (ファイル '%2$s', オフセット %1$ld)."
 
-#: ../src/itdb_itunesdb.c:2006
+#: ../src/itdb_itunesdb.c:2034
 msgid "Master-PL"
 msgstr ""
 
-#: ../src/itdb_itunesdb.c:2010
+#: ../src/itdb_itunesdb.c:2038
 msgid "Podcasts"
 msgstr ""
 
-#: ../src/itdb_itunesdb.c:2012
+#: ../src/itdb_itunesdb.c:2040
 msgid "Playlist"
 msgstr "プレイリスト"
 
-#: ../src/itdb_itunesdb.c:2034
+#: ../src/itdb_itunesdb.c:2062
 #, c-format
 msgid ""
 "iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %"
 "ld in file '%s'."
 msgstr ""
-"iTunesDB が壊れています: mhyp の中の mhip セクションの数が食い違っています。"
-"(ファイル '%2$s', オフセット %1$ld)"
+"iTunesDB が壊れています: mhyp 中の mhip セクションの数が食い違っています "
+"(ファイル '%2$s', オフセット %1$ld)."
 
-#: ../src/itdb_itunesdb.c:2347
+#: ../src/itdb_itunesdb.c:2375
 msgid "OTG Playlist"
 msgstr "OTG プレイリスト"
 
-#: ../src/itdb_itunesdb.c:2365
+#: ../src/itdb_itunesdb.c:2393
 #, c-format
 msgid "Not a OTG playlist file: '%s' (missing mhpo header)."
-msgstr "OTG プレイリストのファイルではありません: '%s' (mhpo ヘッダが無い)"
+msgstr "OTG プレイリストのファイルではありません: '%s' (mhpo ヘッダが無い)."
 
-#: ../src/itdb_itunesdb.c:2379
+#: ../src/itdb_itunesdb.c:2407
 #, c-format
 msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
-msgstr "OTG プレイリストファイル ('%s'): ヘッダの長さが足りません。(%d<20)"
+msgstr "OTG プレイリストファイル ('%s'): ヘッダの長さが足りません (%d<20)."
 
-#: ../src/itdb_itunesdb.c:2391
+#: ../src/itdb_itunesdb.c:2419
 #, c-format
 msgid ""
 "OTG playlist file file ('%s'): entry length smaller than expected (%d<4)."
-msgstr "OTG プレイリストファイル ('%s'): エントリの長さが足りません。(%d<4)"
+msgstr "OTG プレイリストファイル ('%s'): エントリの長さが足りません (%d<4)."
 
-#: ../src/itdb_itunesdb.c:2426
+#: ../src/itdb_itunesdb.c:2454
 #, c-format
 msgid "OTG playlist file '%s': reference to non-existent track (%d)."
 msgstr ""
-"OTG プレイリストファイル ('%s'): 存在しない曲番号 (%d) への参照があります。"
+"OTG プレイリストファイル ('%s'): 存在しない曲番号 (%d) への参照があります."
 
-#: ../src/itdb_itunesdb.c:2471
+#: ../src/itdb_itunesdb.c:2499
 #, c-format
 msgid "OTG Playlist %d"
 msgstr "OTG プレイリスト %d"
 
 #. this should not be -- issue warning
-#: ../src/itdb_itunesdb.c:2539
+#: ../src/itdb_itunesdb.c:2567
 msgid ""
 "iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to "
 "continue.\n"
 msgstr ""
-"iTunesDB が壊れています: 曲数 (mhit の数) が食い違っています。処理を続けま"
-"す。\n"
+"iTunesDB が壊れています: 曲数 (mhit の数) が食い違っています. 処理を続けま"
+"す.\n"
 
 #. this should not be -- issue warning
-#: ../src/itdb_itunesdb.c:2602
+#: ../src/itdb_itunesdb.c:2630
 msgid ""
 "iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. "
 "Trying to continue.\n"
 msgstr ""
 "iTunesDB が多分壊れています: プレイリストの数 (mhyp の数) が食い違っていま"
-"す。処理を続けます。\n"
+"す. 処理を続けます.\n"
 
-#: ../src/itdb_itunesdb.c:2649
+#: ../src/itdb_itunesdb.c:2677
 #, c-format
 msgid ""
 "iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section "
 "found)"
 msgstr ""
-"iTunesDB '%s' が壊れています: 曲リストが見付かりません。(mhsd タイプ 1 セク"
-"ションが見付からない)"
+"iTunesDB '%s' が壊れています: 曲リストが見付かりません. (mhsd タイプ 1 セク"
+"ションが見つからない)"
 
-#: ../src/itdb_itunesdb.c:2678
+#: ../src/itdb_itunesdb.c:2706
 #, c-format
 msgid ""
 "iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 "
 "sections found)"
 msgstr ""
-"iTunesDB '%s' が壊れています: プレイリストが見付かりません。(mhsd タイプ 2 "
-"と タイプ 3 のセクションが見付からない)"
+"iTunesDB '%s' が壊れています: プレイリストが見付かりません. (mhsd タイプ 2 "
+"と タイプ 3 のセクションが見つからない)"
 
-#: ../src/itdb_itunesdb.c:2700
+#: ../src/itdb_itunesdb.c:2728
 #, c-format
 msgid "iTunes directory not found: '%s' (or similar)."
-msgstr ""
+msgstr "iTunes ディレクトリが見つかりません: '%s' (など)."
 
-#: ../src/itdb_itunesdb.c:2717
+#: ../src/itdb_itunesdb.c:2745
 #, c-format
 msgid "Music directory not found: '%s' (or similar)."
-msgstr ""
+msgstr "Music ディレクトリが見つかりません: '%s' (など)."
 
-#: ../src/itdb_itunesdb.c:2735
+#: ../src/itdb_itunesdb.c:2763
 #, c-format
 msgid "Control directory not found: '%s' (or similar)."
-msgstr ""
+msgstr "Control ディレクトリが見つかりません: '%s' (など)."
 
-#: ../src/itdb_itunesdb.c:2808
+#: ../src/itdb_itunesdb.c:2836
 #, c-format
 msgid "File not found: '%s'."
-msgstr "ファイルが見つかりません: '%s'"
+msgstr "ファイルが見つかりません: '%s'."
 
-#: ../src/itdb_itunesdb.c:3626
+#: ../src/itdb_itunesdb.c:3654
 #, c-format
 msgid "Cannot write mhod of type %d\n"
-msgstr "mhod タイプ %d が書き込めません。\n"
+msgstr "mhod タイプ %d が書き込めません.\n"
 
-#: ../src/itdb_itunesdb.c:4217
-#, fuzzy, c-format
+#: ../src/itdb_itunesdb.c:4245
+#, c-format
 msgid "Opening of '%s' for writing failed (%s)."
-msgstr "'%s' を書き込み用に開くことができません。"
+msgstr "'%s' を書き込み用に開くことができません (%s)."
 
-#: ../src/itdb_itunesdb.c:4228 ../src/itdb_itunesdb.c:4239
+#: ../src/itdb_itunesdb.c:4256 ../src/itdb_itunesdb.c:4267
 #, c-format
 msgid "Writing to '%s' failed (%s)."
-msgstr "'%s'の書き込みに失敗しました。(%s)"
+msgstr "'%s'の書き込みに失敗しました (%s)."
 
-#: ../src/itdb_itunesdb.c:4589
-#, fuzzy, c-format
+#: ../src/itdb_itunesdb.c:4617
+#, c-format
 msgid "Path not found: '%s' (or similar)."
-msgstr "パスが見つかりません: '%s'"
+msgstr "パスが見つかりません: '%s' (など)."
 
-#: ../src/itdb_itunesdb.c:4808
+#: ../src/itdb_itunesdb.c:4836
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s)."
-msgstr "'%s' を '%s' に変更することができません。(%s)"
+msgstr "'%s' を '%s' に変更することができません (%s)."
 
-#: ../src/itdb_itunesdb.c:4825 ../src/itdb_itunesdb.c:4842
+#: ../src/itdb_itunesdb.c:4853 ../src/itdb_itunesdb.c:4870
 #, c-format
 msgid "Error removing '%s' (%s)."
-msgstr "'%s' の削除中にエラーが発生しました。(%s)"
-
-#: ../src/itdb_itunesdb.c:5028
-#, c-format
-msgid "No 'F..' directories found in '%s'."
-msgstr "'F..' ディレクトリが '%s' の中にありません。"
+msgstr "'%s' の削除中にエラーが発生しました (%s)."
 
 #: ../src/itdb_itunesdb.c:5056
 #, c-format
+msgid "No 'F..' directories found in '%s'."
+msgstr "'F..' ディレクトリが '%s' の中にありません."
+
+#: ../src/itdb_itunesdb.c:5084
+#, c-format
 msgid "Path not found: '%s'."
-msgstr "パスが見つかりません: '%s'"
-
-#: ../src/itdb_itunesdb.c:5215
-#, c-format
-msgid "Error opening '%s' for reading (%s)."
-msgstr "'%s' を読み込み用に開くことができません。(%s)"
-
-#: ../src/itdb_itunesdb.c:5226
-#, c-format
-msgid "Error opening '%s' for writing (%s)."
-msgstr "'%s' を書き込み用に開くことができません。(%s)"
+msgstr "パスが見つかりません: '%s'."
 
 #: ../src/itdb_itunesdb.c:5243
 #, c-format
-msgid "Error while reading from '%s' (%s)."
-msgstr "'%s' の読み込み中にエラーが発生しました。(%s)"
+msgid "Error opening '%s' for reading (%s)."
+msgstr "'%s' を読み込み用に開くことができません (%s)."
 
-#: ../src/itdb_itunesdb.c:5259
+#: ../src/itdb_itunesdb.c:5254
+#, c-format
+msgid "Error opening '%s' for writing (%s)."
+msgstr "'%s' を書き込み用に開くことができません (%s)."
+
+#: ../src/itdb_itunesdb.c:5271
+#, c-format
+msgid "Error while reading from '%s' (%s)."
+msgstr "'%s' の読み込み中にエラーが発生しました (%s)."
+
+#: ../src/itdb_itunesdb.c:5287
 #, c-format
 msgid "Error while writing to '%s' (%s)."
-msgstr "'%s' の書き込み中にエラーが発生しました。(%s)"
+msgstr "'%s' の書き込み中にエラーが発生しました (%s)."
 
-#: ../src/itdb_itunesdb.c:5272 ../src/itdb_itunesdb.c:5282
+#: ../src/itdb_itunesdb.c:5300 ../src/itdb_itunesdb.c:5310
 #, c-format
 msgid "Error when closing '%s' (%s)."
-msgstr "'%s' を閉じる際にエラーが発生しました。(%s)"
+msgstr "'%s' を閉じる際にエラーが発生しました (%s)."
 
-#: ../src/itdb_itunesdb.c:5645
+#: ../src/itdb_itunesdb.c:5673
 msgid "iPod"
 msgstr ""
 
-#: ../src/itdb_itunesdb.c:6038
+#: ../src/itdb_itunesdb.c:6066
 #, c-format
 msgid "Problem creating iPod directory or file: '%s'."
-msgstr ""
+msgstr "iPod ディレクトリの作成またはファイル '%s' の作成に失敗しました."
 
 #: ../src/itdb_photoalbum.c:107
-#, fuzzy, c-format
+#, c-format
 msgid "Photos directory not found: '%s' (or similar)."
-msgstr "パスが見つかりません: '%s'"
+msgstr "Photos ディレクトリが見つかりません: '%s' (など)."
 
 #: ../src/itdb_photoalbum.c:245 ../src/itdb_photoalbum.c:442
 msgid "Photo Library"
-msgstr ""
+msgstr "写真ライブラリ"
 
 #: ../src/itdb_photoalbum.c:357
 msgid "You need to specify the iPod model used before photos can be added."
 msgstr ""
+"写真を追加する前に, 使用している iPod のモデルを設定する必要があります."
 
 #: ../src/itdb_photoalbum.c:378
 #, c-format
@@ -513,28 +518,34 @@ msgid ""
 "Your iPod does not seem to support photos. Maybe you need to specify the "
 "correct iPod model number? It is currently set to 'x%s' (%s/%s)."
 msgstr ""
+"お使いの iPod は写真の表示ができません. おそらく正しい iPod のモデルを設定し"
+"ていないものと思われます. 現在モデル番号は 'x%s' に設定されています (%s%s)."
 
 #: ../src/itdb_photoalbum.c:390
 #, c-format
 msgid "Could not access file '%s'. Photo not added."
-msgstr ""
+msgstr "ファイル '%s' にアクセスできませんでした. 写真は追加されません."
 
 #: ../src/itdb_photoalbum.c:430
 msgid ""
 "Unexpected error in itdb_photodb_add_photo_internal() while adding photo, "
 "please report."
 msgstr ""
+"写真の追加中に itdb_photodb_add_photo_internal() 内で予期せぬエラーが発生しま"
+"した. 開発者への報告をお願いします."
 
 #: ../src/itdb_photoalbum.c:450
 msgid ""
 "Library compiled without gdk-pixbuf support. Picture support is disabled."
 msgstr ""
+"このソフトが gdkpixbuf を使わずにコンパイルされています. 写真のサポートは無効"
+"になっています."
 
 #. New action!
 #: ../src/itdb_playlist.c:78
 #, c-format
 msgid "Unknown action (%d) in smart playlist will be ignored.\n"
-msgstr "スマートプレイリスト内の未知のアクション (%d) は無視されます。\n"
+msgstr "スマートプレイリスト内の未知のアクション (%d) は無視されます.\n"
 
 #: ../tests/test-photos.c:39
 #, c-format
@@ -547,6 +558,11 @@ msgid ""
 "will\n"
 "  be created.\n"
 msgstr ""
+"写真を追加する:\n"
+"  %s add <マウント場所> <アルバム名> [<ファイル名>]\n"
+"  マスターアルバムにのみ写真を追加する場合は, <albumname> を 'NULL' としてく"
+"だ\n"
+"  さい. ファイル名を指定しないと, 空のアルバムが作成されます.\n"
 
 #: ../tests/test-photos.c:40
 #, c-format
@@ -554,6 +570,8 @@ msgid ""
 "Usage to dump all photos to <output_dir>:\n"
 "  %s dump <mountpoint> <output_dir>\n"
 msgstr ""
+"すべての写真を <出力先ディレクトリ> に保存する:\n"
+"  %s dump <マウント場所> <出力先ディレクトリ>\n"
 
 #: ../tests/test-photos.c:41
 #, c-format
@@ -561,6 +579,8 @@ msgid ""
 "Usage to list all photos IDs to stdout:\n"
 "  %s list <mountpoint>\n"
 msgstr ""
+"すべての写真の ID を標準出力に出力する:\n"
+"  %s list <マウント場所>\n"
 
 #: ../tests/test-photos.c:42
 #, c-format
@@ -572,39 +592,44 @@ msgid ""
 "  instead.\n"
 "  WARNING: IDs may change when writing the PhotoDB file.\n"
 msgstr ""
+"写真 ID を ライブラリから削除する:\n"
+"  %s remove <マウント場所> <アルバム名> [<ID(s)>]\n"
+"  <アルバム名> を 'NULL' にするとその写真を iPod から完全に削除します.\n"
+"  ID を指定しないと, アルバムそのものを削除します.\n"
+"  警告: PhotoDB ファイルを更新すると ID も変化している可能性があります.\n"
 
 #: ../tests/test-photos.c:126
 msgid "Wrong number of command line arguments.\n"
-msgstr ""
+msgstr "コマンドラインの引数の数が正しくありません.\n"
 
 #: ../tests/test-photos.c:135
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating '%s' (mkdir)\n"
-msgstr "'%s' の削除中にエラーが発生しました。(%s)"
+msgstr "'%s' を作成できません (mkdir)\n"
 
 #: ../tests/test-photos.c:141
 #, c-format
 msgid "Error: '%s' is not a directory\n"
-msgstr ""
+msgstr "'%s' はディレクトリではありません\n"
 
 #: ../tests/test-photos.c:150 ../tests/test-photos.c:184
 #: ../tests/test-photos.c:313
-#, fuzzy, c-format
+#, c-format
 msgid "Error reading iPod photo database (%s).\n"
-msgstr "'%s' を '%s' に変更することができません。(%s)"
+msgstr "iPod の写真データベースを読み込めません (%s).\n"
 
 #: ../tests/test-photos.c:156 ../tests/test-photos.c:190
 msgid "Error reading iPod photo database.\n"
-msgstr ""
+msgstr "iPod の写真データベースを読み込めません.\n"
 
 #: ../tests/test-photos.c:174 ../tests/test-photos.c:233
 #: ../tests/test-photos.c:303 ../tests/test-photos.c:386
 msgid "Insufficient number of command line arguments.\n"
-msgstr ""
+msgstr "コマンドラインの引数の数が正しくありません.\n"
 
 #: ../tests/test-photos.c:201
 msgid "<Unnamed>"
-msgstr ""
+msgstr "<名無し>"
 
 #: ../tests/test-photos.c:216
 msgid "<No members>\n"
@@ -616,40 +641,39 @@ msgid ""
 "Error reading iPod photo database (%s).\n"
 "Will attempt to create a new database.\n"
 msgstr ""
+"iPod の写真データベースを読み込めません (%s).\n"
+"新規にデータベースを作成します.\n"
 
 #: ../tests/test-photos.c:249
 msgid ""
 "Error reading iPod photo database, will attempt to create a new database\n"
 msgstr ""
+"iPod の写真データベースを読み込めません. 新規にデータベースを作成します.\n"
 
 #: ../tests/test-photos.c:274
-#, fuzzy, c-format
+#, c-format
 msgid "Error adding photo (%s) to photo database: %s\n"
-msgstr "'%s' を '%s' に変更することができません。(%s)"
+msgstr "写真 (%s) の追加に失敗しました: %s\n"
 
 #: ../tests/test-photos.c:320
-#, fuzzy
 msgid "Error reading iPod photo database"
-msgstr "'%s' を '%s' に変更することができません。(%s)"
+msgstr "iPod の写真データベースを読み込めません"
 
 #: ../tests/test-photos.c:331
 #, c-format
 msgid "Specified album '%s' not found. Aborting.\n"
-msgstr ""
+msgstr "指定されたアルバム '%s' が見つかりません. 中止します.\n"
 
 #: ../tests/test-photos.c:343
 msgid "Cannot remove Photo Library playlist. Aborting.\n"
-msgstr ""
+msgstr "写真ライブラリを削除できませんでした. 中止します.\n"
 
 #: ../tests/test-photos.c:364
 #, c-format
 msgid "Error: could not find photo with ID <%d>. Skipping...\n"
-msgstr ""
+msgstr "写真 ID <%d> が見つかりません. 飛ばします...\n"
 
 #: ../tests/test-photos.c:410
 #, c-format
 msgid "Unknown command '%s'\n"
-msgstr ""
-
-#~ msgid "Writing to '%s' failed."
-#~ msgstr "'%s'の書き込みに失敗しました。"
+msgstr "未知のコマンド '%s'\n"

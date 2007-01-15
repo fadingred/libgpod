@@ -23,6 +23,8 @@
 
 	* po/sv.po: updated Swedish catalog -- thanks to Stefan Asserhall
 
+	* po/ja.po: updated Japanese catalog -- thanks to Kentaro Fukuchi
+
 2007-01-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* tests/test-photos.c:
