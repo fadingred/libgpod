@@ -1,3 +1,24 @@
+2007-01-15  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* Makefile.am
+	  bindings/python/Makefile.am
+	  bindings/python/__init__.py
+	  bindings/python/gpod.i.in
+	  bindings/python/gpod_doc.i.in
+	  bindings/python/gtkdoc-to-swig.xsl
+	  bindings/python/gtkpod.py
+	  bindings/python/ipod.py: add builtin documentation to the python
+	  bindings using the gtk-docs for all of the wrapped libgpod
+	  functions (with much help from Nicolas Piper)
+
+	* bindings/python/gtkpod.py: fix encoding issue in
+	  write_pair() (Nicolas Piper)
+	  handle gtkpod extended info files with either md5_hash or
+	  sha1_hash fields (Nicolas Piper)
+
+	* bindings/python/ipod.py: ensure the db object doesn't get
+	  garbage collected at the wrong time (Nicolas Piper)
+
 2007-01-15  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* po/sv.po: updated Swedish catalog -- thanks to Stefan Asserhall
