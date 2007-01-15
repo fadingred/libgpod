@@ -6,17 +6,13 @@ make install
 
 To make a distribution tarball do
 
-./autogen.sh --enable-gtk-doc
-make
-make dist
-
+./autogen.sh
+make -C docs
+make distcheck
 
 See the INSTALL and TROUBLESHOOTING file for more information.
 
-----------------------------------------------------------------------
-For the time being please always use the current version in CVS. See
-http://sourceforge.net/cvs/?group_id=67873 for information on how to
-access the CVS server. The module to download is called 'libgpod'. The
-package released on sourceforge is simply there to raise awareness and
-hopefully have some package maintainers pick up the library.
-----------------------------------------------------------------------
+Note: If you are building the python bindings, automake-1.9 has some
+minor improvements over automake-1.7 in the py-compile script used to
+byte-compile the *.py files.  You may change REQUIRED_AUTOMAKE_VERSION
+to 1.9 in autogen.sh if you wish.
