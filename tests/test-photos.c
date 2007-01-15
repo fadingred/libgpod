@@ -361,7 +361,7 @@ static int do_remove (int argc, char **argv)
 
 	    if (photo == NULL)
 	    {
-		g_print (_("Error: could not find photo with ID <%d>. Skipping...\n"),
+		g_print (_("Warning: could not find photo with ID <%d>. Skipping...\n"),
 			 id);
 	    }
 	    else
