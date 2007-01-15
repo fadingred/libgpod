@@ -7,6 +7,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libgpod-1.0.pc
 
 EXTRA_DIST =                    \
+	TROUBLESHOOTING		\
         intltool-merge.in       \
         intltool-update.in      \
         intltool-extract.in     \

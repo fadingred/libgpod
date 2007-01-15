@@ -16,3 +16,10 @@ Note: If you are building the python bindings, automake-1.9 has some
 minor improvements over automake-1.7 in the py-compile script used to
 byte-compile the *.py files.  You may change REQUIRED_AUTOMAKE_VERSION
 to 1.9 in autogen.sh if you wish.
+
+In order to build the python bindings you will have to install the
+following packages:
+
+python (e.g. python2.4)
+python-dev (e.g. python2.4-dev)
+python-eye3D

@@ -42,6 +42,12 @@
 	* tests/test-photos.c: change "error" to "warning" in warning
 	  message.
 
+	* INSTALL_CVS:
+	  TROUBLESHOOTING: short note about the python packages required to
+	  build the python bindings.
+
+	* Makefile.am: added TROUBLESHOOTING to EXTRA_DIST
+
 2007-01-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* tests/test-photos.c:
