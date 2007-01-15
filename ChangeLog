@@ -25,6 +25,17 @@
 
 	* po/ja.po: updated Japanese catalog -- thanks to Kentaro Fukuchi
 
+	* .cvsignore
+	  po/.cvsignore
+	  tests/.cvsignore: updated with additional files to ignore.
+
+	* bindings/.cvsignore:
+	  bindings/python/.cvsignore
+	  bindings/python/docs/.cvsignore
+	  docs/.cvsignore
+	  docs/reference/.cvsignore
+	  m4/.cvsignore: created new ignore files
+
 2007-01-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* tests/test-photos.c:
