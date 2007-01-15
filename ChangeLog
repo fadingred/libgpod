@@ -25,16 +25,22 @@
 
 	* po/ja.po: updated Japanese catalog -- thanks to Kentaro Fukuchi
 
+	* po/de.po: updated German catalog
+
 	* .cvsignore
 	  po/.cvsignore
 	  tests/.cvsignore: updated with additional files to ignore.
 
 	* bindings/.cvsignore:
 	  bindings/python/.cvsignore
+	  bindings/python/examples/.cvsignore
 	  bindings/python/docs/.cvsignore
 	  docs/.cvsignore
 	  docs/reference/.cvsignore
 	  m4/.cvsignore: created new ignore files
+
+	* tests/test-photos.c: change "error" to "warning" in warning
+	  message.
 
 2007-01-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
