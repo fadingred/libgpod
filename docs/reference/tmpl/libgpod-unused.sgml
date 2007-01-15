@@ -52,31 +52,6 @@ iTunesDB
 @FIFTH_GENERATION: 
 @MOBILE_GENERATION: 
 
-<!-- ##### ENUM Itdb_IpodGeneration ##### -->
-<para>
-
-</para>
-
-@ITDB_IPOD_GENERATION_UNKNOWN: 
-@ITDB_IPOD_GENERATION_FIRST: 
-@ITDB_IPOD_GENERATION_SECOND: 
-@ITDB_IPOD_GENERATION_THIRD: 
-@ITDB_IPOD_GENERATION_FOURTH: 
-@ITDB_IPOD_GENERATION_FIFTH: 
-@ITDB_IPOD_GENERATION_SIXTH: 
-@ITDB_IPOD_GENERATION_MOBILE: 
-
-<!-- ##### STRUCT Itdb_IpodInfo ##### -->
-<para>
-
-</para>
-
-@model_number: 
-@capacity: 
-@ipod_model: 
-@ipod_generation: 
-@musicdirs: 
-
 <!-- ##### ENUM Itdb_ModelType ##### -->
 <para>
 
@@ -178,125 +153,10 @@ iTunesDB
 </para>
 
 
-<!-- ##### FUNCTION itdb_artwork_add_thumbnail_from_data ##### -->
-<para>
-
-</para>
-
-@artwork: 
-@type: 
-@image_data: 
-@image_data_len: 
-@rotation: 
-@error: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_device_get_ipod_info ##### -->
-<para>
-
-</para>
-
-@device: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_device_set_sysinfo ##### -->
-<para>
-
-</para>
-
-@device: 
-@field: 
-@value: 
-
-<!-- ##### FUNCTION itdb_device_write_sysinfo ##### -->
-<para>
-
-</para>
-
-@device: 
-@error: 
-@Returns: 
-
 <!-- ##### FUNCTION itdb_file_error_quark ##### -->
 <para>
 
 </para>
 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_get_itunessd_path ##### -->
-<para>
-
-</para>
-
-@mountpoint: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_get_photodb_path ##### -->
-<para>
-
-</para>
-
-@mountpoint: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_get_photos_dir ##### -->
-<para>
-
-</para>
-
-@mountpoint: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_get_photos_thumb_dir ##### -->
-<para>
-
-</para>
-
-@mountpoint: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_info_get_ipod_generation_string ##### -->
-<para>
-
-</para>
-
-@generation: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_info_get_ipod_info_table ##### -->
-<para>
-
-</para>
-
-@Returns: 
-
-<!-- ##### FUNCTION itdb_info_get_ipod_model_name_string ##### -->
-<para>
-
-</para>
-
-@model: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_init_ipod ##### -->
-<para>
-
-</para>
-
-@mountpoint: 
-@model_number: 
-@ipod_name: 
-@error: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_track_set_thumbnails_from_data ##### -->
-<para>
-
-</para>
-
-@track: 
-@image_data: 
-@image_data_len: 
 @Returns: 
 
