@@ -1,13 +1,13 @@
 # Translation of gtkpod to Swedish.
 # This file is distributed under the same license as gtkpod.
-# Copyright (C) Stefan Asserhäll <stefan.asserhall@comhem.se>, 2004, 2005.
+# Copyright (C) Stefan Asserhäll <stefan.asserhall@comhem.se>, 2004, 2005, 2007.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: sv\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-01-15 01:20+0900\n"
-"PO-Revision-Date: 2006-09-25 21:57+0200\n"
+"PO-Revision-Date: 2007-01-14 15:53+0100\n"
 "Last-Translator: Stefan Asserhäll <stefan.asserhall@comhem.se>\n"
 "Language-Team: Svenska <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -24,14 +24,14 @@ msgstr "Oväntad mhod3 strängtyp; %d\n"
 #: ../src/db-artwork-parser.c:265
 #, c-format
 msgid "Could not find corresponding track (dbid: %s) for artwork entry.\n"
-msgstr ""
+msgstr "Kunde inte hitta motsvarande spår (dbid: %s) för grafikpost.\n"
 
 #: ../src/db-artwork-parser.c:291
-#, fuzzy, c-format
+#, c-format
 msgid "iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)\n"
 msgstr ""
 "Grafikstorlekar i iTunes databas och grafikdatabas inte konseventa (%d + %d !"
-"= %d)"
+"= %d)\n"
 
 #: ../src/db-artwork-parser.c:459
 #, c-format
@@ -44,13 +44,13 @@ msgid "Unexpected image type in mhni: size: %ux%u (%d), offset: %d\n"
 msgstr "Oväntad bildtyp i mhni: storlek: %ux%u (%d), position: %d\n"
 
 #: ../src/itdb_artwork.c:198
-#, fuzzy, c-format
+#, c-format
 msgid "Could not access file '%s'."
-msgstr "Kunde inte hitta på iPod: '%s'\n"
+msgstr "Kunde inte komma åt filen '%s'."
 
 #: ../src/itdb_artwork.c:215 ../src/itdb_artwork.c:276
 msgid "Artwork support not compiled into libgpod."
-msgstr ""
+msgstr "Grafikstöd inte kompilerat i libgpod."
 
 #: ../src/itdb_artwork.c:334
 #, c-format
@@ -498,11 +498,12 @@ msgstr "Fotokatalog hittades inte: '%s' (eller liknande)."
 
 #: ../src/itdb_photoalbum.c:245 ../src/itdb_photoalbum.c:442
 msgid "Photo Library"
-msgstr ""
+msgstr "Fotobibliotek"
 
 #: ../src/itdb_photoalbum.c:357
 msgid "You need to specify the iPod model used before photos can be added."
 msgstr ""
+"Du måste ange vilken iPod-modell som används innan foton kan läggas till."
 
 #: ../src/itdb_photoalbum.c:378
 #, c-format
@@ -510,22 +511,28 @@ msgid ""
 "Your iPod does not seem to support photos. Maybe you need to specify the "
 "correct iPod model number? It is currently set to 'x%s' (%s/%s)."
 msgstr ""
+"Din iPod verkar inte stödja foton. Kanske måste du ange rätt iPod-"
+"modellnummer? För närvarande är det inställt till 'x%s' (%s/%s)."
 
 #: ../src/itdb_photoalbum.c:390
 #, c-format
 msgid "Could not access file '%s'. Photo not added."
-msgstr ""
+msgstr "Kunde inte komma åt filen '%s'. Fotot har inte lagts till."
 
 #: ../src/itdb_photoalbum.c:430
 msgid ""
 "Unexpected error in itdb_photodb_add_photo_internal() while adding photo, "
 "please report."
 msgstr ""
+"Oväntat fel i itdb_photodb_add_photo_internal() vid tillägg av foto. "
+"Rapportera gärna felet."
 
 #: ../src/itdb_photoalbum.c:450
 msgid ""
 "Library compiled without gdk-pixbuf support. Picture support is disabled."
 msgstr ""
+"Biblioteket kompilerat utan stöd för gdk-pixbuf. Stöd för bilder är "
+"inaktiverat."
 
 #. New action!
 #: ../src/itdb_playlist.c:78
@@ -544,20 +551,28 @@ msgid ""
 "will\n"
 "  be created.\n"
 msgstr ""
+"Användning för att lägga till foton:\n"
+"  %s add <monteringsplats> <albumnamn> [<filnamn>]\n"
+"  <albumnamn> ska vara 'NULL' för att bara lägga till foton i huvudalbumet\n"
+"  (Photo Library). Om inga filnamn anges kommer ett tomt album att skapas.\n"
 
 #: ../tests/test-photos.c:40
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage to dump all photos to <output_dir>:\n"
 "  %s dump <mountpoint> <output_dir>\n"
-msgstr "Användning för att lagra alla foton i <utdatakatalog>:\n"
+msgstr ""
+"Användning för att lagra alla foton i <utdatakatalog>:\n"
+"  %s dump <mountpoint> <output_dir>\n"
 
 #: ../tests/test-photos.c:41
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage to list all photos IDs to stdout:\n"
 "  %s list <mountpoint>\n"
-msgstr "Användning för att lagra alla foton i <utdatakatalog>:\n"
+msgstr ""
+"Användning för att lista id för alla foton på standardutmatningen:\n"
+"  %s list <mountpoint>\n"
 
 #: ../tests/test-photos.c:42
 #, c-format
@@ -569,10 +584,16 @@ msgid ""
 "  instead.\n"
 "  WARNING: IDs may change when writing the PhotoDB file.\n"
 msgstr ""
+"Användning för att ta bort id för foton från fotobiblioteket:\n"
+"  %s remove <monteringsplats> <albumnamn> [<id>]\n"
+"  <albumnamn> ska vara 'NULL' för att ta bort foton från iPod\n"
+"  permanent. Om inget id anges, tas fotoalbumet bort\n"
+"  instället.\n"
+"  VARNING: Id kan ändras när filen PhotoDB skrivs.\n"
 
 #: ../tests/test-photos.c:126
 msgid "Wrong number of command line arguments.\n"
-msgstr ""
+msgstr "Fel antal kommandoradsväljare.\n"
 
 #: ../tests/test-photos.c:135
 #, c-format
@@ -597,15 +618,15 @@ msgstr "Fel vid läsning av iPod fotodatabas.\n"
 #: ../tests/test-photos.c:174 ../tests/test-photos.c:233
 #: ../tests/test-photos.c:303 ../tests/test-photos.c:386
 msgid "Insufficient number of command line arguments.\n"
-msgstr ""
+msgstr "Otillräckligt antal kommandoradsväljare.\n"
 
 #: ../tests/test-photos.c:201
 msgid "<Unnamed>"
-msgstr ""
+msgstr "<Namnlös>"
 
 #: ../tests/test-photos.c:216
 msgid "<No members>\n"
-msgstr ""
+msgstr "<Inga medlemmar>\n"
 
 #: ../tests/test-photos.c:243
 #, c-format
@@ -622,48 +643,29 @@ msgid ""
 msgstr "Fel vid läsning av iPod fotodatabas, försöker skapa en ny databas\n"
 
 #: ../tests/test-photos.c:274
-#, fuzzy, c-format
+#, c-format
 msgid "Error adding photo (%s) to photo database: %s\n"
-msgstr "Fel vid vid läsning av iPod fotodatabas (%s).\n"
+msgstr "Fel vid vid tillägg av foto (%s) i fotodatabas: %s\n"
 
 #: ../tests/test-photos.c:320
-#, fuzzy
 msgid "Error reading iPod photo database"
-msgstr "Fel vid läsning av iPod fotodatabas.\n"
+msgstr "Fel vid läsning av iPod fotodatabas"
 
 #: ../tests/test-photos.c:331
 #, c-format
 msgid "Specified album '%s' not found. Aborting.\n"
-msgstr ""
+msgstr "Angivet album '%s' hittades inte. Avbryter.\n"
 
 #: ../tests/test-photos.c:343
 msgid "Cannot remove Photo Library playlist. Aborting.\n"
-msgstr ""
+msgstr "Kan inte ta bort fotobibliotekets spellista. Avbryter.\n"
 
 #: ../tests/test-photos.c:364
 #, c-format
 msgid "Error: could not find photo with ID <%d>. Skipping...\n"
-msgstr ""
+msgstr "Fel: Kunde inte hitta foto med id <%d>. Hoppar över det...\n"
 
 #: ../tests/test-photos.c:410
 #, c-format
 msgid "Unknown command '%s'\n"
-msgstr ""
-
-#~ msgid "Usage to add photos:\n"
-#~ msgstr "Användning för att lägga till foton:\n"
-
-#~ msgid "%s <mountpoint> <albumname> <filename(s)>\n"
-#~ msgstr "%s <monteringsplats> <albumnamn> <filnamn>\n"
-
-#~ msgid ""
-#~ "albumname should be set to 'master' to add photos to the master photo "
-#~ "album\n"
-#~ msgstr ""
-#~ "albumnamn ska vara 'master' för att lägga till foton i huvudfotoalbumet\n"
-
-#~ msgid "\n"
-#~ msgstr "\n"
-
-#~ msgid "%s dump <mountpoint> <output_dir>\n"
-#~ msgstr "%s dump <monteringsplats> <utdatakatalog>\n"
+msgstr "Okänt kommando '%s'\n"
