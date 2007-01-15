@@ -11,7 +11,7 @@ AM_CONFIG_HEADER(config.h)
 #
 LIBGPOD_MAJOR_VERSION=0
 LIBGPOD_MINOR_VERSION=4
-LIBGPOD_MICRO_VERSION=1
+LIBGPOD_MICRO_VERSION=2
 # If you need a modifier for the version number. 
 # Normally empty, but can be used to make "fixup" releases.
 LIBGPOD_EXTRAVERSION=
@@ -38,6 +38,12 @@ AM_MAINTAINER_MODE
 
 AC_GNU_SOURCE
 AC_PROG_CC
+
+# AC_PROG_CXX is only needed for the test program tests/test-rebuild-db.cc.
+# You can safely remove AC_PROG_CXX and the test program (edit tests/Makefile.am)
+# if you should run into problems.
+AC_PROG_CXX
+
 AC_PROG_LD
 AC_STDC_HEADERS
 AC_PROG_INSTALL
