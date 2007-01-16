@@ -1,5 +1,9 @@
 2007-01-15  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+        * po/fr.po: updated French catalog -- thanks to Éric Lassauge
+
+2007-01-15  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* configure.ac: bumped version to 0.4.3-CVS for further development
 
 	* configure.ac: bumped version to 0.4.2 for release
