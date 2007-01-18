@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-01-15 01:55:47 jcs>
+/* Time-stamp: <2007-01-19 01:00:08 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -5009,7 +5009,7 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
  * set accordingly.
  **/
 gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
-				gchar *filename, GError **error)
+				const gchar *filename, GError **error)
 {
   static gint dir_num = -1;
   gchar *track_db_path, *ipod_fullfile;

@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-01-09 23:44:56 jcs>
+/* Time-stamp: <2007-01-19 00:59:18 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -912,7 +912,7 @@ gchar *itdb_resolve_path (const gchar *root,
 			  const gchar * const * components);
 gboolean itdb_rename_files (const gchar *mp, GError **error);
 gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
-				gchar *filename, GError **error);
+				const gchar *filename, GError **error);
 gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 		  GError **error);
 void itdb_filename_fs2ipod (gchar *filename);
