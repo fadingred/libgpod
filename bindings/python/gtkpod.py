@@ -141,9 +141,15 @@ def parse(filename, db, itunesdb_file=None):
             tracks_by_sha[sha1_hash(track.ipod_filename())] = track
         for ext_block in ext_data.values():
             try:
-                track = tracks_by_sha[ext_block['sha1_hash']]
+                if ext_block.has_key('sha1_hash'):
+                    track = tracks_by_sha[ext_block['sha1_hash']]
+                elif ext_block.has_key('md5_hash'):
+                    # recent gpod uses sha1_hash, older uses md5_hash
+                    track = tracks_by_sha[ext_block['md5_hash']]                    
             except KeyError:
-                # recent gpod uses sha1_hash, older uses md5_hash
-                track = tracks_by_sha[ext_block['md5_hash']]                
+                # what should we do about this?
+                print "Failed to match hash from extended information file with one that we just calculated:"
+                print ext_block
+                continue
             track['userdata'] = ext_block
 
