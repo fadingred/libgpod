@@ -1,4 +1,4 @@
-/*  Time-stamp: <2007-01-09 22:00:03 jcs>
+/*  Time-stamp: <2007-02-10 01:00:40 jcs>
  *
  *  Copyright (C) 2005 Christophe Fergeau
  *
@@ -46,7 +46,9 @@
 #include <fcntl.h>
 
 
-#define ITHUMB_MAX_SIZE (500L*1000L*1000L)
+/* Maximum size for .ithmb files. Reduced from 500 MB to 256 MB after
+   reports of slow iPod interface behavior */
+#define ITHUMB_MAX_SIZE (256L*1000L*1000L)
 /* for testing: */
 /*#define ITHUMB_MAX_SIZE (1L*1000L*1000L)*/
 
