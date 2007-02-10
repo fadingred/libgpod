@@ -322,7 +322,7 @@ class Track:
                 except AttributeError:
                     pass
             if self['title'] is None:
-                self['title'] = filename
+                self['title'] = os.path.splitext(os.path.split(filename)[1])[0]
             try:
                 self['genre'] = tag.getGenre().name
             except AttributeError:
@@ -427,7 +427,7 @@ class Track:
             gpod.sw_set_track_userdata(self._track, value)
             return
         if type(value) == types.UnicodeType:
-            value = value.encode()
+            value = value.encode('UTF-8','ignore')
         if item in self._proxied_attributes:
             return setattr(self._track, item, value)
         else:
