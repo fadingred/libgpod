@@ -315,23 +315,34 @@ class Track:
                                  ('getBPM','BPM'),
                                  ('getPlayCount','playcount'),
                                  ('getAlbum','album')):
-                value = getattr(tag,func)()
-                if value:
-                    self[attrib] = value
+                try:
+                    value = getattr(tag,func)()
+                    if value:
+                        self[attrib] = value
+                except AttributeError:
+                    pass
+            if self['title'] is None:
+                self['title'] = filename
             try:
                 self['genre'] = tag.getGenre().name
             except AttributeError:
                 pass
-            disc, of = tag.getDiscNum()
-            if disc is not None:
-                self['cd_nr'] = disc
-            if of is not None:
-                self['cds'] = of
-            n, of = tag.getTrackNum()
-            if n is not None:
-                self['track_nr'] = n
-            if of is not None:
-                self['tracks'] = of
+            try:
+                disc, of = tag.getDiscNum()
+                if disc is not None:
+                    self['cd_nr'] = disc
+                if of is not None:
+                    self['cds'] = of
+            except AttributeError:
+                pass
+            try:            
+                n, of = tag.getTrackNum()
+                if n is not None:
+                    self['track_nr'] = n
+                if of is not None:
+                    self['tracks'] = of
+            except AttributeError:
+                pass
             self['tracklen'] = audiofile.getPlayTime() * 1000
             self.set_podcast(podcast)
         elif proxied_track:
