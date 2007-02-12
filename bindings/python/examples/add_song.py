@@ -29,7 +29,6 @@ from optparse import OptionParser
 import urlparse, urllib2
 import tempfile
 import shutil
-import eyeD3
 
 def download(path):
     print "Downloading %s" % path

@@ -7,9 +7,14 @@ classes and methods provided here.
 
 import gpod
 import types
-import eyeD3
+from mutagen.mp3 import MP3
+import mutagen.id3
 import gtkpod
 import os
+import locale
+import socket
+
+defaultencoding = locale.getpreferredencoding()
 
 class DatabaseException(RuntimeError):
     """Exception for database errors."""
@@ -159,7 +164,7 @@ class Database:
                     pl.remove(item)
             if harddisk:
                 try:
-                    filename = item['userdata']['filename_locale']
+                    filename = item._userdata_into_default_locale('filename')
                 except KeyError, e:
                     raise TrackException("Unable to remove %s from hard disk, no filename available." % item)
                 os.unlink(filename)
@@ -238,7 +243,7 @@ class Database:
         for track in self:
             try:
                 transferred = int(track['userdata']['transferred'])
-            except KeyError:
+            except (KeyError, TypeError):
                 transferred = 1
             if not transferred:
                 to_copy.append(track)
@@ -283,7 +288,7 @@ class Track:
                            "chapterdata_raw","chapterdata_raw_length","artwork",
                            "usertype")
 
-    def __init__(self, filename=None, from_file=None,
+    def __init__(self, filename=None,
                  proxied_track=None, podcast=False, ownerdb=None):
         """Create a Track object.
 
@@ -298,52 +303,44 @@ class Track:
 
         """
 
-        # XXX couldn't from_file and filename be merged? 
-        if from_file:
-            filename = from_file
         if filename:
             self._track = gpod.itdb_track_new()
-            self['userdata'] = {'filename_locale': filename,
-                                'transferred': 0}
+            self['userdata'] = {'transferred': 0,
+                                'hostname': socket.gethostname(),
+                                'charset':defaultencoding}
+            self['userdata']['pc_mtime'] = os.stat(filename).st_mtime
+            self._set_userdata_utf8('filename',filename)
+            possible_image = os.path.join(os.path.split(filename)[0],'folder.jpg')
+            if os.path.exists(possible_image):
+                self.set_thumbnail(possible_image)
             try:
-                audiofile = eyeD3.Mp3AudioFile(self['userdata']['filename_locale'])
-            except eyeD3.tag.InvalidAudioFormatException, e:
+                audiofile = MP3(self._userdata_into_default_locale('filename'))
+            except Exception, e:
                 raise TrackException(str(e))
-            tag = audiofile.getTag()
-            for func, attrib in (('getArtist','artist'),
-                                 ('getTitle','title'),
-                                 ('getBPM','BPM'),
-                                 ('getPlayCount','playcount'),
-                                 ('getAlbum','album')):
+            for tag, attrib in (('TPE1','artist'),
+                                ('TIT2','title'),
+                                ('TBPM','BPM'),
+                                ('TCON','genre'),
+                                ('TALB','album'),
+                                ('TPOS',('cd_nr','cds')),
+                                ('TRCK',('track_nr','tracks'))):
                 try:
-                    value = getattr(tag,func)()
-                    if value:
-                        self[attrib] = value
-                except AttributeError:
+                    value = audiofile[tag]
+                    if isinstance(value,mutagen.id3.NumericPartTextFrame):
+                        parts = map(int,value.text[0].split("/"))
+                        if len(parts) == 2:
+                            self[attrib[0]], self[attrib[1]] = parts
+                        elif len(parts) == 1:
+                            self[attrib[0]] = parts[0]                           
+                    elif isinstance(value,mutagen.id3.TextFrame):
+                        self[attrib] = value.text[0].encode('UTF-8','replace')
+                except KeyError:
                     pass
             if self['title'] is None:
-                self['title'] = os.path.splitext(os.path.split(filename)[1])[0]
-            try:
-                self['genre'] = tag.getGenre().name
-            except AttributeError:
-                pass
-            try:
-                disc, of = tag.getDiscNum()
-                if disc is not None:
-                    self['cd_nr'] = disc
-                if of is not None:
-                    self['cds'] = of
-            except AttributeError:
-                pass
-            try:            
-                n, of = tag.getTrackNum()
-                if n is not None:
-                    self['track_nr'] = n
-                if of is not None:
-                    self['tracks'] = of
-            except AttributeError:
-                pass
-            self['tracklen'] = audiofile.getPlayTime() * 1000
+                self['title'] = os.path.splitext(
+                    os.path.split(filename)[1])[0].decode(
+                    defaultencoding).encode('UTF-8')
+            self['tracklen'] = int(audiofile.info.length * 1000)
             self.set_podcast(podcast)
         elif proxied_track:
             self._track = proxied_track
@@ -352,18 +349,47 @@ class Track:
             self._track = gpod.itdb_track_new()
             self.set_podcast(podcast)
 
+    def _set_userdata_utf8(self, key, value):
+        self['userdata']['%s_locale' % key] = value
+        try:
+            self['userdata']['%s_utf8'   % key] = value.decode(self['userdata']['charset']).encode('UTF-8')
+        except UnicodeDecodeError, e:
+            # string clearly isn't advertised charset.  I prefer to
+            # not add the _utf8 version as we can't actually generate
+            # it. Maybe we'll have to populate a close-fit though.
+            pass
+
+    def _userdata_into_default_locale(self, key):
+        # to cope with broken filenames, we should trust the _locale version more,
+        # an even that may not really be in self['userdata']['charset']
+        if self['userdata']['charset'] == defaultencoding:
+            # don't try translate it or check it's actually valid, in case it isn't.
+            return self['userdata']['%s_locale' % key]
+        # our filesystem is in a different encoding to the filename, so
+        # try to convert it. The UTF-8 version is likely best to try first?
+        if self['userdata'].has_key('%s_utf8' % key):
+            unicode_value = self['userdata']['%s_utf8' % key].decode('UTF-8')
+        else:
+            unicode_value = self['userdata']['%s_locale' % key].decode(self['userdata']['charset'])
+        return unicode_value.encode(defaultencoding)
+
+    def set_thumbnail(self, filename):
+        gpod.itdb_track_set_thumbnails(self._track, filename)
+        self._set_userdata_utf8('thumbnail', filename)
+
     def copy_to_ipod(self):
         """Copy the track to the iPod."""
-        self['userdata']['md5_hash'] = gtkpod.sha1_hash(
-            self['userdata']['filename_locale'])
+        self['userdata']['sha1_hash'] = gtkpod.sha1_hash(self._userdata_into_default_locale('filename'))
         if not gpod.itdb_get_mountpoint(self._track.itdb):
             return False
-        self['userdata']['transferred'] = 1
         if gpod.itdb_cp_track_to_ipod(self._track,
-                                      self['userdata']['filename_locale'], None) != 1:
+                                      self._userdata_into_default_locale('filename'),
+                                      None) != 1:
             raise TrackException('Unable to copy %s to iPod as %s' % (
-                self['userdata']['filename_locale'],
+                self._userdata_into_default_locale('filename'),
                 self))
+        self['userdata']['transferred'] = 1
+        self['userdata']['filename_ipod'] = self.ipod_filename()
         return True
 
     def ipod_filename(self):
@@ -422,20 +448,17 @@ class Track:
             raise KeyError('No such key: %s' % item)
 
     def __setitem__(self, item, value):
-        #print item, value
         if item == "userdata":
             gpod.sw_set_track_userdata(self._track, value)
             return
         if type(value) == types.UnicodeType:
-            value = value.encode('UTF-8','ignore')
+            value = value.encode('UTF-8','replace')
         if item in self._proxied_attributes:
             return setattr(self._track, item, value)
         else:
             raise KeyError('No such key: %s' % item)
 
-# XXX would this be better as a public variable so that the docs would
-# list valid sort order values?
-_playlist_sorting = {
+playlist_sorting = {
     1:'playlist',
     2:'unknown2',
     3:'songtitle',
@@ -619,14 +642,12 @@ class Playlist:
 
     def get_sort(self):
         """Get the sort order for the playlist."""
-        return _playlist_sorting[self._pl.sortorder]
+        return playlist_sorting[self._pl.sortorder]
 
-    # XXX how does one find out what values are allowed for order without
-    # poking into this file?  (See similar question @ _playlist_order)
     def set_sort(self, order):
         """Set the sort order for the playlist."""
         order = order.lower()
-        for k, v in _playlist_sorting.items():
+        for k, v in playlist_sorting.items():
             if v == order:
                 self._pl.sortorder = v
                 return

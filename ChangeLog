@@ -1,5 +1,23 @@
 2007-02-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* ChangeLog
+	  INSTALL_CVS
+	  configure.ac
+	  bindings/python/gtkpod.py
+	  bindings/python/ipod.py
+	  bindings/python/examples/add_song.py
+	  bindings/python/examples/create_mp3_tags_from_itdb.py:
+
+	  updates and fixes from Nicholas Piper.
+
+2007-02-11  Nicholas Piper  <nick-gtkpod at nickpiper.co.uk>
+
+	* bindings/python: Corrections to text encoding in the extended
+	  database and switch to python-mutagen from python-eyeD3 Thanks
+	  to Stalwart for his help clearing up handling broken filenames.
+
+2007-02-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* src/ithumb-writer.c: reduced maximum size for ithmb files from
 	  500 MB to 256 MB after reports of slow iPod interface behavior.
 

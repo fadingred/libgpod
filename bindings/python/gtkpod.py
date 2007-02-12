@@ -2,16 +2,11 @@
 
 import sha
 import os
-import socket
 import types
-import locale
 
 # This file is originally stolen from pypod-0.5.0
 # http://superduper.net/index.py?page=pypod
-# I hope that's ok, both works are GPL.
-
-hostname = socket.gethostname()
-defaultencoding = locale.getpreferredencoding()
+# and reworked significantly since then.
 
 class ParseError(Exception):
     """Exception for parse errors."""
@@ -45,18 +40,9 @@ def write(filename, db, itunesdb_file):
     file = open(filename, "w")
 
     def write_pair(name, value):
-        if isinstance(value,types.UnicodeType):
-            # encode as UTF-8
-            value = value.encode("utf-8")
-        elif isinstance(value,types.StringType):
-            # assume it's in our default locale, so decode
-            # then re-encode as UTF-8
-            value = unicode(value,
-                            defaultencoding).encode("utf-8")
-        else:
+        if type(value) not in (types.StringType, types.UnicodeType):
+            # e.g., an integer
             value = str(value)
-            
-            
         file.write("=".join([name, value]))
         file.write('\n')
 
@@ -67,23 +53,6 @@ def write(filename, db, itunesdb_file):
         write_pair("id", track['id'])
         if not track['userdata']:
             track['userdata'] = {}
-        if track['ipod_path']:
-            track['userdata']['filename_ipod'] = track['ipod_path']
-        hash_name = 'sha1_hash'
-        try:
-            del track['userdata'][hash_name]
-        except KeyError:
-            # recent gpod uses sha1_hash, older uses md5_hash            
-            try:
-                del track['userdata'][hash_name]
-                hash_name = 'md5_hash'
-            except KeyError:
-                # we'll just write a sha1_hash then
-                pass
-        if track['userdata'].has_key('filename_locale') and not track['userdata'].has_key(hash_name):
-            if os.path.exists(track['userdata']['filename_locale']):
-                track['userdata'][hash_name] = sha1_hash(
-                    track['userdata']['filename_locale'])
         [write_pair(i[0],i[1]) for i in track['userdata'].items()]
 
     write_pair("id", "xxx")
@@ -98,44 +67,42 @@ def parse(filename, db, itunesdb_file=None):
 
     """
 
-    tracks_by_id  = {}
-    tracks_by_sha = {}    
-    id = 0
-    ext_hash_valid = True
-
-    for track in db:
-        track['userdata'] = {}
-
-    for track in db:
-        tracks_by_id[track['id']] = track
-
-    track = None
-    file = open(filename)
+    ext_hash_valid = False
     ext_data = {}
-    ext_block = None
-    for line in file:
+    
+    for line in open(filename).readlines():
         parts = line.strip().split("=", 1)
         if len(parts) != 2:
             print parts
         name, value = parts
         if name == "id":
-            if ext_block:
-                ext_data[id] = ext_block
-            if value != 'xxx':
-                id = int(value)
-                ext_block = {}
+            if value == 'xxx':
+                break
+            id = int(value)
+            ext_data[id] = {}
         elif name == "version":
             pass
         elif name == "itunesdb_hash":
-            if itunesdb_file and sha1_hash(itunesdb_file) != value:
-                ext_hash_valid = False
+            if itunesdb_file and sha1_hash(itunesdb_file) == value:
+                ext_hash_valid = True
         else:
-            ext_block[name] = value
+            # value is a string of undetermined encoding at the moment
+            ext_data[id][name] = value
 
+    # now add each extended info block to the track it goes with
+    # equiv. of fill_in_extended_info()
     if ext_hash_valid:
-        for id,ext_block in ext_data.items():
-            tracks_by_id[id]['userdata'] = ext_block
+        # the normal case
+        for track in db:
+            try:
+                track['userdata'] = ext_data[track['id']]
+            except KeyError:
+                # no userdata available...
+                track['userdata'] = {}
     else:
+        # the iTunesDB was changed, so id's will be wrong.
+        # match up using hash instead
+        tracks_by_sha = {}    
         for track in db:
             # make a dict to allow us to find each track by the sha1_hash
             tracks_by_sha[sha1_hash(track.ipod_filename())] = track

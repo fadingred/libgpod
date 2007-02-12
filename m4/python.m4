@@ -121,8 +121,8 @@ AC_DEFUN([LIBGPOD_CHECK_PYTHON],
                 fi
                 AC_SUBST(PYTHON_LDFLAGS)
 
-                dnl check for eyeD3 module >= $PYTHON_EYED3_MIN_VERSION
-                AM_CHECK_PYMOD(eyeD3,$PYTHON_EYED3_MIN_VERSION,eyeD3.eyeD3Version,,with_python=no)
+                dnl check for mutagen module >= $PYTHON_MUTAGEN_MIN_VERSION
+                AM_CHECK_PYMOD(mutagen,$PYTHON_MUTAGEN_MIN_VERSION,mutagen.version_string,,with_python=no)
 
                 dnl check for swig
                 if test "X$with_python" == Xyes; then

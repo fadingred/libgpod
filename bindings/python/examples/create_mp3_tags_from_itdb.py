@@ -29,7 +29,7 @@
 #
 
 import gpod
-import eyeD3
+import mutagen.mp3
 
 # please specify your iPod mountpoint here..
 IPOD_MOUNT = '/mnt/ipod/'
@@ -51,22 +51,23 @@ for track in gpod.sw_get_tracks( itdb):
 
     filename = gpod.itdb_filename_on_ipod( track)
     try:
-        tag = eyeD3.Tag()
-        tag.link( filename)
-        if tag.link( filename) != True:
+        mp3 = mutagen.mp3.MP3(filename)
+        if not mp3.tags:
             print ''
             print '%s has no id3 tags' % ( filename )
             print 'iTDB says: AR = %s, TI = %s, AL = %s' % ( track.artist, track.title, track.album )
-            tag.setVersion( eyeD3.ID3_DEFAULT_VERSION)
-            tag.setArtist( track.artist)
-            tag.setAlbum( track.album)
-            tag.setTitle( track.title)
-            tag.addComment( 'tagged from itdb with libgpod')
-            tag.update()
-            counter_upd = counter_upd + 1
+            mp3.add_tags() # create header
+            mp3.tags.add(mutagen.id3.TPE1(3,track.artist))
+            mp3.tags.add(mutagen.id3.TALB(3,track.album))
+            mp3.tags.add(mutagen.id3.TIT2(3,track.title))
+            mp3.tags.add(mutagen.id3.TXXX(3,"Taggger","tagged from itdb with libgpod"))
+            mp3.save()
+            counter_upd += 1
             print 'wrote tags to: %s' % ( filename )
-    except:
-        print 'informative debug output: something went wrong.. :/'
+        else:
+            counter_left += 1            
+    except Exception, e:
+        print 'informative debug output: something went wrong.. : %s' % e
         counter_left = counter_left + 1
 
 print ''
