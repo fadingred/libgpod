@@ -957,7 +957,7 @@ write_mhfd (Itdb_DB *db, iPodBuffer *buffer, int id_max)
 		mhfd->unknown2 = get_gint32 (2, buffer->byte_order);
 		break;
 	case DB_TYPE_ITUNES:
-		mhfd->unknown2 = get_gint32 (1, buffer->byte_order);
+		mhfd->unknown2 = get_gint32 (2, buffer->byte_order);
 		break;
 	}
 	mhfd->next_id = get_gint32 (id_max, buffer->byte_order);
