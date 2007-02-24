@@ -10,6 +10,10 @@
 	  Updated smart playlist handling to recognize album artist, tv
 	  show, last skipped, season number, skipcount and video kind
 	  fields.
+
+	* src/itdb_itunesdb.c (get_mhod): don't skip unknown action types
+	  in smart rules to avoid writing illegal smart playlist rules
+	  corrupting the iTunesDB in the process.
 	
 2007-02-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
 

@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-02-24 19:13:02 jcs>
+/* Time-stamp: <2007-02-25 00:28:46 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1427,6 +1427,7 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 	  for (i=0; i<numrules; ++i)
 	  {
 	      guint32 length;
+	      gint ft;
 	      SPLRule *splr = g_new0 (SPLRule, 1);
 	      result.data.splrules->rules = g_list_append (
 		  result.data.splrules->rules, splr);
@@ -1434,54 +1435,54 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 		  goto splrules_error;
 	      splr->field = get32bint (cts, seek);
 	      splr->action = get32bint (cts, seek+4);
+
+	      if (!itdb_spl_action_known (splr->action))
+	      {
+		  g_warning (_("Unknown smart rule action at %ld: %x. Trying to continue.\n"), seek, splr->action);
+	      }
+
 	      seek += 52;
 	      length = get32bint (cts, seek);
 	      g_return_val_if_fail (length < G_MAXUINT-2, result);
-	      if (itdb_spl_action_known (splr->action))
+
+	      ft = itdb_splr_get_field_type (splr);
+	      if (ft == splft_string)
 	      {
-		  gint ft = itdb_splr_get_field_type (splr);
-		  if (ft == splft_string)
+		  gunichar2 *string_utf16 = g_new0 (gunichar2,
+						    (length+2)/2);
+		  if (!seek_get_n_bytes (cts, (gchar *)string_utf16,
+					 seek+4, length))
 		  {
-		      gunichar2 *string_utf16 = g_new0 (gunichar2,
-							(length+2)/2);
-		      if (!seek_get_n_bytes (cts, (gchar *)string_utf16,
-					     seek+4, length))
-		      {
-			  g_free (string_utf16);
-			  goto splrules_error;
-		      }
-		      fixup_big_utf16 (string_utf16);
-		      splr->string = g_utf16_to_utf8 (
-			  string_utf16, -1, NULL, NULL, NULL);
 		      g_free (string_utf16);
+		      goto splrules_error;
 		  }
-		  else
-		  {
-		      if (length != 0x44)
-		      {
-			  g_warning (_("Length of smart playlist rule field (%d) not as expected. Trying to continue anyhow.\n"), length);
-		      }
-		      if (!check_seek (cts, seek, 72))
-			  goto splrules_error;
-		      splr->fromvalue = get64bint (cts, seek+4);
-		      splr->fromdate = get64bint (cts, seek+12);
-		      splr->fromunits = get64bint (cts, seek+20);
-		      splr->tovalue = get64bint (cts, seek+28);
-		      splr->todate = get64bint (cts, seek+36);
-		      splr->tounits = get64bint (cts, seek+44);
-		      /* SPLFIELD_PLAYLIST seems to use these unknowns*/
-		      splr->unk052 = get32bint (cts, seek+52);
-		      splr->unk056 = get32bint (cts, seek+56);
-		      splr->unk060 = get32bint (cts, seek+60);
-		      splr->unk064 = get32bint (cts, seek+64);
-		      splr->unk068 = get32bint (cts, seek+68);
-		  }  
-		  seek += length+4;
+		  fixup_big_utf16 (string_utf16);
+		  splr->string = g_utf16_to_utf8 (
+		      string_utf16, -1, NULL, NULL, NULL);
+		  g_free (string_utf16);
 	      }
 	      else
 	      {
-		  goto splrules_error;
-	      }
+		  if (length != 0x44)
+		  {
+		      g_warning (_("Length of smart playlist rule field (%d) not as expected. Trying to continue anyhow.\n"), length);
+		  }
+		  if (!check_seek (cts, seek, 72))
+		      goto splrules_error;
+		  splr->fromvalue = get64bint (cts, seek+4);
+		  splr->fromdate = get64bint (cts, seek+12);
+		  splr->fromunits = get64bint (cts, seek+20);
+		  splr->tovalue = get64bint (cts, seek+28);
+		  splr->todate = get64bint (cts, seek+36);
+		  splr->tounits = get64bint (cts, seek+44);
+		  /* SPLFIELD_PLAYLIST seems to use these unknowns*/
+		  splr->unk052 = get32bint (cts, seek+52);
+		  splr->unk056 = get32bint (cts, seek+56);
+		  splr->unk060 = get32bint (cts, seek+60);
+		  splr->unk064 = get32bint (cts, seek+64);
+		  splr->unk068 = get32bint (cts, seek+68);
+	      }  
+	      seek += length+4;
 	  }
       }
       else
