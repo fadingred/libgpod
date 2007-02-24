@@ -4,6 +4,13 @@
 	  src/artwork-writer.c: Set unknown2 of mhfd header to 2 instead
 	  of 1, otherwise iTunes7 wipes the ArtworkDB.
 
+	* src/itdb.h
+	  src/itdb_itunesdb.c
+	  src/itdb_playlist.c:
+	  Updated smart playlist handling to recognize album artist, tv
+	  show, last skipped, season number, skipcount and video kind
+	  fields.
+	
 2007-02-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* ChangeLog

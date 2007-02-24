@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-01-19 01:00:08 jcs>
+/* Time-stamp: <2007-02-24 19:13:02 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1432,7 +1432,7 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 		  result.data.splrules->rules, splr);
 	      if (!check_seek (cts, seek, 56))
 		  goto splrules_error;
-      splr->field = get32bint (cts, seek);
+	      splr->field = get32bint (cts, seek);
 	      splr->action = get32bint (cts, seek+4);
 	      seek += 52;
 	      length = get32bint (cts, seek);
@@ -1469,7 +1469,7 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 		      splr->tovalue = get64bint (cts, seek+28);
 		      splr->todate = get64bint (cts, seek+36);
 		      splr->tounits = get64bint (cts, seek+44);
-		      /* SPLFIELD_PLAYLIST seem to use these unknowns*/
+		      /* SPLFIELD_PLAYLIST seems to use these unknowns*/
 		      splr->unk052 = get32bint (cts, seek+52);
 		      splr->unk056 = get32bint (cts, seek+56);
 		      splr->unk060 = get32bint (cts, seek+60);

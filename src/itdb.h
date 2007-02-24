@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-01-19 00:59:18 jcs>
+/* Time-stamp: <2007-02-24 23:11:13 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -212,6 +212,7 @@ typedef enum {
     SPLACTION_IS_LESS_THAN = 0x00000040,    /* "Is Before" in iTunes */
     SPLACTION_IS_IN_THE_RANGE = 0x00000100,
     SPLACTION_IS_IN_THE_LAST = 0x00000200,
+    SPLACTION_BINARY_AND = 0x00000400,
 
     SPLACTION_IS_STRING = 0x01000001,
     SPLACTION_CONTAINS = 0x01000002,
@@ -258,7 +259,8 @@ typedef enum
     splat_playlist,
     splat_none,
     splat_invalid,
-    splat_unknown
+    splat_unknown,
+    splat_binary_and
 } SPLActionType;
 
 
@@ -325,10 +327,16 @@ typedef enum {
 				     SPLACTION_IS_NOT_INT/from=1) */
     SPLFIELD_BPM = 0x23,          /* Int  (e.g. from/to = 60) */
     SPLFIELD_GROUPING = 0x27,     /* String */
-    SPLFIELD_PLAYLIST = 0x28,     /* XXX - Unknown...not parsed
+    SPLFIELD_PLAYLIST = 0x28,     /* FIXME - Unknown...not parsed
 				     correctly...from/to = 0xb6fbad5f
-				     for * "Purchased Music".  Extra
-				     data after * "to"... */
+				     for "Purchased Music".  Extra
+				     data after "to"... */
+    SPLFIELD_VIDEO_KIND = 0x3c,   /* Logic Int */
+    SPLFIELD_TVSHOW = 0x3e,       /* String */
+    SPLFIELD_SEASON_NR = 0x3f,    /* Int */
+    SPLFIELD_SKIPCOUNT = 0x44,    /* Int */
+    SPLFIELD_LAST_SKIPPED = 0x45, /* Int/Mac Timestamp */
+    SPLFIELD_ALBUMARTIST = 0x47   /* String */
 } SPLField;
 
 #define SPLDATE_IDENTIFIER (G_GINT64_CONSTANT (0x2dae2dae2dae2daeU))

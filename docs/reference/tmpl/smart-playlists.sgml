@@ -69,6 +69,7 @@ These functions and structures are for dealing with smart playlists.
 @SPLACTION_IS_LESS_THAN: 
 @SPLACTION_IS_IN_THE_RANGE: 
 @SPLACTION_IS_IN_THE_LAST: 
+@SPLACTION_BINARY_AND: 
 @SPLACTION_IS_STRING: 
 @SPLACTION_CONTAINS: 
 @SPLACTION_STARTS_WITH: 
@@ -110,6 +111,7 @@ These functions and structures are for dealing with smart playlists.
 @splat_none: 
 @splat_invalid: 
 @splat_unknown: 
+@splat_binary_and: 
 
 <!-- ##### ENUM SPLField ##### -->
 <para>
@@ -139,6 +141,12 @@ These functions and structures are for dealing with smart playlists.
 @SPLFIELD_BPM: 
 @SPLFIELD_GROUPING: 
 @SPLFIELD_PLAYLIST: 
+@SPLFIELD_VIDEO_KIND: 
+@SPLFIELD_TVSHOW: 
+@SPLFIELD_SEASON_NR: 
+@SPLFIELD_SKIPCOUNT: 
+@SPLFIELD_LAST_SKIPPED: 
+@SPLFIELD_ALBUMARTIST: 
 
 <!-- ##### MACRO SPLDATE_IDENTIFIER ##### -->
 <para>

@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-10-22 17:42:28 jcs>
+/* Time-stamp: <2007-02-25 00:14:27 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -71,6 +71,7 @@ gboolean itdb_spl_action_known (SPLAction action)
     case SPLACTION_IS_NOT_IN_THE_LAST:
     case SPLACTION_IS_NOT:
     case SPLACTION_DOES_NOT_CONTAIN:
+    case SPLACTION_BINARY_AND:
 	result = TRUE;
     }
     if (result == FALSE)
@@ -93,17 +94,19 @@ SPLFieldType itdb_splr_get_field_type (const SPLRule *splr)
 {
     g_return_val_if_fail (splr != NULL, splft_unknown);
 
-    switch(splr->field)
+    switch((SPLField)splr->field)
     {
     case SPLFIELD_SONG_NAME:
     case SPLFIELD_ALBUM:
+    case SPLFIELD_ALBUMARTIST:
     case SPLFIELD_ARTIST:
     case SPLFIELD_GENRE:
     case SPLFIELD_KIND:
     case SPLFIELD_COMMENT:
     case SPLFIELD_COMPOSER:
     case SPLFIELD_GROUPING:
-	return(splft_string);
+    case SPLFIELD_TVSHOW:
+	return splft_string;
     case SPLFIELD_BITRATE:
     case SPLFIELD_SAMPLE_RATE:
     case SPLFIELD_YEAR:
@@ -115,15 +118,20 @@ SPLFieldType itdb_splr_get_field_type (const SPLRule *splr)
     case SPLFIELD_RATING:
     case SPLFIELD_TIME: /* time is the length of the track in
 			   milliseconds */
-	return(splft_int);
+    case SPLFIELD_SEASON_NR:
+    case SPLFIELD_SKIPCOUNT:
+	return splft_int;
     case SPLFIELD_COMPILATION:
-	return(splft_boolean);
+	return splft_boolean;
     case SPLFIELD_DATE_MODIFIED:
     case SPLFIELD_DATE_ADDED:
     case SPLFIELD_LAST_PLAYED:
-	return(splft_date);
+    case SPLFIELD_LAST_SKIPPED:
+	return splft_date;
     case SPLFIELD_PLAYLIST:
-	return(splft_playlist);
+	return splft_playlist;
+    case SPLFIELD_VIDEO_KIND:
+	return splft_int;
     }
     return(splft_unknown);
 }
@@ -148,7 +156,7 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
     switch(fieldType)
     {
     case splft_string:
-	switch (splr->action)
+	switch ((SPLAction)splr->action)
 	{
 	case SPLACTION_IS_STRING:
 	case SPLACTION_IS_NOT:
@@ -169,16 +177,15 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
 	case SPLACTION_IS_IN_THE_RANGE:
 	case SPLACTION_IS_IN_THE_LAST:
 	case SPLACTION_IS_NOT_IN_THE_LAST:
+	case SPLACTION_BINARY_AND:
 	    return splat_invalid;
-	default:
-	    /* Unknown action type */
-	    g_warning ("Unknown action type %d\n\n", splr->action);
-	    return splat_unknown;
 	}
-	break;
+	/* Unknown action type */
+	g_warning ("Unknown action type %d\n\n", splr->action);
+	return splat_unknown;
 
     case splft_int:
-	switch (splr->action)
+	switch ((SPLAction)splr->action)
 	{
 	case SPLACTION_IS_INT:
 	case SPLACTION_IS_NOT_INT:
@@ -190,6 +197,8 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
 	case SPLACTION_IS_NOT_IN_THE_RANGE:
 	case SPLACTION_IS_IN_THE_RANGE:
 	    return splat_range_int;
+	case SPLACTION_BINARY_AND:
+	    return splat_binary_and;
 	case SPLACTION_IS_STRING:
 	case SPLACTION_CONTAINS:
 	case SPLACTION_STARTS_WITH:
@@ -201,18 +210,16 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
 	case SPLACTION_IS_NOT:
 	case SPLACTION_DOES_NOT_CONTAIN:
 	    return splat_invalid;
-	default:
-	    /* Unknown action type */
-	    g_warning ("Unknown action type %d\n\n", splr->action);
-	    return splat_unknown;
 	}
-	break;
+	/* Unknown action type */
+	g_warning ("Unknown action type %d\n\n", splr->action);
+	return splat_unknown;
 
     case splft_boolean:
 	return splat_none;
 
     case splft_date:
-	switch (splr->action)
+	switch ((SPLAction)splr->action)
 	{
 	case SPLACTION_IS_INT:
 	case SPLACTION_IS_NOT_INT:
@@ -235,16 +242,15 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
 	case SPLACTION_DOES_NOT_END_WITH:
 	case SPLACTION_IS_NOT:
 	case SPLACTION_DOES_NOT_CONTAIN:
+	case SPLACTION_BINARY_AND:
 	    return splat_invalid;
-	default:
-	    /* Unknown action type */
-	    g_warning ("Unknown action type %d\n\n", splr->action);
-	    return splat_unknown;
 	}
-	break;
+	/* Unknown action type */
+	g_warning ("Unknown action type %d\n\n", splr->action);
+	return splat_unknown;
 
     case splft_playlist:
-	switch (splr->action)
+	switch ((SPLAction)splr->action)
 	{
 	case SPLACTION_IS_INT:
 	case SPLACTION_IS_NOT_INT:
@@ -265,17 +271,17 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
 	case SPLACTION_DOES_NOT_END_WITH:
 	case SPLACTION_IS_NOT:
 	case SPLACTION_DOES_NOT_CONTAIN:
+	case SPLACTION_BINARY_AND:
 	    return splat_invalid;
-	default:
-	    /* Unknown action type */
-	    g_warning ("Unknown action type %d\n\n", splr->action);
-	    return splat_unknown;
 	}
+	/* Unknown action type */
+	g_warning ("Unknown action type %d\n\n", splr->action);
+	return splat_unknown;
 
     case splft_unknown:
-	    /* Unknown action type */
-	    g_warning ("Unknown action type %d\n\n", splr->action);
-	    return splat_unknown;
+	/* Unknown action type */
+	g_warning ("Unknown action type %d\n\n", splr->action);
+	return splat_unknown;
     }
     return splat_unknown;
 }
@@ -306,6 +312,7 @@ gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track)
     gchar *strcomp = NULL;
     gint64 intcomp = 0;
     gboolean boolcomp = FALSE;
+    gboolean handled = FALSE;
     guint32 datecomp = 0;
     Itdb_Playlist *playcomp = NULL;
     time_t t;
@@ -325,75 +332,124 @@ gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track)
     {
     case SPLFIELD_SONG_NAME:
 	strcomp = track->title;
+	handled = TRUE;
 	break;
     case SPLFIELD_ALBUM:
 	strcomp = track->album;
+	handled = TRUE;
 	break;
     case SPLFIELD_ARTIST:
 	strcomp = track->artist;
+	handled = TRUE;
 	break;
     case SPLFIELD_GENRE:
 	strcomp = track->genre;
+	handled = TRUE;
 	break;
     case SPLFIELD_KIND:
 	strcomp = track->filetype;
+	handled = TRUE;
 	break;
     case SPLFIELD_COMMENT:
 	strcomp = track->comment;
+	handled = TRUE;
 	break;
     case SPLFIELD_COMPOSER:
 	strcomp = track->composer;
+	handled = TRUE;
 	break;
     case SPLFIELD_GROUPING:
 	strcomp = track->grouping;
+	handled = TRUE;
 	break;
     case SPLFIELD_BITRATE:
 	intcomp = track->bitrate;
+	handled = TRUE;
 	break;
     case SPLFIELD_SAMPLE_RATE:
 	intcomp = track->samplerate;
+	handled = TRUE;
 	break;
     case SPLFIELD_YEAR:
 	intcomp = track->year;
+	handled = TRUE;
 	break;
     case SPLFIELD_TRACKNUMBER:
 	intcomp = track->track_nr;
+	handled = TRUE;
 	break;
     case SPLFIELD_SIZE:
 	intcomp = track->size;
+	handled = TRUE;
 	break;
     case SPLFIELD_PLAYCOUNT:
 	intcomp = track->playcount;
+	handled = TRUE;
 	break;
     case SPLFIELD_DISC_NUMBER:
 	intcomp = track->cd_nr;
+	handled = TRUE;
 	break;
     case SPLFIELD_BPM:
 	intcomp = track->BPM;
+	handled = TRUE;
 	break;
     case SPLFIELD_RATING:
 	intcomp = track->rating;
+	handled = TRUE;
 	break;
     case SPLFIELD_TIME:
 	intcomp = track->tracklen/1000;
+	handled = TRUE;
 	break;
     case SPLFIELD_COMPILATION:
 	boolcomp = track->compilation;
+	handled = TRUE;
 	break;
     case SPLFIELD_DATE_MODIFIED:
 	datecomp = track->time_modified;
+	handled = TRUE;
 	break;
     case SPLFIELD_DATE_ADDED:
 	datecomp = track->time_added;
+	handled = TRUE;
 	break;
     case SPLFIELD_LAST_PLAYED:
 	datecomp = track->time_played;
+	handled = TRUE;
 	break;
     case SPLFIELD_PLAYLIST:
 	playcomp = itdb_playlist_by_id (track->itdb, splr->fromvalue);
+	handled = TRUE;
 	break;
-    default: /* unknown field type */
-	g_return_val_if_fail (FALSE, FALSE);
+    case SPLFIELD_ALBUMARTIST:
+	strcomp = track->albumartist;
+	handled = TRUE;
+	break;
+    case SPLFIELD_TVSHOW:
+	strcomp = track->tvshow;
+	handled = TRUE;
+	break;
+    case SPLFIELD_LAST_SKIPPED:
+	datecomp = track->last_skipped;
+	handled = TRUE;
+	break;
+    case SPLFIELD_SEASON_NR:
+	intcomp = track->season_nr;
+	handled = TRUE;
+	break;
+    case SPLFIELD_SKIPCOUNT:
+	intcomp = track->skipcount;
+	handled = TRUE;
+	break;
+    case SPLFIELD_VIDEO_KIND:
+	intcomp = track->mediatype;
+	handled = TRUE;
+	break;
+    }
+    if (!handled)
+    {   /* unknown field type -- default to FALSE */
+	g_return_val_if_reached (FALSE);
     }
 
     /* actually do the comparison to our rule */
@@ -451,6 +507,8 @@ gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track)
 		     intcomp < splr->tovalue) ||
 		    (intcomp > splr->fromvalue &&
 		     intcomp > splr->tovalue));
+	case SPLACTION_BINARY_AND:
+	    return (intcomp & splr->fromvalue)? TRUE:FALSE;
 	}
 	return FALSE;
     case splft_boolean:
@@ -887,6 +945,7 @@ void itdb_splr_validate (SPLRule *splr)
     case splat_int:
     case splat_playlist:
     case splat_date:
+    case splat_binary_and:
 	splr->fromdate = 0;
 	splr->fromunits = 1;
 	splr->tovalue = splr->fromvalue;
