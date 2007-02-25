@@ -95,6 +95,7 @@ These functions and structures are for dealing with smart playlists.
 @splft_date: 
 @splft_playlist: 
 @splft_unknown: 
+@splft_binary_and: 
 
 <!-- ##### ENUM SPLActionType ##### -->
 <para>

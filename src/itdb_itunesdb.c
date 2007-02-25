@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-02-25 00:28:46 jcs>
+/* Time-stamp: <2007-02-25 11:54:25 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -1427,7 +1427,8 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 	  for (i=0; i<numrules; ++i)
 	  {
 	      guint32 length;
-	      gint ft;
+	      SPLFieldType ft;
+	      gunichar2 *string_utf16;
 	      SPLRule *splr = g_new0 (SPLRule, 1);
 	      result.data.splrules->rules = g_list_append (
 		  result.data.splrules->rules, splr);
@@ -1446,10 +1447,10 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 	      g_return_val_if_fail (length < G_MAXUINT-2, result);
 
 	      ft = itdb_splr_get_field_type (splr);
-	      if (ft == splft_string)
+	      switch (ft)
 	      {
-		  gunichar2 *string_utf16 = g_new0 (gunichar2,
-						    (length+2)/2);
+	      case splft_string:
+		  string_utf16 = g_new0 (gunichar2, (length+2)/2);
 		  if (!seek_get_n_bytes (cts, (gchar *)string_utf16,
 					 seek+4, length))
 		  {
@@ -1460,9 +1461,13 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 		  splr->string = g_utf16_to_utf8 (
 		      string_utf16, -1, NULL, NULL, NULL);
 		  g_free (string_utf16);
-	      }
-	      else
-	      {
+		  break;
+	      case splft_int:
+	      case splft_date:
+	      case splft_boolean:
+	      case splft_playlist:
+	      case splft_unknown:
+	      case splft_binary_and:
 		  if (length != 0x44)
 		  {
 		      g_warning (_("Length of smart playlist rule field (%d) not as expected. Trying to continue anyhow.\n"), length);
@@ -1481,7 +1486,8 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 		  splr->unk060 = get32bint (cts, seek+60);
 		  splr->unk064 = get32bint (cts, seek+64);
 		  splr->unk068 = get32bint (cts, seek+68);
-	      }  
+		  break;
+	      }
 	      seek += length+4;
 	  }
       }
@@ -3608,7 +3614,9 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
 	  for (gl=mhod->data.splrules->rules; gl; gl=gl->next)
 	  {
 	      SPLRule *splr = gl->data;
-	      gint ft;
+	      SPLFieldType ft;
+	      gint len;
+	      gunichar2 *entry_utf16;
 	      g_return_if_fail (splr);
 	      ft = itdb_splr_get_field_type (splr);
 /*	      printf ("%p: field: %d ft: %d\n", splr, splr->field, ft);*/
@@ -3616,10 +3624,11 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
 	      put32bint (cts, splr->field);
 	      put32bint (cts, splr->action);
 	      put32_n0 (cts, 11);          /* unknown              */
-	      if (ft == splft_string)
-	      {   /* write string-type rule */
-		  gunichar2 *entry_utf16 = NULL;
-		  gint len;
+	      switch (ft)
+	      {
+	      case splft_string:
+		  /* write string-type rule */
+		  entry_utf16 = NULL;
 		  /* splr->string may be NULL */
 		  if (splr->string)
 		      entry_utf16 = g_utf8_to_utf16 (splr->string,
@@ -3629,9 +3638,14 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
 		  put32bint (cts, 2*len); /* length of string     */
 		  put_data (cts, (gchar *)entry_utf16, 2*len);
 		  g_free (entry_utf16);
-	      }
-	      else
-	      {   /* write non-string-type rule */
+		  break;
+	      case splft_int:
+	      case splft_date:
+	      case splft_boolean:
+	      case splft_playlist:
+	      case splft_unknown:
+	      case splft_binary_and:
+		  /* write non-string-type rule */
 		  put32bint (cts, 0x44); /* length of data        */
 		  /* data */
 		  put64bint (cts, splr->fromvalue);
@@ -3645,6 +3659,7 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
 		  put32bint (cts, splr->unk060);
 		  put32bint (cts, splr->unk064);
 		  put32bint (cts, splr->unk068);
+		  break;
 	      }
 	  }
 	  /* insert length of mhod junk */

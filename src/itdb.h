@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-02-24 23:11:13 jcs>
+/* Time-stamp: <2007-02-25 13:26:22 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -245,7 +245,8 @@ typedef enum
     splft_boolean,
     splft_date,
     splft_playlist,
-    splft_unknown
+    splft_unknown,
+    splft_binary_and
 } SPLFieldType;
 
 typedef enum
@@ -635,6 +636,17 @@ typedef enum
     ITDB_PSO_DESCRIPTION = 28
 } ItdbPlaylistSortOrder;
 
+
+/* Mediatype definitions */
+typedef enum
+{
+    ITDB_MEDIATYPE_AUDIO      = 0x0001,
+    ITDB_MEDIATYPE_MOVIE      = 0x0002,
+    ITDB_MEDIATYPE_PODCAST    = 0x0004,
+    ITDB_MEDIATYPE_AUDIOBOOK  = 0x0008,
+    ITDB_MEDIATYPE_MUSICVIDEO = 0x0020,
+    ITDB_MEDIATYPE_TVSHOW     = 0x0040,
+} Itdb_Mediatype;
 
 /* some of the descriptive comments below are copied verbatim from
    http://ipodlinux.org/ITunesDB. 

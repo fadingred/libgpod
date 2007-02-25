@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-02-25 00:14:27 jcs>
+/* Time-stamp: <2007-02-25 11:52:48 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -131,7 +131,7 @@ SPLFieldType itdb_splr_get_field_type (const SPLRule *splr)
     case SPLFIELD_PLAYLIST:
 	return splft_playlist;
     case SPLFIELD_VIDEO_KIND:
-	return splft_int;
+	return splft_binary_and;
     }
     return(splft_unknown);
 }
@@ -198,7 +198,6 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
 	case SPLACTION_IS_IN_THE_RANGE:
 	    return splat_range_int;
 	case SPLACTION_BINARY_AND:
-	    return splat_binary_and;
 	case SPLACTION_IS_STRING:
 	case SPLACTION_CONTAINS:
 	case SPLACTION_STARTS_WITH:
@@ -245,6 +244,32 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
 	case SPLACTION_BINARY_AND:
 	    return splat_invalid;
 	}
+    case splft_binary_and:
+	switch ((SPLAction)splr->action)
+	{
+	case SPLACTION_BINARY_AND:
+	    return splat_binary_and;
+	case SPLACTION_IS_INT:
+	case SPLACTION_IS_NOT_INT:
+	case SPLACTION_IS_GREATER_THAN:
+	case SPLACTION_IS_NOT_GREATER_THAN:
+	case SPLACTION_IS_LESS_THAN:
+	case SPLACTION_IS_NOT_LESS_THAN:
+	case SPLACTION_IS_IN_THE_LAST:
+	case SPLACTION_IS_NOT_IN_THE_LAST:
+	case SPLACTION_IS_IN_THE_RANGE:
+	case SPLACTION_IS_NOT_IN_THE_RANGE:
+	case SPLACTION_IS_STRING:
+	case SPLACTION_CONTAINS:
+	case SPLACTION_STARTS_WITH:
+	case SPLACTION_DOES_NOT_START_WITH:
+	case SPLACTION_ENDS_WITH:
+	case SPLACTION_DOES_NOT_END_WITH:
+	case SPLACTION_IS_NOT:
+	case SPLACTION_DOES_NOT_CONTAIN:
+	    return splat_invalid;
+	}
+
 	/* Unknown action type */
 	g_warning ("Unknown action type %d\n\n", splr->action);
 	return splat_unknown;
@@ -507,6 +532,11 @@ gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track)
 		     intcomp < splr->tovalue) ||
 		    (intcomp > splr->fromvalue &&
 		     intcomp > splr->tovalue));
+	}
+	return FALSE;
+    case splft_binary_and:
+	switch(splr->action)
+	{
 	case SPLACTION_BINARY_AND:
 	    return (intcomp & splr->fromvalue)? TRUE:FALSE;
 	}
