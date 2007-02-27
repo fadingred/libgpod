@@ -7,7 +7,6 @@ make install
 To make a distribution tarball do
 
 ./autogen.sh
-make -C docs
 make distcheck
 
 See the INSTALL and TROUBLESHOOTING file for more information.

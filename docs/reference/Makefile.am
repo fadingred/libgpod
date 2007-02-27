@@ -75,3 +75,7 @@ include $(top_srcdir)/gtk-doc.make
 
 # Other files to distribute
 EXTRA_DIST += version.xml.in
+
+# Build the documentation when creating tarballs
+dist-hook-local:
+	$(MAKE) all
