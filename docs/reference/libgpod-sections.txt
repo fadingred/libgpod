@@ -65,6 +65,7 @@ itdb_time_host_to_mac
 <FILE>track</FILE>
 <TITLE>Tracks</TITLE>
 Itdb_Track
+Itdb_Mediatype
 itdb_track_new
 itdb_track_free
 itdb_track_add
@@ -256,7 +257,6 @@ MhodHeaderSmartPlaylistRuleNonString
 MhodHeaderSmartPlaylistRule
 iTunesDB_MhsdHeader
 MhodHeader
-_MhodHeaderArtworkType1
 MhodHeaderArtworkType3
 playcount
 NO_PLAYCOUNT
@@ -279,6 +279,8 @@ ItdbFileError
 ITDB_FILE_ERROR
 itdb_file_error_quark
 itdb_get_artwork_info_from_type
+DbType
+Itdb_DB
 
 SPLACTION_LAST_HOURS_VALUE
 SPLACTION_LAST_MINUTES_VALUE
