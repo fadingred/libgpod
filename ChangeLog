@@ -7,6 +7,10 @@
 	* docs/reference/libgpod-sections.txt: include missing and
 	  newly added declarations, remove unused declarations
 
+	* configure.ac
+	  m4/python.m4: allow the use of nicer version strings in
+	  AM_CHECK_PYMOD
+
 2007-02-25  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h

@@ -111,7 +111,7 @@ dnl * optional python bindings
 dnl **************************************************
 
 PYTHON_MIN_VERSION=2.1.1
-PYTHON_MUTAGEN_MIN_VERSION=1.8.-1
+PYTHON_MUTAGEN_MIN_VERSION=1.8
 SWIG_MIN_VERSION=1.3.24
 LIBGPOD_CHECK_PYTHON($PYTHON_MIN_VERSION)
 

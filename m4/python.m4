@@ -47,10 +47,13 @@ sys.exit(0)"], [prog="
 import sys, string, $1
 curverstr = $3
 # use method from AM_PYTHON_CHECK_VERSION
-minver = map(int, string.split('$2', '.')) + [[0, 0, 0]]
+minver = map(int, string.split('$2', '.'))
+length = len[(minver)]
+minver += [[0, 0, 0]]
 minverhex = 0
 for i in xrange(0, 4): minverhex = (minverhex << 8) + minver[[i]]
-curver = map(int, string.split(curverstr, '.')) + [[0, 0, 0]]
+curver = map(int, string.split(curverstr, '.')[[:length]])
+curver += [[0, 0, 0]]
 curverhex = 0
 for i in xrange(0, 4): curverhex = (curverhex << 8) + curver[[i]]
 if (curverhex >= minverhex):
