@@ -1,3 +1,9 @@
+2007-03-02  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* bindings/Makefile.am: only descend into the python subdir if
+	  HAVE_PYTHON is set, this avoids some problems with the
+	  Makefiles created by automake 1.7
+
 2007-02-27  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* INSTALL_CVS
