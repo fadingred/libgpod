@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-26 23:31:45 jcs>
+/* Time-stamp: <2007-03-21 14:12:58 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -122,7 +122,7 @@ Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork)
  * @artwork: an #Itdb_Artwork
  * @thumb: an #Itdb_Thumb
  *
- * Removes @thumb from @artwork. The memory used by @thumb isn't freed.
+ * Removes @thumb from @artwork. The memory used by @thumb is freed.
  **/
 void
 itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork, Itdb_Thumb *thumb)
@@ -131,6 +131,7 @@ itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork, Itdb_Thumb *thumb)
     g_return_if_fail (thumb);
 
     artwork->thumbnails = g_list_remove (artwork->thumbnails, thumb);
+    itdb_thumb_free (thumb);
 }
 
 
