@@ -129,6 +129,18 @@ information about an iPod track.
 @userdata_duplicate: 
 @userdata_destroy: 
 
+<!-- ##### ENUM Itdb_Mediatype ##### -->
+<para>
+
+</para>
+
+@ITDB_MEDIATYPE_AUDIO: 
+@ITDB_MEDIATYPE_MOVIE: 
+@ITDB_MEDIATYPE_PODCAST: 
+@ITDB_MEDIATYPE_AUDIOBOOK: 
+@ITDB_MEDIATYPE_MUSICVIDEO: 
+@ITDB_MEDIATYPE_TVSHOW: 
+
 <!-- ##### FUNCTION itdb_track_new ##### -->
 <para>
 

@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-02-25 11:54:25 jcs>
+/* Time-stamp: <2007-03-20 22:58:14 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -5111,6 +5111,10 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 	 string. Note: the iPod will most certainly ignore this file... */
       if (!original_suffix) original_suffix = "";
 
+      /* use lower-case version of extension as some iPods seem to
+	 choke on upper-case extension. */
+      original_suffix = g_ascii_strdown (original_suffix, -1);
+
       /* set filetype from the suffix, e.g. '.mp3' -> 'MP3 ' */
       track->filetype_marker = 0;
       for (i=1; i<=4; ++i)   /* start with i=1 to skip the '.' */
@@ -5119,7 +5123,7 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 	  if (strlen (original_suffix) > i)
 	      track->filetype_marker |= g_ascii_toupper (original_suffix[i]);
 	  else
-	      track->filetype_marker |= g_ascii_toupper (' ');
+	      track->filetype_marker |= ' ';
       }
       do
       {   /* we need to loop until we find an unused filename */
@@ -5144,6 +5148,7 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
       } while (!ipod_fullfile);
       g_free(parent_dir_filename);
       g_free (music_dir);
+      g_free (original_suffix);
   }
   /* now extract filepath for track->ipod_path from ipod_fullfile */
   /* ipod_path must begin with a '/' */

@@ -7,6 +7,11 @@
 	  with all other _remove functions in libgpod and caused a memory
 	  hole.
 
+	* src/itdb_itunesdb.c (itdb_cp_track_to_ipod): cast filename
+	  extension to lowercase because some people reported new iPod
+	  models choking on filenames with uppercase extensions like
+	  test.MP3. Not sure if it helps, though.
+
 2007-03-02  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/Makefile.am: only descend into the python subdir if
