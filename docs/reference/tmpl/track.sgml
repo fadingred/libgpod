@@ -250,6 +250,16 @@ information about an iPod track.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_track_set_thumbnails_from_pixbuf ##### -->
+<para>
+
+</para>
+
+@track: 
+@pixbuf: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_track_remove_thumbnails ##### -->
 <para>
 

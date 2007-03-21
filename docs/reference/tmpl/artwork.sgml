@@ -46,6 +46,7 @@ album/track artwork.  For working with photos, see the
 @filename: 
 @image_data: 
 @image_data_len: 
+@pixbuf: 
 @rotation: 
 @offset: 
 @size: 
@@ -113,6 +114,19 @@ album/track artwork.  For working with photos, see the
 @type: 
 @image_data: 
 @image_data_len: 
+@rotation: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_artwork_add_thumbnail_from_pixbuf ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@type: 
+@pixbuf: 
 @rotation: 
 @error: 
 @Returns: 

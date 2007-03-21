@@ -78,6 +78,7 @@ itdb_track_id_tree_destroy
 itdb_track_id_tree_by_id
 itdb_track_set_thumbnails
 itdb_track_set_thumbnails_from_data
+itdb_track_set_thumbnails_from_pixbuf
 itdb_track_remove_thumbnails
 ITDB_RATING_STEP
 </SECTION>
@@ -176,6 +177,7 @@ itdb_artwork_duplicate
 itdb_artwork_free
 itdb_artwork_add_thumbnail
 itdb_artwork_add_thumbnail_from_data
+itdb_artwork_add_thumbnail_from_pixbuf
 itdb_artwork_remove_thumbnail
 itdb_artwork_remove_thumbnails
 itdb_artwork_get_thumb_by_type
@@ -193,6 +195,7 @@ Itdb_PhotoAlbum
 Itdb_PhotoDB
 itdb_photodb_add_photo
 itdb_photodb_add_photo_from_data
+itdb_photodb_add_photo_from_pixbuf
 itdb_photodb_create
 itdb_photodb_free
 itdb_photodb_parse

@@ -157,6 +157,19 @@ directory of the libgpod source for an example of how to use the interface.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_photodb_add_photo_from_pixbuf ##### -->
+<para>
+
+</para>
+
+@db: 
+@pixbuf: 
+@position: 
+@rotation: 
+@error: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_photodb_create ##### -->
 <para>
 
