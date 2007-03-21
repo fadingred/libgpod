@@ -381,6 +381,7 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
 						    const gchar *filename,
 						    const guchar *image_data,
 						    gsize image_data_len,
+                                                    gpointer *pixbuf,
 						    gint rotation,
 						    GError **error)
 {					     
@@ -413,6 +414,19 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
 							   image_data,
 							   image_data_len,
 							   rotation, error);
+    }
+    if (pixbuf)
+    {
+        result = itdb_artwork_add_thumbnail_from_pixbuf (track->artwork,
+                                                         ITDB_THUMB_COVER_SMALL,
+                                                         pixbuf, rotation,
+                                                         error);
+        if (result == TRUE) {
+            result = itdb_artwork_add_thumbnail_from_pixbuf (track->artwork,
+                                                             ITDB_THUMB_COVER_LARGE,
+                                                             pixbuf, rotation,
+                                                             error);
+        }
     }
 
     if (result == TRUE)
@@ -457,7 +471,7 @@ gboolean itdb_track_set_thumbnails (Itdb_Track *track,
     g_return_val_if_fail (track, FALSE);
     g_return_val_if_fail (filename, FALSE);
 
-    return itdb_track_set_thumbnails_internal (track, filename, NULL, 0,
+    return itdb_track_set_thumbnails_internal (track, filename, NULL, 0, NULL,
 					       0, NULL);
 }
 
@@ -487,7 +501,28 @@ gboolean itdb_track_set_thumbnails_from_data (Itdb_Track *track,
 
     return itdb_track_set_thumbnails_internal (track, NULL,
 					       image_data, image_data_len,
-					       0, NULL);
+                                               NULL, 0, NULL);
+}
+
+/**
+ * itdb_track_set_thumbnails_from_pixbuf:
+ * @track: an #Itdb_Track
+ * @pixbuf: a #GdkPixbuf used to generate the thumbnail
+ *
+ * Uses @pixbuf to generate iPod thumbnails. To save memory, the thumbnails
+ * will only be generated when necessary, ie when itdb_save() or a
+ * similar function is called.
+ *
+ * Return value: TRUE if the thumbnail could be added, FALSE otherwise.
+ **/
+gboolean itdb_track_set_thumbnails_from_pixbuf (Itdb_Track *track,
+                                                gpointer pixbuf)
+{
+    g_return_val_if_fail (track, FALSE);
+    g_return_val_if_fail (pixbuf, FALSE);
+
+    return itdb_track_set_thumbnails_internal (track, NULL, NULL, 0,
+                                               pixbuf, 0, NULL);
 }
 
 

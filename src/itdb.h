@@ -445,6 +445,7 @@ struct _Itdb_Thumb {
 				 non-transfered thumbnails when
 				 filename == NULL */
     gsize   image_data_len;   /* length of data */
+    gpointer pixbuf;
     gint    rotation;         /* angle (0, 90, 180, 270) to rotate the image */
     guint32 offset;
     guint32 size;
@@ -1030,6 +1031,9 @@ gboolean itdb_track_set_thumbnails (Itdb_Track *track,
 gboolean itdb_track_set_thumbnails_from_data (Itdb_Track *track,
 					      const guchar *image_data,
 					      gsize image_data_len);
+gboolean itdb_track_set_thumbnails_from_pixbuf (Itdb_Track *track,
+                                                gpointer pixbuf);
+
 void itdb_track_remove_thumbnails (Itdb_Track *track);
 
 /* photoalbum functions -- see itdb_photoalbum.c for instructions on
@@ -1044,6 +1048,11 @@ Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
 						gint position,
 						gint rotation,
 						GError **error);
+Itdb_Artwork *itdb_photodb_add_photo_from_pixbuf (Itdb_PhotoDB *db,
+						  gpointer pixbuf,
+						  gint position,
+						  gint rotation,
+						  GError **error);
 void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
 					Itdb_PhotoAlbum *album,
 					Itdb_Artwork *photo,
@@ -1082,6 +1091,11 @@ gboolean itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
 					       const guchar *image_data,
 					       gsize image_data_len,
 					       gint rotation, GError **error);
+gboolean itdb_artwork_add_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
+                                                 ItdbThumbType type,
+                                                 gpointer pixbuf,
+                                                 gint rotation,
+                                                 GError **error);
 void itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork,
 				    Itdb_Thumb *thumb);
 void itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork);

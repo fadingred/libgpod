@@ -12,6 +12,19 @@
 	  models choking on filenames with uppercase extensions like
 	  test.MP3. Not sure if it helps, though.
 
+	* src/itdb.h
+	  src/itdb_artwork.c
+	  src/itdb_photoalbum.c
+	  src/itdb_track.c
+	  src/ithumb-writer.c:
+	  Added new API functions: itdb_photodb_add_photo_from_pixbuf
+	  function(), itdb_track_set_thumbnails_from_pixbuf() and
+	  itdb_artwork_add_thumbnail_from_pixbuf(). Thanks to Christophe
+	  Fergeau.
+
+	* docs/reference/libgpod-sections.txt: added descriptions by
+	  Christophe Fergeau.
+	
 2007-03-02  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/Makefile.am: only descend into the python subdir if

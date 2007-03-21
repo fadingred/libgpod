@@ -35,7 +35,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <glib/gi18n-lib.h>
-
+#ifdef HAVE_GDKPIXBUF
+#include <gdk-pixbuf/gdk-pixbuf.h>
+#endif
 
 /* Short summary:
 
@@ -331,6 +333,7 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 						      const gchar *filename,
 						      const guchar *image_data,
 						      gsize image_data_len,
+						      gpointer pixbuf,
 						      gint position,
 						      gint rotation,
 						      GError **error)
@@ -345,6 +348,7 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
     g_return_val_if_fail (db->device, NULL);
     g_return_val_if_fail (filename || image_data, NULL);
     g_return_val_if_fail (!(image_data && (image_data_len == 0)), NULL);
+    g_return_val_if_fail (!(pixbuf && (!GDK_IS_PIXBUF (pixbuf))), NULL);
 
     if (!ipod_supports_photos (db->device))
     {
@@ -421,6 +425,14 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 							   rotation,
 							   error);
 	}
+	if (pixbuf) 
+	{
+	  result = itdb_artwork_add_thumbnail_from_pixbuf (artwork,
+							   format->type, 
+							   pixbuf,
+							   rotation,
+							   error);
+	}
     }
 
     if (result != TRUE)
@@ -483,7 +495,7 @@ Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db,
     g_return_val_if_fail (db, FALSE);
     g_return_val_if_fail (filename, FALSE);
 
-    return itdb_photodb_add_photo_internal (db, filename, NULL, 0,
+    return itdb_photodb_add_photo_internal (db, filename, NULL, 0, NULL,
 					    position, rotation, error);
 }
 
@@ -520,7 +532,41 @@ Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
     g_return_val_if_fail (db, FALSE);
     g_return_val_if_fail (image_data, FALSE);
 
-    return itdb_photodb_add_photo_internal (db, NULL, image_data, image_data_len,
+    return itdb_photodb_add_photo_internal (db, NULL, 
+					    image_data, image_data_len,
+					    NULL, position, rotation, error);
+}
+
+/**
+ * itdb_photodb_add_photo_from_pixbuf:
+ * @db: the #Itdb_PhotoDB to add the photo to.
+ * @pixbuf: a #GdkPixbuf to use as the image data
+ * @position: position where to insert the new photo (-1 to append at
+ * the end)
+ * @rotation: angle by which the image should be rotated
+ * counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error: return location for a #GError or NULL
+ * 
+ * Add a photo to the PhotoDB. The photo is automatically added to the
+ * first Photoalbum, which by default contains a list of all photos in
+ * the database. If no Photoalbums exist one is created automatically.
+ *
+ * For the rotation angle you can also use the gdk constants
+ * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
+ * ..._CLOCKWISE.
+ *
+ * Return value: a pointer to the added photo.
+ **/
+Itdb_Artwork *itdb_photodb_add_photo_from_pixbuf (Itdb_PhotoDB *db,
+						  gpointer pixbuf,
+						  gint position,
+						  gint rotation,
+						  GError **error)
+{
+    g_return_val_if_fail (db, FALSE);
+    g_return_val_if_fail (pixbuf, FALSE);
+
+    return itdb_photodb_add_photo_internal (db, NULL, NULL, 0, pixbuf,
 					    position, rotation, error);
 }
 

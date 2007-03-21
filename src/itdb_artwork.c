@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-03-21 14:12:58 jcs>
+/* Time-stamp: <2007-03-21 17:30:57 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -218,6 +218,66 @@ itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
 #endif
 }
 
+/**
+ * itdb_artwork_add_thumbnail_from_pixbuf
+ * @artwork: an #Itdb_Thumbnail
+ * @type: thumbnail size
+ * @pixbuf: #GdkPixbuf to use to create the thumbnail
+ * @rotation: angle by which the image should be rotated
+ * counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error: return location for a #GError or NULL
+ *
+ * Appends a thumbnail of type @type to existing thumbnails in @artwork. No 
+ * data is generated from @pixbuf yet, it will be done when @artwork is saved 
+ * to disk. @pixbuf is ref'ed by this function, but is not copied, so it should
+ * not be modified before the database is saved.
+ *
+ * For the rotation angle you can also use the gdk constants
+ * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
+ * ..._CLOCKWISE.
+ *
+ * Return value: TRUE if the thumbnail could be successfully added, FALSE
+ * otherwise. @error is set appropriately.
+ **/
+gboolean
+itdb_artwork_add_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
+                                        ItdbThumbType type,
+                                        gpointer pixbuf,
+                                        gint rotation,
+                                        GError **error)
+{
+#ifdef HAVE_GDKPIXBUF
+/* This operation doesn't make sense when we can't save thumbnail files */
+    Itdb_Thumb *thumb;
+    GTimeVal time;
+    gint rowstride;
+    gint height;
+
+    g_return_val_if_fail (artwork, FALSE);
+    g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), FALSE);
+
+    g_get_current_time (&time);
+    g_object_get (G_OBJECT (pixbuf),
+                  "height", &height,
+                  "rowstride", &rowstride,
+                  NULL);
+    artwork->artwork_size  = rowstride * height;
+    artwork->creation_date = time.tv_sec;
+
+    thumb = itdb_thumb_new ();
+    g_object_ref (G_OBJECT (pixbuf));
+    thumb->pixbuf = pixbuf;
+    thumb->type = type;
+    thumb->rotation = rotation;
+    artwork->thumbnails = g_list_append (artwork->thumbnails, thumb);
+
+    return TRUE;
+#else
+    g_set_error (error, 0, -1,
+		 _("Artwork support not compiled into libgpod."));
+    return FALSE;
+#endif
+}
 
 /**
  * itdb_artwork_add_thumbnail_from_data
@@ -667,6 +727,12 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 		    g_object_ref (pixbuf);
 		g_object_unref (loader);
 	}
+	else if (thumb->pixbuf)
+	{   /* use pixbuf data */
+	    pixbuf = gdk_pixbuf_scale_simple (thumb->pixbuf,
+					      width, height,
+					      GDK_INTERP_BILINEAR);
+	}
 
 	if (!pixbuf)
 	{
@@ -783,6 +849,9 @@ void itdb_thumb_free (Itdb_Thumb *thumb)
     g_return_if_fail (thumb);
 
     g_free (thumb->image_data);
+    if (thumb->pixbuf) {
+        g_object_unref (G_OBJECT (thumb->pixbuf));
+    }
     g_free (thumb->filename);
     g_free (thumb);
 }
@@ -813,6 +882,9 @@ Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb)
 	new_thumb->image_data = g_malloc (thumb->image_data_len);
 	memcpy (new_thumb->image_data, thumb->image_data,
 		new_thumb->image_data_len);
+    }
+    if (thumb->pixbuf) {
+        g_object_ref (G_OBJECT (thumb->pixbuf));
     }
     return new_thumb;
 }

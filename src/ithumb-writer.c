@@ -357,6 +357,14 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 	thumb->image_data = NULL;
 	thumb->image_data_len = 0;
     }
+    else if (thumb->pixbuf)
+    {
+        pixbuf = gdk_pixbuf_scale_simple (GDK_PIXBUF(thumb->pixbuf),
+                                          width, height,
+                                          GDK_INTERP_BILINEAR);
+        g_object_unref (thumb->pixbuf);
+        thumb->pixbuf = NULL;
+    }
 
     if (pixbuf == NULL)
     {
