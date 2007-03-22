@@ -1,3 +1,9 @@
+2007-03-22  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (write_playlist): corrected what is written
+	  into the mhyp header according to the iTunesDB wiki (mhod count /
+	  libmhod count)
+
 2007-03-21  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_artwork.c (itdb_artwork_remove_thumbnail): memory used

@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-03-20 22:58:14 jcs>
+/* Time-stamp: <2007-03-22 22:53:36 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -4158,11 +4158,8 @@ static gboolean write_playlist (FExport *fexp,
     put8int (cts, pl->flag3);      /* unknown                   */
     put32lint (cts, pl->timestamp);/* some timestamp            */
     put64lint (cts, pl->id);       /* 64 bit ID                 */
-    put32lint (cts, 1);            /* mhodcount: we only write
-				    * one mhod type < 50        */
-    put16lint (cts, 1);            /* libmhodcount: we don't write
-				      mhod type 52, and "1" seems to
-				      be the default            */
+    put32lint (cts, 0);            /* unknown, always 0?        */
+    put16lint (cts, 1);            /* string mhod count (1)     */
     put16lint (cts, pl->podcastflag);
     put32lint (cts, pl->sortorder);
     put32_n0 (cts, 15);            /* ?                         */
