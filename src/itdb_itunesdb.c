@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-03-22 22:53:36 jcs>
+/* Time-stamp: <2007-03-23 20:49:29 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -220,6 +220,32 @@ enum MHOD_ID {
 };
 
 
+/* Used as first iPod ID when renumbering (re-assigning) the iPod
+   (track) IDs before writing out the iTunesDB. */
+static const gint FIRST_IPOD_ID=52;
+
+
+enum MHOD52_SORTTYPE {
+    MHOD52_SORTTYPE_TITLE    = 0x03,
+    MHOD52_SORTTYPE_ALBUM    = 0x04,
+    MHOD52_SORTTYPE_ARTIST   = 0x05,
+    MHOD52_SORTTYPE_GENRE    = 0x07,
+    MHOD52_SORTTYPE_COMPOSER = 0x12
+};
+
+struct mhod52track
+{
+    gchar *album;
+    gchar *title;
+    gchar *artist;
+    gchar *genre;
+    gchar *composer;
+    gint track_nr;
+    gint cd_nr;
+    gint index;
+    gint numtracks;
+};
+
 struct _MHODData
 {
     gboolean valid;
@@ -232,7 +258,12 @@ struct _MHODData
 	Itdb_Track *chapterdata_track; /* for writing chapterdata */
 	SPLPref *splpref;
 	SPLRules *splrules;
+	GList *mhod52info;
     } data;
+    union
+    {
+	enum MHOD52_SORTTYPE mhod52sorttype;
+    } data2;
 };
 
 typedef struct _MHODData MHODData;
@@ -3667,7 +3698,29 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
       }
       break;
   case MHOD_ID_LIBPLAYLISTINDEX:
-      g_warning (_("Cannot write mhod of type %d\n"), mhod->type);
+      g_return_if_fail (mhod->data.mhod52info);
+      g_return_if_fail (mhod->data.mhod52info->data);
+      {
+	  struct mhod52track *ct = mhod->data.mhod52info->data;
+	  gint numtracks = ct->numtracks;
+	  GList *gl;
+
+	  put_header (cts, "mhod");         /* header                     */
+	  put32lint (cts, 24);              /* size of header             */
+	  put32lint (cts, 4*numtracks+72);  /* size of header + body      */
+	  put32lint (cts, mhod->type);      /* type of the mhod           */
+	  put32_n0 (cts, 2);                /* unknown                    */
+	  /* end of header, start of data */
+	  put32lint (cts, mhod->data2.mhod52sorttype);   /* sort type     */
+	  put32lint (cts, numtracks);       /* number of entries          */
+	  put32_n0 (cts, 10);               /* unknown                    */
+	  for (gl=mhod->data.mhod52info; gl; gl=gl->next)
+	  {
+	      ct = gl->data;
+	      g_return_if_fail (ct);
+	      put32lint (cts, ct->index);
+	  }
+      }
       break;
   }
 }
@@ -4118,6 +4171,182 @@ static gboolean write_podcast_mhips (FExport *fexp,
 }
 
 
+static gint mhod52_sort_title (const struct mhod52track *a, const struct mhod52track *b)
+{
+    return strcmp (a->title, b->title);
+}
+
+
+static gint mhod52_sort_album (const struct mhod52track *a, const struct mhod52track *b)
+{
+    gint result;
+
+    result = strcmp (a->album, b->album);
+    if (result == 0)
+	result = a->cd_nr - b->cd_nr;
+    if (result == 0)
+	result = a->track_nr - b->track_nr;
+    if (result == 0)
+	result = strcmp (a->title, b->title);
+    return result;
+}
+
+static gint mhod52_sort_artist (struct mhod52track *a, struct mhod52track *b)
+{
+    gint result;
+
+    result = strcmp (a->artist, b->artist);
+    if (result == 0)
+	result = strcmp (a->album, b->album);
+    if (result == 0)
+	result = a->cd_nr - b->cd_nr;
+    if (result == 0)
+	result = a->track_nr - b->track_nr;
+    if (result == 0)
+	result = strcmp (a->title, b->title);
+    return result;
+}
+
+static gint mhod52_sort_genre (struct mhod52track *a, struct mhod52track *b)
+{
+    gint result;
+
+    result = strcmp (a->genre, b->genre);
+    if (result == 0)
+	result = strcmp (a->artist, b->artist);
+    if (result == 0)
+	result = strcmp (a->album, b->album);
+    if (result == 0)
+	result = a->cd_nr - b->cd_nr;
+    if (result == 0)
+	result = a->track_nr - b->track_nr;
+    if (result == 0)
+	result = strcmp (a->title, b->title);
+    return result;
+}
+
+static gint mhod52_sort_composer (struct mhod52track *a, struct mhod52track *b)
+{
+    gint result;
+
+    result = strcmp (a->composer, b->composer);
+    if (result == 0)
+	result = strcmp (a->title, b->title);
+    return result;
+}
+
+
+/* Create a new list containing all tracks but with collate keys
+   instead of the actual strings (title, artist, album, genre,
+   composer) */
+static GList *mhod52_make_collate_keys (GList *tracks)
+{
+    gint numtracks = g_list_length (tracks);
+    GList *gl, *coltracks = NULL;
+    gint index=0;
+
+    for (gl=tracks; gl; gl=gl->next)
+    {
+	struct mhod52track *ct;
+	Itdb_Track *tr = gl->data;
+	g_return_val_if_fail (tr, NULL);
+
+	ct = g_new0 (struct mhod52track, 1);
+	coltracks = g_list_prepend (coltracks, ct);
+
+	if (tr->album)
+	    ct->album = g_utf8_collate_key (tr->album, -1);
+	else
+	    ct->album = g_strdup ("");
+	if (tr->title)
+	    ct->title = g_utf8_collate_key (tr->title, -1);
+	else
+	    ct->title = g_strdup ("");
+	if (tr->artist)
+	    ct->artist = g_utf8_collate_key (tr->artist, -1);
+	else
+	    ct->artist = g_strdup ("");
+	if (tr->genre)
+	    ct->genre = g_utf8_collate_key (tr->genre, -1);
+	else
+	    ct->genre = g_strdup ("");
+	if (tr->composer)
+	    ct->composer = g_utf8_collate_key (tr->composer, -1);
+	else
+	    ct->composer = g_strdup ("");
+	ct->track_nr = tr->track_nr;
+	ct->cd_nr = tr->cd_nr;
+	ct->numtracks = numtracks;
+	ct->index = index++;
+    }
+    return coltracks;
+}
+
+
+/* Free all memory used up by the collate keys */
+static void mhod52_free_collate_keys (GList *coltracks)
+{
+    GList *gl;
+
+    for (gl=coltracks; gl; gl=gl->next)
+    {
+	struct mhod52track *ct = gl->data;
+	g_return_if_fail (ct);
+	g_free (ct->album);
+	g_free (ct->title);
+	g_free (ct->artist);
+	g_free (ct->genre);
+	g_free (ct->composer);
+	g_free (ct);
+    }
+    g_list_free (coltracks);
+}
+
+
+/* Write a MHOD52 containing a sorted list of all tracks. Will change
+   the order of @coltracks and return the new list! */
+static GList *mk_mhod52 (WContents *cts, GList *coltracks,
+			 enum MHOD52_SORTTYPE sorttype)
+{
+    MHODData mhod;
+
+    gpointer compfunc = NULL;
+
+    g_return_val_if_fail (cts, coltracks);
+
+    switch (sorttype)
+    {
+    case MHOD52_SORTTYPE_TITLE:
+	compfunc = mhod52_sort_title;
+	break;
+    case MHOD52_SORTTYPE_ALBUM:
+	compfunc = mhod52_sort_album;
+	break;
+    case MHOD52_SORTTYPE_ARTIST:
+	compfunc = mhod52_sort_artist;
+	break;
+    case MHOD52_SORTTYPE_GENRE:
+	compfunc = mhod52_sort_genre;
+	break;
+    case MHOD52_SORTTYPE_COMPOSER:
+	compfunc = mhod52_sort_composer;
+	break;
+    }
+    g_return_val_if_fail (compfunc, coltracks);
+
+    /* sort the tracks */
+    coltracks = g_list_sort (coltracks, compfunc);
+
+    /* Write the mhod52 */
+    mhod.valid = TRUE;
+    mhod.type = MHOD_ID_LIBPLAYLISTINDEX;
+    mhod.data.mhod52info = coltracks;
+    mhod.data2.mhod52sorttype = sorttype;
+    mk_mhod (cts, &mhod);
+
+    return coltracks;
+}
+
 
 /* corresponds to mk_mhyp */
 /* mhsd_type: 2: write normal playlists
@@ -4130,6 +4359,7 @@ static gboolean write_playlist (FExport *fexp,
     WContents *cts;
     gboolean result = TRUE;
     MHODData mhod;
+    gint mhodnum;
 
     g_return_val_if_fail (fexp, FALSE);
     g_return_val_if_fail (fexp->itdb, FALSE);
@@ -4146,10 +4376,19 @@ static gboolean write_playlist (FExport *fexp,
     put_header (cts, "mhyp");      /* header                    */
     put32lint (cts, 108);          /* length		        */
     put32lint (cts, -1);           /* size -> later             */
+    mhodnum = 2;
     if (pl->is_spl)
-	put32lint (cts, 4);        /* nr of mhods               */
+    {   /* 2 more SPL MHODs */
+	mhodnum += 2;
+    }
     else
-	put32lint (cts, 2);        /* nr of mhods               */
+    {
+	if ((pl->type == ITDB_PL_TYPE_MPL) && pl->members)
+	{   /* 5 more MHOD 52 lists */
+	    mhodnum += 5;
+	}
+    }
+    put32lint (cts, mhodnum);      /* nr of mhods               */
     /* number of tracks in plist */
     put32lint (cts, -1);           /* number of mhips -> later  */
     put8int (cts, pl->type);       /* 1 = main, 0 = visible     */
@@ -4170,7 +4409,20 @@ static gboolean write_playlist (FExport *fexp,
     mk_mhod (cts, &mhod);
     mk_long_mhod_id_playlist (fexp, pl);
 
-    if (pl->is_spl)
+    if ((pl->type == ITDB_PL_TYPE_MPL) && pl->members)
+    {   /* write out the MHOD 52 lists */
+	/* We have to sort all tracks five times. To speed this up,
+	   translate the utf8 keys into collate_keys and use the
+	   faster strcmp() for comparison */
+	GList *coltracks = mhod52_make_collate_keys (pl->members);
+	coltracks = mk_mhod52 (cts, coltracks, MHOD52_SORTTYPE_TITLE);
+	coltracks = mk_mhod52 (cts, coltracks, MHOD52_SORTTYPE_ALBUM);
+	coltracks = mk_mhod52 (cts, coltracks, MHOD52_SORTTYPE_ARTIST);
+	coltracks = mk_mhod52 (cts, coltracks, MHOD52_SORTTYPE_GENRE);
+	coltracks = mk_mhod52 (cts, coltracks, MHOD52_SORTTYPE_COMPOSER);
+	mhod52_free_collate_keys (coltracks);
+    }
+    else  if (pl->is_spl)
     {  /* write the smart rules */
 	mhod.type = MHOD_ID_SPLPREF;
 	mhod.data.splpref = &pl->splpref;
@@ -4213,7 +4465,7 @@ static gboolean write_mhsd_playlists (FExport *fexp, guint32 mhsd_type)
     mk_mhsd (fexp, mhsd_type); /* write header */
     /* write header with nr. of playlists */
     mk_mhlp (fexp);
-    for(gl=fexp->itdb->playlists; gl; gl=gl->next)
+    for (gl=fexp->itdb->playlists; gl; gl=gl->next)
     {
 	Itdb_Playlist *pl = gl->data;
 	g_return_val_if_fail (pl, FALSE);
@@ -4330,7 +4582,7 @@ static void reassign_ids (FExport *fexp)
 	itdb->tracks = g_list_prepend (itdb->tracks, track);
     }
 
-    fexp->next_id = 52;
+    fexp->next_id = FIRST_IPOD_ID;
 
     /* assign unique IDs */
     for (gl=itdb->tracks; gl; gl=gl->next)

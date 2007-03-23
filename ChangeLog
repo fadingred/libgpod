@@ -1,3 +1,10 @@
+2007-03-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c: Write out MHOD52 hunks after master
+	  playlist. This speeds up the iPod interface when browsing titles
+	  or albums etc. because the iPod won't have to sort through the
+	  track list.
+
 2007-03-22  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c (write_playlist): corrected what is written
