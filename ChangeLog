@@ -1,3 +1,8 @@
+2007-03-25  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c: streamline MHOD52 patch (remove mk_mhod52()
+	  and let mk_mhod() handle the sorting of mhod52 directly).
+
 2007-03-23  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c: Write out MHOD52 hunks after master
