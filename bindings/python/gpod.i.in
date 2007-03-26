@@ -1,7 +1,7 @@
 /* File : gpod.i.in */
 
 /*
- Copyright (C) 2005 Nick Piper <nick-gtkpod at nickpiper co uk>
+ Copyright (C) 2007 Nick Piper <nick-gtkpod at nickpiper co uk>
  Part of the gtkpod project.
  
  URL: http://www.gtkpod.org/
@@ -46,7 +46,9 @@ interface."
 #include "db-itunes-parser.h" 
 #include "db-parse-context.h" 
 #include "itdb.h" 
+#include "itdb_device.h" 
 #include "itdb_private.h"
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 /* include prototypes for all functions so builds using
  * -Wmissing-prototypes don't fail. */
@@ -59,8 +61,17 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb);
 PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl);
 PyObject* sw_set_track_userdata(Itdb_Track *track, PyObject *data);
 PyObject* sw_get_track_userdata(Itdb_Track *track);
-PyObject *sw__track_extra_duplicate (PyObject *data);
+PyObject* sw__track_extra_duplicate (PyObject *data);
+PyObject* sw_get_photoalbums(Itdb_PhotoDB *db);
+PyObject* sw_get_photoalbum(GList *list, gint index);
+PyObject* sw_get_photos(Itdb_PhotoDB *db);
+PyObject* sw_get_photo(GList *list, gint index);
+PyObject* sw_get_artwork_thumbnails(Itdb_Artwork *artwork);
+PyObject* sw_get_photoalbum_members(Itdb_PhotoAlbum *album);
+PyObject* sw_ipod_device_to_dict(Itdb_Device *device);
+PyObject* sw_save_itdb_thumb(Itdb_PhotoDB *itdb, Itdb_Thumb *thumb, const gchar *filename);
 void sw__track_extra_destroy (PyObject *data);
+void hash_table_to_pydict(gpointer key, gpointer value, gpointer user_data);
 void SWIG_init(void);
 
 PyObject* sw_get_tracks(Itdb_iTunesDB *itdb) {
@@ -169,8 +180,125 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb) {
      return Py_None;
    }
  }
+
+ PyObject* sw_get_photoalbums(Itdb_PhotoDB *db) {
+  PyObject    *list;
+  gint        i;
+  GList       *l;
+  list = PyList_New(g_list_length(db->photoalbums));
+  for (l = db->photoalbums, i = 0; l; l = l->next, ++i) {
+    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data),
+SWIGTYPE_p__Itdb_PhotoAlbum, 0));
+  }
+  return list;
+ }
+
+ PyObject* sw_get_artwork_thumbnails(Itdb_Artwork *artwork) {
+  PyObject    *list;
+  gint        i;
+  GList       *l;
+  list = PyList_New(g_list_length(artwork->thumbnails));
+  for (l = artwork->thumbnails, i = 0; l; l = l->next, ++i) {
+    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data), SWIGTYPE_p__Itdb_Thumb, 0));
+  }
+  return list;
+ }
+
+
+PyObject* sw_get_photoalbum(GList *list, gint index) {
+  GList *position;
+  if ( (index >= g_list_length(list)) || index < 0 ) {
+   PyErr_SetString(PyExc_IndexError, "Value out of range");
+   return NULL;
+  }
+  position = g_list_nth(list, index);
+  return SWIG_NewPointerObj((void*)(position->data), SWIGTYPE_p__Itdb_PhotoAlbum, 0);
+ }
+
+ PyObject* sw_get_photoalbum_members(Itdb_PhotoAlbum *album) {
+  PyObject    *list;
+  gint        i;
+  GList       *l;
+  list = PyList_New(g_list_length(album->members));
+  for (l = album->members, i = 0; l; l = l->next, ++i) {
+    gint photo_id = GPOINTER_TO_INT(l->data);
+    PyList_SET_ITEM(list, i, PyInt_FromLong((long)photo_id));
+  }
+  return list;
+ }
+
+ PyObject* sw_get_photos(Itdb_PhotoDB *db) {
+  PyObject    *list;
+  gint        i;
+  GList       *l;
+  list = PyList_New(g_list_length(db->photos));
+  for (l = db->photos, i = 0; l; l = l->next, ++i) {
+    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data),
+SWIGTYPE_p__Itdb_Artwork, 0));
+  }
+  return list;
+ }
+
+PyObject* sw_get_photo(GList *list, gint index) {
+  GList *position;
+  if ( (index >= g_list_length(list)) || index < 0 ) {
+   PyErr_SetString(PyExc_IndexError, "Value out of range");
+   return NULL;
+  }
+  position = g_list_nth(list, index);
+  return SWIG_NewPointerObj((void*)(position->data), SWIGTYPE_p__Itdb_Artwork, 0);
+ }
+
+ void hash_table_to_pydict(gpointer key,
+			   gpointer value,
+			   gpointer user_data) {
+   PyDict_SetItemString((PyObject *)user_data, 
+			(char *)key,
+			PyString_FromString(value));
+ }
+
+ PyObject* sw_ipod_device_to_dict(Itdb_Device *device) {
+   PyObject* sysinfo;
+   if (device == NULL) {
+     Py_INCREF(Py_None);
+     return Py_None;
+   } else {
+     sysinfo = PyDict_New();
+     g_hash_table_foreach(device->sysinfo, 
+			  hash_table_to_pydict, 
+			  (gpointer) sysinfo);
+     return Py_BuildValue("{s:s,s:i,s:i,s:O}",
+			  "mountpoint",
+			  device->mountpoint,
+			  "musicdirs",
+			  device->musicdirs,
+			  "byte_order",
+			  device->byte_order,
+			  "sysinfo",
+			  sysinfo);
+   }
+ }
+
+ PyObject* sw_save_itdb_thumb(Itdb_PhotoDB *itdb, Itdb_Thumb *thumb, const gchar *filename) {
+   GdkPixbuf *pixbuf;
+	
+   pixbuf = itdb_thumb_get_gdk_pixbuf (itdb->device, thumb);
+   
+   if (pixbuf != NULL) {
+     gdk_pixbuf_save (pixbuf, filename, "png", NULL, NULL);
+     gdk_pixbuf_unref (pixbuf);
+     Py_INCREF(Py_True);
+     return Py_True;
+   } else {
+     Py_INCREF(Py_False);
+     return Py_False;
+   }
+ }
  
- 
+%}
+
+%init %{
+   g_type_init ();
 %}
 
 %include "gpod_doc.i"
@@ -287,6 +415,10 @@ typedef char gchar;
    $result = PyLong_FromUnsignedLong($1);
 }
 
+%typemap(out) gint16 {
+   $result = PyLong_FromLong($1);
+}
+
 %typemap(out) guint8 {
    $result = PyInt_FromLong($1);
 }
@@ -306,5 +438,13 @@ PyObject* sw_get_playlists(Itdb_iTunesDB *itdb);
 PyObject* sw_get_playlist_tracks(Itdb_Playlist *pl);
 PyObject* sw_set_track_userdata(Itdb_Track *track, PyObject *data);
 PyObject* sw_get_track_userdata(Itdb_Track *track);
+PyObject* sw_get_photoalbums(Itdb_PhotoDB *db);
+PyObject* sw_get_photoalbum(GList *list, gint index);
+PyObject* sw_get_photos(Itdb_PhotoDB *db);
+PyObject* sw_get_photo(GList *list, gint index);
+PyObject* sw_get_photoalbum_members(Itdb_PhotoAlbum *album);
+PyObject* sw_get_artwork_thumbnails(Itdb_Artwork *artwork);
+PyObject* sw_ipod_device_to_dict(Itdb_Device *device);
+PyObject* sw_save_itdb_thumb(Itdb_PhotoDB *itdb, Itdb_Thumb *thumb, const gchar *filename);
 
 %include "@top_srcdir@/src/itdb.h"

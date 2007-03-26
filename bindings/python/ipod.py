@@ -13,6 +13,7 @@ import gtkpod
 import os
 import locale
 import socket
+import datetime
 
 defaultencoding = locale.getpreferredencoding()
 
@@ -21,6 +22,10 @@ class DatabaseException(RuntimeError):
     pass
 
 class TrackException(RuntimeError):
+    """Exception for track errors."""
+    pass
+
+class PhotoException(RuntimeError):
     """Exception for track errors."""
     pass
 
@@ -717,3 +722,244 @@ class Playlist:
             gpod.itdb_playlist_remove_track(self._pl, track._track)
         else:
             raise DatabaseException("Playlist %s does not contain %s" % (self, track))
+
+class PhotoDatabase:
+    """An iTunes Photo database"""
+    def __init__(self, mountpoint="/mnt/ipod"):
+        """Create a Photo database object"""
+        self._itdb = gpod.itdb_photodb_parse(mountpoint, None)
+        
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return "<PhotoDatabase Mountpoint:%s Albums:%s Photos:%s>" % (
+            repr(self.device['mountpoint']),
+            gpod.sw_get_list_len(self._itdb.photoalbums),
+            len(self))
+
+    def close(self):
+        pass
+
+    def __len__(self):
+        return gpod.sw_get_list_len(self._itdb.photos)
+
+    def __getitem__(self, index):
+        if type(index) == types.SliceType:
+            return [self[i] for i in xrange(*index.indices(len(self)))]
+        else:
+            if index < 0:
+                index += len(self)
+            return Photo(proxied_photo=gpod.sw_get_photo(self._itdb.photos, index),
+                         ownerdb=self)
+    def get_device(self):
+        return gpod.sw_ipod_device_to_dict(self._itdb.device)        
+
+    def get_photoalbums(self):
+        """Get all photo albums."""
+        return _PhotoAlbums(self)
+
+    PhotoAlbums = property(get_photoalbums)
+    device      = property(get_device)
+
+class _PhotoAlbums:
+    def __init__(self, db):
+        self._db = db
+
+    def __len__(self):
+        return gpod.sw_get_list_len(self._db._itdb.photoalbums)
+
+    def __nonzero__(self):
+        return True
+
+    def __getitem__(self, index):
+        if type(index) == types.SliceType:
+            return [self[i] for i in xrange(*index.indices(len(self)))]
+        else:
+            if index < 0:
+                index += len(self)
+            return PhotoAlbum(self._db,
+                              proxied_photoalbum=gpod.sw_get_photoalbum(self._db._itdb.photoalbums,
+                                                                        index))
+
+    def __repr__(self):
+        return "<PhotoAlbums from %s>" % self._db
+
+    def __call__(self, name):
+        if type(name) in (types.TupleType, types.ListType):
+            return [self.__call__(name=i) for i in name]
+        else:
+            pa = gpod.itdb_photodb_photoalbum_by_name(self._db._itdb,
+                                                      name)
+            if pa:
+                return PhotoAlbum(self._db,
+                                  proxied_playlist=pa)
+            else:
+                raise KeyError("Album with name %s not found." % repr(name))
+
+
+class PhotoAlbum:
+    """A Photo Album in an iTunes database."""
+
+    def __init__(self, parent_db, title="New Album",
+                 pos=-1, proxied_photoalbum=None):
+
+        self._db = parent_db
+        if proxied_photoalbum:
+            self._pa = proxied_photoalbum
+        else:
+            raise NotImplemented("Can't create new Photo Albums yet")
+
+    def get_name(self):
+        """Get the name of the photo album."""
+        return self._pa.name
+
+    def set_name(self, name):
+        """Set the name for the photo album."""
+        self._pa.name = name
+
+    def get_album_type(self):
+        return self._pa.album_type
+
+    name       = property(get_name, set_name)
+    album_type = property(get_album_type)
+    
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return "<PhotoAlbum Title:%s Photos:%d Type:%d>" % (
+            repr(self.name),
+            len(self),
+            self.album_type)
+
+    def __getitem__(self, index):
+        if type(index) == types.SliceType:
+            return [self[i] for i in xrange(*index.indices(len(self)))]
+        else:
+            if index < 0:
+                index += len(self)
+            return Photo(proxied_photo=gpod.sw_get_photo(self._pa.members, index),
+                         ownerdb=self._db)
+
+    def __len__(self):
+        return gpod.sw_get_list_len(self._pa.members)
+
+    def __nonzero__(self):
+        return True
+
+class Photo:
+    """A photo in an iTunes Photo database."""
+
+    _proxied_attributes = ("id","creation_date","digitized_date","artwork_size")  
+
+    def __init__(self, filename=None,
+                 proxied_photo=None, ownerdb=None):
+        """Create a Photo object."""
+
+        if filename:
+            # maybe use itdb_photodb_add_photo ?
+            raise NotImplemented("Can't create new Photos from files yet")
+        elif proxied_photo:
+            self._photo = proxied_photo
+            self._database = ownerdb
+        else:
+            self._photo = gpod.itdb_artwork_new()
+            
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return "<Photo ID:%s Creation:'%s' Digitized:'%s' Size:%s>" % (
+            repr(self['id']),
+            self['creation_date'].strftime("%c"),
+            self['digitized_date'].strftime("%c"),
+            repr(self['artwork_size']))
+
+    def keys(self):
+        return list(self._proxied_attributes)
+
+    def items(self):
+        return [self[k] for k in self._proxied_attributes]
+
+    def pairs(self):
+        return [(k, self[k]) for k in self._proxied_attributes]        
+
+    def __getitem__(self, item):
+        if item in self._proxied_attributes:
+            attr = getattr(self._photo, item)
+            if item.endswith("_date"):
+                try:
+                    return datetime.datetime.fromtimestamp(attr)
+                except:
+                    return datetime.datetime.fromtimestamp(0)
+            else:
+                return attr
+        else:
+            raise KeyError('No such key: %s' % item)
+
+    def __setitem__(self, item, value):
+        if type(value) == types.UnicodeType:
+            value = value.encode('UTF-8','replace')
+        if item in self._proxied_attributes:
+            return setattr(self._photo, item, value)
+        else:
+            raise KeyError('No such key: %s' % item)
+    
+    def get_thumbnails(self):
+        return [Thumbnail(proxied_thumbnail=t, ownerphoto=self) for t in gpod.sw_get_artwork_thumbnails(self._photo)]
+
+    thumbnails = property(get_thumbnails)
+
+class Thumbnail:
+    """A thumbnail in an Photo."""
+
+    _proxied_attributes = ("type","filename","rotation","offset","size","width","height",
+                           "horizontal_padding", "vertical_padding")
+
+    def __init__(self, proxied_thumbnail=None, ownerphoto=None):
+        """Create a thumbnail object."""
+
+        if not proxied_thumbnail:
+            raise NotImplemented("Can't create new Thumbnails from scratch, create Photos instead")
+
+        self._thumbnail = proxied_thumbnail
+        self.__photo = ownerphoto # so the photo doesn't get gc'd
+            
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return "<Thumbnail Filename:%s Size:%d Width:%d Height:%d>" % (
+            repr(self['filename']),
+            self['size'],
+            self['width'],
+            self['height'])
+
+    def keys(self):
+        return list(self._proxied_attributes)
+
+    def items(self):
+        return [self[k] for k in self._proxied_attributes]
+
+    def pairs(self):
+        return [(k, self[k]) for k in self._proxied_attributes]        
+
+    def __getitem__(self, item):
+        if item in self._proxied_attributes:
+            return getattr(self._thumbnail, item)
+        else:
+            raise KeyError('No such key: %s' % item)
+
+    def __setitem__(self, item, value):
+        if type(value) == types.UnicodeType:
+            value = value.encode('UTF-8','replace')
+        if item in self._proxied_attributes:
+            return setattr(self._thumbnail, item, value)
+        else:
+            raise KeyError('No such key: %s' % item)
+
+    def save_image(self,filename):
+        return gpod.sw_save_itdb_thumb(
+            self.__photo._database._itdb,
+            self._thumbnail,filename)
