@@ -1,8 +1,9 @@
 import unittest
-import gpod
 import shutil
 import tempfile
 import os
+
+gpod = __import__('__init__')
 
 class TestiPodFunctions(unittest.TestCase):
     def setUp(self):

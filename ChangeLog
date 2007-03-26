@@ -1,5 +1,13 @@
 2007-03-26  Nicholas Piper  <nicholas at users.sourceforge.net>
 
+	* bindings/python/Makefile.am
+	  bindings/python/tests/Makefile.am
+	  bindings/python/tests/tests.py: Causes tests to run with the
+	  libraries from the build tree rather than currently installed
+	  version (Todd Zullinger)
+
+2007-03-26  Nicholas Piper  <nicholas at users.sourceforge.net>
+
 	* bindings/python/gpod.i.in: Add basic PhotoDB reading facility
 
 2007-03-25  Jorg Schuler <jcsjcs at users.sourceforge.net>

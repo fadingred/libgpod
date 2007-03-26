@@ -170,6 +170,7 @@ bindings/Makefile
 bindings/python/gpod.i
 bindings/python/Makefile
 bindings/python/examples/Makefile
+bindings/python/tests/Makefile
 docs/Makefile
 docs/reference/Makefile
 docs/reference/version.xml

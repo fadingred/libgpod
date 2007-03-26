@@ -1,4 +1,4 @@
-SUBDIRS = examples
+SUBDIRS = examples tests
 
 EXTRA_DIST =                \
         README.in           \
@@ -59,5 +59,5 @@ gpod.py: $(SWIG_INTERFACES)
 	$(SWIG) -python -o $@ $<
 
 test:
-	cd tests && python tests.py
+	$(MAKE) -C tests test
 endif
