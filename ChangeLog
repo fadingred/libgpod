@@ -1,3 +1,11 @@
+2007-04-08  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h: changed 'gchar *chapterdata' to 'gpointer
+	  chapterdata' with note that chapterdata is not yet supported.
+
+	* src/itdb_track.c (itdb_track_duplicate): arrange the strings in
+	  the same order as in Itdb_Track for easier error-checking.
+
 2007-03-26  Nicholas Piper  <nicholas at users.sourceforge.net>
 
 	* bindings/python/Makefile.am

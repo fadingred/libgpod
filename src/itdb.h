@@ -1,5 +1,4 @@
-/* Time-stamp: <2007-02-25 13:26:22 jcs>
-|
+/*
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
@@ -670,7 +669,7 @@ struct _Itdb_Track
   gchar   *description;      /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *podcasturl;       /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *podcastrss;       /* see note for MHOD_ID in itdb_itunesdb.c */
-  gchar   *chapterdata;      /* see note for MHOD_ID in itdb_itunesdb.c */
+  gpointer chapterdata;      /* not yet supported. Help welcome.        */
   gchar   *subtitle;         /* see note for MHOD_ID in itdb_itunesdb.c */
 /* the following 6 are new in libgpod 0.4.2... */
   gchar   *tvshow;           /* see note for MHOD_ID in itdb_itunesdb.c */

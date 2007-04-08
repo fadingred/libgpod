@@ -1,5 +1,4 @@
-/* Time-stamp: <2006-11-23 23:32:16 jcs>
-|
+/*
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
@@ -337,14 +336,14 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
 
     /* copy strings */
     tr_dup->title = g_strdup (tr->title);
-    tr_dup->artist = g_strdup (tr->artist);
     tr_dup->album = g_strdup (tr->album);
+    tr_dup->artist = g_strdup (tr->artist);
     tr_dup->genre = g_strdup (tr->genre);
-    tr_dup->composer = g_strdup (tr->composer);
-    tr_dup->comment = g_strdup (tr->comment);
     tr_dup->filetype = g_strdup (tr->filetype);
-    tr_dup->grouping = g_strdup (tr->grouping);
+    tr_dup->comment = g_strdup (tr->comment);
     tr_dup->category = g_strdup (tr->category);
+    tr_dup->composer = g_strdup (tr->composer);
+    tr_dup->grouping = g_strdup (tr->grouping);
     tr_dup->description = g_strdup (tr->description);
     tr_dup->podcasturl = g_strdup (tr->podcasturl);
     tr_dup->podcastrss = g_strdup (tr->podcastrss);
