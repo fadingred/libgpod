@@ -964,6 +964,8 @@ void itdb_device_set_sysinfo (Itdb_Device *device,
 			      const gchar *field, const gchar *value);
 const Itdb_IpodInfo *itdb_device_get_ipod_info (Itdb_Device *device);
 const Itdb_IpodInfo *itdb_info_get_ipod_info_table (void);
+gboolean itdb_device_supports_artwork (Itdb_Device *device);
+gboolean itdb_device_supports_photo (Itdb_Device *device);
 const gchar *itdb_info_get_ipod_model_name_string (Itdb_IpodModel model);
 const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generation);
 

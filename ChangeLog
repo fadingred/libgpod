@@ -1,3 +1,11 @@
+2007-04-14  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: add itdb_device_supports_artwork and
+	idb_device_supports_photo functions
+	* docs/reference/tmpl/device.sgml: update api doc
+	* src/itdb_itunesdb.c: don't try to write artwork database if the iPod
+	model doesn't support artwork.
+
 2007-04-08  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h: changed 'gchar *chapterdata' to 'gpointer

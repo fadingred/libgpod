@@ -1,4 +1,4 @@
-/* Time-stamp: <2006-11-12 23:07:06 jcs>
+/* Time-stamp: <27-mar-2007 10:09:48 teuf>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -780,4 +780,57 @@ const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generatio
 	++i;
     }
     return NULL;
+}
+
+
+/**
+ * itdb_device_supports_artwork:
+ * @device: an #Itdb_Device
+ *
+ * Indicates whether @device can display artwork or not. When dealing
+ * with a non-art capable ipod, no artwork data will be written to the
+ * iPod so you can spare calls to the artwork handling methods.
+ *
+ * Return value: true if @device can display artwork.
+ */
+
+gboolean itdb_device_supports_artwork (Itdb_Device *device)
+{
+    if (device == NULL) {
+        return FALSE;
+    }
+
+    return (itdb_device_get_artwork_formats (device) != NULL);
+}
+
+
+/**
+ * itdb_device_supports_photo:
+ * @device: an #Itdb_Device
+ *
+ * Indicates whether @device can display photos or not.
+ *
+ * Return value: true if @device can display photos.
+ */
+
+gboolean itdb_device_supports_photo (Itdb_Device *device)
+{
+    const Itdb_ArtworkFormat *formats;
+    const Itdb_ArtworkFormat *it;
+
+    if (device == NULL) {
+        return FALSE;
+    }
+
+    formats = itdb_device_get_artwork_formats (device);
+    if (formats == NULL) {
+	return FALSE;
+    }
+
+    it = formats;
+    while ((it->type != -1) && (it->type != ITDB_THUMB_PHOTO_FULL_SCREEN)) {
+	it++;
+    }
+    
+    return (it->type != -1);
 }
