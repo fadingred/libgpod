@@ -385,7 +385,8 @@ class Track:
     def copy_to_ipod(self):
         """Copy the track to the iPod."""
         self['userdata']['sha1_hash'] = gtkpod.sha1_hash(self._userdata_into_default_locale('filename'))
-        if not gpod.itdb_get_mountpoint(self._track.itdb):
+        mp = gpod.itdb_get_mountpoint(self._track.itdb)
+        if not mp:
             return False
         if gpod.itdb_cp_track_to_ipod(self._track,
                                       self._userdata_into_default_locale('filename'),
@@ -393,8 +394,9 @@ class Track:
             raise TrackException('Unable to copy %s to iPod as %s' % (
                 self._userdata_into_default_locale('filename'),
                 self))
+        fname = self.ipod_filename().replace(mp, '').replace(os.path.sep, ':')
+        self['userdata']['filename_ipod'] = fname
         self['userdata']['transferred'] = 1
-        self['userdata']['filename_ipod'] = self._track['ipod_path']
         return True
 
     def ipod_filename(self):
