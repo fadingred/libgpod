@@ -394,7 +394,7 @@ class Track:
                 self._userdata_into_default_locale('filename'),
                 self))
         self['userdata']['transferred'] = 1
-        self['userdata']['filename_ipod'] = self.ipod_filename()
+        self['userdata']['filename_ipod'] = self._track['ipod_path']
         return True
 
     def ipod_filename(self):

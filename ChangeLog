@@ -1,3 +1,8 @@
+2007-04-15  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/ipod.py: use the mac-style path for
+	  filename_ipod in the extended info file, like gtkpod does
+
 2007-04-14  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: add itdb_device_supports_artwork and
