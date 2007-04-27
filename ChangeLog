@@ -3,10 +3,16 @@
  	* src/itdb.h
  	  src/itdb_itunesdb.c
  	  src/itdb_playlist.c
- 	  src/itdb_private.h: namespace cleanup. Applications supporting
- 	  smart playlists will have to be adapted. The following changes
- 	  were implemented to make sure all exported symbols start with
- 	  ITDB or Itdb:
+ 	  src/itdb_private.h
+	  bindings/python/gpod.i.in
+	  bindings/python/gpod_doc.i.in
+	  docs/reference/libgpod-sections.txt
+	  docs/reference/tmpl/libgpod-unused.sgml
+	  docs/reference/tmpl/smart-playlists.sgml:
+
+	  Namespace cleanup. Applications supporting smart playlists will
+	  have to be adapted. The following changes were implemented to
+	  make sure all exported symbols start with ITDB or Itdb:
  
  	  structs:
  	      SPLPref -> Itdb_SPLPref

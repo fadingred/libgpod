@@ -19,14 +19,14 @@ index: position of the track
 Returns: an Itdb_Track
 ") sw_get_track;
 
-%feature("autodoc", "sw_get_rule(GList list, gint index) -> SPLRule") sw_get_rule;
+%feature("autodoc", "sw_get_rule(GList list, gint index) -> Itdb_SPLRule") sw_get_rule;
 %feature("docstring", "
 Get a rule
 
 Parameters
 list: a GList
 index: position of the rule
-Returns: an SPLRule
+Returns: an Itdb_SPLRule
 ") sw_get_rule;
 
 %feature("autodoc", "sw_get_playlist(GList list, gint index) -> Itdb_Playlist") sw_get_playlist;

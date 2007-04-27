@@ -102,7 +102,7 @@ PyObject* sw_get_rule(GList *list, gint index) {
    return NULL;
   }
   position = g_list_nth(list, index);
-  return SWIG_NewPointerObj((void*)(position->data), SWIGTYPE_p__SPLRule, 0);
+  return SWIG_NewPointerObj((void*)(position->data), SWIGTYPE_p__Itdb_SPLRule, 0);
  }
 
 PyObject* sw_get_playlist(GList *list, gint index) {
