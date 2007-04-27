@@ -56,9 +56,9 @@ typedef gpointer (* ItdbUserDataDuplicateFunc) (gpointer userdata);
 typedef struct _Itdb_Device Itdb_Device;
 typedef struct _Itdb_Artwork Itdb_Artwork;
 typedef struct _Itdb_Thumb Itdb_Thumb;
-typedef struct _SPLPref SPLPref;
-typedef struct _SPLRule SPLRule;
-typedef struct _SPLRules SPLRules;
+typedef struct _Itdb_SPLPref Itdb_SPLPref;
+typedef struct _Itdb_SPLRule Itdb_SPLRule;
+typedef struct _Itdb_SPLRules Itdb_SPLRules;
 typedef struct _Itdb_iTunesDB Itdb_iTunesDB;
 typedef struct _Itdb_PhotoDB Itdb_PhotoDB;
 typedef struct _Itdb_Playlist Itdb_Playlist;
@@ -137,33 +137,34 @@ struct _Itdb_IpodInfo {
 /* Most of the knowledge about smart playlists has been provided by
    Samuel "Otto" Wood (sam dot wood at gmail dot com) who let me dig
    in his impressive C++ class. Contact him for a complete
-   copy. Further, all enums and #defines below, SPLRule, SPLRules, and
-   SPLPref may also be used under a FreeBSD license. */
+   copy. Further, all enums and #defines below, Itdb_SPLRule, Itdb_SPLRules, and
+   Itdb_SPLPref may also be used under a FreeBSD license. */
 
-#define SPL_STRING_MAXLEN 255
+#define ITDB_SPL_STRING_MAXLEN 255
+#define ITDB_SPL_DATE_IDENTIFIER (G_GINT64_CONSTANT (0x2dae2dae2dae2daeU))
 
 /* Definitions for smart playlists */
-enum { /* types for match_operator */
-    SPLMATCH_AND = 0, /* AND rule - all of the rules must be true in
+typedef enum { /* types for match_operator */
+    ITDB_SPLMATCH_AND = 0, /* AND rule - all of the rules must be true in
 			 order for the combined rule to be applied */
-    SPLMATCH_OR = 1   /* OR rule */
-};
+    ITDB_SPLMATCH_OR = 1   /* OR rule */
+} ItdbSPLMatch;
 
 /* Limit Types.. like limit playlist to 100 minutes or to 100 songs */
-enum {
-    LIMITTYPE_MINUTES = 0x01,
-    LIMITTYPE_MB      = 0x02,
-    LIMITTYPE_SONGS   = 0x03,
-    LIMITTYPE_HOURS   = 0x04,
-    LIMITTYPE_GB      = 0x05
-};
+typedef enum {
+    ITDB_LIMITTYPE_MINUTES = 0x01,
+    ITDB_LIMITTYPE_MB      = 0x02,
+    ITDB_LIMITTYPE_SONGS   = 0x03,
+    ITDB_LIMITTYPE_HOURS   = 0x04,
+    ITDB_LIMITTYPE_GB      = 0x05
+} ItdbLimitType;
 
 /* Limit Sorts.. Like which songs to pick when using a limit type
-   Special note: the values for LIMITSORT_LEAST_RECENTLY_ADDED,
-   LIMITSORT_LEAST_OFTEN_PLAYED, LIMITSORT_LEAST_RECENTLY_PLAYED, and
-   LIMITSORT_LOWEST_RATING are really 0x10, 0x14, 0x15, 0x17, with the
+   Special note: the values for ITDB_LIMITSORT_LEAST_RECENTLY_ADDED,
+   ITDB_LIMITSORT_LEAST_OFTEN_PLAYED, ITDB_LIMITSORT_LEAST_RECENTLY_PLAYED, and
+   ITDB_LIMITSORT_LOWEST_RATING are really 0x10, 0x14, 0x15, 0x17, with the
    'limitsort_opposite' flag set.  This is the same value as the
-   "positive" value (i.e. LIMITSORT_LEAST_RECENTLY_ADDED), and is
+   "positive" value (i.e. ITDB_LIMITSORT_LEAST_RECENTLY_ADDED), and is
    really very terribly awfully weird, so we map the values to iPodDB
    specific values with the high bit set.
 
@@ -171,21 +172,21 @@ enum {
    from that. That way, we don't have to deal with programs using the
    class needing to set the wrong limit and then make it into the
    "opposite", which would be frickin' annoying. */
-enum {
-    LIMITSORT_RANDOM = 0x02,
-    LIMITSORT_SONG_NAME = 0x03,
-    LIMITSORT_ALBUM = 0x04,
-    LIMITSORT_ARTIST = 0x05,
-    LIMITSORT_GENRE = 0x07,
-    LIMITSORT_MOST_RECENTLY_ADDED = 0x10,
-    LIMITSORT_LEAST_RECENTLY_ADDED = 0x80000010, /* See note above */
-    LIMITSORT_MOST_OFTEN_PLAYED = 0x14,
-    LIMITSORT_LEAST_OFTEN_PLAYED = 0x80000014,   /* See note above */
-    LIMITSORT_MOST_RECENTLY_PLAYED = 0x15,
-    LIMITSORT_LEAST_RECENTLY_PLAYED = 0x80000015,/* See note above */
-    LIMITSORT_HIGHEST_RATING = 0x17,
-    LIMITSORT_LOWEST_RATING = 0x80000017,        /* See note above */
-};
+typedef enum {
+    ITDB_LIMITSORT_RANDOM = 0x02,
+    ITDB_LIMITSORT_SONG_NAME = 0x03,
+    ITDB_LIMITSORT_ALBUM = 0x04,
+    ITDB_LIMITSORT_ARTIST = 0x05,
+    ITDB_LIMITSORT_GENRE = 0x07,
+    ITDB_LIMITSORT_MOST_RECENTLY_ADDED = 0x10,
+    ITDB_LIMITSORT_LEAST_RECENTLY_ADDED = 0x80000010, /* See note above */
+    ITDB_LIMITSORT_MOST_OFTEN_PLAYED = 0x14,
+    ITDB_LIMITSORT_LEAST_OFTEN_PLAYED = 0x80000014,   /* See note above */
+    ITDB_LIMITSORT_MOST_RECENTLY_PLAYED = 0x15,
+    ITDB_LIMITSORT_LEAST_RECENTLY_PLAYED = 0x80000015,/* See note above */
+    ITDB_LIMITSORT_HIGHEST_RATING = 0x17,
+    ITDB_LIMITSORT_LOWEST_RATING = 0x80000017,        /* See note above */
+} ItdbLimitSort;
 
 /* Smartlist Actions - Used in the rules.
 Note by Otto (Samuel Wood):
@@ -206,145 +207,140 @@ Note by Otto (Samuel Wood):
  bit 9 = "in the last"
 */
 typedef enum {
-    SPLACTION_IS_INT = 0x00000001,          /* "Is Set" in iTunes */
-    SPLACTION_IS_GREATER_THAN = 0x00000010, /* "Is After" in iTunes */
-    SPLACTION_IS_LESS_THAN = 0x00000040,    /* "Is Before" in iTunes */
-    SPLACTION_IS_IN_THE_RANGE = 0x00000100,
-    SPLACTION_IS_IN_THE_LAST = 0x00000200,
-    SPLACTION_BINARY_AND = 0x00000400,
+    ITDB_SPLACTION_IS_INT = 0x00000001,          /* "Is Set" in iTunes */
+    ITDB_SPLACTION_IS_GREATER_THAN = 0x00000010, /* "Is After" in iTunes */
+    ITDB_SPLACTION_IS_LESS_THAN = 0x00000040,    /* "Is Before" in iTunes */
+    ITDB_SPLACTION_IS_IN_THE_RANGE = 0x00000100,
+    ITDB_SPLACTION_IS_IN_THE_LAST = 0x00000200,
+    ITDB_SPLACTION_BINARY_AND = 0x00000400,
 
-    SPLACTION_IS_STRING = 0x01000001,
-    SPLACTION_CONTAINS = 0x01000002,
-    SPLACTION_STARTS_WITH = 0x01000004,
-    SPLACTION_ENDS_WITH = 0x01000008,
+    ITDB_SPLACTION_IS_STRING = 0x01000001,
+    ITDB_SPLACTION_CONTAINS = 0x01000002,
+    ITDB_SPLACTION_STARTS_WITH = 0x01000004,
+    ITDB_SPLACTION_ENDS_WITH = 0x01000008,
 
-    SPLACTION_IS_NOT_INT = 0x02000001,     /* "Is Not Set" in iTunes */
+    ITDB_SPLACTION_IS_NOT_INT = 0x02000001,     /* "Is Not Set" in iTunes */
 
     /* Note: Not available in iTunes 4.5 (untested on iPod) */
-    SPLACTION_IS_NOT_GREATER_THAN = 0x02000010,
+    ITDB_SPLACTION_IS_NOT_GREATER_THAN = 0x02000010,
     /* Note: Not available in iTunes 4.5 (untested on iPod) */
-    SPLACTION_IS_NOT_LESS_THAN = 0x02000040,
+    ITDB_SPLACTION_IS_NOT_LESS_THAN = 0x02000040,
     /* Note: Not available in iTunes 4.5 (seems to work on iPod) */
-    SPLACTION_IS_NOT_IN_THE_RANGE = 0x02000100,
+    ITDB_SPLACTION_IS_NOT_IN_THE_RANGE = 0x02000100,
 
-    SPLACTION_IS_NOT_IN_THE_LAST = 0x02000200,
-    SPLACTION_IS_NOT = 0x03000001,
-    SPLACTION_DOES_NOT_CONTAIN = 0x03000002,
+    ITDB_SPLACTION_IS_NOT_IN_THE_LAST = 0x02000200,
+    ITDB_SPLACTION_IS_NOT = 0x03000001,
+    ITDB_SPLACTION_DOES_NOT_CONTAIN = 0x03000002,
 
     /* Note: Not available in iTunes 4.5 (seems to work on iPod) */
-    SPLACTION_DOES_NOT_START_WITH = 0x03000004,
+    ITDB_SPLACTION_DOES_NOT_START_WITH = 0x03000004,
     /* Note: Not available in iTunes 4.5 (seems to work on iPod) */
-    SPLACTION_DOES_NOT_END_WITH = 0x03000008,
-} SPLAction;
+    ITDB_SPLACTION_DOES_NOT_END_WITH = 0x03000008,
+} ItdbSPLAction;
 
 typedef enum
 {
-    splft_string = 1,
-    splft_int,
-    splft_boolean,
-    splft_date,
-    splft_playlist,
-    splft_unknown,
-    splft_binary_and
-} SPLFieldType;
+    ITDB_SPLFT_STRING = 1,
+    ITDB_SPLFT_INT,
+    ITDB_SPLFT_BOOLEAN,
+    ITDB_SPLFT_DATE,
+    ITDB_SPLFT_PLAYLIST,
+    ITDB_SPLFT_UNKNOWN,
+    ITDB_SPLFT_BINARY_AND
+} ItdbSPLFieldType;
 
 typedef enum
 {
-    splat_string = 1,
-    splat_int,
-    splat_date,
-    splat_range_int,
-    splat_range_date,
-    splat_inthelast,
-    splat_playlist,
-    splat_none,
-    splat_invalid,
-    splat_unknown,
-    splat_binary_and
-} SPLActionType;
+    ITDB_SPLAT_STRING = 1,
+    ITDB_SPLAT_INT,
+    ITDB_SPLAT_DATE,
+    ITDB_SPLAT_RANGE_INT,
+    ITDB_SPLAT_RANGE_DATE,
+    ITDB_SPLAT_INTHELAST,
+    ITDB_SPLAT_PLAYLIST,
+    ITDB_SPLAT_NONE,
+    ITDB_SPLAT_INVALID,
+    ITDB_SPLAT_UNKNOWN,
+    ITDB_SPLAT_BINARY_AND
+} ItdbSPLActionType;
 
 
 /* These are to pass to AddRule() when you need a unit for the two "in
    the last" action types Or, in theory, you can use any time
    range... iTunes might not like it, but the iPod shouldn't care. */
-enum {
-    SPLACTION_LAST_DAYS_VALUE = 86400,    /* nr of secs in 24 hours */
-    SPLACTION_LAST_WEEKS_VALUE = 604800,  /* nr of secs in 7 days   */
-    SPLACTION_LAST_MONTHS_VALUE = 2628000,/* nr of secs in 30.4167
+typedef enum {
+    ITDB_SPLACTION_LAST_DAYS_VALUE = 86400,    /* nr of secs in 24 hours */
+    ITDB_SPLACTION_LAST_WEEKS_VALUE = 604800,  /* nr of secs in 7 days   */
+    ITDB_SPLACTION_LAST_MONTHS_VALUE = 2628000,/* nr of secs in 30.4167
 					     days ~= 1 month */
-} ;
+} ItdbSPLActionLast;
 
 #if 0
 // Hey, why limit ourselves to what iTunes can do? If the iPod can deal with it, excellent!
-#define SPLACTION_LAST_HOURS_VALUE		3600		// number of seconds in 1 hour
-#define SPLACTION_LAST_MINUTES_VALUE	60			// number of seconds in 1 minute
-#define SPLACTION_LAST_YEARS_VALUE		31536000 	// number of seconds in 365 days
+#define ITDB_SPLACTION_LAST_HOURS_VALUE		3600		// number of seconds in 1 hour
+#define ITDB_SPLACTION_LAST_MINUTES_VALUE	60			// number of seconds in 1 minute
+#define ITDB_SPLACTION_LAST_YEARS_VALUE		31536000 	// number of seconds in 365 days
 
 /* fun ones.. Near as I can tell, all of these work. It's open like that. :)*/
-#define SPLACTION_LAST_LUNARCYCLE_VALUE	2551443		// a "lunar cycle" is the time it takes the moon to circle the earth
-#define SPLACTION_LAST_SIDEREAL_DAY		86164		// a "sidereal day" is time in one revolution of earth on its axis
-#define SPLACTION_LAST_SWATCH_BEAT		86			// a "swatch beat" is 1/1000th of a day.. search for "internet time" on google
-#define SPLACTION_LAST_MOMENT			90			// a "moment" is 1/40th of an hour, or 1.5 minutes
-#define SPLACTION_LAST_OSTENT			600			// an "ostent" is 1/10th of an hour, or 6 minutes
-#define SPLACTION_LAST_FORTNIGHT		1209600 	// a "fortnight" is 14 days
-#define SPLACTION_LAST_VINAL			1728000 	// a "vinal" is 20 days
-#define SPLACTION_LAST_QUARTER			7889231		// a "quarter" is a quarter year
-#define SPLACTION_LAST_SOLAR_YEAR       31556926 	// a "solar year" is the time it takes the earth to go around the sun
-#define SPLACTION_LAST_SIDEREAL_YEAR 	31558150	// a "sidereal year" is the time it takes the earth to reach the same point in space again, compared to the stars
+#define ITDB_SPLACTION_LAST_LUNARCYCLE_VALUE	2551443		// a "lunar cycle" is the time it takes the moon to circle the earth
+#define ITDB_SPLACTION_LAST_SIDEREAL_DAY		86164		// a "sidereal day" is time in one revolution of earth on its axis
+#define ITDB_SPLACTION_LAST_SWATCH_BEAT		86			// a "swatch beat" is 1/1000th of a day.. search for "internet time" on google
+#define ITDB_SPLACTION_LAST_MOMENT			90			// a "moment" is 1/40th of an hour, or 1.5 minutes
+#define ITDB_SPLACTION_LAST_OSTENT			600			// an "ostent" is 1/10th of an hour, or 6 minutes
+#define ITDB_SPLACTION_LAST_FORTNIGHT		1209600 	// a "fortnight" is 14 days
+#define ITDB_SPLACTION_LAST_VINAL			1728000 	// a "vinal" is 20 days
+#define ITDB_SPLACTION_LAST_QUARTER			7889231		// a "quarter" is a quarter year
+#define ITDB_SPLACTION_LAST_SOLAR_YEAR       31556926 	// a "solar year" is the time it takes the earth to go around the sun
+#define ITDB_SPLACTION_LAST_SIDEREAL_YEAR 	31558150	// a "sidereal year" is the time it takes the earth to reach the same point in space again, compared to the stars
 #endif
 
 /* Smartlist fields - Used for rules. */
 typedef enum {
-    SPLFIELD_SONG_NAME = 0x02,    /* String */
-    SPLFIELD_ALBUM = 0x03,        /* String */
-    SPLFIELD_ARTIST = 0x04,       /* String */
-    SPLFIELD_BITRATE = 0x05,      /* Int (e.g. from/to = 128) */
-    SPLFIELD_SAMPLE_RATE = 0x06,  /* Int  (e.g. from/to = 44100) */
-    SPLFIELD_YEAR = 0x07,         /* Int  (e.g. from/to = 2004) */
-    SPLFIELD_GENRE = 0x08,        /* String */
-    SPLFIELD_KIND = 0x09,         /* String */
-    SPLFIELD_DATE_MODIFIED = 0x0a,/* Int/Mac Timestamp (e.g. from/to =
+    ITDB_SPLFIELD_SONG_NAME = 0x02,    /* String */
+    ITDB_SPLFIELD_ALBUM = 0x03,        /* String */
+    ITDB_SPLFIELD_ARTIST = 0x04,       /* String */
+    ITDB_SPLFIELD_BITRATE = 0x05,      /* Int (e.g. from/to = 128) */
+    ITDB_SPLFIELD_SAMPLE_RATE = 0x06,  /* Int  (e.g. from/to = 44100) */
+    ITDB_SPLFIELD_YEAR = 0x07,         /* Int  (e.g. from/to = 2004) */
+    ITDB_SPLFIELD_GENRE = 0x08,        /* String */
+    ITDB_SPLFIELD_KIND = 0x09,         /* String */
+    ITDB_SPLFIELD_DATE_MODIFIED = 0x0a,/* Int/Mac Timestamp (e.g. from/to =
                                      bcf93280 == is before 6/19/2004)*/
-    SPLFIELD_TRACKNUMBER = 0x0b,  /* Int (e.g. from = 1, to = 2) */
-    SPLFIELD_SIZE = 0x0c,         /* Int (e.g. from/to = 0x00600000
+    ITDB_SPLFIELD_TRACKNUMBER = 0x0b,  /* Int (e.g. from = 1, to = 2) */
+    ITDB_SPLFIELD_SIZE = 0x0c,         /* Int (e.g. from/to = 0x00600000
 				     for 6MB) */
-    SPLFIELD_TIME = 0x0d,         /* Int (e.g. from/to = 83999 for
+    ITDB_SPLFIELD_TIME = 0x0d,         /* Int (e.g. from/to = 83999 for
 				     1:23/83 seconds) */
-    SPLFIELD_COMMENT = 0x0e,      /* String */
-    SPLFIELD_DATE_ADDED = 0x10,   /* Int/Mac Timestamp (e.g. from/to =
+    ITDB_SPLFIELD_COMMENT = 0x0e,      /* String */
+    ITDB_SPLFIELD_DATE_ADDED = 0x10,   /* Int/Mac Timestamp (e.g. from/to =
                                      bcfa83ff == is after 6/19/2004) */
-    SPLFIELD_COMPOSER = 0x12,     /* String */
-    SPLFIELD_PLAYCOUNT = 0x16,    /* Int  (e.g. from/to = 1) */
-    SPLFIELD_LAST_PLAYED = 0x17,  /* Int/Mac Timestamp (e.g. from =
+    ITDB_SPLFIELD_COMPOSER = 0x12,     /* String */
+    ITDB_SPLFIELD_PLAYCOUNT = 0x16,    /* Int  (e.g. from/to = 1) */
+    ITDB_SPLFIELD_LAST_PLAYED = 0x17,  /* Int/Mac Timestamp (e.g. from =
                                      bcfa83ff (6/19/2004) to =
                                      0xbcfbd57f (6/20/2004)) */
-    SPLFIELD_DISC_NUMBER = 0x18,  /* Int  (e.g. from/to = 1) */
-    SPLFIELD_RATING = 0x19,       /* Int/Stars Rating (e.g. from/to =
+    ITDB_SPLFIELD_DISC_NUMBER = 0x18,  /* Int  (e.g. from/to = 1) */
+    ITDB_SPLFIELD_RATING = 0x19,       /* Int/Stars Rating (e.g. from/to =
                                      60 (3 stars)) */
-    SPLFIELD_COMPILATION = 0x1f,  /* Int (e.g. is set ->
-				     SPLACTION_IS_INT/from=1,
+    ITDB_SPLFIELD_COMPILATION = 0x1f,  /* Int (e.g. is set ->
+				     ITDB_SPLACTION_IS_INT/from=1,
 				     is not set ->
-				     SPLACTION_IS_NOT_INT/from=1) */
-    SPLFIELD_BPM = 0x23,          /* Int  (e.g. from/to = 60) */
-    SPLFIELD_GROUPING = 0x27,     /* String */
-    SPLFIELD_PLAYLIST = 0x28,     /* FIXME - Unknown...not parsed
+				     ITDB_SPLACTION_IS_NOT_INT/from=1) */
+    ITDB_SPLFIELD_BPM = 0x23,          /* Int  (e.g. from/to = 60) */
+    ITDB_SPLFIELD_GROUPING = 0x27,     /* String */
+    ITDB_SPLFIELD_PLAYLIST = 0x28,     /* FIXME - Unknown...not parsed
 				     correctly...from/to = 0xb6fbad5f
 				     for "Purchased Music".  Extra
 				     data after "to"... */
-    SPLFIELD_VIDEO_KIND = 0x3c,   /* Logic Int */
-    SPLFIELD_TVSHOW = 0x3e,       /* String */
-    SPLFIELD_SEASON_NR = 0x3f,    /* Int */
-    SPLFIELD_SKIPCOUNT = 0x44,    /* Int */
-    SPLFIELD_LAST_SKIPPED = 0x45, /* Int/Mac Timestamp */
-    SPLFIELD_ALBUMARTIST = 0x47   /* String */
-} SPLField;
+    ITDB_SPLFIELD_VIDEO_KIND = 0x3c,   /* Logic Int */
+    ITDB_SPLFIELD_TVSHOW = 0x3e,       /* String */
+    ITDB_SPLFIELD_SEASON_NR = 0x3f,    /* Int */
+    ITDB_SPLFIELD_SKIPCOUNT = 0x44,    /* Int */
+    ITDB_SPLFIELD_LAST_SKIPPED = 0x45, /* Int/Mac Timestamp */
+    ITDB_SPLFIELD_ALBUMARTIST = 0x47   /* String */
+} ItdbSPLField;
 
-#define SPLDATE_IDENTIFIER (G_GINT64_CONSTANT (0x2dae2dae2dae2daeU))
-
-/* Maximum string length that iTunes writes to the database */
-#define SPL_MAXSTRINGLENGTH 255
-
-struct _SPLPref
+struct _Itdb_SPLPref
 {
     guint8  liveupdate;        /* "live Updating" check box */
     guint8  checkrules;        /* "Match X of the following
@@ -358,7 +354,7 @@ struct _SPLPref
 				  box */
 };
 
-struct _SPLRule
+struct _Itdb_SPLRule
 {
     guint32 field;
     guint32 action;
@@ -387,11 +383,11 @@ struct _SPLRule
 };
 
 
-struct _SPLRules
+struct _Itdb_SPLRules
 {
     guint32 unk004;
-    guint32 match_operator;  /* "All" (logical AND): SPLMATCH_AND,
-				"Any" (logical OR): SPLMATCH_OR */
+    guint32 match_operator;  /* "All" (logical AND): Itdb_SPLMATCH_AND,
+				"Any" (logical OR): Itdb_SPLMATCH_OR */
     GList *rules;
 };
 
@@ -558,8 +554,8 @@ struct _Itdb_Playlist
     guint64 id;           /* playlist ID                           */
     guint32 sortorder;    /* How to sort playlist -- see below     */
     guint32 podcastflag;  /* ITDB_PL_FLAG_NORM/_PODCAST            */
-    SPLPref splpref;      /* smart playlist prefs                  */
-    SPLRules splrules;    /* rules for smart playlists             */
+    Itdb_SPLPref splpref;      /* smart playlist prefs                  */
+    Itdb_SPLRules splrules;    /* rules for smart playlists             */
     gpointer reserved1;   /* reserved for MHOD100 implementation   */
     gpointer reserved2;   /* reserved for MHOD100 implementation   */
     /* below is for use by application */
@@ -1010,15 +1006,15 @@ gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl);
 void itdb_playlist_set_podcasts (Itdb_Playlist *pl);
 
 /* smart playlist functions */
-SPLFieldType itdb_splr_get_field_type (const SPLRule *splr);
-SPLActionType itdb_splr_get_action_type (const SPLRule *splr);
-void itdb_splr_validate (SPLRule *splr);
-void itdb_splr_remove (Itdb_Playlist *pl, SPLRule *splr);
-SPLRule *itdb_splr_new (void);
-void itdb_splr_add (Itdb_Playlist *pl, SPLRule *splr, gint pos);
-SPLRule *itdb_splr_add_new (Itdb_Playlist *pl, gint pos);
+ItdbSPLFieldType itdb_splr_get_field_type (const Itdb_SPLRule *splr);
+ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr);
+void itdb_splr_validate (Itdb_SPLRule *splr);
+void itdb_splr_remove (Itdb_Playlist *pl, Itdb_SPLRule *splr);
+Itdb_SPLRule *itdb_splr_new (void);
+void itdb_splr_add (Itdb_Playlist *pl, Itdb_SPLRule *splr, gint pos);
+Itdb_SPLRule *itdb_splr_add_new (Itdb_Playlist *pl, gint pos);
 void itdb_spl_copy_rules (Itdb_Playlist *dest, Itdb_Playlist *src);
-gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track);
+gboolean itdb_splr_eval (Itdb_SPLRule *splr, Itdb_Track *track);
 void itdb_spl_update (Itdb_Playlist *spl);
 void itdb_spl_update_all (Itdb_iTunesDB *itdb);
 void itdb_spl_update_live (Itdb_iTunesDB *itdb);

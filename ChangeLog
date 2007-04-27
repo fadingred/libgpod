@@ -1,5 +1,36 @@
 2007-04-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+ 	* src/itdb.h
+ 	  src/itdb_itunesdb.c
+ 	  src/itdb_playlist.c
+ 	  src/itdb_private.h: namespace cleanup. Applications supporting
+ 	  smart playlists will have to be adapted. The following changes
+ 	  were implemented to make sure all exported symbols start with
+ 	  ITDB or Itdb:
+ 
+ 	  structs:
+ 	      SPLPref -> Itdb_SPLPref
+ 	      SPLRules -> Itdb_SPLRules
+ 	      SPLRule -> Itdb_SPLRule
+ 	      SPL_* -> ITDB_SPL_*
+ 	  enums, #defines:
+ 	      LIMITTYPE_* -> ITDB_LIMITTYPE_*
+ 	      LIMITSORT_* -> ITDB_LIMITSORT_*
+ 	      SPLMATCH_* -> ITDB_SPLMATCH_*
+ 	      SPLACTION_* -> ITDB_SPLACTION_*
+ 	      SPLFIELD_* -> ITDB_SPLFIELD_*
+ 	      SPLDATE_IDENTIFIER -> ITDB_SPL_DATE_IDENTIFIER
+ 	      splft_* -> ITDB_SPLFT_*
+ 	      splat_* -> ITDB_SPLAT_*
+ 	      enum SPLAction -> ItdbSPLAction
+ 	      enum SPLActionType -> ItdbSPLActionType
+ 	      enum SPLField -> ItdbSPLField
+ 	      enum SPLFieldType -> ItdbSPLFieldType
+ 	      enum ItdbLimitType (new)
+ 	      enum ItdbLimitSort (new)
+ 	      enum ItdbSPLMatch (new)
+ 	      removed SPL_MAXSTRINGLENGTH (use ITDB_SPL_STRING_MAXLEN)
+ 
 	* docs/reference/tmpl/device.sgml
 	  docs/reference/tmpl/itunesdb-time.sgml
 	  docs/reference/tmpl/libgpod-unused.sgml

@@ -88,10 +88,6 @@
    void itunesdb_convert_filename_fs2ipod(gchar *ipod_file);
    void itunesdb_convert_filename_ipod2fs(gchar *ipod_file);
 
-   guint32 itunesdb_time_get_mac_time (void);
-   time_t itunesdb_time_mac_to_host (guint32 mactime);
-   guint32 itunesdb_time_host_to_mac (time_t time);
-
    void itunesdb_rename_files (const gchar *dirname);
 
    (Renames/removes some files on the iPod (Playcounts, OTG
@@ -255,8 +251,8 @@ struct _MHODData
 	gchar *string;
 	gchar *chapterdata_raw;
 	Itdb_Track *chapterdata_track; /* for writing chapterdata */
-	SPLPref *splpref;
-	SPLRules *splrules;
+	Itdb_SPLPref *splpref;
+	Itdb_SPLRules *splrules;
 	GList *mhod52coltracks;
     } data;
     union
@@ -1278,7 +1274,7 @@ static gint32 get_mhod_type (FContents *cts, glong seek, guint32 *ml)
 
 /* Returns the contents of the mhod at position @mhod_seek. This can
    be a simple string or something more complicated as in the case for
-   SPLPREF OR SPLRULES.
+   Itdb_SPLPREF OR Itdb_SPLRULES.
 
    *mhod_len is set to the total length of the mhod (-1 in case an
    *error occured).
@@ -1423,7 +1419,7 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
   case MHOD_ID_SPLPREF:  /* Settings for smart playlist */
       if (!check_seek (cts, seek, 14))
 	  return result;  /* *ml==-1, result.valid==FALSE */
-      result.data.splpref = g_new0 (SPLPref, 1);
+      result.data.splpref = g_new0 (Itdb_SPLPref, 1);
       result.data.splpref->liveupdate = get8int (cts, seek);
       result.data.splpref->checkrules = get8int (cts, seek+1);
       result.data.splpref->checklimits = get8int (cts, seek+2);
@@ -1446,7 +1442,7 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 	  guint32 numrules;
 	  if (!check_seek (cts, seek, 136))
 	      return result;  /* *ml==-1, result.valid==FALSE */
-	  result.data.splrules = g_new0 (SPLRules, 1);
+	  result.data.splrules = g_new0 (Itdb_SPLRules, 1);
 	  result.data.splrules->unk004 = get32bint (cts, seek+4);
 	  numrules = get32bint (cts, seek+8);
 	  result.data.splrules->match_operator = get32bint (cts, seek+12);
@@ -1455,9 +1451,9 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 	  for (i=0; i<numrules; ++i)
 	  {
 	      guint32 length;
-	      SPLFieldType ft;
+	      ItdbSPLFieldType ft;
 	      gunichar2 *string_utf16;
-	      SPLRule *splr = g_new0 (SPLRule, 1);
+	      Itdb_SPLRule *splr = g_new0 (Itdb_SPLRule, 1);
 	      result.data.splrules->rules = g_list_append (
 		  result.data.splrules->rules, splr);
 	      if (!check_seek (cts, seek, 56))
@@ -1477,7 +1473,7 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 	      ft = itdb_splr_get_field_type (splr);
 	      switch (ft)
 	      {
-	      case splft_string:
+	      case ITDB_SPLFT_STRING:
 		  string_utf16 = g_new0 (gunichar2, (length+2)/2);
 		  if (!seek_get_n_bytes (cts, (gchar *)string_utf16,
 					 seek+4, length))
@@ -1490,12 +1486,12 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 		      string_utf16, -1, NULL, NULL, NULL);
 		  g_free (string_utf16);
 		  break;
-	      case splft_int:
-	      case splft_date:
-	      case splft_boolean:
-	      case splft_playlist:
-	      case splft_unknown:
-	      case splft_binary_and:
+	      case ITDB_SPLFT_INT:
+	      case ITDB_SPLFT_DATE:
+	      case ITDB_SPLFT_BOOLEAN:
+	      case ITDB_SPLFT_PLAYLIST:
+	      case ITDB_SPLFT_UNKNOWN:
+	      case ITDB_SPLFT_BINARY_AND:
 		  if (length != 0x44)
 		  {
 		      g_warning (_("Length of smart playlist rule field (%d) not as expected. Trying to continue anyhow.\n"), length);
@@ -1508,17 +1504,19 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 		  splr->tovalue = get64bint (cts, seek+28);
 		  splr->todate = get64bint (cts, seek+36);
 		  splr->tounits = get64bint (cts, seek+44);
-		  /* SPLFIELD_PLAYLIST seems to use these unknowns*/
+		  /* ITDB_SPLFIELD_PLAYLIST seems to use these unknowns*/
 		  splr->unk052 = get32bint (cts, seek+52);
 		  splr->unk056 = get32bint (cts, seek+56);
 		  splr->unk060 = get32bint (cts, seek+60);
 		  splr->unk064 = get32bint (cts, seek+64);
 		  splr->unk068 = get32bint (cts, seek+68);
 
-		  if (ft == splft_date) {
-		      SPLActionType at;
+		  if (ft == ITDB_SPLFT_DATE) {
+		      ItdbSPLActionType at;
 		      at = itdb_splr_get_action_type (splr);
-		      if ((at == splat_range_date) || (at == splat_date)) {
+		      if ((at == ITDB_SPLAT_RANGE_DATE) ||
+			  (at == ITDB_SPLAT_DATE))
+		      {
 			  Itdb_iTunesDB *itdb = fimp->itdb;
 			  splr->fromvalue = itdb_time_mac_to_time_t (itdb, 
 								     splr->fromvalue);
@@ -2027,7 +2025,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	      {
 		  plitem->is_spl = TRUE;
 		  memcpy (&plitem->splpref, mhod.data.splpref,
-			  sizeof (SPLPref));
+			  sizeof (Itdb_SPLPref));
 		  g_free (mhod.data.splpref);
 		  mhod.valid = FALSE;
 	      }
@@ -2039,7 +2037,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	      {
 		  plitem->is_spl = TRUE;
 		  memcpy (&plitem->splrules, mhod.data.splrules,
-			  sizeof (SPLRules));
+			  sizeof (Itdb_SPLRules));
 		  g_free (mhod.data.splrules);
 		  mhod.valid = FALSE;
 	      }
@@ -3681,8 +3679,8 @@ static void mhod52_free_collate_keys (GList *coltracks)
      type: see enum of MHMOD_IDs;
      data: utf8 string for text items
            position indicator for MHOD_ID_PLAYLIST
-           SPLPref for MHOD_ID_SPLPREF
-	   SPLRules for MHOD_ID_SPLRULES */
+           Itdb_SPLPref for MHOD_ID_SPLPREF
+	   Itdb_SPLRules for MHOD_ID_SPLRULES */
 static void mk_mhod (FExport *fexp, MHODData *mhod)
 {
   WContents *cts = fexp->wcontents;
@@ -3834,8 +3832,8 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
 	  /* end of header, now follow the rules */
 	  for (gl=mhod->data.splrules->rules; gl; gl=gl->next)
 	  {
-	      SPLRule *splr = gl->data;
-	      SPLFieldType ft;
+	      Itdb_SPLRule *splr = gl->data;
+	      ItdbSPLFieldType ft;
 	      gint len;
 	      gunichar2 *entry_utf16;
 	      g_return_if_fail (splr);
@@ -3847,7 +3845,7 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
 	      put32_n0 (cts, 11);          /* unknown              */	      
 	      switch (ft)
 	      {
-	      case splft_string:
+	      case ITDB_SPLFT_STRING:
 		  /* write string-type rule */
 		  entry_utf16 = NULL;
 		  /* splr->string may be NULL */
@@ -3860,25 +3858,26 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
 		  put_data (cts, (gchar *)entry_utf16, 2*len);
 		  g_free (entry_utf16);
 		  break;
-	      case splft_date:
-	      case splft_int:
-	      case splft_boolean:
-	      case splft_playlist:
-	      case splft_unknown:
-	      case splft_binary_and: {
+	      case ITDB_SPLFT_DATE:
+	      case ITDB_SPLFT_INT:
+	      case ITDB_SPLFT_BOOLEAN:
+	      case ITDB_SPLFT_PLAYLIST:
+	      case ITDB_SPLFT_UNKNOWN:
+	      case ITDB_SPLFT_BINARY_AND: {
 		  guint64 fromvalue;	       
 		  guint64 tovalue;
 		  
 		  fromvalue = splr->fromvalue;
 		  tovalue = splr->tovalue;
 
-		  if (ft == splft_date) {
-		      SPLActionType at;
+		  if (ft == ITDB_SPLFT_DATE) {
+		      ItdbSPLActionType at;
 		      at = itdb_splr_get_action_type (splr);
-		      if ((at == splat_range_date) || (at == splat_date)) {
+		      if ((at == ITDB_SPLAT_RANGE_DATE) ||
+			  (at == ITDB_SPLAT_DATE))
+		      {
 			  Itdb_iTunesDB *itdb = fexp->itdb;
-			  fromvalue = itdb_time_time_t_to_mac (itdb, 
-							       fromvalue);
+			  fromvalue = itdb_time_time_t_to_mac (itdb, fromvalue);
 			  tovalue = itdb_time_time_t_to_mac (itdb, tovalue);
 		      }
 		  }

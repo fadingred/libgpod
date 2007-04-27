@@ -47,31 +47,31 @@
  * Return value: TRUE if @action is known. Otherwise a warning is displayed 
  * and FALSE is returned. 
  **/
-gboolean itdb_spl_action_known (SPLAction action)
+gboolean itdb_spl_action_known (ItdbSPLAction action)
 {
     gboolean result = FALSE;
 
     switch (action)
     {
-    case SPLACTION_IS_INT:
-    case SPLACTION_IS_GREATER_THAN:
-    case SPLACTION_IS_NOT_GREATER_THAN:
-    case SPLACTION_IS_LESS_THAN:
-    case SPLACTION_IS_NOT_LESS_THAN:
-    case SPLACTION_IS_IN_THE_RANGE:
-    case SPLACTION_IS_NOT_IN_THE_RANGE:
-    case SPLACTION_IS_IN_THE_LAST:
-    case SPLACTION_IS_STRING:
-    case SPLACTION_CONTAINS:
-    case SPLACTION_STARTS_WITH:
-    case SPLACTION_DOES_NOT_START_WITH:
-    case SPLACTION_ENDS_WITH:
-    case SPLACTION_DOES_NOT_END_WITH:
-    case SPLACTION_IS_NOT_INT:
-    case SPLACTION_IS_NOT_IN_THE_LAST:
-    case SPLACTION_IS_NOT:
-    case SPLACTION_DOES_NOT_CONTAIN:
-    case SPLACTION_BINARY_AND:
+    case ITDB_SPLACTION_IS_INT:
+    case ITDB_SPLACTION_IS_GREATER_THAN:
+    case ITDB_SPLACTION_IS_NOT_GREATER_THAN:
+    case ITDB_SPLACTION_IS_LESS_THAN:
+    case ITDB_SPLACTION_IS_NOT_LESS_THAN:
+    case ITDB_SPLACTION_IS_IN_THE_RANGE:
+    case ITDB_SPLACTION_IS_NOT_IN_THE_RANGE:
+    case ITDB_SPLACTION_IS_IN_THE_LAST:
+    case ITDB_SPLACTION_IS_STRING:
+    case ITDB_SPLACTION_CONTAINS:
+    case ITDB_SPLACTION_STARTS_WITH:
+    case ITDB_SPLACTION_DOES_NOT_START_WITH:
+    case ITDB_SPLACTION_ENDS_WITH:
+    case ITDB_SPLACTION_DOES_NOT_END_WITH:
+    case ITDB_SPLACTION_IS_NOT_INT:
+    case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
+    case ITDB_SPLACTION_IS_NOT:
+    case ITDB_SPLACTION_DOES_NOT_CONTAIN:
+    case ITDB_SPLACTION_BINARY_AND:
 	result = TRUE;
     }
     if (result == FALSE)
@@ -83,232 +83,232 @@ gboolean itdb_spl_action_known (SPLAction action)
 
 /**
  * itdb_splr_get_field_type:
- * @splr: an #SPLRule
+ * @splr: an #Itdb_SPLRule
  *
  * Gets the type of the field of the @splr rule
  *
- * Return value: an #SPLFieldType corresponding to @splr field type 
+ * Return value: an #Itdb_SPLFieldType corresponding to @splr field type 
  * (string, int, date, ...)
  **/
-SPLFieldType itdb_splr_get_field_type (const SPLRule *splr)
+ItdbSPLFieldType itdb_splr_get_field_type (const Itdb_SPLRule *splr)
 {
-    g_return_val_if_fail (splr != NULL, splft_unknown);
+    g_return_val_if_fail (splr != NULL, ITDB_SPLFT_UNKNOWN);
 
-    switch((SPLField)splr->field)
+    switch((ItdbSPLField)splr->field)
     {
-    case SPLFIELD_SONG_NAME:
-    case SPLFIELD_ALBUM:
-    case SPLFIELD_ALBUMARTIST:
-    case SPLFIELD_ARTIST:
-    case SPLFIELD_GENRE:
-    case SPLFIELD_KIND:
-    case SPLFIELD_COMMENT:
-    case SPLFIELD_COMPOSER:
-    case SPLFIELD_GROUPING:
-    case SPLFIELD_TVSHOW:
-	return splft_string;
-    case SPLFIELD_BITRATE:
-    case SPLFIELD_SAMPLE_RATE:
-    case SPLFIELD_YEAR:
-    case SPLFIELD_TRACKNUMBER:
-    case SPLFIELD_SIZE:
-    case SPLFIELD_PLAYCOUNT:
-    case SPLFIELD_DISC_NUMBER:
-    case SPLFIELD_BPM:
-    case SPLFIELD_RATING:
-    case SPLFIELD_TIME: /* time is the length of the track in
+    case ITDB_SPLFIELD_SONG_NAME:
+    case ITDB_SPLFIELD_ALBUM:
+    case ITDB_SPLFIELD_ALBUMARTIST:
+    case ITDB_SPLFIELD_ARTIST:
+    case ITDB_SPLFIELD_GENRE:
+    case ITDB_SPLFIELD_KIND:
+    case ITDB_SPLFIELD_COMMENT:
+    case ITDB_SPLFIELD_COMPOSER:
+    case ITDB_SPLFIELD_GROUPING:
+    case ITDB_SPLFIELD_TVSHOW:
+	return ITDB_SPLFT_STRING;
+    case ITDB_SPLFIELD_BITRATE:
+    case ITDB_SPLFIELD_SAMPLE_RATE:
+    case ITDB_SPLFIELD_YEAR:
+    case ITDB_SPLFIELD_TRACKNUMBER:
+    case ITDB_SPLFIELD_SIZE:
+    case ITDB_SPLFIELD_PLAYCOUNT:
+    case ITDB_SPLFIELD_DISC_NUMBER:
+    case ITDB_SPLFIELD_BPM:
+    case ITDB_SPLFIELD_RATING:
+    case ITDB_SPLFIELD_TIME: /* time is the length of the track in
 			   milliseconds */
-    case SPLFIELD_SEASON_NR:
-    case SPLFIELD_SKIPCOUNT:
-	return splft_int;
-    case SPLFIELD_COMPILATION:
-	return splft_boolean;
-    case SPLFIELD_DATE_MODIFIED:
-    case SPLFIELD_DATE_ADDED:
-    case SPLFIELD_LAST_PLAYED:
-    case SPLFIELD_LAST_SKIPPED:
-	return splft_date;
-    case SPLFIELD_PLAYLIST:
-	return splft_playlist;
-    case SPLFIELD_VIDEO_KIND:
-	return splft_binary_and;
+    case ITDB_SPLFIELD_SEASON_NR:
+    case ITDB_SPLFIELD_SKIPCOUNT:
+	return ITDB_SPLFT_INT;
+    case ITDB_SPLFIELD_COMPILATION:
+	return ITDB_SPLFT_BOOLEAN;
+    case ITDB_SPLFIELD_DATE_MODIFIED:
+    case ITDB_SPLFIELD_DATE_ADDED:
+    case ITDB_SPLFIELD_LAST_PLAYED:
+    case ITDB_SPLFIELD_LAST_SKIPPED:
+	return ITDB_SPLFT_DATE;
+    case ITDB_SPLFIELD_PLAYLIST:
+	return ITDB_SPLFT_PLAYLIST;
+    case ITDB_SPLFIELD_VIDEO_KIND:
+	return ITDB_SPLFT_BINARY_AND;
     }
-    return(splft_unknown);
+    return(ITDB_SPLFT_UNKNOWN);
 }
 
 
 /**
  * itdb_splr_get_action_type:
- * @splr: an #SPLRule
+ * @splr: an #Itdb_SPLRule
  * 
  * Gets the type of the action associated with @splr.
  *
  * Return value: type (range, date, string...) of the action field 
  **/
-SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
+ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 {
-    SPLFieldType fieldType;
+    ItdbSPLFieldType fieldType;
 
-    g_return_val_if_fail (splr != NULL, splft_unknown);
+    g_return_val_if_fail (splr != NULL, ITDB_SPLAT_INVALID);
 
     fieldType = itdb_splr_get_field_type (splr);
 
     switch(fieldType)
     {
-    case splft_string:
-	switch ((SPLAction)splr->action)
+    case ITDB_SPLFT_STRING:
+	switch ((ItdbSPLAction)splr->action)
 	{
-	case SPLACTION_IS_STRING:
-	case SPLACTION_IS_NOT:
-	case SPLACTION_CONTAINS:
-	case SPLACTION_DOES_NOT_CONTAIN:
-	case SPLACTION_STARTS_WITH:
-	case SPLACTION_DOES_NOT_START_WITH:
-	case SPLACTION_ENDS_WITH:
-	case SPLACTION_DOES_NOT_END_WITH:
-	    return splat_string;
-	case SPLACTION_IS_NOT_IN_THE_RANGE:
-	case SPLACTION_IS_INT:
-	case SPLACTION_IS_NOT_INT:
-	case SPLACTION_IS_GREATER_THAN:
-	case SPLACTION_IS_NOT_GREATER_THAN:
-	case SPLACTION_IS_LESS_THAN:
-	case SPLACTION_IS_NOT_LESS_THAN:
-	case SPLACTION_IS_IN_THE_RANGE:
-	case SPLACTION_IS_IN_THE_LAST:
-	case SPLACTION_IS_NOT_IN_THE_LAST:
-	case SPLACTION_BINARY_AND:
-	    return splat_invalid;
+	case ITDB_SPLACTION_IS_STRING:
+	case ITDB_SPLACTION_IS_NOT:
+	case ITDB_SPLACTION_CONTAINS:
+	case ITDB_SPLACTION_DOES_NOT_CONTAIN:
+	case ITDB_SPLACTION_STARTS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_START_WITH:
+	case ITDB_SPLACTION_ENDS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_END_WITH:
+	    return ITDB_SPLAT_STRING;
+	case ITDB_SPLACTION_IS_NOT_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_INT:
+	case ITDB_SPLACTION_IS_NOT_INT:
+	case ITDB_SPLACTION_IS_GREATER_THAN:
+	case ITDB_SPLACTION_IS_NOT_GREATER_THAN:
+	case ITDB_SPLACTION_IS_LESS_THAN:
+	case ITDB_SPLACTION_IS_NOT_LESS_THAN:
+	case ITDB_SPLACTION_IS_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
+	case ITDB_SPLACTION_BINARY_AND:
+	    return ITDB_SPLAT_INVALID;
 	}
 	/* Unknown action type */
 	g_warning ("Unknown action type %d\n\n", splr->action);
-	return splat_unknown;
+	return ITDB_SPLAT_UNKNOWN;
 
-    case splft_int:
-	switch ((SPLAction)splr->action)
+    case ITDB_SPLFT_INT:
+	switch ((ItdbSPLAction)splr->action)
 	{
-	case SPLACTION_IS_INT:
-	case SPLACTION_IS_NOT_INT:
-	case SPLACTION_IS_GREATER_THAN:
-	case SPLACTION_IS_NOT_GREATER_THAN:
-	case SPLACTION_IS_LESS_THAN:
-	case SPLACTION_IS_NOT_LESS_THAN:
-	    return splat_int;
-	case SPLACTION_IS_NOT_IN_THE_RANGE:
-	case SPLACTION_IS_IN_THE_RANGE:
-	    return splat_range_int;
-	case SPLACTION_BINARY_AND:
-	case SPLACTION_IS_STRING:
-	case SPLACTION_CONTAINS:
-	case SPLACTION_STARTS_WITH:
-	case SPLACTION_DOES_NOT_START_WITH:
-	case SPLACTION_ENDS_WITH:
-	case SPLACTION_DOES_NOT_END_WITH:
-	case SPLACTION_IS_IN_THE_LAST:
-	case SPLACTION_IS_NOT_IN_THE_LAST:
-	case SPLACTION_IS_NOT:
-	case SPLACTION_DOES_NOT_CONTAIN:
-	    return splat_invalid;
+	case ITDB_SPLACTION_IS_INT:
+	case ITDB_SPLACTION_IS_NOT_INT:
+	case ITDB_SPLACTION_IS_GREATER_THAN:
+	case ITDB_SPLACTION_IS_NOT_GREATER_THAN:
+	case ITDB_SPLACTION_IS_LESS_THAN:
+	case ITDB_SPLACTION_IS_NOT_LESS_THAN:
+	    return ITDB_SPLAT_INT;
+	case ITDB_SPLACTION_IS_NOT_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_IN_THE_RANGE:
+	    return ITDB_SPLAT_RANGE_INT;
+	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_IS_STRING:
+	case ITDB_SPLACTION_CONTAINS:
+	case ITDB_SPLACTION_STARTS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_START_WITH:
+	case ITDB_SPLACTION_ENDS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_END_WITH:
+	case ITDB_SPLACTION_IS_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_NOT:
+	case ITDB_SPLACTION_DOES_NOT_CONTAIN:
+	    return ITDB_SPLAT_INVALID;
 	}
 	/* Unknown action type */
 	g_warning ("Unknown action type %d\n\n", splr->action);
-	return splat_unknown;
+	return ITDB_SPLAT_UNKNOWN;
 
-    case splft_boolean:
-	return splat_none;
+    case ITDB_SPLFT_BOOLEAN:
+	return ITDB_SPLAT_NONE;
 
-    case splft_date:
-	switch ((SPLAction)splr->action)
+    case ITDB_SPLFT_DATE:
+	switch ((ItdbSPLAction)splr->action)
 	{
-	case SPLACTION_IS_INT:
-	case SPLACTION_IS_NOT_INT:
-	case SPLACTION_IS_GREATER_THAN:
-	case SPLACTION_IS_NOT_GREATER_THAN:
-	case SPLACTION_IS_LESS_THAN:
-	case SPLACTION_IS_NOT_LESS_THAN:
-	    return splat_date;
-	case SPLACTION_IS_IN_THE_LAST:
-	case SPLACTION_IS_NOT_IN_THE_LAST:
-	    return splat_inthelast;
-	case SPLACTION_IS_IN_THE_RANGE:
-	case SPLACTION_IS_NOT_IN_THE_RANGE:
-	    return splat_range_date;
-	case SPLACTION_IS_STRING:
-	case SPLACTION_CONTAINS:
-	case SPLACTION_STARTS_WITH:
-	case SPLACTION_DOES_NOT_START_WITH:
-	case SPLACTION_ENDS_WITH:
-	case SPLACTION_DOES_NOT_END_WITH:
-	case SPLACTION_IS_NOT:
-	case SPLACTION_DOES_NOT_CONTAIN:
-	case SPLACTION_BINARY_AND:
-	    return splat_invalid;
+	case ITDB_SPLACTION_IS_INT:
+	case ITDB_SPLACTION_IS_NOT_INT:
+	case ITDB_SPLACTION_IS_GREATER_THAN:
+	case ITDB_SPLACTION_IS_NOT_GREATER_THAN:
+	case ITDB_SPLACTION_IS_LESS_THAN:
+	case ITDB_SPLACTION_IS_NOT_LESS_THAN:
+	    return ITDB_SPLAT_DATE;
+	case ITDB_SPLACTION_IS_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
+	    return ITDB_SPLAT_INTHELAST;
+	case ITDB_SPLACTION_IS_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_RANGE:
+	    return ITDB_SPLAT_RANGE_DATE;
+	case ITDB_SPLACTION_IS_STRING:
+	case ITDB_SPLACTION_CONTAINS:
+	case ITDB_SPLACTION_STARTS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_START_WITH:
+	case ITDB_SPLACTION_ENDS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_END_WITH:
+	case ITDB_SPLACTION_IS_NOT:
+	case ITDB_SPLACTION_DOES_NOT_CONTAIN:
+	case ITDB_SPLACTION_BINARY_AND:
+	    return ITDB_SPLAT_INVALID;
 	}
-    case splft_binary_and:
-	switch ((SPLAction)splr->action)
+    case ITDB_SPLFT_BINARY_AND:
+	switch ((ItdbSPLAction)splr->action)
 	{
-	case SPLACTION_BINARY_AND:
-	    return splat_binary_and;
-	case SPLACTION_IS_INT:
-	case SPLACTION_IS_NOT_INT:
-	case SPLACTION_IS_GREATER_THAN:
-	case SPLACTION_IS_NOT_GREATER_THAN:
-	case SPLACTION_IS_LESS_THAN:
-	case SPLACTION_IS_NOT_LESS_THAN:
-	case SPLACTION_IS_IN_THE_LAST:
-	case SPLACTION_IS_NOT_IN_THE_LAST:
-	case SPLACTION_IS_IN_THE_RANGE:
-	case SPLACTION_IS_NOT_IN_THE_RANGE:
-	case SPLACTION_IS_STRING:
-	case SPLACTION_CONTAINS:
-	case SPLACTION_STARTS_WITH:
-	case SPLACTION_DOES_NOT_START_WITH:
-	case SPLACTION_ENDS_WITH:
-	case SPLACTION_DOES_NOT_END_WITH:
-	case SPLACTION_IS_NOT:
-	case SPLACTION_DOES_NOT_CONTAIN:
-	    return splat_invalid;
+	case ITDB_SPLACTION_BINARY_AND:
+	    return ITDB_SPLAT_BINARY_AND;
+	case ITDB_SPLACTION_IS_INT:
+	case ITDB_SPLACTION_IS_NOT_INT:
+	case ITDB_SPLACTION_IS_GREATER_THAN:
+	case ITDB_SPLACTION_IS_NOT_GREATER_THAN:
+	case ITDB_SPLACTION_IS_LESS_THAN:
+	case ITDB_SPLACTION_IS_NOT_LESS_THAN:
+	case ITDB_SPLACTION_IS_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_STRING:
+	case ITDB_SPLACTION_CONTAINS:
+	case ITDB_SPLACTION_STARTS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_START_WITH:
+	case ITDB_SPLACTION_ENDS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_END_WITH:
+	case ITDB_SPLACTION_IS_NOT:
+	case ITDB_SPLACTION_DOES_NOT_CONTAIN:
+	    return ITDB_SPLAT_INVALID;
 	}
 
 	/* Unknown action type */
 	g_warning ("Unknown action type %d\n\n", splr->action);
-	return splat_unknown;
+	return ITDB_SPLAT_UNKNOWN;
 
-    case splft_playlist:
-	switch ((SPLAction)splr->action)
+    case ITDB_SPLFT_PLAYLIST:
+	switch ((ItdbSPLAction)splr->action)
 	{
-	case SPLACTION_IS_INT:
-	case SPLACTION_IS_NOT_INT:
-	    return splat_playlist;
-	case SPLACTION_IS_GREATER_THAN:
-	case SPLACTION_IS_NOT_GREATER_THAN:
-	case SPLACTION_IS_LESS_THAN:
-	case SPLACTION_IS_NOT_LESS_THAN:
-	case SPLACTION_IS_IN_THE_LAST:
-	case SPLACTION_IS_NOT_IN_THE_LAST:
-	case SPLACTION_IS_IN_THE_RANGE:
-	case SPLACTION_IS_NOT_IN_THE_RANGE:
-	case SPLACTION_IS_STRING:
-	case SPLACTION_CONTAINS:
-	case SPLACTION_STARTS_WITH:
-	case SPLACTION_DOES_NOT_START_WITH:
-	case SPLACTION_ENDS_WITH:
-	case SPLACTION_DOES_NOT_END_WITH:
-	case SPLACTION_IS_NOT:
-	case SPLACTION_DOES_NOT_CONTAIN:
-	case SPLACTION_BINARY_AND:
-	    return splat_invalid;
+	case ITDB_SPLACTION_IS_INT:
+	case ITDB_SPLACTION_IS_NOT_INT:
+	    return ITDB_SPLAT_PLAYLIST;
+	case ITDB_SPLACTION_IS_GREATER_THAN:
+	case ITDB_SPLACTION_IS_NOT_GREATER_THAN:
+	case ITDB_SPLACTION_IS_LESS_THAN:
+	case ITDB_SPLACTION_IS_NOT_LESS_THAN:
+	case ITDB_SPLACTION_IS_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_STRING:
+	case ITDB_SPLACTION_CONTAINS:
+	case ITDB_SPLACTION_STARTS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_START_WITH:
+	case ITDB_SPLACTION_ENDS_WITH:
+	case ITDB_SPLACTION_DOES_NOT_END_WITH:
+	case ITDB_SPLACTION_IS_NOT:
+	case ITDB_SPLACTION_DOES_NOT_CONTAIN:
+	case ITDB_SPLACTION_BINARY_AND:
+	    return ITDB_SPLAT_INVALID;
 	}
 	/* Unknown action type */
 	g_warning ("Unknown action type %d\n\n", splr->action);
-	return splat_unknown;
+	return ITDB_SPLAT_UNKNOWN;
 
-    case splft_unknown:
+    case ITDB_SPLFT_UNKNOWN:
 	/* Unknown action type */
 	g_warning ("Unknown action type %d\n\n", splr->action);
-	return splat_unknown;
+	return ITDB_SPLAT_UNKNOWN;
     }
-    return splat_unknown;
+    return ITDB_SPLAT_UNKNOWN;
 }
 
 /* -------------------------------------------------------------------
@@ -323,17 +323,17 @@ SPLActionType itdb_splr_get_action_type (const SPLRule *splr)
 
 /**
  * itdb_splr_eval:
- * @splr: an #SPLRule
+ * @splr: an #Itdb_SPLRule
  * @track: an #Itdb_Track
  *
  * Evaluates @splr's truth against @track. track-&gt;itdb must be set.
  *
  * Return value: TRUE if @track matches @splr, FALSE otherwise.
  **/
-gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track)
+gboolean itdb_splr_eval (Itdb_SPLRule *splr, Itdb_Track *track)
 {
-    SPLFieldType ft;
-    SPLActionType at;
+    ItdbSPLFieldType ft;
+    ItdbSPLActionType at;
     gchar *strcomp = NULL;
     gint64 intcomp = 0;
     gboolean boolcomp = FALSE;
@@ -350,124 +350,124 @@ gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track)
     ft = itdb_splr_get_field_type (splr);
     at = itdb_splr_get_action_type (splr);
 
-    g_return_val_if_fail (at != splat_invalid, FALSE);
+    g_return_val_if_fail (at != ITDB_SPLAT_INVALID, FALSE);
 
     /* find what we need to compare in the track */
     switch (splr->field)
     {
-    case SPLFIELD_SONG_NAME:
+    case ITDB_SPLFIELD_SONG_NAME:
 	strcomp = track->title;
 	handled = TRUE;
 	break;
-    case SPLFIELD_ALBUM:
+    case ITDB_SPLFIELD_ALBUM:
 	strcomp = track->album;
 	handled = TRUE;
 	break;
-    case SPLFIELD_ARTIST:
+    case ITDB_SPLFIELD_ARTIST:
 	strcomp = track->artist;
 	handled = TRUE;
 	break;
-    case SPLFIELD_GENRE:
+    case ITDB_SPLFIELD_GENRE:
 	strcomp = track->genre;
 	handled = TRUE;
 	break;
-    case SPLFIELD_KIND:
+    case ITDB_SPLFIELD_KIND:
 	strcomp = track->filetype;
 	handled = TRUE;
 	break;
-    case SPLFIELD_COMMENT:
+    case ITDB_SPLFIELD_COMMENT:
 	strcomp = track->comment;
 	handled = TRUE;
 	break;
-    case SPLFIELD_COMPOSER:
+    case ITDB_SPLFIELD_COMPOSER:
 	strcomp = track->composer;
 	handled = TRUE;
 	break;
-    case SPLFIELD_GROUPING:
+    case ITDB_SPLFIELD_GROUPING:
 	strcomp = track->grouping;
 	handled = TRUE;
 	break;
-    case SPLFIELD_BITRATE:
+    case ITDB_SPLFIELD_BITRATE:
 	intcomp = track->bitrate;
 	handled = TRUE;
 	break;
-    case SPLFIELD_SAMPLE_RATE:
+    case ITDB_SPLFIELD_SAMPLE_RATE:
 	intcomp = track->samplerate;
 	handled = TRUE;
 	break;
-    case SPLFIELD_YEAR:
+    case ITDB_SPLFIELD_YEAR:
 	intcomp = track->year;
 	handled = TRUE;
 	break;
-    case SPLFIELD_TRACKNUMBER:
+    case ITDB_SPLFIELD_TRACKNUMBER:
 	intcomp = track->track_nr;
 	handled = TRUE;
 	break;
-    case SPLFIELD_SIZE:
+    case ITDB_SPLFIELD_SIZE:
 	intcomp = track->size;
 	handled = TRUE;
 	break;
-    case SPLFIELD_PLAYCOUNT:
+    case ITDB_SPLFIELD_PLAYCOUNT:
 	intcomp = track->playcount;
 	handled = TRUE;
 	break;
-    case SPLFIELD_DISC_NUMBER:
+    case ITDB_SPLFIELD_DISC_NUMBER:
 	intcomp = track->cd_nr;
 	handled = TRUE;
 	break;
-    case SPLFIELD_BPM:
+    case ITDB_SPLFIELD_BPM:
 	intcomp = track->BPM;
 	handled = TRUE;
 	break;
-    case SPLFIELD_RATING:
+    case ITDB_SPLFIELD_RATING:
 	intcomp = track->rating;
 	handled = TRUE;
 	break;
-    case SPLFIELD_TIME:
+    case ITDB_SPLFIELD_TIME:
 	intcomp = track->tracklen/1000;
 	handled = TRUE;
 	break;
-    case SPLFIELD_COMPILATION:
+    case ITDB_SPLFIELD_COMPILATION:
 	boolcomp = track->compilation;
 	handled = TRUE;
 	break;
-    case SPLFIELD_DATE_MODIFIED:
+    case ITDB_SPLFIELD_DATE_MODIFIED:
 	datecomp = track->time_modified;
 	handled = TRUE;
 	break;
-    case SPLFIELD_DATE_ADDED:
+    case ITDB_SPLFIELD_DATE_ADDED:
 	datecomp = track->time_added;
 	handled = TRUE;
 	break;
-    case SPLFIELD_LAST_PLAYED:
+    case ITDB_SPLFIELD_LAST_PLAYED:
 	datecomp = track->time_played;
 	handled = TRUE;
 	break;
-    case SPLFIELD_PLAYLIST:
+    case ITDB_SPLFIELD_PLAYLIST:
 	playcomp = itdb_playlist_by_id (track->itdb, splr->fromvalue);
 	handled = TRUE;
 	break;
-    case SPLFIELD_ALBUMARTIST:
+    case ITDB_SPLFIELD_ALBUMARTIST:
 	strcomp = track->albumartist;
 	handled = TRUE;
 	break;
-    case SPLFIELD_TVSHOW:
+    case ITDB_SPLFIELD_TVSHOW:
 	strcomp = track->tvshow;
 	handled = TRUE;
 	break;
-    case SPLFIELD_LAST_SKIPPED:
+    case ITDB_SPLFIELD_LAST_SKIPPED:
 	datecomp = track->last_skipped;
 	handled = TRUE;
 	break;
-    case SPLFIELD_SEASON_NR:
+    case ITDB_SPLFIELD_SEASON_NR:
 	intcomp = track->season_nr;
 	handled = TRUE;
 	break;
-    case SPLFIELD_SKIPCOUNT:
+    case ITDB_SPLFIELD_SKIPCOUNT:
 	intcomp = track->skipcount;
 	handled = TRUE;
 	break;
-    case SPLFIELD_VIDEO_KIND:
+    case ITDB_SPLFIELD_VIDEO_KIND:
 	intcomp = track->mediatype;
 	handled = TRUE;
 	break;
@@ -480,128 +480,128 @@ gboolean itdb_splr_eval (SPLRule *splr, Itdb_Track *track)
     /* actually do the comparison to our rule */
     switch (ft)
     {
-    case splft_string:
+    case ITDB_SPLFT_STRING:
 	if(strcomp && splr->string)
 	{
 	    gint len1 = strlen (strcomp);
 	    gint len2 = strlen (splr->string);
 	    switch (splr->action)
 	    {
-	    case SPLACTION_IS_STRING:
+	    case ITDB_SPLACTION_IS_STRING:
 		return (strcmp (strcomp, splr->string) == 0);
-	    case SPLACTION_IS_NOT:
+	    case ITDB_SPLACTION_IS_NOT:
 		return (strcmp (strcomp, splr->string) != 0);
-	    case SPLACTION_CONTAINS:
+	    case ITDB_SPLACTION_CONTAINS:
 		return (strstr (strcomp, splr->string) != NULL);
-	    case SPLACTION_DOES_NOT_CONTAIN:
+	    case ITDB_SPLACTION_DOES_NOT_CONTAIN:
 		return (strstr (strcomp, splr->string) == NULL);
-	    case SPLACTION_STARTS_WITH:
+	    case ITDB_SPLACTION_STARTS_WITH:
 		return (strncmp (strcomp, splr->string, len2) == 0);
-	    case SPLACTION_ENDS_WITH:
+	    case ITDB_SPLACTION_ENDS_WITH:
 	    if (len2 > len1)  return FALSE;
 	    return (strncmp (strcomp+len1-len2,
 			     splr->string, len2) == 0);
-	    case SPLACTION_DOES_NOT_START_WITH:
+	    case ITDB_SPLACTION_DOES_NOT_START_WITH:
 		return (strncmp (strcomp, splr->string,
 				 strlen (splr->string)) != 0);
-	    case SPLACTION_DOES_NOT_END_WITH:
+	    case ITDB_SPLACTION_DOES_NOT_END_WITH:
 		if (len2 > len1)  return TRUE;
 		return (strncmp (strcomp+len1-len2,
 				 splr->string, len2) != 0);
 	    };
 	}
 	return FALSE;
-    case splft_int:
+    case ITDB_SPLFT_INT:
 	switch(splr->action)
 	{
-	case SPLACTION_IS_INT:
+	case ITDB_SPLACTION_IS_INT:
 	    return (intcomp == splr->fromvalue);
-	case SPLACTION_IS_NOT_INT:
+	case ITDB_SPLACTION_IS_NOT_INT:
 	    return (intcomp != splr->fromvalue);
-	case SPLACTION_IS_GREATER_THAN:
+	case ITDB_SPLACTION_IS_GREATER_THAN:
 	    return (intcomp > splr->fromvalue);
-	case SPLACTION_IS_LESS_THAN:
+	case ITDB_SPLACTION_IS_LESS_THAN:
 	    return (intcomp < splr->fromvalue);
-	case SPLACTION_IS_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_IN_THE_RANGE:
 	    return ((intcomp <= splr->fromvalue &&
 		     intcomp >= splr->tovalue) ||
 		    (intcomp >= splr->fromvalue &&
 		     intcomp <= splr->tovalue));
-	case SPLACTION_IS_NOT_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_RANGE:
 	    return ((intcomp < splr->fromvalue &&
 		     intcomp < splr->tovalue) ||
 		    (intcomp > splr->fromvalue &&
 		     intcomp > splr->tovalue));
 	}
 	return FALSE;
-    case splft_binary_and:
+    case ITDB_SPLFT_BINARY_AND:
 	switch(splr->action)
 	{
-	case SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_BINARY_AND:
 	    return (intcomp & splr->fromvalue)? TRUE:FALSE;
 	}
 	return FALSE;
-    case splft_boolean:
+    case ITDB_SPLFT_BOOLEAN:
 	switch (splr->action)
 	{
-	case SPLACTION_IS_INT:	    /* aka "is set" */
+	case ITDB_SPLACTION_IS_INT:	    /* aka "is set" */
 	    return (boolcomp != 0);
-	case SPLACTION_IS_NOT_INT:  /* aka "is not set" */
+	case ITDB_SPLACTION_IS_NOT_INT:  /* aka "is not set" */
 	    return (boolcomp == 0);
 	}
 	return FALSE;
-    case splft_date:
+    case ITDB_SPLFT_DATE:
 	switch (splr->action)
 	{
-	case SPLACTION_IS_INT:
+	case ITDB_SPLACTION_IS_INT:
 	    return (datecomp == splr->fromvalue);
-	case SPLACTION_IS_NOT_INT:
+	case ITDB_SPLACTION_IS_NOT_INT:
 	    return (datecomp != splr->fromvalue);
-	case SPLACTION_IS_GREATER_THAN:
+	case ITDB_SPLACTION_IS_GREATER_THAN:
 	    return (datecomp > splr->fromvalue);
-	case SPLACTION_IS_LESS_THAN:
+	case ITDB_SPLACTION_IS_LESS_THAN:
 	    return (datecomp < splr->fromvalue);
-	case SPLACTION_IS_NOT_GREATER_THAN:
+	case ITDB_SPLACTION_IS_NOT_GREATER_THAN:
 	    return (datecomp <= splr->fromvalue);
-	case SPLACTION_IS_NOT_LESS_THAN:
+	case ITDB_SPLACTION_IS_NOT_LESS_THAN:
 	    return (datecomp >= splr->fromvalue);
-	case SPLACTION_IS_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_IN_THE_LAST:
 	    time (&t);
 	    t += (splr->fromdate * splr->fromunits);
 	    mactime = itdb_time_host_to_mac (t);
 	    return (datecomp > mactime);
-	case SPLACTION_IS_NOT_IN_THE_LAST:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
 	    time (&t);
 	    t += (splr->fromdate * splr->fromunits);
 	    mactime = itdb_time_host_to_mac (t);
 	    return (datecomp <= mactime);
-	case SPLACTION_IS_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_IN_THE_RANGE:
 	    return ((datecomp <= splr->fromvalue &&
 		     datecomp >= splr->tovalue) ||
 		    (datecomp >= splr->fromvalue &&
 		     datecomp <= splr->tovalue));
-	case SPLACTION_IS_NOT_IN_THE_RANGE:
+	case ITDB_SPLACTION_IS_NOT_IN_THE_RANGE:
 	    return ((datecomp < splr->fromvalue &&
 		     datecomp < splr->tovalue) ||
 		    (datecomp > splr->fromvalue &&
 		     datecomp > splr->tovalue));
 	}
 	return FALSE;
-    case splft_playlist:
+    case ITDB_SPLFT_PLAYLIST:
 	/* if we didn't find the playlist, just exit instead of
 	   dealing with it */
 	if (playcomp == NULL) return FALSE;
 
 	switch(splr->action)
 	{
-	case SPLACTION_IS_INT:	  /* is this track in this playlist? */
+	case ITDB_SPLACTION_IS_INT:	  /* is this track in this playlist? */
 	    return (itdb_playlist_contains_track (playcomp, track));
-	case SPLACTION_IS_NOT_INT:/* NOT in this playlist? */
+	case ITDB_SPLACTION_IS_NOT_INT:/* NOT in this playlist? */
 	    return (!itdb_playlist_contains_track (playcomp, track));
 	}
 	return FALSE;
-    case splft_unknown:
-	g_return_val_if_fail (ft != splft_unknown, FALSE);
+    case ITDB_SPLFT_UNKNOWN:
+	g_return_val_if_fail (ft != ITDB_SPLFT_UNKNOWN, FALSE);
 	return FALSE;
     default: /* new type: warning to change this code */
 	g_return_val_if_fail (FALSE, FALSE);
@@ -741,7 +741,7 @@ void itdb_spl_update (Itdb_Playlist *spl)
 	    gboolean matchrules;
 	    GList *gl;
 
-	    if (spl->splrules.match_operator == SPLMATCH_AND)
+	    if (spl->splrules.match_operator == ITDB_SPLMATCH_AND)
 		 matchrules = TRUE;
 	    else matchrules = FALSE;
 	    /* assume everything matches with no rules */
@@ -749,9 +749,9 @@ void itdb_spl_update (Itdb_Playlist *spl)
 	    /* match all rules */
 	    for (gl=spl->splrules.rules; gl; gl=gl->next)
 	    {
-		SPLRule* splr = gl->data;
+		Itdb_SPLRule* splr = gl->data;
 		gboolean ruletruth = itdb_splr_eval (splr, t);
-		if (spl->splrules.match_operator == SPLMATCH_AND)
+		if (spl->splrules.match_operator == ITDB_SPLMATCH_AND)
 		{
 		    if (!ruletruth)
 		    {   /* one rule did not match -- we can stop */
@@ -759,7 +759,7 @@ void itdb_spl_update (Itdb_Playlist *spl)
 			break;
 		    }
 		}
-		else if (spl->splrules.match_operator == SPLMATCH_OR)
+		else if (spl->splrules.match_operator == ITDB_SPLMATCH_OR)
 		{
 		    if (ruletruth)
 		    {   /* one rule matched -- we can stop */
@@ -798,50 +798,50 @@ void itdb_spl_update (Itdb_Playlist *spl)
 	/* first, we sort the list */
 	switch(spl->splpref.limitsort)
 	{
-	case LIMITSORT_RANDOM:
+	case ITDB_LIMITSORT_RANDOM:
 	    sel_tracks = randomize_glist (sel_tracks);
 	    break;
-	case LIMITSORT_SONG_NAME:
+	case ITDB_LIMITSORT_SONG_NAME:
 	    sel_tracks = g_list_sort (sel_tracks, (GCompareFunc)compTitle);
 	    break;
-	case LIMITSORT_ALBUM:
+	case ITDB_LIMITSORT_ALBUM:
 	    sel_tracks = g_list_sort (sel_tracks, (GCompareFunc)compAlbum);
 		break;
-	case LIMITSORT_ARTIST:
+	case ITDB_LIMITSORT_ARTIST:
 	    sel_tracks = g_list_sort (sel_tracks, (GCompareFunc)compArtist);
 	    break;
-	case LIMITSORT_GENRE:
+	case ITDB_LIMITSORT_GENRE:
 	    sel_tracks = g_list_sort (sel_tracks, (GCompareFunc)compGenre);
 	    break;
-	case LIMITSORT_MOST_RECENTLY_ADDED:
+	case ITDB_LIMITSORT_MOST_RECENTLY_ADDED:
 	    sel_tracks = g_list_sort (sel_tracks,
 			 (GCompareFunc)compMostRecentlyAdded);
 	    break;
-	case LIMITSORT_LEAST_RECENTLY_ADDED:
+	case ITDB_LIMITSORT_LEAST_RECENTLY_ADDED:
 	    sel_tracks = g_list_sort (sel_tracks,
 			 (GCompareFunc)compLeastRecentlyAdded);
 	    break;
-	case LIMITSORT_MOST_OFTEN_PLAYED:
+	case ITDB_LIMITSORT_MOST_OFTEN_PLAYED:
 	    sel_tracks = g_list_sort (sel_tracks,
 			 (GCompareFunc)compMostOftenPlayed);
 	    break;
-	case LIMITSORT_LEAST_OFTEN_PLAYED:
+	case ITDB_LIMITSORT_LEAST_OFTEN_PLAYED:
 	    sel_tracks = g_list_sort (sel_tracks,
 			 (GCompareFunc)compLeastOftenPlayed);
 	    break;
-	case LIMITSORT_MOST_RECENTLY_PLAYED:
+	case ITDB_LIMITSORT_MOST_RECENTLY_PLAYED:
 	    sel_tracks = g_list_sort (sel_tracks,
 			 (GCompareFunc)compMostRecentlyPlayed);
 	    break;
-	case LIMITSORT_LEAST_RECENTLY_PLAYED:
+	case ITDB_LIMITSORT_LEAST_RECENTLY_PLAYED:
 	    sel_tracks = g_list_sort (sel_tracks,
 			 (GCompareFunc)compLeastRecentlyPlayed);
 	    break;
-	case LIMITSORT_HIGHEST_RATING:
+	case ITDB_LIMITSORT_HIGHEST_RATING:
 	    sel_tracks = g_list_sort (sel_tracks,
 			 (GCompareFunc)compHighestRating);
 	    break;
-	case LIMITSORT_LOWEST_RATING:
+	case ITDB_LIMITSORT_LOWEST_RATING:
 	    sel_tracks = g_list_sort (sel_tracks,
 			 (GCompareFunc)compLowestRating);
 	    break;
@@ -865,19 +865,19 @@ void itdb_spl_update (Itdb_Playlist *spl)
 	    /* get the next song's value to add to running total */
 	    switch (spl->splpref.limittype)
 	    {
-	    case LIMITTYPE_MINUTES:
+	    case ITDB_LIMITTYPE_MINUTES:
 		currentvalue = (double)(t->tracklen)/(60*1000);
 		break;
-	    case LIMITTYPE_HOURS:
+	    case ITDB_LIMITTYPE_HOURS:
 		currentvalue = (double)(t->tracklen)/(60*60*1000);
 		break;
-	    case LIMITTYPE_MB:
+	    case ITDB_LIMITTYPE_MB:
 		currentvalue = (double)(t->size)/(1024*1024);
 		break;
-	    case LIMITTYPE_GB:
+	    case ITDB_LIMITTYPE_GB:
 		currentvalue = (double)(t->size)/(1024*1024*1024);
 		break;
-	    case LIMITTYPE_SONGS:
+	    case ITDB_LIMITTYPE_SONGS:
 		currentvalue = 1;
 		break;
 	    default:
@@ -956,46 +956,46 @@ void itdb_spl_update_live (Itdb_iTunesDB *itdb)
 
 /**
  * itdb_splr_validate:
- * @splr: an #SPLRule
+ * @splr: an #Itdb_SPLRule
  *
  * Validates a rule 
  **/
-void itdb_splr_validate (SPLRule *splr)
+void itdb_splr_validate (Itdb_SPLRule *splr)
 {
-    SPLActionType at;
+    ItdbSPLActionType at;
 
     g_return_if_fail (splr != NULL);
 
     at = itdb_splr_get_action_type (splr);
 
-    g_return_if_fail (at != splat_unknown);
+    g_return_if_fail (at != ITDB_SPLAT_UNKNOWN);
 
     switch (at)
     {
-    case splat_int:
-    case splat_playlist:
-    case splat_date:
-    case splat_binary_and:
+    case ITDB_SPLAT_INT:
+    case ITDB_SPLAT_PLAYLIST:
+    case ITDB_SPLAT_DATE:
+    case ITDB_SPLAT_BINARY_AND:
 	splr->fromdate = 0;
 	splr->fromunits = 1;
 	splr->tovalue = splr->fromvalue;
 	splr->todate = 0;
 	splr->tounits = 1;
 	break;
-    case splat_range_int:
-    case splat_range_date:
+    case ITDB_SPLAT_RANGE_INT:
+    case ITDB_SPLAT_RANGE_DATE:
 	splr->fromdate = 0;
 	splr->fromunits = 1;
 	splr->todate = 0;
 	splr->tounits = 1;
 	break;
-    case splat_inthelast:
-	splr->fromvalue = SPLDATE_IDENTIFIER;
-	splr->tovalue = SPLDATE_IDENTIFIER;
+    case ITDB_SPLAT_INTHELAST:
+	splr->fromvalue = ITDB_SPL_DATE_IDENTIFIER;
+	splr->tovalue = ITDB_SPL_DATE_IDENTIFIER;
 	splr->tounits = 1;
 	break;
-    case splat_none:
-    case splat_string:
+    case ITDB_SPLAT_NONE:
+    case ITDB_SPLAT_STRING:
 	splr->fromvalue = 0;
 	splr->fromdate = 0;
 	splr->fromunits = 0;
@@ -1003,8 +1003,8 @@ void itdb_splr_validate (SPLRule *splr)
 	splr->todate = 0;
 	splr->tounits = 0;
 	break;
-    case splat_invalid:
-    case splat_unknown:
+    case ITDB_SPLAT_INVALID:
+    case ITDB_SPLAT_UNKNOWN:
 	g_return_if_fail (FALSE);
 	break;
     }
@@ -1014,11 +1014,11 @@ void itdb_splr_validate (SPLRule *splr)
 
 /**
  * itdb_splr_free:
- * @splr: an #SPLRule
+ * @splr: an #Itdb_SPLRule
  *
  * Frees the memory used by @splr 
  **/
-void itdb_splr_free (SPLRule *splr)
+void itdb_splr_free (Itdb_SPLRule *splr)
 {
     if (splr)
     {
@@ -1030,12 +1030,12 @@ void itdb_splr_free (SPLRule *splr)
 /**
  * itdb_splr_remove:
  * @pl: an #Itdb_Playlist
- * @splr: an SPLRule
+ * @splr: an Itdb_SPLRule
  *
  * Removes the smart playlist rule @splr from playlist @pl. The memory used by
  * @splr is freed.
  **/
-void itdb_splr_remove (Itdb_Playlist *pl, SPLRule *splr)
+void itdb_splr_remove (Itdb_Playlist *pl, Itdb_SPLRule *splr)
 {
     g_return_if_fail (pl);
     g_return_if_fail (splr);
@@ -1047,14 +1047,14 @@ void itdb_splr_remove (Itdb_Playlist *pl, SPLRule *splr)
 /**
  * itdb_splr_add:
  * @pl: an #Itdb_Playlist
- * @splr: an #SPLRule
+ * @splr: an #Itdb_SPLRule
  * @pos: position of the rule
  *
  * Adds the smart rule @splr to @pl at position @pos. If @pos is -1, @splr gets
  * appended to the end. After this call, @splr memory is managed by @pl, so 
  * you no longer need to call itdb_splr_free()
  **/
-void itdb_splr_add (Itdb_Playlist *pl, SPLRule *splr, gint pos)
+void itdb_splr_add (Itdb_Playlist *pl, Itdb_SPLRule *splr, gint pos)
 {
     g_return_if_fail (pl);
     g_return_if_fail (splr);
@@ -1069,15 +1069,15 @@ void itdb_splr_add (Itdb_Playlist *pl, SPLRule *splr, gint pos)
  * 
  * Creates a new default smart rule 
  *
- * Return value: a new #SPLRule that must be freed with itdb_splr_free() when 
+ * Return value: a new #Itdb_SPLRule that must be freed with itdb_splr_free() when 
  * no longer needed
  **/
-SPLRule *itdb_splr_new (void)
+Itdb_SPLRule *itdb_splr_new (void)
 {
-    SPLRule *splr = g_new0 (SPLRule, 1);
+    Itdb_SPLRule *splr = g_new0 (Itdb_SPLRule, 1);
 
-    splr->field = SPLFIELD_ARTIST;
-    splr->action = SPLACTION_CONTAINS;
+    splr->field = ITDB_SPLFIELD_ARTIST;
+    splr->action = ITDB_SPLACTION_CONTAINS;
     splr->fromvalue = 0;
     splr->fromdate = 0;
     splr->fromunits = 0;
@@ -1097,12 +1097,12 @@ SPLRule *itdb_splr_new (void)
  * Creates a new smart rule and inserts it at position @pos in @pl. If @pos is
  * -1, the new rule gets appended to the end.
  *
- * Return value: pointer to the newly created #SPLRule. Its memory is handled 
+ * Return value: pointer to the newly created #Itdb_SPLRule. Its memory is handled 
  * by @pl though, so you don't need to explicitly call itdb_splr_free() on it
  **/
-SPLRule *itdb_splr_add_new (Itdb_Playlist *pl, gint pos)
+Itdb_SPLRule *itdb_splr_add_new (Itdb_Playlist *pl, gint pos)
 {
-    SPLRule *splr;
+    Itdb_SPLRule *splr;
 
     g_return_val_if_fail (pl, NULL);
 
@@ -1111,14 +1111,14 @@ SPLRule *itdb_splr_add_new (Itdb_Playlist *pl, gint pos)
     return splr;
 }
 
-/* Duplicate SPLRule @splr */
-static SPLRule *splr_duplicate (SPLRule *splr)
+/* Duplicate Itdb_SPLRule @splr */
+static Itdb_SPLRule *splr_duplicate (Itdb_SPLRule *splr)
 {
-    SPLRule *dup = NULL;
+    Itdb_SPLRule *dup = NULL;
     if (splr)
     {
-	dup = g_malloc (sizeof (SPLRule));
-	memcpy (dup, splr, sizeof (SPLRule));
+	dup = g_malloc (sizeof (Itdb_SPLRule));
+	memcpy (dup, splr, sizeof (Itdb_SPLRule));
 
 	/* Now copy the strings */
 	dup->string = g_strdup (splr->string);
@@ -1163,7 +1163,7 @@ Itdb_Playlist *itdb_playlist_duplicate (Itdb_Playlist *pl)
     /* Copy rules */
     for (gl=pl->splrules.rules; gl; gl=gl->next)
     {
-	SPLRule *splr_dup = splr_duplicate (gl->data);
+	Itdb_SPLRule *splr_dup = splr_duplicate (gl->data);
 	pl_dup->splrules.rules = g_list_append (
 	    pl_dup->splrules.rules, splr_dup);
     }
@@ -1203,14 +1203,14 @@ void itdb_spl_copy_rules (Itdb_Playlist *dest, Itdb_Playlist *src)
     g_list_free (dest->splrules.rules);
 
     /* copy general spl settings */
-    memcpy (&dest->splpref, &src->splpref, sizeof (SPLPref));
-    memcpy (&dest->splrules, &src->splrules, sizeof (SPLRules));
+    memcpy (&dest->splpref, &src->splpref, sizeof (Itdb_SPLPref));
+    memcpy (&dest->splrules, &src->splrules, sizeof (Itdb_SPLRules));
     dest->splrules.rules = NULL;
 
     /* Copy rules */
     for (gl=src->splrules.rules; gl; gl=gl->next)
     {
-	SPLRule *splr_dup = splr_duplicate (gl->data);
+	Itdb_SPLRule *splr_dup = splr_duplicate (gl->data);
 	dest->splrules.rules = g_list_append (
 	    dest->splrules.rules, splr_dup);
     }
@@ -1246,11 +1246,11 @@ Itdb_Playlist *itdb_playlist_new (const gchar *title, gboolean spl)
 	pl->splpref.liveupdate = TRUE;
 	pl->splpref.checkrules = TRUE;
 	pl->splpref.checklimits = FALSE;
-	pl->splpref.limittype = LIMITTYPE_HOURS;
-	pl->splpref.limitsort = LIMITSORT_RANDOM;
+	pl->splpref.limittype = ITDB_LIMITTYPE_HOURS;
+	pl->splpref.limitsort = ITDB_LIMITSORT_RANDOM;
 	pl->splpref.limitvalue = 2;
 	pl->splpref.matchcheckedonly = FALSE;
-	pl->splrules.match_operator = SPLMATCH_AND;
+	pl->splrules.match_operator = ITDB_SPLMATCH_AND;
 	/* add at least one rule */
 	itdb_splr_add_new (pl, 0);
     }
