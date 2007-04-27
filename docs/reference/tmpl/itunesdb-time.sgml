@@ -6,7 +6,10 @@ Helper functions to convert between Epoch time and Mac (iPod) time
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-The functions provide conversion between Epoch time and Mac (iPod) time
+The functions provide conversion between Epoch time and Mac (iPod) time. These 
+functions are now obsolete and should no longer be used, libgpod automatically
+converts to/from Epoch time and iPod time when writing/reading the iPod 
+databases
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -30,7 +33,7 @@ The functions provide conversion between Epoch time and Mac (iPod) time
 
 </para>
 
-@mactime: 
+@time: 
 @Returns: 
 
 

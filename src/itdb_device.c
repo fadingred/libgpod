@@ -1,6 +1,5 @@
-/* Time-stamp: <27-mar-2007 10:09:48 teuf>
-|
-|  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
+/*
+|  Copyright (C) 2002-2007 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
 |  URL: http://www.gtkpod.org/
@@ -268,6 +267,8 @@ static const Itdb_ArtworkFormat *ipod_artwork_info_table[] = {
 };
 
 
+static void itdb_device_set_timezone_info (Itdb_Device *device);
+
 /* Reset or create the SysInfo hash table */
 static void itdb_device_reset_sysinfo (Itdb_Device *device)
 {
@@ -328,8 +329,10 @@ void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp)
 
     g_free (device->mountpoint);
     device->mountpoint = g_strdup (mp);
-    if (mp)
+    if (mp) {
 	itdb_device_read_sysinfo (device);
+        itdb_device_set_timezone_info (device);
+    }
 }
 
 
@@ -833,4 +836,73 @@ gboolean itdb_device_supports_photo (Itdb_Device *device)
     }
     
     return (it->type != -1);
+}
+
+
+/* This function reads the timezone information from the iPod and sets it in
+ * the Itdb_Device structure. If an error occurs, the function returns silently
+ * and the timezone shift is set to 0
+ */
+static void itdb_device_set_timezone_info (Itdb_Device *device)
+{
+    const gchar *p_preferences[] = {"Preferences", NULL};
+    char *dev_path;
+    char *prefs_filename;
+    FILE *f;
+    gint32 timezone;
+    const int GMT_OFFSET = 0x19;
+    int result;
+
+    device->timezone_shift = 0;
+
+    if (device->mountpoint == NULL) {
+        /* Assumes the iPod is in the UTC timezone for those cases */
+        return;
+    }
+
+    dev_path = itdb_get_device_dir (device->mountpoint);
+
+    if (dev_path == NULL) {
+        return ;
+    }
+
+    prefs_filename = itdb_resolve_path (dev_path, p_preferences);
+    g_free (dev_path);
+
+    f = fopen (prefs_filename, "r");
+    if (f == NULL) {
+        g_free (prefs_filename);
+        return;
+    }
+
+    result = fseek (f, 0xB10, SEEK_SET);
+    if (result != 0) {
+        fclose (f);
+        g_free (prefs_filename);
+        return;
+    }
+
+    result = fread (&timezone, sizeof (timezone), 1, f);
+    if (result != 1) {
+        fclose (f);
+        g_free (prefs_filename);
+        return;
+    }
+
+    fclose (f);
+    g_free (prefs_filename);
+
+    timezone = GINT32_FROM_LE (timezone);
+    if ((timezone < 0) || (timezone > (2*12) << 1)) {
+        /* invalid timezone */
+        return;
+    }
+
+    timezone -= GMT_OFFSET;
+
+    device->timezone_shift = (timezone >> 1) * 3600;
+    if (timezone & 1) {
+        /* Adjust for DST */
+        device->timezone_shift += 3600;
+    }
 }

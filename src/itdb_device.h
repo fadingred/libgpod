@@ -1,6 +1,5 @@
-/* Time-stamp: <2006-11-12 23:03:35 jcs>
-|
-|  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
+/*
+|  Copyright (C) 2002-2007 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
 |  URL: http://www.gtkpod.org/
@@ -71,6 +70,10 @@ struct _Itdb_Device
 			   * in Device/SysInfo */
     gboolean sysinfo_changed; /* Has the sysinfo hash been changed by
 				 the user (itdb_set_sysinfo) */
+    gint timezone_shift;  /* difference in seconds between the current
+                           * timezone and UTC
+                           */
+
 };
 
 struct _Itdb_ArtworkFormat

@@ -59,8 +59,8 @@ information about an iPod track.
 @volume: 
 @soundcheck: 
 @time_added: 
-@time_played: 
 @time_modified: 
+@time_played: 
 @bookmark_time: 
 @rating: 
 @playcount: 

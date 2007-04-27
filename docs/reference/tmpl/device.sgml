@@ -27,6 +27,7 @@ These functions are for reading and setting information about the iPod.
 @byte_order: 
 @sysinfo: 
 @sysinfo_changed: 
+@timezone_shift: 
 
 <!-- ##### FUNCTION itdb_device_new ##### -->
 <para>
@@ -93,24 +94,6 @@ These functions are for reading and setting information about the iPod.
 
 
 <!-- ##### FUNCTION itdb_device_get_ipod_info ##### -->
-<para>
-
-</para>
-
-@device: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_device_supports_artwork ##### -->
-<para>
-
-</para>
-
-@device: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_device_supports_photo ##### -->
 <para>
 
 </para>

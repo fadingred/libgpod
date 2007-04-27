@@ -1,6 +1,5 @@
-/* Time-stamp: <2007-01-06 20:46:59 jcs>
-|
-|  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
+/*
+|  Copyright (C) 2002-2007 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
 |  URL: http://www.gtkpod.org/
@@ -83,12 +82,12 @@ typedef struct
 struct playcount {
     guint32 playcount;
     guint32 skipped;     /* skipped (only for Shuffle's iTunesStats */
-    guint32 time_played;
+    time_t time_played;
     guint32 bookmark_time;
     gint32 rating;
     gint32 pc_unk16;     /* unknown field in Play Counts file */
     guint32 skipcount;
-    guint32 last_skipped;
+    time_t last_skipped;
     gint32 st_unk06;     /* unknown field in iTunesStats file */
     gint32 st_unk09;     /* unknown field in iTunesStats file */
 };
@@ -152,4 +151,8 @@ G_GNUC_INTERNAL gint itdb_get_free_photo_id ( Itdb_PhotoDB *db );
 G_GNUC_INTERNAL Itdb_iTunesDB *db_get_itunesdb (Itdb_DB *db);
 G_GNUC_INTERNAL Itdb_PhotoDB *db_get_photodb (Itdb_DB *db);
 G_GNUC_INTERNAL gint itdb_thumb_get_byteorder (ItdbThumbFormat format);
+G_GNUC_INTERNAL time_t itdb_time_mac_to_time_t (Itdb_iTunesDB *db, 
+						guint64 mactime);
+G_GNUC_INTERNAL guint64 itdb_time_time_t_to_mac (Itdb_iTunesDB *db,
+						 time_t timet);
 #endif

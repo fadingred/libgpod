@@ -1,6 +1,5 @@
-/* Time-stamp: <27-mar-2007 10:06:21 teuf>
-|
-|  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
+/*
+|  Copyright (C) 2002-2007 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
 |  URL: http://www.gtkpod.org/
@@ -270,7 +269,6 @@ typedef struct _MHODData MHODData;
 
 /* Declarations */
 static gboolean itdb_create_directories (Itdb_Device *device, GError **error);
-
 
 /* ID for error domain */
 GQuark itdb_file_error_quark (void)
@@ -939,6 +937,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
     CHECK_ERROR (fimp, FALSE);
     for (i=0; i<entry_num; ++i)
     {
+	gint32 mac_time;
 	struct playcount *playcount = g_new0 (struct playcount, 1);
 	glong seek = header_length + i*entry_length;
 
@@ -946,18 +945,10 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	CHECK_ERROR (fimp, FALSE);	
 
 	fimp->playcounts = g_list_append (fimp->playcounts, playcount);
-	playcount->playcount = get32lint (cts, seek);
-	playcount->time_played = get32lint (cts, seek+4);
+	playcount->playcount = get32lint (cts, seek);	
+	mac_time = get32lint (cts, seek+4);
+	playcount->time_played = itdb_time_mac_to_time_t (fimp->itdb, mac_time);
 	playcount->bookmark_time = get32lint (cts, seek+8);
-	/* NOTE:
-	 *
-	 * The iPod (firmware 1.3, 2.0, ...?) doesn't seem to use the
-	 * timezone information correctly -- no matter what you set
-	 * iPod's timezone to, it will always record as if it were set
-	 * to UTC -- we need to subtract the difference between
-	 * current timezone and UTC to get a correct
-	 * display. -- this should be done by the application were
-	 * necessary */
 	
 	/* rating only exists if the entry length is at least 0x10 */
 	if (entry_length >= 0x10)
@@ -978,7 +969,10 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	if (entry_length >= 0x1c)
 	{
 	    playcount->skipcount = get32lint (cts, seek+20);
-	    playcount->last_skipped = get32lint (cts, seek+24);
+	    mac_time = get32lint (cts, seek+24);
+	    playcount->last_skipped = itdb_time_mac_to_time_t (fimp->itdb,
+							       mac_time);
+
 	}
     }
     return TRUE;
@@ -1297,7 +1291,7 @@ static gint32 get_mhod_type (FContents *cts, glong seek, guint32 *ml)
    .playlist_id/.string/.chapterdata/.splp/.splrs
 */
 
-static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
+static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 {
   gunichar2 *entry_utf16 = NULL;
   MHODData result;
@@ -1306,7 +1300,10 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
   gint32 header_length;
   guint32 string_type;
   gulong seek;
-
+  FContents *cts;
+  
+  cts = fimp->fcontents;
+    
   result.valid = FALSE;
   result.type = -1;
   g_return_val_if_fail (ml, result);
@@ -1517,6 +1514,19 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
 		  splr->unk060 = get32bint (cts, seek+60);
 		  splr->unk064 = get32bint (cts, seek+64);
 		  splr->unk068 = get32bint (cts, seek+68);
+
+		  if (ft == splft_date) {
+		      SPLActionType at;
+		      at = itdb_splr_get_action_type (splr);
+		      if ((at == splat_range_date) || (at == splat_date)) {
+			  Itdb_iTunesDB *itdb = fimp->itdb;
+			  splr->fromvalue = itdb_time_mac_to_time_t (itdb, 
+								     splr->fromvalue);
+			  splr->tovalue = itdb_time_mac_to_time_t (itdb, 
+								   splr->tovalue);
+		      }
+		  }
+
 		  break;
 	      }
 	      seek += length+4;
@@ -1557,9 +1567,12 @@ static MHODData get_mhod (FContents *cts, glong mhod_seek, guint32 *ml)
    UTF8). After use you must free the string with g_free(). Returns
    NULL if no string is avaible. *ml is set to -1 in case of error and
    cts->error is set appropriately. */
-static gchar *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *mty)
+static gchar *get_mhod_string (FImport *fimp, glong seek, guint32 *ml, gint32 *mty)
 {
     MHODData mhoddata;
+    FContents *cts;
+
+    cts = fimp->fcontents;
 
     *mty = get_mhod_type (cts, seek, ml);
     if (cts->error) return NULL;
@@ -1585,7 +1598,7 @@ static gchar *get_mhod_string (FContents *cts, glong seek, guint32 *ml, gint32 *
     case MHOD_ID_TVNETWORK:
     case MHOD_ID_ALBUMARTIST:
     case MHOD_ID_KEYWORDS:
-	mhoddata = get_mhod (cts, seek, ml);
+	mhoddata = get_mhod (fimp, seek, ml);
 	if ((*ml != -1) && mhoddata.valid)
 	    return mhoddata.data.string;
 	else
@@ -1850,7 +1863,7 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	if (mhod_type == MHOD_ID_PLAYLIST)
 	{
 	    MHODData mhod;
-	    mhod = get_mhod (cts, mhod_seek, &mhod_len);
+	    mhod = get_mhod (fimp, mhod_seek, &mhod_len);
 	    CHECK_ERROR (fimp, -1);
 	    pos = -1;
 	    if (mhod.valid && first_entry)
@@ -1973,6 +1986,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   plitem->flag2 = get8int (cts, mhyp_seek+22);
   plitem->flag3 = get8int (cts, mhyp_seek+23);
   plitem->timestamp = get32lint (cts, mhyp_seek+24);
+  plitem->timestamp = itdb_time_mac_to_time_t (fimp->itdb, plitem->timestamp);
   plitem->id = get64lint (cts, mhyp_seek+28);
 /*  plitem->mhodcount = get32lint (cts, mhyp_seek+36);   */
 /*  plitem->libmhodcount = get16lint (cts, mhyp_seek+40);*/
@@ -1996,7 +2010,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	      /* here we could do something about the playlist settings */
 	      break;
 	  case MHOD_ID_TITLE:
-	      mhod = get_mhod (cts, mhod_seek, &header_len);
+	      mhod = get_mhod (fimp, mhod_seek, &header_len);
 	      CHECK_ERROR (fimp, -1);
 	      if (mhod.valid && mhod.data.string)
 	      {
@@ -2007,7 +2021,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	      }
 	      break;
 	  case MHOD_ID_SPLPREF:
-	      mhod = get_mhod (cts, mhod_seek, &header_len);
+	      mhod = get_mhod (fimp, mhod_seek, &header_len);
 	      CHECK_ERROR (fimp, -1);
 	      if (mhod.valid && mhod.data.splpref)
 	      {
@@ -2019,7 +2033,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	      }
 	      break;
 	  case MHOD_ID_SPLRULES:
-	      mhod = get_mhod (cts, mhod_seek, &header_len);
+	      mhod = get_mhod (fimp, mhod_seek, &header_len);
 	      CHECK_ERROR (fimp, -1);
 	      if (mhod.valid && mhod.data.splrules)
 	      {
@@ -2178,6 +2192,8 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->compilation = get8int (cts, seek+30);
       track->rating = get8int (cts, seek+31);
       track->time_modified = get32lint(cts, seek+32); /* time added       */
+      track->time_modified = itdb_time_mac_to_time_t (fimp->itdb, 
+						      track->time_modified);
       track->size = get32lint(cts, seek+36);       /* file size        */
       track->tracklen = get32lint(cts, seek+40);   /* time             */
       track->track_nr = get32lint(cts, seek+44);   /* track number     */
@@ -2194,12 +2210,16 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->playcount = get32lint (cts, seek+80); /* playcount        */
       track->playcount2 = get32lint (cts, seek+84);
       track->time_played = get32lint(cts, seek+88);/* last time played */
+      track->time_played = itdb_time_mac_to_time_t (fimp->itdb, 
+						    track->time_played);
       track->cd_nr = get32lint(cts, seek+92);      /* CD nr            */
       track->cds = get32lint(cts, seek+96);        /* CD nr of..       */
       /* Apple Store/Audible User ID (for DRM'ed files only, set to 0
 	 otherwise). */
       track->drm_userid = get32lint (cts, seek+100);
       track->time_added = get32lint(cts, seek+104);/* last mod. time */
+      track->time_added = itdb_time_mac_to_time_t (fimp->itdb, 
+						   track->time_added);
       track->bookmark_time = get32lint (cts, seek+108);/*time bookmarked*/
       track->dbid = get64lint (cts, seek+112);
       track->checked = get8int (cts, seek+120); /*Checked/Unchecked: 0/1*/
@@ -2213,6 +2233,8 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->unk132 = get32lint (cts, seek+132);
       track->samplerate2 = get32lfloat (cts, seek+136);
       track->time_released = get32lint (cts, seek+140);
+      track->time_released = itdb_time_mac_to_time_t (fimp->itdb,
+						      track->time_released);
       track->unk144 = get16lint (cts, seek+144);
       track->unk146 = get16lint (cts, seek+146);
       track->unk148 = get32lint (cts, seek+148);
@@ -2222,6 +2244,8 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
   {
       track->skipcount = get32lint (cts, seek+156);
       track->last_skipped = get32lint (cts, seek+160);
+      track->last_skipped = itdb_time_mac_to_time_t (fimp->itdb, 
+						     track->last_skipped);
       track->has_artwork = get8int (cts, seek+164);
       track->skip_when_shuffling = get8int (cts, seek+165);
       track->remember_playback_position = get8int (cts, seek+166);
@@ -2263,7 +2287,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 
   for (i=0; i<mhod_nums; ++i)
   {
-      entry_utf8 = get_mhod_string (cts, seek, &zip, &type);
+      entry_utf8 = get_mhod_string (fimp, seek, &zip, &type);
       CHECK_ERROR (fimp, -1);
       if (entry_utf8 != NULL)
       {
@@ -2343,7 +2367,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	  case MHOD_ID_CHAPTERDATA:
 	      /* we just read the entire chapterdata info until we
 		 have a better way to parse and represent it */
-	      mhod = get_mhod (cts, seek, &zip);
+	      mhod = get_mhod (fimp, seek, &zip);
 	      if (mhod.valid && mhod.data.chapterdata_raw)
 	      {
 		  track->chapterdata_raw = mhod.data.chapterdata_raw;
@@ -2804,6 +2828,42 @@ static void error_no_control_dir (const gchar *mp, GError **error)
 }
 #endif
 
+
+static gboolean
+itdb_parse_internal (Itdb_iTunesDB *itdb, GError **error)
+{
+    FImport *fimp;
+    gboolean success;
+
+    g_return_val_if_fail (itdb->filename != NULL, FALSE);
+    
+    fimp = g_new0 (FImport, 1);
+    fimp->itdb = itdb;
+
+    fimp->fcontents = fcontents_read (itdb->filename, error);
+
+    if (fimp->fcontents)
+    {
+	if (playcounts_init (fimp))
+	{
+	    if (parse_fimp (fimp))
+	    {
+		if (read_OTG_playlists (fimp))
+		{
+		    success = TRUE;
+		}
+	    }
+	}
+    }
+
+    if (fimp->error)
+	g_propagate_error (error, fimp->error);
+
+    itdb_free_fimp (fimp);
+
+    return success;
+}
+
 /**
  * itdb_parse:
  * @mp: mount point of the iPod (eg "/mnt/ipod) in local encoding
@@ -2823,6 +2883,7 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
     Itdb_iTunesDB *itdb = NULL;
     const gchar *db[] = {"iTunesDB", NULL};
 
+
     itunes_dir = itdb_get_itunes_dir (mp);
 
     if (!itunes_dir)
@@ -2832,13 +2893,24 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
     }
 
     filename = itdb_resolve_path (itunes_dir, db);
+    if (itdb != NULL) {
+	itdb_set_mountpoint (itdb, mp);
+    }
     if (filename)
     {
-	itdb = itdb_parse_file (filename, error);
+	itdb = itdb_new ();
+	
 	if (itdb)
 	{
-	    itdb_set_mountpoint (itdb, mp);
+	    gboolean success;
 
+	    itdb_set_mountpoint (itdb, mp);
+	    itdb->filename = filename;
+	    success = itdb_parse_internal (itdb, error);
+	    if (!success) {
+		itdb_free (itdb);
+		itdb = NULL;
+	    }
 	    /* We don't test the return value of ipod_parse_artwork_db
 	     * since the database content will be consistent even if
 	     * we fail to get the various thumbnails, we ignore the
@@ -2863,7 +2935,6 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 	    ipod_parse_artwork_db (itdb);
 
 	}
-	g_free (filename);
     }
     else
     {
@@ -2879,6 +2950,7 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
     return itdb;
 }
 
+
 /**
  * itdb_parse_file:
  * @filename: path to a file in iTunesDB format
@@ -2887,47 +2959,26 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
  *  Same as itunesdb_parse(), but filename is specified directly.
  *
  * Return value: a newly allocated #Itdb_iTunesDB struct holding the tracks and
- * the playlists present on the iPod at @mp, NULL if @mp isn't an iPod mount
- * point. If non-NULL, the #Itdb_iTunesDB is to be freed with itdb_free() when
- * it's no longer needed
+ * the playlists present in @filename, NULL if @filename isn't a parsable 
+ * iTunesDB file. If non-NULL, the #Itdb_iTunesDB is to be freed with 
+ * itdb_free() when it's no longer needed
  **/
 Itdb_iTunesDB *itdb_parse_file (const gchar *filename, GError **error)
 {
-    FImport *fimp;
     Itdb_iTunesDB *itdb;
-    gboolean success = FALSE;
+    gboolean success;
 
     g_return_val_if_fail (filename, NULL);
 
-    fimp = g_new0 (FImport, 1);
     itdb = itdb_new ();
     itdb->filename = g_strdup (filename);
-    fimp->itdb = itdb;
 
-    fimp->fcontents = fcontents_read (filename, error);
-
-    if (fimp->fcontents)
-    {
-	if (playcounts_init (fimp))
-	{
-	    if (parse_fimp (fimp))
-	    {
-		if (read_OTG_playlists (fimp))
-		{
-		    success = TRUE;
-		}
-	    }
-	}
-    }
-
+    success = itdb_parse_internal (itdb, error);
     if (!success)
     {
 	itdb_free (itdb);
 	itdb = NULL;
-	if (fimp->error)
-	    g_propagate_error (error, fimp->error);
     }
-    itdb_free_fimp (fimp);
 
     return itdb;
 }
@@ -3388,6 +3439,7 @@ static void mk_mhlt (FExport *fexp, guint32 num)
 /* Write out the mhit header. Size will be written later */
 static void mk_mhit (WContents *cts, Itdb_Track *track)
 {
+  gint32 mac_time;
   g_return_if_fail (cts);
   g_return_if_fail (track);
 
@@ -3403,7 +3455,8 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put8int (cts, track->type2);
   put8int   (cts, track->compilation);
   put8int   (cts, track->rating);
-  put32lint (cts, track->time_modified); /* timestamp               */
+  mac_time = itdb_time_time_t_to_mac (track->itdb, track->time_modified);
+  put32lint (cts, mac_time); /* timestamp               */
   put32lint (cts, track->size);    /* filesize                   */
   put32lint (cts, track->tracklen);/* length of track in ms      */
   put32lint (cts, track->track_nr);/* track number               */
@@ -3419,11 +3472,13 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->playcount);/* playcount                 */
   track->playcount2 = track->playcount;
   put32lint (cts, track->playcount2);
-  put32lint (cts, track->time_played); /* last time played       */
+  mac_time = itdb_time_time_t_to_mac (track->itdb, track->time_played);
+  put32lint (cts, mac_time); /* last time played       */
   put32lint (cts, track->cd_nr);   /* CD number                  */
   put32lint (cts, track->cds);     /* number of CDs              */
   put32lint (cts, track->drm_userid);
-  put32lint (cts, track->time_added); /* timestamp            */
+  mac_time = itdb_time_time_t_to_mac (track->itdb, track->time_added);
+  put32lint (cts, mac_time); /* timestamp            */
   put32lint (cts, track->bookmark_time);
   put64lint (cts, track->dbid);
   if (track->checked)   put8int (cts, 1);
@@ -3435,14 +3490,16 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->artwork_size);
   put32lint (cts, track->unk132);
   put32lfloat (cts, track->samplerate2);
-  put32lint (cts, track->time_released);
+  mac_time = itdb_time_time_t_to_mac (track->itdb, track->time_released);
+  put32lint (cts, mac_time);
   put16lint (cts, track->unk144);
   put16lint (cts, track->unk146);
   put32lint (cts, track->unk148);
   put32lint (cts, track->unk152);
   /* since iTunesDB version 0x0c */
   put32lint (cts, track->skipcount);
-  put32lint (cts, track->last_skipped);
+  mac_time = itdb_time_time_t_to_mac (track->itdb, track->last_skipped);
+  put32lint (cts, mac_time);
   put8int (cts, track->has_artwork);
   put8int (cts, track->skip_when_shuffling);
   put8int (cts, track->remember_playback_position);
@@ -3626,8 +3683,10 @@ static void mhod52_free_collate_keys (GList *coltracks)
            position indicator for MHOD_ID_PLAYLIST
            SPLPref for MHOD_ID_SPLPREF
 	   SPLRules for MHOD_ID_SPLRULES */
-static void mk_mhod (WContents *cts, MHODData *mhod)
+static void mk_mhod (FExport *fexp, MHODData *mhod)
 {
+  WContents *cts = fexp->wcontents;
+
   g_return_if_fail (cts);
   g_return_if_fail (mhod->valid);
 
@@ -3785,7 +3844,7 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
 	      itdb_splr_validate (splr);
 	      put32bint (cts, splr->field);
 	      put32bint (cts, splr->action);
-	      put32_n0 (cts, 11);          /* unknown              */
+	      put32_n0 (cts, 11);          /* unknown              */	      
 	      switch (ft)
 	      {
 	      case splft_string:
@@ -3801,19 +3860,36 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
 		  put_data (cts, (gchar *)entry_utf16, 2*len);
 		  g_free (entry_utf16);
 		  break;
-	      case splft_int:
 	      case splft_date:
+	      case splft_int:
 	      case splft_boolean:
 	      case splft_playlist:
 	      case splft_unknown:
-	      case splft_binary_and:
+	      case splft_binary_and: {
+		  guint64 fromvalue;	       
+		  guint64 tovalue;
+		  
+		  fromvalue = splr->fromvalue;
+		  tovalue = splr->tovalue;
+
+		  if (ft == splft_date) {
+		      SPLActionType at;
+		      at = itdb_splr_get_action_type (splr);
+		      if ((at == splat_range_date) || (at == splat_date)) {
+			  Itdb_iTunesDB *itdb = fexp->itdb;
+			  fromvalue = itdb_time_time_t_to_mac (itdb, 
+							       fromvalue);
+			  tovalue = itdb_time_time_t_to_mac (itdb, tovalue);
+		      }
+		  }
+
 		  /* write non-string-type rule */
 		  put32bint (cts, 0x44); /* length of data        */
 		  /* data */
-		  put64bint (cts, splr->fromvalue);
+		  put64bint (cts, fromvalue);
 		  put64bint (cts, splr->fromdate);
 		  put64bint (cts, splr->fromunits);
-		  put64bint (cts, splr->tovalue);
+		  put64bint (cts, tovalue);
 		  put64bint (cts, splr->todate);
 		  put64bint (cts, splr->tounits);
 		  put32bint (cts, splr->unk052);
@@ -3822,6 +3898,7 @@ static void mk_mhod (WContents *cts, MHODData *mhod)
 		  put32bint (cts, splr->unk064);
 		  put32bint (cts, splr->unk068);
 		  break;
+	      }
 	      }
 	  }
 	  /* insert length of mhod junk */
@@ -3977,6 +4054,7 @@ static void mk_mhip (FExport *fexp,
   put32lint (cts, podcastgroupflag);                /* 16 */
   put32lint (cts, podcastgroupid);                  /* 20 */
   put32lint (cts, trackid);                         /* 24 */
+  timestamp = itdb_time_time_t_to_mac (fexp->itdb, timestamp);
   put32lint (cts, timestamp);                       /* 28 */
   put32lint (cts, podcastgroupref);                 /* 32 */
   put32_n0 (cts, 10);                               /* 36 */
@@ -4017,140 +4095,140 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	{
 	    mhod.type = MHOD_ID_TITLE;
 	    mhod.data.string = track->title;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->ipod_path && *track->ipod_path)
 	{
 	    mhod.type = MHOD_ID_PATH;
 	    mhod.data.string = track->ipod_path;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->album && *track->album)
 	{
 	    mhod.type = MHOD_ID_ALBUM;
 	    mhod.data.string = track->album;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->artist && *track->artist)
 	{
 	    mhod.type = MHOD_ID_ARTIST;
 	    mhod.data.string = track->artist;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->genre && *track->genre)
 	{
 	    mhod.type = MHOD_ID_GENRE;
 	    mhod.data.string = track->genre;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->filetype && *track->filetype)
 	{
 	    mhod.type = MHOD_ID_FILETYPE;
 	    mhod.data.string = track->filetype;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->comment && *track->comment)
 	{
 	    mhod.type = MHOD_ID_COMMENT;
 	    mhod.data.string = track->comment;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->category && *track->category)
 	{
 	    mhod.type = MHOD_ID_CATEGORY;
 	    mhod.data.string = track->category;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->composer && *track->composer)
 	{
 	    mhod.type = MHOD_ID_COMPOSER;
 	    mhod.data.string = track->composer;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->grouping && *track->grouping)
 	{
 	    mhod.type = MHOD_ID_GROUPING;
 	    mhod.data.string = track->grouping;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->description && *track->description)
 	{
 	    mhod.type = MHOD_ID_DESCRIPTION;
 	    mhod.data.string = track->description;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->subtitle && *track->subtitle)
 	{
 	    mhod.type = MHOD_ID_SUBTITLE;
 	    mhod.data.string = track->subtitle;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->tvshow && *track->tvshow)
 	{
 	    mhod.type = MHOD_ID_TVSHOW;
 	    mhod.data.string = track->tvshow;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->tvepisode && *track->tvepisode)
 	{
 	    mhod.type = MHOD_ID_TVEPISODE;
 	    mhod.data.string = track->tvepisode;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->tvnetwork && *track->tvnetwork)
 	{
 	    mhod.type = MHOD_ID_TVNETWORK;
 	    mhod.data.string = track->tvnetwork;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->albumartist && *track->albumartist)
 	{
 	    mhod.type = MHOD_ID_ALBUMARTIST;
 	    mhod.data.string = track->albumartist;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->keywords && *track->keywords)
 	{
 	    mhod.type = MHOD_ID_KEYWORDS;
 	    mhod.data.string = track->keywords;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->podcasturl && *track->podcasturl)
 	{
 	    mhod.type = MHOD_ID_PODCASTURL;
 	    mhod.data.string = track->podcasturl;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->podcastrss && *track->podcastrss)
 	{
 	    mhod.type = MHOD_ID_PODCASTRSS;
 	    mhod.data.string = track->podcastrss;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
 	if (track->chapterdata_raw && track->chapterdata_raw_length)
 	{
 	    mhod.type = MHOD_ID_CHAPTERDATA;
 	    mhod.data.chapterdata_track = track;
-	    mk_mhod (cts, &mhod);
+	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
         /* Fill in the missing items of the mhit header */
@@ -4191,7 +4269,7 @@ static gboolean write_playlist_mhips (FExport *fexp,
 	mhod.valid = TRUE;
 	mhod.type = MHOD_ID_PLAYLIST;
 	mhod.data.track_pos = i;
-	mk_mhod (cts, &mhod);
+	mk_mhod (fexp, &mhod);
 	/* note: with iTunes 4.9 the mhod is counted as a child to
 	   mhip, so we have put the total length of the mhip and mhod
 	   into the mhip header */
@@ -4247,7 +4325,7 @@ void write_one_podcast_group (gpointer key, gpointer value,
     mhod.valid = TRUE;
     mhod.type = MHOD_ID_TITLE;
     mhod.data.string = album;
-    mk_mhod (cts, &mhod);
+    mk_mhod (fexp, &mhod);
     fix_header (cts, mhip_seek);
 
     /* write members */
@@ -4263,7 +4341,7 @@ void write_one_podcast_group (gpointer key, gpointer value,
 	mk_mhip (fexp, 1, 0, mhip_id, track->id, 0, groupid);
 	mhod.type = MHOD_ID_PLAYLIST;
 	mhod.data.track_pos = mhip_id;
-	mk_mhod (cts, &mhod);
+	mk_mhod (fexp, &mhod);
 	fix_header (cts, mhip_seek);
     }
 }
@@ -4340,6 +4418,7 @@ static gboolean write_playlist (FExport *fexp,
     gboolean result = TRUE;
     MHODData mhod;
     gint mhodnum;
+    guint32 mac_time;
 
     g_return_val_if_fail (fexp, FALSE);
     g_return_val_if_fail (fexp->itdb, FALSE);
@@ -4375,7 +4454,8 @@ static gboolean write_playlist (FExport *fexp,
     put8int (cts, pl->flag1);      /* unknown                   */
     put8int (cts, pl->flag2);      /* unknown                   */
     put8int (cts, pl->flag3);      /* unknown                   */
-    put32lint (cts, pl->timestamp);/* some timestamp            */
+    mac_time = itdb_time_time_t_to_mac (fexp->itdb, pl->timestamp);
+    put32lint (cts, mac_time);     /* some timestamp            */
     put64lint (cts, pl->id);       /* 64 bit ID                 */
     put32lint (cts, 0);            /* unknown, always 0?        */
     put16lint (cts, 1);            /* string mhod count (1)     */
@@ -4386,7 +4466,7 @@ static gboolean write_playlist (FExport *fexp,
     mhod.valid = TRUE;
     mhod.type = MHOD_ID_TITLE;
     mhod.data.string = pl->name;
-    mk_mhod (cts, &mhod);
+    mk_mhod (fexp, &mhod);
     mk_long_mhod_id_playlist (fexp, pl);
 
     if ((pl->type == ITDB_PL_TYPE_MPL) && pl->members)
@@ -4398,26 +4478,26 @@ static gboolean write_playlist (FExport *fexp,
 	mhod.type = MHOD_ID_LIBPLAYLISTINDEX;
 	mhod.data.mhod52coltracks = mhod52_make_collate_keys (pl->members);
 	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_TITLE;
-	mk_mhod (cts, &mhod);
+	mk_mhod (fexp, &mhod);
 	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_ALBUM;
-	mk_mhod (cts, &mhod);
+	mk_mhod (fexp, &mhod);
 	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_ARTIST;
-	mk_mhod (cts, &mhod);
+	mk_mhod (fexp, &mhod);
 	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_GENRE;
-	mk_mhod (cts, &mhod);
+	mk_mhod (fexp, &mhod);
 	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_COMPOSER;
-	mk_mhod (cts, &mhod);
+	mk_mhod (fexp, &mhod);
 	mhod52_free_collate_keys (mhod.data.mhod52coltracks);
     }
     else  if (pl->is_spl)
     {  /* write the smart rules */
 	mhod.type = MHOD_ID_SPLPREF;
 	mhod.data.splpref = &pl->splpref;
-	mk_mhod (cts, &mhod);
+	mk_mhod (fexp, &mhod);
 
 	mhod.type = MHOD_ID_SPLRULES;
 	mhod.data.splrules = &pl->splrules;
-	mk_mhod (cts, &mhod);
+	mk_mhod (fexp, &mhod);
     }
 
     if (itdb_playlist_is_podcasts(pl) && (mhsd_type == 3))
@@ -5820,17 +5900,21 @@ gchar *itdb_get_artworkdb_path (const gchar *mountpoint)
 /**
  * itdb_time_get_mac_time:
  *
- * Gets the current time expressed in 'Mac' unit (ie in number of seconds since
- * 1/1/1904).
+ * Gets the current time in a format appropriate for storing in the libgpod
+ * data structures
  * 
- * Return value: current time in 'Mac' unit.
+ * Return value: current time
+ *
+ * Deprecated: kept for compatibility with older code, directly use 
+ * g_get_current_time() or time(NULL) instead
  **/
-guint64 itdb_time_get_mac_time (void)
+time_t itdb_time_get_mac_time (void)
 {
     GTimeVal time;
 
     g_get_current_time (&time);
-    return itdb_time_host_to_mac (time.tv_sec);
+
+    return time.tv_sec;
 }
 
 
@@ -5838,33 +5922,45 @@ guint64 itdb_time_get_mac_time (void)
  * itdb_time_mac_to_host:
  * @mactime: time expressed in 'Mac' unit
  *
- * Convert a Mac timestamp to host system time stamp -- modify
- * this function if necessary to port to host systems with different
- * start of Epoch.
- * A "0" time will not be converted.
+ * Converts a timestamp from libgpod format to host system timestamp.
  *
  * Return value: timestamp for the host system
+ *
+ * Deprecated: It's been kept for compatibility with older code, but this
+ * function is now a no-op
  **/
-time_t itdb_time_mac_to_host (guint64 mactime)
+time_t itdb_time_mac_to_host (time_t mactime)
 {
-    if (mactime != 0)  return (time_t)(mactime - 2082844800);
-    else               return (time_t)mactime;
+    return mactime;
 }
-
 
 /**
  * itdb_time_host_to_mac:
  * @time: time expressed in host unit
  *
- * Convert host system timestamp to Mac time stamp -- modify
- * this function if necessary to port to host systems with different
- * start of Epoch 
+ * Convert host system timestamp to libgpod format timestamp
  *
- * Return value: a Mac timestamp
+ * Return value: a libgpod timestamp
+ *
+ * Deprecated: It's been kept for compatibility with older code, but this
+ * function is now a no-op
  **/
-guint64 itdb_time_host_to_mac (time_t time)
+time_t itdb_time_host_to_mac (time_t timet)
 {
-    return (guint64)(((gint64)time) + 2082844800);
+    return timet;
+}
+
+time_t itdb_time_mac_to_time_t (Itdb_iTunesDB *db, guint64 mactime)
+{
+    if (mactime != 0)  return (time_t)(mactime - 2082844800 - db->device->timezone_shift);
+    else               return (time_t)mactime;
+}
+
+guint64 itdb_time_time_t_to_mac (Itdb_iTunesDB *db, time_t timet)
+{
+    if (timet != 0)
+	return ((guint64)timet) + 2082844800 + db->device->timezone_shift;
+    else return 0;
 }
 
 

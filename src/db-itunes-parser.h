@@ -1,6 +1,5 @@
-/*  Time-stamp: <2007-02-24 21:36:04 jcs>
- *
- *  Copyright (C) 2005 Christophe Fergeau
+/*
+ *  Copyright (C) 2005-2007 Christophe Fergeau
  *
  * 
  *  The code contained in this file is free software; you can redistribute

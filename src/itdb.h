@@ -1,5 +1,5 @@
 /*
-|  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
+|  Copyright (C) 2002-2007 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
 |  URL: http://www.gtkpod.org/
@@ -461,10 +461,10 @@ struct _Itdb_Artwork {
     gint32  unk028;
     guint32 rating;        /* Rating from iPhoto * 20 (PhotoDB only) */
     gint32  unk036;
-    guint32 creation_date; /* Date the image file was created
+    time_t  creation_date;  /* Date the image file was created
 			      (creation date of image file (Mac type,
 			      PhotoDB only) */
-    guint32 digitized_date;/* Date the image was taken (EXIF
+    time_t  digitized_date;/* Date the image was taken (EXIF
 			      information, Mac type, PhotoDB only) */
     guint32 artwork_size;  /* Size in bytes of the original source
 			      image (PhotoDB only -- don't touch in
@@ -554,7 +554,7 @@ struct _Itdb_Playlist
     gint  num;            /* number of tracks in playlist          */
     GList *members;       /* tracks in playlist (Track *)          */
     gboolean is_spl;      /* smart playlist?                       */
-    guint32 timestamp;    /* timestamp of playlist creation        */
+    time_t timestamp;     /* timestamp of playlist creation        */
     guint64 id;           /* playlist ID                           */
     guint32 sortorder;    /* How to sort playlist -- see below     */
     guint32 podcastflag;  /* ITDB_PL_FLAG_NORM/_PODCAST            */
@@ -694,9 +694,9 @@ struct _Itdb_Track
   gint32  year;              /* year                   */
   gint32  volume;            /* volume adjustment              */
   guint32 soundcheck;        /* volume adjustment "soundcheck" */
-  guint32 time_added;        /* time when added (Mac type)          */
-  guint32 time_played;       /* time of last play (Mac type)        */
-  guint32 time_modified;     /* time of last modification (Mac type)*/
+  time_t  time_added;        /* time when added (Mac type)          */
+  time_t  time_modified;     /* time of last modification (Mac type)*/
+  time_t  time_played;       /* time of last play (Mac type)        */
   guint32 bookmark_time;     /* bookmark set for (AudioBook) in ms  */
   guint32 rating;            /* star rating (stars * RATING_STEP (20))     */
   guint32 playcount;         /* number of times track was played    */
@@ -756,11 +756,9 @@ struct _Itdb_Track
 			 (like WAVE format), 0x1 for Audible. itdb
 			 will try to set this when adding a new track */
   guint32 unk132;     /* unknown */
-  guint32 time_released;/* date/time added to music store? definitely a
-			 timestamp, always appears to be a time of
-			 0700 GMT. For podcasts: release date as
-			 displayed next to the title in the Podcast
-			 playlist  */
+  time_t  time_released;/* date/time added to music store? 
+			   For podcasts: release date as displayed next to the 
+			   title in the Podcast playlist */
   guint16 unk144;     /* unknown, but MP3 songs appear to be always
 			 0x000c, AAC songs are always 0x0033, Audible
 			 files are 0x0029, WAV files are 0x0. itdb
@@ -1111,9 +1109,9 @@ Itdb_Thumb *itdb_thumb_new (void);
 gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb);
 
 /* time functions */
-guint64 itdb_time_get_mac_time (void);
-time_t itdb_time_mac_to_host (guint64 mactime);
-guint64 itdb_time_host_to_mac (time_t time);
+time_t itdb_time_get_mac_time (void);
+time_t itdb_time_mac_to_host (time_t time);
+time_t itdb_time_host_to_mac (time_t time);
 
 /* Initialize a blank ipod */
 gboolean itdb_init_ipod (const gchar *mountpoint,

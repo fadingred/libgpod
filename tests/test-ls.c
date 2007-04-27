@@ -37,6 +37,36 @@
 #define LOCALDB "/.gtkpod/local_0.itdb"
 
 static void
+display_recently_played (Itdb_iTunesDB *db)
+{
+    Itdb_Playlist *mpl = itdb_playlist_mpl (db);
+    GList *it;
+
+    g_print ("Recently played:\n");
+    for (it = mpl->members; it != NULL; it = it->next) {
+        Itdb_Track *track = (Itdb_Track*)it->data;
+
+        if (track->recent_playcount != 0) {
+            char date[30];
+            time_t track_time = itdb_time_mac_to_host (track->time_played);
+
+            g_print ("%s - %s - %s:\n",
+                     track->artist, track->album, track->title);
+            strftime (date, sizeof (date), "%D %H:%M:%S",
+                      gmtime (&track_time));
+            g_print ("\tUTC: %s\n", date);
+            strftime (date, sizeof (date), "%D %H:%M:%S",
+                      localtime (&track_time));
+            g_print ("\tlocal: %s\n", date);
+            g_print ("track: %ld ", track_time);
+            time (&track_time);
+            g_print ("current: %ld\n", track_time);
+            g_print ("\n");
+        }
+    }
+}
+
+static void
 display_track (Itdb_Track *track, const char *prefix) 
 {
     g_print ("%s%s - %s - %s\n", prefix,  
@@ -131,6 +161,8 @@ main (int argc, char *argv[])
 	  g_error_free (error);
 	  error = NULL;
       }
+
+      display_recently_played (itdb);
   }
 
   itdb_free (itdb);

@@ -1,5 +1,5 @@
 if HAVE_GDKPIXBUF
-TESTTHUMBS=test-thumbnails test-write-thumbnails test-photos
+TESTTHUMBS=test-thumbnails test-write-thumbnails test-photos get-timezone
 
 test_thumbnails_SOURCES = test-covers.c
 test_thumbnails_CFLAGS = $(AM_CFLAGS)
@@ -32,6 +32,8 @@ test_ls_LDADD =
 
 test_init_ipod_SOURCES = test-init-ipod.c
 test_init_ipod_LDADD = 
+
+get_timezone_SOURCES = get-timezone.c
 
 noinst_PROGRAMS=test-itdb test-ls $(TESTTHUMBS) $(TESTTAGLIB) $(TESTMISC)
 

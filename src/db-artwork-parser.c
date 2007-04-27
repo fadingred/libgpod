@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2005 Christophe Fergeau
+ *  Copyright (C) 2005-2007 Christophe Fergeau
  *
  * 
  *  The code contained in this file is free software; you can redistribute
@@ -237,6 +237,8 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	Itdb_PhotoDB *photodb;
 	Itdb_iTunesDB *itunesdb;
 	guint64 dbid;
+	guint64 mactime;
+	Itdb_iTunesDB *itdb = db_get_itunesdb (ctx->db);
 
 	mhii = db_parse_context_get_m_header (ctx, MhiiHeader, "mhii");
 	if (mhii == NULL)
@@ -277,11 +279,11 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	artwork->unk028 = get_gint32 (mhii->unknown4, ctx->byte_order);
 	artwork->rating = get_gint32 (mhii->rating, ctx->byte_order);
 	artwork->unk036 = get_gint32 (mhii->unknown6, ctx->byte_order);
-	artwork->creation_date = get_gint32 (mhii->orig_date, ctx->byte_order);
-	artwork->digitized_date = get_gint32 (mhii->digitized_date,
-					      ctx->byte_order);
-	artwork->artwork_size = get_gint32 (mhii->orig_img_size,
-					    ctx->byte_order);
+	mactime = get_gint32 (mhii->orig_date, ctx->byte_order);
+	artwork->creation_date = itdb_time_mac_to_time_t (itdb, mactime);
+	mactime = get_gint32 (mhii->digitized_date, ctx->byte_order);
+	artwork->digitized_date = itdb_time_mac_to_time_t (itdb, mactime);
+	artwork->artwork_size = get_gint32 (mhii->orig_img_size, ctx->byte_order);
 
 	if (song)
 	{

@@ -1,3 +1,43 @@
+2007-04-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* docs/reference/tmpl/device.sgml
+	  docs/reference/tmpl/itunesdb-time.sgml
+	  docs/reference/tmpl/libgpod-unused.sgml
+	  docs/reference/tmpl/track.sgml
+	  src/db-artwork-parser.c
+	  src/db-artwork-writer.c
+	  src/db-itunes-parser.h
+	  src/itdb.h
+	  src/itdb_device.c
+	  src/itdb_device.h
+	  src/itdb_itunesdb.c
+	  src/itdb_private.h
+	  tests/Makefile.am:
+
+	  Christophe's patch for automatic correction of timestamps
+	  depending on which timezone the iPod is set to.
+
+	  ATTENTION DEVELOPERS: as a consequence all exported timestamps
+	  are no longer guint32 mac-type timestamps but standard time_t
+	  timestamps. This also includes the 64 bit timestamps in smart
+	  playlists. The following functions are therefore no longer
+	  needed and are deprecated:
+
+	  itdb_time_mac_to_host(), itdb_time_host_to_mac(): simply return
+	  the argument without changing it. Argument and return value are
+	  now both of type 'time_t'.
+
+	  itunesdb_time_get_mac_time(): returns the seconds passed since
+	  Epoch in seconds and is equivalent to time(NULL).
+
+	  These functions may be removed in a future version of
+	  libgpod. Programs linking to libgpod may need to be changed
+	  slightly if they made any assumptions on the type of timestamps
+	  used. This should be obvious through compile-time warnings.
+
+	  tests/test-ls.c: print a list of recently played tracks.
+
+
 2007-04-15  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/ipod.py: use the mac-style path for
