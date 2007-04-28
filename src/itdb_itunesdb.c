@@ -168,46 +168,50 @@ enum MHOD_ID {
   MHOD_ID_FILETYPE = 6,
 /* MHOD_ID_EQSETTING = 7, */
   MHOD_ID_COMMENT = 8,
-/* Category - This is the category ("Technology", "Music", etc.) where
-   the podcast was located. Introduced in db version 0x0d. */
+  /* Category - This is the category ("Technology", "Music", etc.) where
+     the podcast was located. Introduced in db version 0x0d. */
   MHOD_ID_CATEGORY = 9,
   MHOD_ID_COMPOSER = 12,
   MHOD_ID_GROUPING = 13,
-/* Description text (such as podcast show notes). Accessible by
-   wselecting the center button on the iPod, where this string is
-   displayed along with the song title, date, and
-   timestamp. Introduced in db version 0x0d. */
+  /* Description text (such as podcast show notes). Accessible by
+     wselecting the center button on the iPod, where this string is
+     displayed along with the song title, date, and
+     timestamp. Introduced in db version 0x0d. */
   MHOD_ID_DESCRIPTION = 14,
-/* Podcast Enclosure URL. Note: this is either a UTF-8 or ASCII
-   encoded string (NOT UTF-16). Also, there is no mhod::length value
-   for this type. Introduced in db version 0x0d.  */
+  /* Podcast Enclosure URL. Note: this is either a UTF-8 or ASCII
+     encoded string (NOT UTF-16). Also, there is no mhod::length value
+     for this type. Introduced in db version 0x0d.  */
   MHOD_ID_PODCASTURL = 15,
-/* Podcast RSS URL. Note: this is either a UTF-8 or ASCII encoded
-   string (NOT UTF-16). Also, there is no mhod::length value for this
-   type. Introduced in db version 0x0d. */
+  /* Podcast RSS URL. Note: this is either a UTF-8 or ASCII encoded
+     string (NOT UTF-16). Also, there is no mhod::length value for this
+     type. Introduced in db version 0x0d. */
   MHOD_ID_PODCASTRSS = 16,
-/* Chapter data. This is a m4a-style entry that is used to display
-   subsongs within a mhit. Introduced in db version 0x0d. */
+  /* Chapter data. This is a m4a-style entry that is used to display
+     subsongs within a mhit. Introduced in db version 0x0d. */
   MHOD_ID_CHAPTERDATA = 17,
-/* Subtitle (usually the same as Description). Introduced in db
-   version 0x0d. */
+  /* Subtitle (usually the same as Description). Introduced in db
+     version 0x0d. */
   MHOD_ID_SUBTITLE = 18,
-/* Show (for TV Shows only). Introduced in db version 0x0d? */
+  /* Show (for TV Shows only). Introduced in db version 0x0d? */
   MHOD_ID_TVSHOW = 19, 
-/* Episode # (for TV Shows only). Introduced in db version 0x0d? */
+  /* Episode # (for TV Shows only). Introduced in db version 0x0d? */
   MHOD_ID_TVEPISODE = 20,
-/* TV Network (for TV Shows only). Introduced in db version 0x0d? */
+  /* TV Network (for TV Shows only). Introduced in db version 0x0d? */
   MHOD_ID_TVNETWORK = 21,
-/* Album Artist. Introduced in db version 0x13? */
+  /* Album Artist. Introduced in db version 0x13? */
   MHOD_ID_ALBUMARTIST = 22,
-/* This only seems to appear if the Artist has "The" in front of it
-  (like "The Monkies") in which case it will be in the format "Artist,
-  The" and is followed by 5 0x01 UTF-16 characters. Introduced in db
-  version 0x13? */
-/*  MHOD_ID_ARTISTTHE = 23,   later */
-/* Appears to be a list of keywords pertaining to a track. Introduced
-   in db version 0x13? */
+  /* Sort key for artist. */
+  MHOD_ID_SORT_ARTIST = 23,
+  /* Appears to be a list of keywords pertaining to a track. Introduced
+     in db version 0x13? */
   MHOD_ID_KEYWORDS = 24,
+  /* more sort keys, taking precedence over the standard entries if
+     present */
+  MHOD_ID_SORT_TITLE = 27,
+  MHOD_ID_SORT_ALBUM = 28,
+  MHOD_ID_SORT_ALBUMARTIST = 29,
+  MHOD_ID_SORT_COMPOSER = 30,
+  MHOD_ID_SORT_TVSHOW = 31,
   MHOD_ID_SPLPREF = 50,  /* settings for smart playlist */
   MHOD_ID_SPLRULES = 51, /* rules for smart playlist     */
   MHOD_ID_LIBPLAYLISTINDEX = 52,  /* Library Playlist Index */
@@ -1364,6 +1368,12 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
   case MHOD_ID_TVNETWORK:
   case MHOD_ID_ALBUMARTIST:
   case MHOD_ID_KEYWORDS:
+  case MHOD_ID_SORT_ARTIST:
+  case MHOD_ID_SORT_TITLE:
+  case MHOD_ID_SORT_ALBUM:
+  case MHOD_ID_SORT_ALBUMARTIST:
+  case MHOD_ID_SORT_COMPOSER:
+  case MHOD_ID_SORT_TVSHOW:
       /* type of string: 0x02: UTF8, 0x01 or 0x00: UTF16 LE */
       string_type = get32lint (cts, seek);
       xl = get32lint (cts, seek+4);   /* length of string */
@@ -1596,6 +1606,12 @@ static gchar *get_mhod_string (FImport *fimp, glong seek, guint32 *ml, gint32 *m
     case MHOD_ID_TVNETWORK:
     case MHOD_ID_ALBUMARTIST:
     case MHOD_ID_KEYWORDS:
+    case MHOD_ID_SORT_ARTIST:
+    case MHOD_ID_SORT_TITLE:
+    case MHOD_ID_SORT_ALBUM:
+    case MHOD_ID_SORT_ALBUMARTIST:
+    case MHOD_ID_SORT_COMPOSER:
+    case MHOD_ID_SORT_TVSHOW:
 	mhoddata = get_mhod (fimp, seek, ml);
 	if ((*ml != -1) && mhoddata.valid)
 	    return mhoddata.data.string;
@@ -2061,6 +2077,12 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	  case MHOD_ID_ALBUMARTIST:
 	  case MHOD_ID_KEYWORDS:
 	  case MHOD_ID_CHAPTERDATA:
+	  case MHOD_ID_SORT_ARTIST:
+	  case MHOD_ID_SORT_TITLE:
+	  case MHOD_ID_SORT_ALBUM:
+	  case MHOD_ID_SORT_ALBUMARTIST:
+	  case MHOD_ID_SORT_COMPOSER:
+	  case MHOD_ID_SORT_TVSHOW:
 	      /* these are not expected here */
 	      break;
 	  case MHOD_ID_LIBPLAYLISTINDEX:
@@ -2347,6 +2369,17 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	      break;
 	  case MHOD_ID_KEYWORDS:
 	      track->keywords = entry_utf8;
+	      break;
+	  case MHOD_ID_SORT_ARTIST:
+	  case MHOD_ID_SORT_TITLE:
+	  case MHOD_ID_SORT_ALBUM:
+	  case MHOD_ID_SORT_ALBUMARTIST:
+	  case MHOD_ID_SORT_COMPOSER:
+	  case MHOD_ID_SORT_TVSHOW:
+	      /* we don't read those -- the application has to set
+		 them before each export / libgpod will create the
+		 sort_artist field before each export if not set */
+	      g_free (entry_utf8);
 	      break;
 	  case MHOD_ID_SPLPREF:
 	  case MHOD_ID_SPLRULES:
@@ -3543,6 +3576,45 @@ static void fix_mhit (WContents *cts, gulong mhit_seek, guint32 mhod_num)
   put32lint_seek (cts, mhod_num, mhit_seek+12);
 }
 
+/* Returns:
+   - track->sort_artist if track->sort_artist is not NULL
+
+   - 'Artist, The' if track->sort_artist is NULL and track->artist of
+     of type 'The Artist'.
+
+   - NULL if track->sort_artist is NULL and track->artist is not of
+     type 'The Artist'.
+
+   You must g_free() the returned string */
+static gchar *get_sort_artist (Itdb_Track *track)
+{
+    g_return_val_if_fail (track, NULL);
+
+    if (track->sort_artist && *track->sort_artist)
+    {
+	return g_strdup (track->sort_artist);
+    }
+
+    if (!(track->artist && *track->artist))
+    {
+	return NULL;
+    }
+
+    /* check if artist is of type 'The Artist' */
+    if (g_ascii_strncasecmp ("The ", track->artist, 4) == 0)
+    {   /* return 'Artist, The', followed by five 0x01 chars
+	   (analogous to iTunes) */
+	return g_strdup_printf ("%s, The%c%c%c%c%c",
+				track->artist+4,
+				0x01, 0x01, 0x01, 0x01, 0x01);
+    }
+
+    return NULL;
+}
+
+
+
+
 static gint mhod52_sort_title (const struct mhod52track *a, const struct mhod52track *b)
 {
     return strcmp (a->title, b->title);
@@ -3619,6 +3691,7 @@ static GList *mhod52_make_collate_keys (GList *tracks)
 
     for (gl=tracks; gl; gl=gl->next)
     {
+	gchar *str;
 	struct mhod52track *ct;
 	Itdb_Track *tr = gl->data;
 	g_return_val_if_fail (tr, NULL);
@@ -3626,26 +3699,74 @@ static GList *mhod52_make_collate_keys (GList *tracks)
 	ct = g_new0 (struct mhod52track, 1);
 	coltracks = g_list_prepend (coltracks, ct);
 
-	if (tr->album)
+	/* album */
+	if (tr->sort_album)
+	{
+	    ct->album = g_utf8_collate_key (tr->sort_album, -1);
+	}
+	else if (tr->album)
+	{
 	    ct->album = g_utf8_collate_key (tr->album, -1);
+	}
 	else
+	{
 	    ct->album = g_strdup ("");
-	if (tr->title)
+	}
+
+	/* title */
+	if (tr->sort_title)
+	{
+	    ct->title = g_utf8_collate_key (tr->sort_title, -1);
+	}
+	else if (tr->title)
+	{
 	    ct->title = g_utf8_collate_key (tr->title, -1);
+	}
 	else
+	{
 	    ct->title = g_strdup ("");
-	if (tr->artist)
+	}
+
+	/* artist */
+	str = get_sort_artist (tr);
+	if (str)
+	{
+	    ct->artist = g_utf8_collate_key (str, -1);
+	    g_free (str);
+	}
+	else if (tr->artist)
+	{
 	    ct->artist = g_utf8_collate_key (tr->artist, -1);
+	}
 	else
+	{
 	    ct->artist = g_strdup ("");
+	}
+
+	/* genre */
 	if (tr->genre)
+	{
 	    ct->genre = g_utf8_collate_key (tr->genre, -1);
+	}
 	else
+	{
 	    ct->genre = g_strdup ("");
-	if (tr->composer)
+	}
+
+	/* composer */
+	if (tr->sort_composer)
+	{
+	    ct->composer = g_utf8_collate_key (tr->sort_composer, -1);
+	}
+	else if (tr->composer)
+	{
 	    ct->composer = g_utf8_collate_key (tr->composer, -1);
+	}
 	else
+	{
 	    ct->composer = g_strdup ("");
+	}
+
 	ct->track_nr = tr->track_nr;
 	ct->cd_nr = tr->cd_nr;
 	ct->numtracks = numtracks;
@@ -3707,6 +3828,12 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
   case MHOD_ID_TVNETWORK:
   case MHOD_ID_ALBUMARTIST:
   case MHOD_ID_KEYWORDS:
+  case MHOD_ID_SORT_ARTIST:
+  case MHOD_ID_SORT_TITLE:
+  case MHOD_ID_SORT_ALBUM:
+  case MHOD_ID_SORT_ALBUMARTIST:
+  case MHOD_ID_SORT_COMPOSER:
+  case MHOD_ID_SORT_TVSHOW:
       g_return_if_fail (mhod->data.string);
       /* normal iTunesDBs seem to take utf16 strings), endian-inversed
 	 iTunesDBs seem to take utf8 strings */
@@ -4084,6 +4211,7 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	guint32 mhod_num = 0;
 	gulong mhit_seek = cts->pos;
 	MHODData mhod;
+	gchar *str;
 
 	g_return_val_if_fail (track, FALSE);
 
@@ -4220,6 +4348,50 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	{
 	    mhod.type = MHOD_ID_PODCASTRSS;
 	    mhod.data.string = track->podcastrss;
+	    mk_mhod (fexp, &mhod);
+	    ++mhod_num;
+	}
+	str = get_sort_artist (track);
+	if (str)
+	{
+	    mhod.type = MHOD_ID_SORT_ARTIST;
+	    mhod.data.string = str;
+	    mk_mhod (fexp, &mhod);
+	    ++mhod_num;
+	    g_free (str);
+	}
+	if (track->sort_title && *track->sort_title)
+	{
+	    mhod.type = MHOD_ID_SORT_TITLE;
+	    mhod.data.string = track->sort_title;
+	    mk_mhod (fexp, &mhod);
+	    ++mhod_num;
+	}
+	if (track->sort_album && *track->sort_album)
+	{
+	    mhod.type = MHOD_ID_SORT_ALBUM;
+	    mhod.data.string = track->sort_album;
+	    mk_mhod (fexp, &mhod);
+	    ++mhod_num;
+	}
+	if (track->sort_albumartist && *track->sort_albumartist)
+	{
+	    mhod.type = MHOD_ID_SORT_ALBUMARTIST;
+	    mhod.data.string = track->sort_albumartist;
+	    mk_mhod (fexp, &mhod);
+	    ++mhod_num;
+	}
+	if (track->sort_composer && *track->sort_composer)
+	{
+	    mhod.type = MHOD_ID_SORT_COMPOSER;
+	    mhod.data.string = track->sort_composer;
+	    mk_mhod (fexp, &mhod);
+	    ++mhod_num;
+	}
+	if (track->sort_tvshow && *track->sort_tvshow)
+	{
+	    mhod.type = MHOD_ID_SORT_TVSHOW;
+	    mhod.data.string = track->sort_tvshow;
 	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
@@ -4617,9 +4789,10 @@ static void wcontents_free (WContents *cts)
 }
 
 
-/* reassign the iPod IDs and make sure the itdb->tracks are in the
-   same order as the mpl */
-static void reassign_ids (FExport *fexp)
+/* - reassign the iPod IDs
+   - make sure the itdb->tracks are in the same order as the mpl
+*/
+static void prepare_itdb_for_write (FExport *fexp)
 {
     GList *gl;
     Itdb_iTunesDB *itdb;
@@ -4639,18 +4812,20 @@ static void reassign_ids (FExport *fexp)
 
     for (gl=g_list_last(mpl->members); gl; gl=gl->prev)
     {
+	GList *link;
 	Itdb_Track *track = gl->data;
 	g_return_if_fail (track);
-	g_return_if_fail (g_list_find (itdb->tracks, track));
+	link = g_list_find (itdb->tracks, track);
+	g_return_if_fail (link);
 
 	/* move this track to the beginning of itdb_tracks */
-	itdb->tracks = g_list_remove (itdb->tracks, track);
+	itdb->tracks = g_list_delete_link (itdb->tracks, link);
 	itdb->tracks = g_list_prepend (itdb->tracks, track);
     }
 
     fexp->next_id = FIRST_IPOD_ID;
 
-    /* assign unique IDs */
+    /* assign unique IDs and create sort keys */
     for (gl=itdb->tracks; gl; gl=gl->next)
     {
 	Itdb_Track *track = gl->data;
@@ -4706,8 +4881,8 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 
     cts->reversed = (itdb->device->byte_order == G_BIG_ENDIAN);
 
-    reassign_ids (fexp);
-
+    prepare_itdb_for_write (fexp);
+    
     mk_mhbd (fexp, 3);   /* three mhsds */
     /* write tracklist */
     if (write_mhsd_tracks (fexp))
@@ -5009,7 +5184,7 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
     fexp->wcontents = wcontents_new (filename);
     cts = fexp->wcontents;
 
-    reassign_ids (fexp);
+    prepare_itdb_for_write (fexp);
 
     put24bint (cts, itdb_tracks_number (itdb));
     put24bint (cts, 0x010600);

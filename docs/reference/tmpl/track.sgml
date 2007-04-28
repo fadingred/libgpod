@@ -44,7 +44,12 @@ information about an iPod track.
 @tvnetwork: 
 @albumartist: 
 @keywords: 
-@reserved: 
+@sort_artist: 
+@sort_title: 
+@sort_album: 
+@sort_albumartist: 
+@sort_composer: 
+@sort_tvshow: 
 @id: 
 @size: 
 @tracklen: 
@@ -132,6 +137,10 @@ information about an iPod track.
 @reserved_int6: 
 @reserved1: 
 @reserved2: 
+@reserved3: 
+@reserved4: 
+@reserved5: 
+@reserved6: 
 @usertype: 
 @userdata: 
 @userdata_duplicate: 

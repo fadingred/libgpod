@@ -1,5 +1,5 @@
 /*
-|  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
+|  Copyright (C) 2002-2007 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
 |  URL: http://www.gtkpod.org/
@@ -247,14 +247,15 @@ void itdb_track_free (Itdb_Track *track)
     g_return_if_fail (track);
 
     g_free (track->title);
-    g_free (track->artist);
+    g_free (track->ipod_path);
     g_free (track->album);
+    g_free (track->artist);
     g_free (track->genre);
-    g_free (track->composer);
-    g_free (track->comment);
     g_free (track->filetype);
-    g_free (track->grouping);
+    g_free (track->comment);
     g_free (track->category);
+    g_free (track->composer);
+    g_free (track->grouping);
     g_free (track->description);
     g_free (track->podcasturl);
     g_free (track->podcastrss);
@@ -264,12 +265,20 @@ void itdb_track_free (Itdb_Track *track)
     g_free (track->tvnetwork);
     g_free (track->albumartist);
     g_free (track->keywords);
-    g_free (track->ipod_path);
+    g_free (track->sort_artist);
+    g_free (track->sort_title);
+    g_free (track->sort_album);
+    g_free (track->sort_albumartist);
+    g_free (track->sort_composer);
+    g_free (track->sort_tvshow);
+
     g_free (track->chapterdata_raw);
-    itdb_artwork_remove_thumbnails (track->artwork);
-    g_free (track->artwork);
+
+    itdb_artwork_free (track->artwork);
+
     if (track->userdata && track->userdata_destroy)
 	(*track->userdata_destroy) (track->userdata);
+
     g_free (track);
 }
 

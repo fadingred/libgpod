@@ -53,7 +53,9 @@ G_BEGIN_DECLS
 typedef void (* ItdbUserDataDestroyFunc) (gpointer userdata);
 typedef gpointer (* ItdbUserDataDuplicateFunc) (gpointer userdata);
 
+/* public structures */
 typedef struct _Itdb_Device Itdb_Device;
+typedef struct _Itdb_IpodInfo Itdb_IpodInfo;
 typedef struct _Itdb_Artwork Itdb_Artwork;
 typedef struct _Itdb_Thumb Itdb_Thumb;
 typedef struct _Itdb_SPLPref Itdb_SPLPref;
@@ -64,7 +66,6 @@ typedef struct _Itdb_PhotoDB Itdb_PhotoDB;
 typedef struct _Itdb_Playlist Itdb_Playlist;
 typedef struct _Itdb_PhotoAlbum Itdb_PhotoAlbum;
 typedef struct _Itdb_Track Itdb_Track;
-typedef struct _Itdb_IpodInfo Itdb_IpodInfo;
 
 
 /* ------------------------------------------------------------ *\
@@ -124,8 +125,8 @@ struct _Itdb_IpodInfo {
        iPod from scratch. */
     const guint musicdirs;
     /* reserved for future use */
-    const gint reserved_int1;
-    const gint reserved_int2;
+    const gint32 reserved_int1;
+    const gint32 reserved_int2;
     gconstpointer reserved1;
     gconstpointer reserved2;
 };
@@ -698,18 +699,18 @@ typedef enum
    about the iTunesDB and related files. */
 struct _Itdb_Track
 {
-  Itdb_iTunesDB *itdb;       /* pointer to iTunesDB (for convenience) */
-  gchar   *title;            /* title (utf8)           */
-  gchar   *ipod_path;        /* name of file on iPod: uses ":"
-				instead of "/"                        */
-  gchar   *album;            /* album (utf8)           */
-  gchar   *artist;           /* artist (utf8)          */
-  gchar   *genre;            /* genre (utf8)           */
-  gchar   *filetype;         /* eg. "MP3-File"...(utf8)*/
-  gchar   *comment;          /* comment (utf8)         */
-  gchar   *category;         /* Category for podcast   */
-  gchar   *composer;         /* Composer (utf8)        */
-  gchar   *grouping;         /* ? (utf8)               */
+  Itdb_iTunesDB *itdb;       /* pointer to iTunesDB (for convenience)   */
+  gchar   *title;            /* title (utf8)                            */
+  gchar   *ipod_path;        /* name of file on iPod: uses ":" instead
+				of "/" and is relative to mountpoint    */
+  gchar   *album;            /* album (utf8)                            */
+  gchar   *artist;           /* artist (utf8)                           */
+  gchar   *genre;            /* genre (utf8)                            */
+  gchar   *filetype;         /* eg. "MP3-File"...(utf8)                 */
+  gchar   *comment;          /* comment (utf8)                          */
+  gchar   *category;         /* Category for podcast                    */
+  gchar   *composer;         /* Composer (utf8)                         */
+  gchar   *grouping;         /* ? (utf8)                                */
   gchar   *description;      /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *podcasturl;       /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *podcastrss;       /* see note for MHOD_ID in itdb_itunesdb.c */
@@ -721,55 +722,75 @@ struct _Itdb_Track
   gchar   *tvnetwork;        /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *albumartist;      /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *keywords;         /* see note for MHOD_ID in itdb_itunesdb.c */
-  gchar   *reserved;         /* will probably be used for artistthe     */
+/* the following 6 are new in libgpod 0.5.0... */
+  /* You can set these strings to override the standard sortorder
+     suggested by libgpod. When set they take precedence over the
+     default 'artist', 'album'... fields.
+
+     When reading the iTunesDB these fields are discarded, so you will
+     have to set them again before writing the iTunesDB.
+
+     libgpod will automatically create an entry in the iTunesDB (but
+     not below) for sort_artist if 'artist' is something like "The
+     Artist" and sort_artist wasn't set by the application. In that
+     case 'Artist, The' followed by five 0x01 characters is used for
+     sorting and written to the iTunesDB. Why five 0x01 characters are
+     added is not completely understood, but analogous to what iTunes
+     does. libgpod will _not_ change the six fields below, however. */
+  gchar   *sort_artist;      /* artist name (for sorting)               */
+  gchar   *sort_title;       /* title (for sorting)                     */
+  gchar   *sort_album;       /* album (for sorting)                     */
+  gchar   *sort_albumartist; /* album artist (for sorting)              */
+  gchar   *sort_composer;    /* composer (for sorting)                  */
+  gchar   *sort_tvshow;      /* tv show (for sorting)                   */
 /* ... to here */
-  guint32 id;                /* unique ID of track     */
-  gint32  size;              /* size of file in bytes  */
-  gint32  tracklen;          /* Length of track in ms  */
-  gint32  cd_nr;             /* CD number              */
-  gint32  cds;               /* number of CDs          */
-  gint32  track_nr;          /* track number           */
-  gint32  tracks;            /* number of tracks       */
-  gint32  bitrate;           /* bitrate                */
-  guint16 samplerate;        /* samplerate (CD: 44100) */
+  guint32 id;                /* unique ID of track                      */
+  gint32  size;              /* size of file in bytes                   */
+  gint32  tracklen;          /* Length of track in ms                   */
+  gint32  cd_nr;             /* CD number                               */
+  gint32  cds;               /* number of CDs                           */
+  gint32  track_nr;          /* track number                            */
+  gint32  tracks;            /* number of tracks                        */
+  gint32  bitrate;           /* bitrate                                 */
+  guint16 samplerate;        /* samplerate (CD: 44100)                  */
   guint16 samplerate_low;    /* in the iTunesDB the samplerate is
                                 multiplied by 0x10000 -- these are the
-				lower 16 bit, which are usually 0 */
-  gint32  year;              /* year                   */
-  gint32  volume;            /* volume adjustment              */
-  guint32 soundcheck;        /* volume adjustment "soundcheck" */
-  time_t  time_added;        /* time when added (Mac type)          */
-  time_t  time_modified;     /* time of last modification (Mac type)*/
-  time_t  time_played;       /* time of last play (Mac type)        */
-  guint32 bookmark_time;     /* bookmark set for (AudioBook) in ms  */
-  guint32 rating;            /* star rating (stars * RATING_STEP (20))     */
-  guint32 playcount;         /* number of times track was played    */
+				lower 16 bit, which are usually 0       */
+  gint32  year;              /* year                                    */
+  gint32  volume;            /* volume adjustment                       */
+  guint32 soundcheck;        /* volume adjustment "soundcheck"          */
+  time_t  time_added;        /* time when added (Mac type)              */
+  time_t  time_modified;     /* time of last modification (Mac type)    */
+  time_t  time_played;       /* time of last play (Mac type)            */
+  guint32 bookmark_time;     /* bookmark set for (AudioBook) in ms      */
+  guint32 rating;            /* star rating (stars * RATING_STEP (20))  */
+  guint32 playcount;         /* number of times track was played        */
   guint32 playcount2;        /* Also stores the play count of the
 				song.  Don't know if it ever differs
 				from the above value. During sync itdb
 				sets playcount2 to the same value as
-				playcount. */
-  guint32 recent_playcount;  /* times track was played since last sync */
-  gboolean transferred;      /* has file been transferred to iPod?  */
-  gint16  BPM;               /* supposed to vary the playback speed */
+				playcount.                              */
+  guint32 recent_playcount;  /* times track was played since last sync  */
+  gboolean transferred;      /* has file been transferred to iPod?      */
+  gint16  BPM;               /* supposed to vary the playback speed     */
   guint8  app_rating;        /* star rating set by appl. (not
 			      * iPod). If the rating set on the iPod
 			        and the rating field above differ, the
 				original rating is copied here and the
 				new rating is stored above. */
   guint8  type1;             /* CBR MP3s and AAC are 0x00, VBR MP3s are
-			        0x01 */
-  guint8  type2;             /* MP3s are 0x01, AAC are 0x00 */
+			        0x01                                    */
+  guint8  type2;             /* MP3s are 0x01, AAC are 0x00             */
   guint8  compilation;
   guint32 starttime;
   guint32 stoptime;
   guint8  checked;           /* 0x0: checkmark on track is set 0x1: not set */
-  guint64 dbid;              /* unique database ID */
+  guint64 dbid;              /* unique database ID                      */
   guint32 drm_userid;        /* Apple Store/Audible User ID (for DRM'ed
-				files only, set to 0 otherwise). */
+				files only, set to 0 otherwise).        */
   guint32 visible;           /*  If this value is 1, the song is visible
 				 on the iPod. All other values cause
-				 the file to be hidden. */
+				 the file to be hidden.                 */
   guint32 filetype_marker;   /* This appears to always be 0 on hard
                                 drive based iPods, but for the
                                 iTunesDB that is written to an iPod
@@ -779,7 +800,7 @@ struct _Itdb_Track
                                 0x4d503320 -> 0x4d = 'M', 0x50 = 'P',
                                 0x33 = '3', 0x20 = <space>. (set to
 				the filename extension by itdb when
-				copying track to iPod)*/
+				copying track to iPod)                  */
   guint16 artwork_count;     /* The number of album artwork items
 				associated with this song. libgpod
 				updates this value when syncing */
@@ -788,12 +809,12 @@ struct _Itdb_Track
 				converted to JPEG format. Observed in
 				iPodDB version 0x0b and with an iPod
 				Photo. libgpod updates this value when
-				syncing */
+				syncing                                 */
   float samplerate2;         /* The sample rate of the song expressed
 				as an IEEE 32 bit floating point
 				number.  It's uncertain why this is
 				here.  itdb will set this when adding
-				a track */
+				a track                                 */
 
   guint16 unk126;     /* unknown, but always seems to be 0xffff for
 			 MP3/AAC songs, 0x0 for uncompressed songs
@@ -924,6 +945,10 @@ struct _Itdb_Track
   gint32 reserved_int6;
   gpointer reserved1;
   gpointer reserved2;
+  gpointer reserved3;
+  gpointer reserved4;
+  gpointer reserved5;
+  gpointer reserved6;
 
   /* below is for use by application */
   guint64 usertype;

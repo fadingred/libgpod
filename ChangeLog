@@ -1,8 +1,34 @@
 2007-04-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h: added padding to exported structures so new entries
-	can be added without loosing backward run-time compatibility.
+	  can be added without loosing backward run-time compatibility.
 
+	* docs/reference/tmpl/track.sgml
+	  src/itdb.h
+	  src/itdb_itunesdb.c
+	  src/itdb_track.c: Added the following fields to Itdb_Track:
+
+	  sort_artist
+	  sort_title
+	  sort_album
+	  sort_albumartist
+	  sort_composer
+	  sort_tvshow
+
+	  These fields can (theoretically) be used to force a certain sort
+	  order on the iPod when displaying by artist, album...
+
+	  Even though these fields are present in the iTunesDB, they are
+	  discarded when reading the iTunesDB and applications must always
+	  set them before writing the iTunesDB again. This is to avoid
+	  that the fields 'artist' and 'sort_artist' accidentially get out
+	  of sync.
+
+	  libgpod will automatically create a sort_artist key for you if
+	  artist is of the type 'The Artist' and sort_artist is not
+	  set. The sort key used in that case is 'Artist, The' (followed
+	  by five time 0x01), even though sort_artist itself will not be
+	  touched.
 
 2007-04-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
