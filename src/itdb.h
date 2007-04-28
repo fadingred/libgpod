@@ -110,20 +110,24 @@ typedef enum {
 } Itdb_IpodModel;
 
 struct _Itdb_IpodInfo {
-       /* model_number is abbreviated: if the first character is not
-	  numeric, it is ommited. e.g. "MA350 -> A350", "M9829 -> 9829" */
-	const gchar *model_number;
-        const double capacity;  /* in GB */
-	const Itdb_IpodModel ipod_model;
-	const Itdb_IpodGeneration ipod_generation;
-        /* Number of music (Fnn) dirs created by iTunes. The exact
-	   number seems to be version dependent. Therefore, the
-	   numbers here represent a mixture of reported values and
-	   common sense. Note: this number does not necessarily
-	   represent the number of dirs present on a particular
-	   iPod. It is used when setting up a new iPod from
-	   scratch. */
-        const guint musicdirs;
+    /* model_number is abbreviated: if the first character is not
+       numeric, it is ommited. e.g. "MA350 -> A350", "M9829 -> 9829" */
+    const gchar *model_number;
+    const double capacity;  /* in GB */
+    const Itdb_IpodModel ipod_model;
+    const Itdb_IpodGeneration ipod_generation;
+    /* Number of music (Fnn) dirs created by iTunes. The exact number
+       seems to be version dependent. Therefore, the numbers here
+       represent a mixture of reported values and common sense. Note:
+       this number does not necessarily represent the number of dirs
+       present on a particular iPod. It is used when setting up a new
+       iPod from scratch. */
+    const guint musicdirs;
+    /* reserved for future use */
+    const gint reserved_int1;
+    const gint reserved_int2;
+    gconstpointer reserved1;
+    gconstpointer reserved2;
 };
 
 
@@ -350,8 +354,12 @@ struct _Itdb_SPLPref
     guint32 limitsort;         /* See types defined above */
     guint32 limitvalue;        /* The value typed next to "Limit
 				  type" */
-    guint8  matchcheckedonly;  /* "Match only checked songs" check
-				  box */
+    guint8  matchcheckedonly;  /* "Match only checked songs" check box */
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
 };
 
 struct _Itdb_SPLRule
@@ -380,6 +388,11 @@ struct _Itdb_SPLRule
     guint32 unk060;
     guint32 unk064;
     guint32 unk068;
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
 };
 
 
@@ -389,6 +402,11 @@ struct _Itdb_SPLRules
     guint32 match_operator;  /* "All" (logical AND): Itdb_SPLMATCH_AND,
 				"Any" (logical OR): Itdb_SPLMATCH_OR */
     GList *rules;
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
 };
 
 
@@ -448,6 +466,11 @@ struct _Itdb_Thumb {
     gint16  height;
     gint16  horizontal_padding;
     gint16  vertical_padding;
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
 };
 
 struct _Itdb_Artwork {
@@ -465,6 +488,11 @@ struct _Itdb_Artwork {
     guint32 artwork_size;  /* Size in bytes of the original source
 			      image (PhotoDB only -- don't touch in
 			      case of ArtworkDB!) */
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
@@ -479,6 +507,11 @@ struct _Itdb_PhotoDB
     GList *photos;      /* (Itdb_Artwork *)     */
     GList *photoalbums; /* (Itdb_PhotoAlbum *)  */
     Itdb_Device *device;/* iPod device info     */
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
@@ -495,6 +528,11 @@ struct _Itdb_iTunesDB
     Itdb_Device *device;/* iPod device info     */
     guint32 version;
     guint64 id;
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
@@ -531,6 +569,11 @@ struct _Itdb_PhotoAlbum
     /* set automatically at time of writing the PhotoDB */
     gint32  album_id;
     gint32  prev_album_id;
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
@@ -556,8 +599,13 @@ struct _Itdb_Playlist
     guint32 podcastflag;  /* ITDB_PL_FLAG_NORM/_PODCAST            */
     Itdb_SPLPref splpref;      /* smart playlist prefs                  */
     Itdb_SPLRules splrules;    /* rules for smart playlists             */
-    gpointer reserved1;   /* reserved for MHOD100 implementation   */
-    gpointer reserved2;   /* reserved for MHOD100 implementation   */
+    gpointer reserved100; /* reserved for MHOD100 implementation   */
+    gpointer reserved101; /* reserved for MHOD100 implementation   */
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
     /* below is for use by application */
     guint64 usertype;
     gpointer userdata;
@@ -866,6 +914,16 @@ struct _Itdb_Track
 
   /* This is for Cover Art support */
   struct _Itdb_Artwork *artwork;
+
+  /* reserved for future use */
+  gint32 reserved_int1;
+  gint32 reserved_int2;
+  gint32 reserved_int3;
+  gint32 reserved_int4;
+  gint32 reserved_int5;
+  gint32 reserved_int6;
+  gpointer reserved1;
+  gpointer reserved2;
 
   /* below is for use by application */
   guint64 usertype;

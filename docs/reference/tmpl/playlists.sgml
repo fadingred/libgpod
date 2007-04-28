@@ -39,6 +39,10 @@ a playlist, etc.
 @podcastflag: 
 @splpref: 
 @splrules: 
+@reserved100: 
+@reserved101: 
+@reserved_int1: 
+@reserved_int2: 
 @reserved1: 
 @reserved2: 
 @usertype: 

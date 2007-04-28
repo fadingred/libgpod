@@ -32,6 +32,10 @@ album/track artwork.  For working with photos, see the
 @creation_date: 
 @digitized_date: 
 @artwork_size: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
 @usertype: 
 @userdata: 
 @userdata_duplicate: 
@@ -54,6 +58,10 @@ album/track artwork.  For working with photos, see the
 @height: 
 @horizontal_padding: 
 @vertical_padding: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
 
 <!-- ##### ENUM ItdbThumbType ##### -->
 <para>

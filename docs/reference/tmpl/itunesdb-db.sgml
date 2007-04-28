@@ -109,6 +109,10 @@ to the library _duplicate()/_free() functions.
 @device: 
 @version: 
 @id: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
 @usertype: 
 @userdata: 
 @userdata_duplicate: 

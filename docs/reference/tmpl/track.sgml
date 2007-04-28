@@ -124,6 +124,14 @@ information about an iPod track.
 @chapterdata_raw: 
 @chapterdata_raw_length: 
 @artwork: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved_int3: 
+@reserved_int4: 
+@reserved_int5: 
+@reserved_int6: 
+@reserved1: 
+@reserved2: 
 @usertype: 
 @userdata: 
 @userdata_duplicate: 

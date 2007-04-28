@@ -1,3 +1,9 @@
+2007-04-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h: added padding to exported structures so new entries
+	can be added without loosing backward run-time compatibility.
+
+
 2007-04-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
  	* src/itdb.h
@@ -36,7 +42,8 @@
  	      enum ItdbLimitSort (new)
  	      enum ItdbSPLMatch (new)
  	      removed SPL_MAXSTRINGLENGTH (use ITDB_SPL_STRING_MAXLEN)
- 
+
+
 	* docs/reference/tmpl/device.sgml
 	  docs/reference/tmpl/itunesdb-time.sgml
 	  docs/reference/tmpl/libgpod-unused.sgml

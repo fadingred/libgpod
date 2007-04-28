@@ -112,6 +112,10 @@ directory of the libgpod source for an example of how to use the interface.
 @unk048: 
 @album_id: 
 @prev_album_id: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
 @usertype: 
 @userdata: 
 @userdata_duplicate: 
@@ -125,6 +129,10 @@ directory of the libgpod source for an example of how to use the interface.
 @photos: 
 @photoalbums: 
 @device: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
 @usertype: 
 @userdata: 
 @userdata_duplicate: 

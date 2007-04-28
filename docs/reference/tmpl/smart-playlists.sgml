@@ -29,6 +29,10 @@ These functions and structures are for dealing with smart playlists.
 @limitsort: 
 @limitvalue: 
 @matchcheckedonly: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
 
 <!-- ##### STRUCT Itdb_SPLRule ##### -->
 <para>
@@ -49,6 +53,10 @@ These functions and structures are for dealing with smart playlists.
 @unk060: 
 @unk064: 
 @unk068: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
 
 <!-- ##### STRUCT Itdb_SPLRules ##### -->
 <para>
@@ -58,6 +66,10 @@ These functions and structures are for dealing with smart playlists.
 @unk004: 
 @match_operator: 
 @rules: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
 
 <!-- ##### ENUM ItdbLimitSort ##### -->
 <para>
