@@ -640,11 +640,11 @@ static gint compLeastRecentlyAdded (Itdb_Track *a, Itdb_Track *b)
 }
 static gint compMostOftenPlayed (Itdb_Track *a, Itdb_Track *b)
 {
-    return b->time_added - a->time_added;
+    return b->playcount - a->playcount;
 }
 static gint compLeastOftenPlayed (Itdb_Track *a, Itdb_Track *b)
 {
-    return a->time_added - b->time_added;
+    return a->playcount - b->playcount;
 }
 static gint compMostRecentlyPlayed (Itdb_Track *a, Itdb_Track *b)
 {

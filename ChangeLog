@@ -8,6 +8,10 @@
 
 	* tests/get-timezone.c: added to CVS (thanks to Daniele Forsi).
 
+	* src/itdb_playlist.c (compMostOftenPlayed, compLeastOftenPlayed):
+	  compaered time_added instead of playcount (thanks to Daniele
+	  Forsi).
+
 2007-04-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h: added padding to exported structures so new entries
