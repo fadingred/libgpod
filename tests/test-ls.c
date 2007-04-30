@@ -52,10 +52,10 @@ display_recently_played (Itdb_iTunesDB *db)
 
             g_print ("%s - %s - %s:\n",
                      track->artist, track->album, track->title);
-            strftime (date, sizeof (date), "%D %H:%M:%S",
+            strftime (date, sizeof (date), "%F %H:%M:%S",
                       gmtime (&track_time));
             g_print ("\tUTC: %s\n", date);
-            strftime (date, sizeof (date), "%D %H:%M:%S",
+            strftime (date, sizeof (date), "%F %H:%M:%S",
                       localtime (&track_time));
             g_print ("\tlocal: %s\n", date);
             g_print ("track: %ld ", track_time);

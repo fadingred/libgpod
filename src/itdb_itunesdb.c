@@ -2864,7 +2864,7 @@ static gboolean
 itdb_parse_internal (Itdb_iTunesDB *itdb, GError **error)
 {
     FImport *fimp;
-    gboolean success;
+    gboolean success = FALSE;
 
     g_return_val_if_fail (itdb->filename != NULL, FALSE);
     

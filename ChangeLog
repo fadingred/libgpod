@@ -1,3 +1,13 @@
+2007-04-30  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb (itdb_parse_internal): fixed compile warning
+	  (thanks to Daniele Forsi).
+
+	* tests/test-ls.c (display_recently_played): fixed compile warning
+	  (thanks to Daniele Forsi).
+
+	* tests/get-timezone.c: added to CVS (thanks to Daniele Forsi).
+
 2007-04-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h: added padding to exported structures so new entries
