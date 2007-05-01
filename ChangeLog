@@ -1,3 +1,14 @@
+2007-05-01  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (itdb_cp_track_to_ipod): removed static
+	  variable "dir_num" which was initialized once and cycled through
+	  for each track transfered. This doesn't seem right since
+	  different iPods with different number of music directories may
+	  be connected at the same time, and itdb_cp_track_to_ipod() may
+	  be called for different iTunesDBs at the same in in a threaded
+	  environment. Since there is no inherent value in cycling through
+	  the directories, a random directory is selected each time.
+
 2007-04-30  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb (itdb_parse_internal): fixed compile warning

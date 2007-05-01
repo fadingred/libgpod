@@ -5493,14 +5493,14 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
  * Copy one track to the iPod. The PC filename is @filename
  * and is taken literally.
  *
- * The mountpoint of the iPod (in local encoding) is expected in
- * track-&gt;itdb-&gt;mountpoint.
+ * The mountpoint of the iPod (in local encoding) must have been set
+ * with itdb_set_mountpoint() (done automatically when reading an
+ * iTunesDB).
  *
  * If @track-&gt;transferred is set to TRUE, nothing is done. Upon
  * successful transfer @track-&gt;transferred is set to TRUE.
  *
- * For storage, the directories "f00 ... fnn" will be
- * cycled through.
+ * For storage, the directories "f00 ... fnn" will be used randomly.
  *
  * The filename is constructed as "gtkpod"&lt;random number&gt; and copied
  * to @track-&gt;ipod_path. If this file already exists, &lt;random number&gt;
@@ -5518,7 +5518,7 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
 gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 				const gchar *filename, GError **error)
 {
-  static gint dir_num = -1;
+  gint dir_num;
   gchar *track_db_path, *ipod_fullfile;
   gboolean success;
   gint mplen = 0;
@@ -5566,14 +5566,7 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 	  return FALSE;
       }
 
-      if (dir_num == -1)
-      {
-	  dir_num = g_random_int_range (0, itdb_musicdirs_number (itdb));
-      }
-      else
-      {
-	  dir_num = (dir_num + 1) % itdb_musicdirs_number (itdb);
-      }
+      dir_num = g_random_int_range (0, itdb_musicdirs_number (itdb));
 
       g_snprintf (dir_num_str, 5, "F%02d", dir_num);
       dest_components[0] = dir_num_str;
