@@ -31,6 +31,7 @@
 */
 
 #include "itdb_device.h"
+#include "itdb_private.h"
 #include <ctype.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -573,6 +574,36 @@ itdb_device_get_artwork_formats (Itdb_Device *device)
 }
 
 
+
+/* Determine the number of F.. directories in iPod_Control/Music.*/
+G_GNUC_INTERNAL gint
+itdb_musicdirs_number_by_mountpoint (const gchar *mountpoint)
+{
+    gint dir_num;
+    gchar *music_dir = itdb_get_music_dir (mountpoint);
+
+    if (!music_dir) return 0;
+
+    /* count number of dirs */
+    for (dir_num=0; ;++dir_num)
+    {
+	gchar *dir_filename;
+	gchar dir_num_str[6];
+
+	g_snprintf (dir_num_str, 6, "F%02d", dir_num);
+  
+	dir_filename = itdb_get_path (music_dir, dir_num_str);
+
+	g_free (dir_filename);
+	if (!dir_filename)  break;
+    }
+
+    g_free (music_dir);
+
+    return dir_num;
+}
+
+
 /* Determine the number of F.. directories in iPod_Control/Music.
 
    If device->musicdirs is already set, simply return the previously
@@ -581,29 +612,11 @@ itdb_device_get_artwork_formats (Itdb_Device *device)
 G_GNUC_INTERNAL gint
 itdb_device_musicdirs_number (Itdb_Device *device)
 {
-    gchar *dir_filename = NULL;
-    gint dir_num;
-
     g_return_val_if_fail (device, 0);
 
     if (device->musicdirs <= 0)
     {
-	gchar *music_dir = itdb_get_music_dir (device->mountpoint);
-	if (!music_dir) return 0;
-	/* count number of dirs */
-	for (dir_num=0; ;++dir_num)
-	{
-	    gchar dir_num_str[5];
-
-	    g_snprintf (dir_num_str, 5, "F%02d", dir_num);
-  
-	    dir_filename = itdb_get_path (music_dir, dir_num_str);
-
-	    if (!dir_filename)  break;
-	    g_free (dir_filename);
-	}
-	device->musicdirs = dir_num;
-	g_free (music_dir);
+	device->musicdirs = itdb_musicdirs_number_by_mountpoint (device->mountpoint);
     }
     return device->musicdirs;
 }

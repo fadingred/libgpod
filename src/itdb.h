@@ -968,11 +968,11 @@ struct _Itdb_Track
 \* ------------------------------------------------------------ */
 typedef enum
 {
-    ITDB_FILE_ERROR_SEEK,      /* file corrupt: illegal seek occured */
-    ITDB_FILE_ERROR_CORRUPT,   /* file corrupt   */
-    ITDB_FILE_ERROR_NOTFOUND,  /* file not found */
-    ITDB_FILE_ERROR_RENAME,    /* file could not be renamed    */
-    ITDB_FILE_ERROR_ITDB_CORRUPT /* iTunesDB in memory corrupt */
+    ITDB_FILE_ERROR_SEEK,        /* file corrupt: illegal seek occured */
+    ITDB_FILE_ERROR_CORRUPT,     /* file corrupt                       */
+    ITDB_FILE_ERROR_NOTFOUND,    /* file not found                     */
+    ITDB_FILE_ERROR_RENAME,      /* file could not be renamed          */
+    ITDB_FILE_ERROR_ITDB_CORRUPT /* iTunesDB in memory corrupt         */
 } ItdbFileError;
 
 
@@ -1008,10 +1008,18 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb);
 gchar *itdb_resolve_path (const gchar *root,
 			  const gchar * const * components);
 gboolean itdb_rename_files (const gchar *mp, GError **error);
-gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
-				const gchar *filename, GError **error);
+gchar *itdb_cp_get_dest_filename (Itdb_Track *track,
+                                  const gchar *mountpoint,
+				  const gchar *filename,
+				  GError **error);
 gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 		  GError **error);
+Itdb_Track *itdb_cp_finalize (Itdb_Track *track,
+			      const gchar *mountpoint,
+			      const gchar *dest_filename,
+			      GError **error);
+gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
+				const gchar *filename, GError **error);
 void itdb_filename_fs2ipod (gchar *filename);
 void itdb_filename_ipod2fs (gchar *ipod_file);
 gchar *itdb_filename_on_ipod (Itdb_Track *track);

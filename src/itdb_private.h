@@ -155,4 +155,5 @@ G_GNUC_INTERNAL time_t itdb_time_mac_to_time_t (Itdb_iTunesDB *db,
 						guint64 mactime);
 G_GNUC_INTERNAL guint64 itdb_time_time_t_to_mac (Itdb_iTunesDB *db,
 						 time_t timet);
+G_GNUC_INTERNAL gint itdb_musicdirs_number_by_mountpoint (const gchar *mountpoint);
 #endif

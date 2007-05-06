@@ -5482,6 +5482,287 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
     return itdb_device_musicdirs_number (itdb->device);
 }
 
+/**
+ * itdb_cp_get_dest_filename:
+ * @track: track to transfer or NULL
+ * @mountpoint: mountpoint of your iPod or NULL
+ * @filename: the source file
+ * @error: return location for a #GError or NULL
+ *
+ * Creates a valid filename on the iPod where to copy @filename.
+ *
+ * You must either provide @track or @mountpoint. Providing @track is
+ * not thread-safe (accesses track->itdb->device and may even write to
+ * track->itdb->device). Providing @mountpoint is thread-safe but
+ * slightly slower because the number of music directories is counted
+ * each time the function is called.
+ *
+ * You can use #itdb_cp() to copy the track to the iPod or implement
+ * your own copy function. After the file was copied you have to call
+ * #itdb_cp_finalize() to obtain relevant update information for
+ * #Itdb_Track.
+ *
+ * Return value: a valid filename on the iPod to where @filename can
+ * be copied or NULL in case of an error. In that case @error is set
+ * accordingly. You must free the filename when it is no longer
+ * needed.
+ **/
+gchar *itdb_cp_get_dest_filename (Itdb_Track *track,
+                                  const gchar *mountpoint,
+				  const gchar *filename,
+				  GError **error)
+{
+    gchar *ipod_fullfile = NULL;
+
+    /* either supply mountpoint or track */
+    g_return_val_if_fail (mountpoint || track, NULL);
+    /* if mountpoint is not set, track->itdb is required */
+    g_return_val_if_fail (mountpoint || track->itdb, NULL);
+    g_return_val_if_fail (filename, NULL);
+
+    if (!mountpoint)
+    {
+	mountpoint = itdb_get_mountpoint (track->itdb);
+    }
+
+    if (!mountpoint)
+    {
+	g_set_error (error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_NOTFOUND,
+		     _("Mountpoint not set."));
+	return NULL;
+    }
+
+    /* If track->ipod_path exists, we use that one instead. */
+    if (track)
+    {
+	ipod_fullfile = itdb_filename_on_ipod (track);
+    }
+
+    if (!ipod_fullfile)
+    {
+	gint dir_num, musicdirs_number;
+	gchar *dest_components[] = {NULL, NULL, NULL};
+	gchar *parent_dir_filename, *music_dir;
+	gchar *original_suffix;
+	gchar dir_num_str[6];
+	gint32 oops = 0;
+	gint32 rand = g_random_int_range (0, 899999); /* 0 to 900000 */
+
+	music_dir = itdb_get_music_dir (mountpoint);
+	if (!music_dir)
+	{
+	    error_no_music_dir (mountpoint, error);
+	    return NULL;
+	}
+
+	if (track)
+	{
+	    musicdirs_number = itdb_musicdirs_number (track->itdb);
+	}
+	else
+	{
+	    musicdirs_number = itdb_musicdirs_number_by_mountpoint (mountpoint);
+	}
+	if (musicdirs_number <= 0)
+	{
+	    g_set_error (error,
+			 ITDB_FILE_ERROR,
+			 ITDB_FILE_ERROR_NOTFOUND,
+			 _("No 'F..' directories found in '%s'."),
+			 music_dir);
+	    g_free (music_dir);
+	    return NULL;
+	}
+
+	dir_num = g_random_int_range (0, musicdirs_number);
+
+	g_snprintf (dir_num_str, 6, "F%02d", dir_num);
+	dest_components[0] = dir_num_str;
+  
+	parent_dir_filename =
+	    itdb_resolve_path (music_dir, (const gchar **)dest_components);
+	if(parent_dir_filename == NULL)
+	{
+	    /* Can't find the F%02d directory */
+	    gchar *str = g_build_filename (music_dir,
+					   dest_components[0], NULL);
+	    g_set_error (error,
+			 ITDB_FILE_ERROR,
+			 ITDB_FILE_ERROR_NOTFOUND,
+			 _("Path not found: '%s'."),
+			 str);
+	    g_free (str);
+	    g_free (music_dir);
+	    return NULL;
+	}
+
+	/* we need the original suffix of pcfile to construct a correct ipod
+	   filename */
+	original_suffix = strrchr (filename, '.');
+	/* If there is no ".mp3", ".m4a" etc, set original_suffix to empty
+	   string. Note: the iPod will most certainly ignore this file... */
+	if (!original_suffix) original_suffix = "";
+
+	/* use lower-case version of extension as some iPods seem to
+	   choke on upper-case extension. */
+	original_suffix = g_ascii_strdown (original_suffix, -1);
+
+	do
+	{   /* we need to loop until we find an unused filename */
+	    dest_components[1] = 
+		g_strdup_printf("gtkpod%06d%s",
+				rand + oops, original_suffix);
+	    ipod_fullfile = itdb_resolve_path (
+		parent_dir_filename,
+		(const gchar **)&dest_components[1]);
+	    if(ipod_fullfile)
+	    {   /* already exists -- try next */
+		g_free(ipod_fullfile);
+		ipod_fullfile = NULL;
+	    }
+	    else
+	    {   /* found unused file -- build filename */
+		ipod_fullfile = g_build_filename (parent_dir_filename,
+						  dest_components[1], NULL);
+	    }
+	    g_free (dest_components[1]);
+	    ++oops;
+	} while (!ipod_fullfile);
+	g_free(parent_dir_filename);
+	g_free (music_dir);
+	g_free (original_suffix);
+    }
+
+    return ipod_fullfile;
+}
+
+
+/**
+ * itdb_cp_finalize:
+ * @track: track to update or NULL
+ * @mountpoint: mountpoint of your iPod or NULL
+ * @dest_filename: the name of the file on the iPod copied to
+ * @error: return location for a #GError or NULL
+ *
+ * Updates information in @track necessary for the iPod. You must
+ * either supply @track or @mountpoint. If @track == NULL, a new track
+ * structure is created that must be freed with #itdb_track_free()
+ * when it is no longer needed.
+ *
+ * The following fields are updated:
+ *
+ * - ipod_path
+ * - filetype_marker
+ * - transferred
+ * - size
+ *
+ * Return value: on success a pointer to the #Itdb_Track item passed
+ * or a new #Itdb_Track item if @track was NULL. In the latter case
+ * you must free the memory using #itdb_track_free() when the item is
+ * no longer used. If an error occurs NULL is returned and @error is
+ * set accordingly. Errors occur when @dest_filename cannot be
+ * accessed or the mountpoint is not set.
+ **/
+Itdb_Track *itdb_cp_finalize (Itdb_Track *track,
+			      const gchar *mountpoint,
+			      const gchar *dest_filename,
+			      GError **error)
+{
+    const gchar *suffix;
+    Itdb_Track *use_track;
+    gint i, mplen;
+    struct stat statbuf;
+
+    /* either supply mountpoint or track */
+    g_return_val_if_fail (mountpoint || track, NULL);
+    /* if mountpoint is not set, track->itdb is required */
+    g_return_val_if_fail (mountpoint || track->itdb, NULL);
+    g_return_val_if_fail (dest_filename, NULL);
+
+    if (!mountpoint)
+    {
+	mountpoint = itdb_get_mountpoint (track->itdb);
+    }
+
+    if (!mountpoint)
+    {
+	g_set_error (error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_NOTFOUND,
+		     _("Mountpoint not set."));
+	return NULL;
+    }
+
+    if (stat (dest_filename, &statbuf) == -1)
+    {
+	g_set_error (error,
+		     G_FILE_ERROR,
+		     g_file_error_from_errno (errno),
+		     _("'%s' could not be accessed (%s)."),
+		     dest_filename, g_strerror (errno));
+	return NULL;
+    }
+
+    if (strlen (mountpoint) >= strlen (dest_filename))
+    {
+	g_set_error (error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_CORRUPT,
+		     _("Destination file '%s' does not appear to be on the iPod mounted at '%s'."),
+		     dest_filename, mountpoint);
+	return NULL;
+    }
+
+    if (!track)
+    {
+	use_track = itdb_track_new ();
+    }
+    else
+    {
+	use_track = track;
+    }
+
+    use_track->transferred = TRUE;
+    use_track->size = statbuf.st_size;
+
+    /* we need the original suffix of pcfile to construct a correct ipod
+       filename */
+    suffix = strrchr (dest_filename, '.');
+    /* If there is no ".mp3", ".m4a" etc, set original_suffix to empty
+       string. Note: the iPod will most certainly ignore this file... */
+    if (!suffix) suffix = ".";
+
+    /* set filetype from the suffix, e.g. '.mp3' -> 'MP3 ' */
+    use_track->filetype_marker = 0;
+    for (i=1; i<=4; ++i)   /* start with i=1 to skip the '.' */
+    {
+	use_track->filetype_marker = use_track->filetype_marker << 8;
+	if (strlen (suffix) > i)
+	    use_track->filetype_marker |= g_ascii_toupper (suffix[i]);
+	else
+	    use_track->filetype_marker |= ' ';
+    }
+
+    /* now extract filepath for use_track->ipod_path from ipod_fullfile */
+    /* ipod_path must begin with a '/' */
+    g_free (use_track->ipod_path);
+    mplen = strlen (mountpoint); /* length of mountpoint in bytes */
+    if (dest_filename[mplen] == G_DIR_SEPARATOR)
+    {
+	use_track->ipod_path = g_strdup (&dest_filename[mplen]);
+    }
+    else
+    {
+	use_track->ipod_path = g_strdup_printf ("%c%s", G_DIR_SEPARATOR,
+						&dest_filename[mplen]);
+    }
+    /* convert to iPod type */
+    itdb_filename_fs2ipod (use_track->ipod_path);
+
+    return use_track;
+}
 
 
 /**
@@ -5518,151 +5799,33 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
 gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 				const gchar *filename, GError **error)
 {
-  gint dir_num;
-  gchar *track_db_path, *ipod_fullfile;
-  gboolean success;
-  gint mplen = 0;
-  gint i;
-  const gchar *mountpoint;
-  Itdb_iTunesDB *itdb;
+    gchar *dest_filename;
+    gboolean result = FALSE;
 
-  g_return_val_if_fail (track, FALSE);
-  g_return_val_if_fail (track->itdb, FALSE);
-  g_return_val_if_fail (itdb_get_mountpoint (track->itdb), FALSE);
-  g_return_val_if_fail (filename, FALSE);
+    g_return_val_if_fail (track, FALSE);
+    g_return_val_if_fail (track->itdb, FALSE);
+    g_return_val_if_fail (itdb_get_mountpoint (track->itdb), FALSE);
+    g_return_val_if_fail (filename, FALSE);
 
-  if(track->transferred)  return TRUE; /* nothing to do */ 
+    if(track->transferred)  return TRUE; /* nothing to do */ 
 
-  mountpoint = itdb_get_mountpoint (track->itdb);
-  itdb = track->itdb;
+    dest_filename = itdb_cp_get_dest_filename (track, NULL, filename, error);
 
-  /* If track->ipod_path exists, we use that one instead. */
-  ipod_fullfile = itdb_filename_on_ipod (track);
+    if (dest_filename)
+    {
+	if (itdb_cp (filename, dest_filename, error))
+	{
+	    if (itdb_cp_finalize (track, NULL, dest_filename, error))
+	    {
+		result = TRUE;
+	    }
+	}
+	g_free (dest_filename);
+    }
 
-  if (!ipod_fullfile)
-  {
-      gchar *dest_components[] = {NULL, NULL, NULL};
-      gchar *parent_dir_filename, *music_dir;
-      gchar *original_suffix;
-      gchar dir_num_str[5];
-      gint32 oops = 0;
-      gint32 rand = g_random_int_range (0, 899999); /* 0 to 900000 */
-
-      music_dir = itdb_get_music_dir (mountpoint);
-      if (!music_dir)
-      {
-	  error_no_music_dir (mountpoint, error);
-	  return FALSE;
-      }
-
-      if (itdb_musicdirs_number (itdb) <= 0)
-      {
-	  g_set_error (error,
-		       ITDB_FILE_ERROR,
-		       ITDB_FILE_ERROR_NOTFOUND,
-		       _("No 'F..' directories found in '%s'."),
-		       music_dir);
-	  g_free (music_dir);
-	  return FALSE;
-      }
-
-      dir_num = g_random_int_range (0, itdb_musicdirs_number (itdb));
-
-      g_snprintf (dir_num_str, 5, "F%02d", dir_num);
-      dest_components[0] = dir_num_str;
-  
-      parent_dir_filename =
-	  itdb_resolve_path (music_dir, (const gchar **)dest_components);
-      if(parent_dir_filename == NULL)
-      {
-	  /* Can't find the F%02d directory */
-	  gchar *str = g_build_filename (music_dir,
-					 dest_components[0], NULL);
-	  g_set_error (error,
-		       ITDB_FILE_ERROR,
-		       ITDB_FILE_ERROR_NOTFOUND,
-		       _("Path not found: '%s'."),
-		       str);
-	  g_free (str);
-	  g_free (music_dir);
-	  return FALSE;
-      }
-
-      /* we need the original suffix of pcfile to construct a correct ipod
-	 filename */
-      original_suffix = strrchr (filename, '.');
-      /* If there is no ".mp3", ".m4a" etc, set original_suffix to empty
-	 string. Note: the iPod will most certainly ignore this file... */
-      if (!original_suffix) original_suffix = "";
-
-      /* use lower-case version of extension as some iPods seem to
-	 choke on upper-case extension. */
-      original_suffix = g_ascii_strdown (original_suffix, -1);
-
-      /* set filetype from the suffix, e.g. '.mp3' -> 'MP3 ' */
-      track->filetype_marker = 0;
-      for (i=1; i<=4; ++i)   /* start with i=1 to skip the '.' */
-      {
-	  track->filetype_marker = track->filetype_marker << 8;
-	  if (strlen (original_suffix) > i)
-	      track->filetype_marker |= g_ascii_toupper (original_suffix[i]);
-	  else
-	      track->filetype_marker |= ' ';
-      }
-      do
-      {   /* we need to loop until we find an unused filename */
-	  dest_components[1] = 
-	      g_strdup_printf("gtkpod%06d%s",
-			      rand + oops, original_suffix);
-	  ipod_fullfile = itdb_resolve_path (
-	      parent_dir_filename,
-	      (const gchar **)&dest_components[1]);
-	  if(ipod_fullfile)
-	  {   /* already exists -- try next */
-              g_free(ipod_fullfile);
-              ipod_fullfile = NULL;
-	  }
-	  else
-	  {   /* found unused file -- build filename */
-	      ipod_fullfile = g_build_filename (parent_dir_filename,
-					        dest_components[1], NULL);
-	  }
-	  g_free (dest_components[1]);
-	  ++oops;
-      } while (!ipod_fullfile);
-      g_free(parent_dir_filename);
-      g_free (music_dir);
-      g_free (original_suffix);
-  }
-  /* now extract filepath for track->ipod_path from ipod_fullfile */
-  /* ipod_path must begin with a '/' */
-  mplen = strlen (mountpoint); /* length of mountpoint in bytes */
-  if (ipod_fullfile[mplen] == G_DIR_SEPARATOR)
-  {
-      track_db_path = g_strdup (&ipod_fullfile[mplen]);
-  }
-  else
-  {
-      track_db_path = g_strdup_printf ("%c%s", G_DIR_SEPARATOR,
-				       &ipod_fullfile[mplen]);
-  }
-  /* convert to iPod type */
-  itdb_filename_fs2ipod (track_db_path);
-  
-/* 	printf ("ff: %s\ndb: %s\n", ipod_fullfile, track_db_path); */
-
-  success = itdb_cp (filename, ipod_fullfile, error);
-  if (success)
-  {
-      track->transferred = TRUE;
-      g_free (track->ipod_path);
-      track->ipod_path = g_strdup (track_db_path);
-  }
-
-  g_free (track_db_path);
-  g_free (ipod_fullfile);
-  return success;
+    return result;
 }
+
 
 
 /**
@@ -5684,29 +5847,35 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 gchar *itdb_filename_on_ipod (Itdb_Track *track)
 {
     gchar *result = NULL;
+    gchar *buf;
     const gchar *mp;
 
     g_return_val_if_fail (track, NULL);
+
+    if (!track->ipod_path || !*track->ipod_path)
+    {   /* No filename set */
+	return NULL;
+    }
+
     g_return_val_if_fail (track->itdb, NULL);
 
     if (!itdb_get_mountpoint (track->itdb)) return NULL;
 
     mp = itdb_get_mountpoint (track->itdb);
 
-    if(track->ipod_path && *track->ipod_path)
+    buf = g_strdup (track->ipod_path);
+    itdb_filename_ipod2fs (buf);
+    result = g_build_filename (mp, buf, NULL);
+    g_free (buf);
+
+    if (!g_file_test (result, G_FILE_TEST_EXISTS))
     {
-	gchar *buf = g_strdup (track->ipod_path);
-	itdb_filename_ipod2fs (buf);
-	result = g_build_filename (mp, buf, NULL);
-	g_free (buf);
-	if (!g_file_test (result, G_FILE_TEST_EXISTS))
-	{
-	    gchar **components = g_strsplit (track->ipod_path,":",10);
-	    g_free (result);
-	    result = itdb_resolve_path (mp, (const gchar **)components);
-	    g_strfreev (components);
-	}
+	gchar **components = g_strsplit (track->ipod_path,":",10);
+	g_free (result);
+	result = itdb_resolve_path (mp, (const gchar **)components);
+	g_strfreev (components);
     }
+
     return result;
 }
 
