@@ -765,7 +765,7 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 
 	if (img_info == NULL)
 	{
-	    g_print (_("Unable to retreive thumbnail (appears to be on iPod, but no image info available): type: %d, filename: '%s'\n"),
+	    g_print (_("Unable to retrieve thumbnail (appears to be on iPod, but no image info available): type: %d, filename: '%s'\n"),
 		     thumb->type, thumb->filename);
 	    return NULL;
 	}

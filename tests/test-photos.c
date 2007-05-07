@@ -39,7 +39,7 @@ static void usage (int argc, char **argv)
     g_print (_("Usage to add photos:\n  %s add <mountpoint> <albumname> [<filename(s)>]\n  <albumname> should be set to 'NULL' to add photos to the master photo album\n  (Photo Library) only. If you don't specify any filenames an empty album will\n  be created.\n"), name);
     g_print (_("Usage to dump all photos to <output_dir>:\n  %s dump <mountpoint> <output_dir>\n"), name);
     g_print (_("Usage to list all photos IDs to stdout:\n  %s list <mountpoint>\n"), name);
-    g_print (_("Usage to remove photo IDs from Photo Library:\n  %s remove <mountpoint> <albumname> [<ID(s)>]\n  <albumname> should be set to 'NULL' to to remove photos from the iPod\n  altogether. If you don't specify any IDs, the photoalbum will be removed\n  instead.\n  WARNING: IDs may change when writing the PhotoDB file.\n"), name);
+    g_print (_("Usage to remove photo IDs from Photo Library:\n  %s remove <mountpoint> <albumname> [<ID(s)>]\n  <albumname> should be set to 'NULL' to remove photos from the iPod\n  altogether. If you don't specify any IDs, the photoalbum will be removed\n  instead.\n  WARNING: IDs may change when writing the PhotoDB file.\n"), name);
 }
 
 /* Retrieve the photo whose ID is @id */
@@ -317,7 +317,7 @@ static int do_remove (int argc, char **argv)
 	}
 	else
 	{
-	    g_print (_("Error reading iPod photo database"));
+	    g_print (_("Error reading iPod photo database.\n"));
 	}
 	return 1;
     }

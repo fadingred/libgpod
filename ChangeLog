@@ -1,3 +1,10 @@
+2007-05-07  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * src/itdb_artwork.c
+	  src/itdb_itunesdb.c
+	  tests/test-photos.c:
+	  Corrected some typos. Thanks to Daniele Forsi.
+
 2007-05-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c

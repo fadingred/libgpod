@@ -2509,7 +2509,7 @@ static gboolean process_OTG_file (FImport *fimp, FContents *cts,
 	g_set_error (&fimp->error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_CORRUPT,
-		     _("OTG playlist file file ('%s'): entry length smaller than expected (%d<4)."),
+		     _("OTG playlist file ('%s'): entry length smaller than expected (%d<4)."),
 		     cts->filename, entry_length);
 	return FALSE;
     }
