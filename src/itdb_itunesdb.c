@@ -937,7 +937,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
     CHECK_ERROR (fimp, FALSE);
     for (i=0; i<entry_num; ++i)
     {
-	gint32 mac_time;
+	guint32 mac_time;
 	struct playcount *playcount = g_new0 (struct playcount, 1);
 	glong seek = header_length + i*entry_length;
 
@@ -3470,7 +3470,7 @@ static void mk_mhlt (FExport *fexp, guint32 num)
 /* Write out the mhit header. Size will be written later */
 static void mk_mhit (WContents *cts, Itdb_Track *track)
 {
-  gint32 mac_time;
+  guint32 mac_time;
   g_return_if_fail (cts);
   g_return_if_fail (track);
 

@@ -5,6 +5,10 @@
 	  tests/test-photos.c:
 	  Corrected some typos. Thanks to Daniele Forsi.
 
+	* src/itdb_itunesdb.c:
+	  Fix for 64 bit systems: don't show "last played" data as played
+	  in the last century... Thanks to Christophe.
+
 2007-05-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c
