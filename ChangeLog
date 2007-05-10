@@ -1,3 +1,8 @@
+2007-05-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * src/itdb_itunesdb.c: remove non-sense check (itdb != NULL) when
+	  itdb can never be NULL. Thanks to Raymond Walsh.
+
 2007-05-07  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/itdb_artwork.c

@@ -2924,9 +2924,7 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
     }
 
     filename = itdb_resolve_path (itunes_dir, db);
-    if (itdb != NULL) {
-	itdb_set_mountpoint (itdb, mp);
-    }
+
     if (filename)
     {
 	itdb = itdb_new ();
