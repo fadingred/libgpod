@@ -315,22 +315,6 @@ iTunesDB
 </para>
 
 
-<!-- ##### FUNCTION itdb_device_supports_artwork ##### -->
-<para>
-
-</para>
-
-@device: 
-@Returns: 
-
-<!-- ##### FUNCTION itdb_device_supports_photo ##### -->
-<para>
-
-</para>
-
-@device: 
-@Returns: 
-
 <!-- ##### FUNCTION itdb_file_error_quark ##### -->
 <para>
 

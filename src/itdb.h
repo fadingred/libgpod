@@ -1195,10 +1195,12 @@ void itdb_thumb_free (Itdb_Thumb *thumb);
 Itdb_Thumb *itdb_thumb_new (void);
 gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb);
 
+#ifndef LIBGPOD_DISABLE_DEPRECATED
 /* time functions */
 time_t itdb_time_get_mac_time (void);
 time_t itdb_time_mac_to_host (time_t time);
 time_t itdb_time_host_to_mac (time_t time);
+#endif
 
 /* Initialize a blank ipod */
 gboolean itdb_init_ipod (const gchar *mountpoint,

@@ -169,6 +169,30 @@ control over the iPod database.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_cp_get_dest_filename ##### -->
+<para>
+
+</para>
+
+@track: 
+@mountpoint: 
+@filename: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_cp_finalize ##### -->
+<para>
+
+</para>
+
+@track: 
+@mountpoint: 
+@dest_filename: 
+@error: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_parse_file ##### -->
 <para>
 

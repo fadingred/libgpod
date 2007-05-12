@@ -102,6 +102,24 @@ These functions are for reading and setting information about the iPod.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_device_supports_artwork ##### -->
+<para>
+
+</para>
+
+@device: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_device_supports_photo ##### -->
+<para>
+
+</para>
+
+@device: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_info_get_ipod_info_table ##### -->
 <para>
 

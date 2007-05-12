@@ -1,3 +1,16 @@
+2007-05-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* docs/reference/Makefile.am
+	  docs/reference/libgpod-sections.txt
+	  docs/reference/tmpl/device.sgml
+	  docs/reference/tmpl/itunesdb-lowlevel.sgml
+	  docs/reference/tmpl/itunesdb-time.sgml
+	  docs/reference/tmpl/libgpod-unused.sgml
+	  docs/reference/tmpl/smart-playlists.sgml
+	  src/itdb_itunesdb.c
+	  src/itdb.h:
+	  Minor documentation cleanups.
+
 2007-05-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/itdb_itunesdb.c: remove non-sense check (itdb != NULL) when

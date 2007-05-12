@@ -6254,7 +6254,7 @@ time_t itdb_time_get_mac_time (void)
 
 /**
  * itdb_time_mac_to_host:
- * @mactime: time expressed in 'Mac' unit
+ * @time: time expressed in libgpod format
  *
  * Converts a timestamp from libgpod format to host system timestamp.
  *
@@ -6263,9 +6263,9 @@ time_t itdb_time_get_mac_time (void)
  * Deprecated: It's been kept for compatibility with older code, but this
  * function is now a no-op
  **/
-time_t itdb_time_mac_to_host (time_t mactime)
+time_t itdb_time_mac_to_host (time_t time)
 {
-    return mactime;
+    return time;
 }
 
 /**
@@ -6279,9 +6279,9 @@ time_t itdb_time_mac_to_host (time_t mactime)
  * Deprecated: It's been kept for compatibility with older code, but this
  * function is now a no-op
  **/
-time_t itdb_time_host_to_mac (time_t timet)
+time_t itdb_time_host_to_mac (time_t time)
 {
-    return timet;
+    return time;
 }
 
 time_t itdb_time_mac_to_time_t (Itdb_iTunesDB *db, guint64 mactime)

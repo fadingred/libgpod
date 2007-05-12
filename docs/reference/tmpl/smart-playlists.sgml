@@ -208,6 +208,13 @@ These functions and structures are for dealing with smart playlists.
 @ITDB_SPLMATCH_AND: 
 @ITDB_SPLMATCH_OR: 
 
+<!-- ##### MACRO ITDB_SPL_DATE_IDENTIFIER ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### MACRO ITDB_SPL_STRING_MAXLEN ##### -->
 <para>
 

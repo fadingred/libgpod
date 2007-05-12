@@ -48,6 +48,8 @@ itdb_resolve_path
 itdb_shuffle_write
 itdb_shuffle_write_file
 itdb_cp
+itdb_cp_get_dest_filename
+itdb_cp_finalize
 itdb_parse_file
 itdb_write_file
 itdb_duplicate
@@ -66,6 +68,7 @@ itdb_time_host_to_mac
 <TITLE>Tracks</TITLE>
 Itdb_Track
 Itdb_Mediatype
+ITDB_RATING_STEP
 itdb_track_new
 itdb_track_free
 itdb_track_add
@@ -80,7 +83,6 @@ itdb_track_set_thumbnails
 itdb_track_set_thumbnails_from_data
 itdb_track_set_thumbnails_from_pixbuf
 itdb_track_remove_thumbnails
-ITDB_RATING_STEP
 </SECTION>
 
 
@@ -131,8 +133,7 @@ ItdbSPLActionType
 ItdbSPLField
 ItdbSPLFieldType
 ItdbSPLMatch
-ITDB_SPLDATE_IDENTIFIER
-SPL_MAXSTRINGLENGTH
+ITDB_SPL_DATE_IDENTIFIER
 ITDB_SPL_STRING_MAXLEN
 itdb_splr_get_field_type
 itdb_splr_get_action_type
@@ -160,6 +161,8 @@ itdb_device_get_sysinfo
 itdb_device_set_sysinfo
 itdb_device_write_sysinfo
 itdb_device_get_ipod_info
+itdb_device_supports_artwork
+itdb_device_supports_photo
 itdb_info_get_ipod_info_table
 itdb_info_get_ipod_generation_string
 itdb_info_get_ipod_model_name_string
