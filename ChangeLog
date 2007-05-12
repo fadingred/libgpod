@@ -1,5 +1,9 @@
 2007-05-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
+	* bindings/python/gpod.i.in: treat time_t as int
+
+2007-05-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
 	* docs/reference/Makefile.am
 	  docs/reference/libgpod-sections.txt
 	  docs/reference/tmpl/device.sgml
