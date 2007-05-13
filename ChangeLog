@@ -1,8 +1,11 @@
+2007-05-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * TROUBLESHOOTING: added a note about the 'padding[]'
+	  incompatibility with older versions of gcc.
+
 2007-05-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/gpod.i.in: treat time_t as int
-
-2007-05-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* docs/reference/Makefile.am
 	  docs/reference/libgpod-sections.txt

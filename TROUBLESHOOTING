@@ -46,6 +46,15 @@ Upgrade intltool. 0.33 seems to work.
 
 ------------------------------------------------------------
 
+* "array size missing in `padding'"
+
+Older versions of gcc don't seem to understand the construct. You can
+either change the 'padding[]' strings to 'padding[0]' (not tested) or
+upgrade your gcc to a more recent version (gcc-3.2 has been reported
+to work) fine.
+
+------------------------------------------------------------
+
 * Compiling for 64bit systems
 
 The current automake/autobuild setup doesn't set the correct
