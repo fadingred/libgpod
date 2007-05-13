@@ -308,8 +308,8 @@ PyObject* sw_get_photo(GList *list, gint index) {
 # them utf8 encoded Strings.
 typedef char gchar;
 
-# treat time_t as int
-typedef int time_t;
+# treat time_t as long
+typedef long time_t;
 
 %typemap(in) guint8 {
    unsigned long ival;
