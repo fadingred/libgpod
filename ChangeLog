@@ -5,7 +5,7 @@
 
 2007-05-12  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
-	* bindings/python/gpod.i.in: treat time_t as int
+	* bindings/python/gpod.i.in: treat time_t as long
 
 	* docs/reference/Makefile.am
 	  docs/reference/libgpod-sections.txt
