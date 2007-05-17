@@ -950,6 +950,11 @@ struct _Itdb_Track
   gpointer reserved5;
   gpointer reserved6;
 
+  /* +++***+++***+++***+++***+++***+++***+++***+++***+++***+++***
+     When adding string fields don't forget to add them in
+     itdb_track_duplicate as well
+     +++***+++***+++***+++***+++***+++***+++***+++***+++***+++*** */
+
   /* below is for use by application */
   guint64 usertype;
   gpointer userdata;

@@ -1,3 +1,9 @@
+2007-05-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb.h: warning about adding string fields
+	  src/itdb_track_duplicate: duplicate new string fields
+	  (sort_*). Thanks to Raymond Walsh.
+
 2007-05-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * TROUBLESHOOTING: added a note about the 'padding[]'

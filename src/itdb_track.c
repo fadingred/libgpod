@@ -363,6 +363,13 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
     tr_dup->albumartist = g_strdup (tr->albumartist);
     tr_dup->keywords = g_strdup (tr->keywords);
     tr_dup->ipod_path = g_strdup (tr->ipod_path);
+    tr_dup->sort_artist = g_strdup (tr->sort_artist);
+    tr_dup->sort_title = g_strdup (tr->sort_title);
+    tr_dup->sort_album = g_strdup (tr->sort_album);
+    tr_dup->sort_albumartist = g_strdup (tr->sort_albumartist);
+    tr_dup->sort_composer = g_strdup (tr->sort_composer);
+    tr_dup->sort_tvshow = g_strdup (tr->sort_tvshow);
+
 
     /* Copy chapterdata */
     if (tr->chapterdata_raw)
