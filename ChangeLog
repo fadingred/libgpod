@@ -1,3 +1,8 @@
+2007-05-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (playcounts_init): C&P error stat'ing the
+	  wrong file. Thanks to Raymond Walsh.
+
 2007-05-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb.h: warning about adding string fields

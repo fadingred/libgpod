@@ -1093,7 +1093,7 @@ static gboolean playcounts_init (FImport *fimp)
   {
       /* skip if iTunesStats file has zero-length (often happens after
        * dosfsck) */
-      stat (plcname, &filestat);
+      stat (istname, &filestat);
       if (filestat.st_size >= 0x06)
       {
 	  cts = fcontents_read (istname, &fimp->error);
