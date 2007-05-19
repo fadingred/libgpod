@@ -496,7 +496,7 @@ gchar *itdb_device_get_sysinfo (Itdb_Device *device, const gchar *field)
  * @value: value to set (or NULL to remove the field).
  *
  * Set specified field. It can later be written to the iPod using
- * itdb_device_read_sysinfo
+ * itdb_device_write_sysinfo()
  *
  **/
 void itdb_device_set_sysinfo (Itdb_Device *device,
