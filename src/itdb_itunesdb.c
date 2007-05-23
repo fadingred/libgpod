@@ -2103,13 +2103,13 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   {   /* we did not read a valid mhod TITLE header -> */
       /* we simply make up our own name */
       if (itdb_playlist_is_mpl (plitem))
-	  plitem->name = _("Master-PL");
+	  plitem->name = g_strdup (_("Master-PL"));
       else
       {
 	  if (itdb_playlist_is_podcasts (plitem))
-	      plitem->name = _("Podcasts");
+	      plitem->name = g_strdup (_("Podcasts"));
 	  else
-	      plitem->name = _("Playlist");
+	      plitem->name = g_strdup (_("Playlist"));
       }
   }
 

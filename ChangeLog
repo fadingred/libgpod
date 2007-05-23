@@ -1,3 +1,8 @@
+2007-05-23  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (get_playlist): fix a potential crasher
+	  (Raymond Walsh)
+
 2007-05-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c (playcounts_init): C&P error stat'ing the
