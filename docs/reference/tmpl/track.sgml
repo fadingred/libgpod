@@ -158,6 +158,13 @@ information about an iPod track.
 @ITDB_MEDIATYPE_MUSICVIDEO: 
 @ITDB_MEDIATYPE_TVSHOW: 
 
+<!-- ##### MACRO ITDB_RATING_STEP ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### FUNCTION itdb_track_new ##### -->
 <para>
 
@@ -283,12 +290,5 @@ information about an iPod track.
 </para>
 
 @track: 
-
-
-<!-- ##### MACRO ITDB_RATING_STEP ##### -->
-<para>
-
-</para>
-
 
 

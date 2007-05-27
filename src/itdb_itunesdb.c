@@ -947,7 +947,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	fimp->playcounts = g_list_append (fimp->playcounts, playcount);
 	playcount->playcount = get32lint (cts, seek);	
 	mac_time = get32lint (cts, seek+4);
-	playcount->time_played = itdb_time_mac_to_time_t (fimp->itdb, mac_time);
+	playcount->time_played = device_time_mac_to_time_t (fimp->itdb->device, mac_time);
 	playcount->bookmark_time = get32lint (cts, seek+8);
 	
 	/* rating only exists if the entry length is at least 0x10 */
@@ -970,7 +970,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	{
 	    playcount->skipcount = get32lint (cts, seek+20);
 	    mac_time = get32lint (cts, seek+24);
-	    playcount->last_skipped = itdb_time_mac_to_time_t (fimp->itdb,
+	    playcount->last_skipped = device_time_mac_to_time_t (fimp->itdb->device,
 							       mac_time);
 
 	}
@@ -1528,9 +1528,9 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 			  (at == ITDB_SPLAT_DATE))
 		      {
 			  Itdb_iTunesDB *itdb = fimp->itdb;
-			  splr->fromvalue = itdb_time_mac_to_time_t (itdb, 
+			  splr->fromvalue = device_time_mac_to_time_t (itdb->device,
 								     splr->fromvalue);
-			  splr->tovalue = itdb_time_mac_to_time_t (itdb, 
+			  splr->tovalue = device_time_mac_to_time_t (itdb->device,
 								   splr->tovalue);
 		      }
 		  }
@@ -2000,7 +2000,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   plitem->flag2 = get8int (cts, mhyp_seek+22);
   plitem->flag3 = get8int (cts, mhyp_seek+23);
   plitem->timestamp = get32lint (cts, mhyp_seek+24);
-  plitem->timestamp = itdb_time_mac_to_time_t (fimp->itdb, plitem->timestamp);
+  plitem->timestamp = device_time_mac_to_time_t (fimp->itdb->device, plitem->timestamp);
   plitem->id = get64lint (cts, mhyp_seek+28);
 /*  plitem->mhodcount = get32lint (cts, mhyp_seek+36);   */
 /*  plitem->libmhodcount = get16lint (cts, mhyp_seek+40);*/
@@ -2212,7 +2212,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->compilation = get8int (cts, seek+30);
       track->rating = get8int (cts, seek+31);
       track->time_modified = get32lint(cts, seek+32); /* time added       */
-      track->time_modified = itdb_time_mac_to_time_t (fimp->itdb, 
+      track->time_modified = device_time_mac_to_time_t (fimp->itdb->device, 
 						      track->time_modified);
       track->size = get32lint(cts, seek+36);       /* file size        */
       track->tracklen = get32lint(cts, seek+40);   /* time             */
@@ -2230,7 +2230,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->playcount = get32lint (cts, seek+80); /* playcount        */
       track->playcount2 = get32lint (cts, seek+84);
       track->time_played = get32lint(cts, seek+88);/* last time played */
-      track->time_played = itdb_time_mac_to_time_t (fimp->itdb, 
+      track->time_played = device_time_mac_to_time_t (fimp->itdb->device, 
 						    track->time_played);
       track->cd_nr = get32lint(cts, seek+92);      /* CD nr            */
       track->cds = get32lint(cts, seek+96);        /* CD nr of..       */
@@ -2238,7 +2238,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	 otherwise). */
       track->drm_userid = get32lint (cts, seek+100);
       track->time_added = get32lint(cts, seek+104);/* last mod. time */
-      track->time_added = itdb_time_mac_to_time_t (fimp->itdb, 
+      track->time_added = device_time_mac_to_time_t (fimp->itdb->device, 
 						   track->time_added);
       track->bookmark_time = get32lint (cts, seek+108);/*time bookmarked*/
       track->dbid = get64lint (cts, seek+112);
@@ -2253,7 +2253,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->unk132 = get32lint (cts, seek+132);
       track->samplerate2 = get32lfloat (cts, seek+136);
       track->time_released = get32lint (cts, seek+140);
-      track->time_released = itdb_time_mac_to_time_t (fimp->itdb,
+      track->time_released = device_time_mac_to_time_t (fimp->itdb->device,
 						      track->time_released);
       track->unk144 = get16lint (cts, seek+144);
       track->unk146 = get16lint (cts, seek+146);
@@ -2264,7 +2264,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
   {
       track->skipcount = get32lint (cts, seek+156);
       track->last_skipped = get32lint (cts, seek+160);
-      track->last_skipped = itdb_time_mac_to_time_t (fimp->itdb, 
+      track->last_skipped = device_time_mac_to_time_t (fimp->itdb->device, 
 						     track->last_skipped);
       track->has_artwork = get8int (cts, seek+164);
       track->skip_when_shuffling = get8int (cts, seek+165);
@@ -3484,7 +3484,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put8int (cts, track->type2);
   put8int   (cts, track->compilation);
   put8int   (cts, track->rating);
-  mac_time = itdb_time_time_t_to_mac (track->itdb, track->time_modified);
+  mac_time = device_time_time_t_to_mac (track->itdb->device, track->time_modified);
   put32lint (cts, mac_time); /* timestamp               */
   put32lint (cts, track->size);    /* filesize                   */
   put32lint (cts, track->tracklen);/* length of track in ms      */
@@ -3501,12 +3501,12 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->playcount);/* playcount                 */
   track->playcount2 = track->playcount;
   put32lint (cts, track->playcount2);
-  mac_time = itdb_time_time_t_to_mac (track->itdb, track->time_played);
+  mac_time = device_time_time_t_to_mac (track->itdb->device, track->time_played);
   put32lint (cts, mac_time); /* last time played       */
   put32lint (cts, track->cd_nr);   /* CD number                  */
   put32lint (cts, track->cds);     /* number of CDs              */
   put32lint (cts, track->drm_userid);
-  mac_time = itdb_time_time_t_to_mac (track->itdb, track->time_added);
+  mac_time = device_time_time_t_to_mac (track->itdb->device, track->time_added);
   put32lint (cts, mac_time); /* timestamp            */
   put32lint (cts, track->bookmark_time);
   put64lint (cts, track->dbid);
@@ -3519,7 +3519,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->artwork_size);
   put32lint (cts, track->unk132);
   put32lfloat (cts, track->samplerate2);
-  mac_time = itdb_time_time_t_to_mac (track->itdb, track->time_released);
+  mac_time = device_time_time_t_to_mac (track->itdb->device, track->time_released);
   put32lint (cts, mac_time);
   put16lint (cts, track->unk144);
   put16lint (cts, track->unk146);
@@ -3527,7 +3527,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->unk152);
   /* since iTunesDB version 0x0c */
   put32lint (cts, track->skipcount);
-  mac_time = itdb_time_time_t_to_mac (track->itdb, track->last_skipped);
+  mac_time = device_time_time_t_to_mac (track->itdb->device, track->last_skipped);
   put32lint (cts, mac_time);
   put8int (cts, track->has_artwork);
   put8int (cts, track->skip_when_shuffling);
@@ -4002,8 +4002,8 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
 			  (at == ITDB_SPLAT_DATE))
 		      {
 			  Itdb_iTunesDB *itdb = fexp->itdb;
-			  fromvalue = itdb_time_time_t_to_mac (itdb, fromvalue);
-			  tovalue = itdb_time_time_t_to_mac (itdb, tovalue);
+			  fromvalue = device_time_time_t_to_mac (itdb->device, fromvalue);
+			  tovalue = device_time_time_t_to_mac (itdb->device, tovalue);
 		      }
 		  }
 
@@ -4178,7 +4178,7 @@ static void mk_mhip (FExport *fexp,
   put32lint (cts, podcastgroupflag);                /* 16 */
   put32lint (cts, podcastgroupid);                  /* 20 */
   put32lint (cts, trackid);                         /* 24 */
-  timestamp = itdb_time_time_t_to_mac (fexp->itdb, timestamp);
+  timestamp = device_time_time_t_to_mac (fexp->itdb->device, timestamp);
   put32lint (cts, timestamp);                       /* 28 */
   put32lint (cts, podcastgroupref);                 /* 32 */
   put32_n0 (cts, 10);                               /* 36 */
@@ -4623,7 +4623,7 @@ static gboolean write_playlist (FExport *fexp,
     put8int (cts, pl->flag1);      /* unknown                   */
     put8int (cts, pl->flag2);      /* unknown                   */
     put8int (cts, pl->flag3);      /* unknown                   */
-    mac_time = itdb_time_time_t_to_mac (fexp->itdb, pl->timestamp);
+    mac_time = device_time_time_t_to_mac (fexp->itdb->device, pl->timestamp);
     put32lint (cts, mac_time);     /* some timestamp            */
     put64lint (cts, pl->id);       /* 64 bit ID                 */
     put32lint (cts, 0);            /* unknown, always 0?        */
@@ -6283,20 +6283,6 @@ time_t itdb_time_host_to_mac (time_t time)
 {
     return time;
 }
-
-time_t itdb_time_mac_to_time_t (Itdb_iTunesDB *db, guint64 mactime)
-{
-    if (mactime != 0)  return (time_t)(mactime - 2082844800 - db->device->timezone_shift);
-    else               return (time_t)mactime;
-}
-
-guint64 itdb_time_time_t_to_mac (Itdb_iTunesDB *db, time_t timet)
-{
-    if (timet != 0)
-	return ((guint64)timet) + 2082844800 + db->device->timezone_shift;
-    else return 0;
-}
-
 
 /**
  * itdb_init_ipod:

@@ -532,7 +532,7 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 	Itdb_Track *song;
 	Itdb_Artwork *artwork;
 	guint64 mactime;
-	Itdb_iTunesDB *itdb = db_get_itunesdb (db);
+	Itdb_Device *device = db_get_device (db);
 
 	mhii = (MhiiHeader *)init_header (buffer, "mhii", sizeof (MhiiHeader));
 	if (mhii == NULL) {
@@ -558,10 +558,10 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 	mhii->rating = get_gint32 (artwork->rating, buffer->byte_order);
 	mhii->unknown6 = get_gint32 (artwork->unk036, buffer->byte_order);
 
-	mactime = itdb_time_time_t_to_mac (itdb, artwork->creation_date);
+	mactime = device_time_time_t_to_mac (device, artwork->creation_date);
 	mhii->orig_date = get_guint32 (mactime, buffer->byte_order);
 
-	mactime = itdb_time_time_t_to_mac (itdb, artwork->digitized_date);
+	mactime = device_time_time_t_to_mac (device, artwork->digitized_date);
 	mhii->digitized_date = get_guint32 (mactime, buffer->byte_order);
 
 	mhii->orig_img_size = get_gint32 (artwork->artwork_size, buffer->byte_order);

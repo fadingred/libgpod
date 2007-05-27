@@ -1,3 +1,20 @@
+2007-05-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-artwork-parser.c
+	  src/db-artwork-writer.c
+	  src/itdb_device.c
+	  src/itdb_itunesdb.c
+	  src/itdb_private.h:
+	  Fixed segfault when parsing photo databases introduced by the
+	  new handling of timestamps (all timestamps exported are
+	  host-local time_t).
+	  itdb_time_time_t_to_mac() and itdb_time_mac_to_time_t() were
+	  renamed to device_*() and take a pointer to an Itdb_Device
+	  instead of a pointer to an Itdb_iTunesDB structure as the latter
+	  does not exist in case of photo databases. The functions are
+	  moved from itdb_itunesdb.c to itdb_device.c and all references
+	  to these two functions were changed accordingly.
+
 2007-05-23  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c (get_playlist): fix a potential crasher

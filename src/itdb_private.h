@@ -151,9 +151,9 @@ G_GNUC_INTERNAL gint itdb_get_free_photo_id ( Itdb_PhotoDB *db );
 G_GNUC_INTERNAL Itdb_iTunesDB *db_get_itunesdb (Itdb_DB *db);
 G_GNUC_INTERNAL Itdb_PhotoDB *db_get_photodb (Itdb_DB *db);
 G_GNUC_INTERNAL gint itdb_thumb_get_byteorder (ItdbThumbFormat format);
-G_GNUC_INTERNAL time_t itdb_time_mac_to_time_t (Itdb_iTunesDB *db, 
+G_GNUC_INTERNAL time_t device_time_mac_to_time_t (Itdb_Device *device, 
 						guint64 mactime);
-G_GNUC_INTERNAL guint64 itdb_time_time_t_to_mac (Itdb_iTunesDB *db,
+G_GNUC_INTERNAL guint64 device_time_time_t_to_mac (Itdb_Device *device,
 						 time_t timet);
 G_GNUC_INTERNAL gint itdb_musicdirs_number_by_mountpoint (const gchar *mountpoint);
 #endif

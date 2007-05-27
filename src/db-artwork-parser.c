@@ -238,7 +238,7 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	Itdb_iTunesDB *itunesdb;
 	guint64 dbid;
 	guint64 mactime;
-	Itdb_iTunesDB *itdb = db_get_itunesdb (ctx->db);
+	Itdb_Device *device = db_get_device (ctx->db);
 
 	mhii = db_parse_context_get_m_header (ctx, MhiiHeader, "mhii");
 	if (mhii == NULL)
@@ -280,9 +280,9 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	artwork->rating = get_gint32 (mhii->rating, ctx->byte_order);
 	artwork->unk036 = get_gint32 (mhii->unknown6, ctx->byte_order);
 	mactime = get_gint32 (mhii->orig_date, ctx->byte_order);
-	artwork->creation_date = itdb_time_mac_to_time_t (itdb, mactime);
+	artwork->creation_date = device_time_mac_to_time_t (device, mactime);
 	mactime = get_gint32 (mhii->digitized_date, ctx->byte_order);
-	artwork->digitized_date = itdb_time_mac_to_time_t (itdb, mactime);
+	artwork->digitized_date = device_time_mac_to_time_t (device, mactime);
 	artwork->artwork_size = get_gint32 (mhii->orig_img_size, ctx->byte_order);
 
 	if (song)

@@ -337,6 +337,22 @@ void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp)
 }
 
 
+G_GNUC_INTERNAL time_t device_time_mac_to_time_t (Itdb_Device *device, guint64 mactime)
+{
+    g_return_val_if_fail (device, 0);
+    if (mactime != 0)  return (time_t)(mactime - 2082844800 - device->timezone_shift);
+    else               return (time_t)mactime;
+}
+
+G_GNUC_INTERNAL guint64 device_time_time_t_to_mac (Itdb_Device *device, time_t timet)
+{
+    g_return_val_if_fail (device, 0);
+    if (timet != 0)
+	return ((guint64)timet) + 2082844800 + device->timezone_shift;
+    else return 0;
+}
+
+
 /** 
  * itdb_device_read_sysinfo:
  * @device: an #Itdb_Device
