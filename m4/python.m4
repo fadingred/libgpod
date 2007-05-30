@@ -26,7 +26,6 @@ CPPFLAGS="$save_CPPFLAGS"
 ])
 
 dnl copied and modified from gnome-python
-dnl http://cvs.gnome.org/viewcvs/*checkout*/gnome-python/pygtk/m4/python.m4
 dnl
 dnl AM_CHECK_PYMOD(MODNAME [,VERSION, VERSION_MATCHER [,ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND]]])
 dnl Check if a module of a particular version is visible to python.

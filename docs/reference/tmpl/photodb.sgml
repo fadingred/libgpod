@@ -67,7 +67,7 @@ itdb_device_set_sysinfo (db->device, "ModelNumStr", model);
 <para>
 For example, "MA450" would stand for an 80 GB 6th generation iPod Video. See
 <ulink type="http"
-url="http://gtkpod.cvs.sourceforge.net/*checkout*/gtkpod/libgpod/src/itdb_device.c">itdb_device.c</ulink>
+url="http://gtkpod.svn.sourceforge.net/svnroot/gtkpod/libgpod/trunk/src/itdb_device.c">itdb_device.c</ulink>
 for a list of supported models.
 </para>
 <para>
@@ -76,9 +76,9 @@ saved (itdb_device_write_sysinfo() is called).
 </para>
 <para>
 Have a look at the <ulink type="http"
-url="http://gtkpod.cvs.sourceforge.net/*checkout*/gtkpod/libgpod/tests/test-photos.c">test-photos</ulink>
+url="http://gtkpod.svn.sourceforge.net/svnroot/gtkpod/libgpod/trunk/tests/test-photos.c">test-photos</ulink>
 test program in the <ulink type="http"
-url="http://gtkpod.cvs.sourceforge.net/gtkpod/libgpod/tests/">tests/</ulink>
+url="http://gtkpod.svn.sourceforge.net/svnroot/gtkpod/libgpod/trunk/tests/">tests/</ulink>
 directory of the libgpod source for an example of how to use the interface.
 </para>
 

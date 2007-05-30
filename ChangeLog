@@ -1,3 +1,11 @@
+2007-05-30  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/tests/resources/iTunes/iTunesDB.ext
+	  docs/reference/libgpod-docs.xml
+	  docs/reference/tmpl/photodb.sgml
+	  m4/python.m4:
+	  change CVS references and links to SVN
+
 2007-05-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/db-artwork-parser.c
