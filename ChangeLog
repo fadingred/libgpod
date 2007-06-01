@@ -11,6 +11,13 @@
 	  src/db-itunes-parser.h: '#if 0' unused structure to avoid
 	  confusion.
 
+	* src/itdb_photoalbum.c (itdb_photodb_parse): return a valid
+	  photodb structure including the main Photo Library album if no
+	  database existed, analogous to itdb_photodb_create(). Without
+	  this the test-photos script won't work as expected and other
+	  applications also would have to add extra checks for presence of
+	  the main Photo Libarary.
+
 2007-05-30  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
         * bindings/python/tests/resources/iTunes/iTunesDB.ext

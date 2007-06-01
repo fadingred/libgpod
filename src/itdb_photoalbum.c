@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-01-15 01:02:46 jcs>
+/* Time-stamp: <2007-06-01 23:03:58 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -24,7 +24,7 @@
 |
 |  This product is not supported/written/published by Apple!
 |
-|  $Id$
+|  $Id: itdb_photoalbum.c,v 1.17 2007/03/21 08:37:20 jcsjcs Exp $
 */
 #include <config.h>
 
@@ -224,6 +224,15 @@ Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error)
     photodb = itdb_photodb_new ();
     itdb_device_set_mountpoint (photodb->device, mp);
     ipod_parse_photo_db (photodb);
+
+    /* if photodb is empty, create a valid photodb including the main
+       Photo Library album */
+    if (!photodb->photos && !photodb->photoalbums)
+    {
+	itdb_photodb_free (photodb);
+	photodb = itdb_photodb_create (mp);
+    }
+
     return photodb;
 }
 
