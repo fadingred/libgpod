@@ -355,15 +355,17 @@ parse_mhba (DBParseContext *ctx, GError *error)
 	mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	num_children = get_gint32 (mhba->num_mhods, ctx->byte_order);
 	while ((num_children > 0) && (mhod_ctx != NULL)) {
+	        MhodHeaderArtworkType1 *mhod1;
 		/* FIXME: First mhod is album name, whats the others for? */
 		mhod = db_parse_context_get_m_header (mhod_ctx, ArtworkDB_MhodHeader, "mhod");
 		if (mhod == NULL) {
 			return -1;
 		}
 		db_parse_context_set_total_len (mhod_ctx,  get_gint32(mhod->total_len, ctx->byte_order));
-		album->name = g_strdup( (char *)((MhodHeaderArtworkType1*)mhod)->string );
+		mhod1 = (MhodHeaderArtworkType1*)mhod;
+		album->name = g_strndup ((gchar *)mhod1->string, mhod1->string_len);
 		cur_offset += mhod_ctx->total_len;
-		dump_mhod_type_1 ((MhodHeaderArtworkType1*)mhod);
+		dump_mhod_type_1 (mhod1);
 		g_free (mhod_ctx);
 		num_children--;
 	}

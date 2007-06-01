@@ -1,3 +1,16 @@
+2007-05-27  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * src/db-artwork-parser.c (parse_mhba): non-zero terminated
+	  string was copied using g_strdup() instead of g_strndup(). This
+	  affected album names of the Photo Database.
+
+	  src/db-artwork-writer.c (write_mhod_type_1): convert 'type' as
+	  16 bit integer, not 32 bit integer. Potential problem on
+	  non-standard endian system (iPod side).
+
+	  src/db-itunes-parser.h: '#if 0' unused structure to avoid
+	  confusion.
+
 2007-05-30  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
         * bindings/python/tests/resources/iTunes/iTunesDB.ext

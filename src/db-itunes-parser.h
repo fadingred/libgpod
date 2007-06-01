@@ -20,7 +20,7 @@
  * 
  *  This product is not supported/written/published by Apple!
  *
- * $Id$
+ * $Id: db-itunes-parser.h,v 1.11 2007/04/27 14:09:59 jcsjcs Exp $
  */
 
 
@@ -377,6 +377,8 @@ struct _MhodHeaderArtworkType1 {
 	unsigned char string[];
 };
 
+#if 0
+/* not used at all */
 struct _MhodHeaderArtworkType3 {
 	unsigned char header_id[4];
 	gint32 header_len;
@@ -390,6 +392,7 @@ struct _MhodHeaderArtworkType3 {
 	gint32 unknown4;
 	gunichar2 string[];
 };
+#endif
 
 struct _ArtworkDB_MhodHeaderArtworkType3 {
 	unsigned char header_id[4];

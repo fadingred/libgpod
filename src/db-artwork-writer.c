@@ -330,7 +330,7 @@ write_mhod_type_1 (gchar *string, iPodBuffer *buffer)
 
 	padding = 4 - ( (total_bytes + len) % 4 );
 	mhod->padding = padding;
-	mhod->type = get_gint32 (0x0001, buffer->byte_order);
+	mhod->type = get_gint16 (0x01, buffer->byte_order);
 
 	/* Make sure we have enough free space to write the string */
 	if (ipod_buffer_maybe_grow (buffer, total_bytes + len + padding ) != 0) {
@@ -384,7 +384,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    /* number of bytes of the string encoded in UTF-16 */
 	    mhod->string_len = get_gint32 (2*len, buffer->byte_order);
 	    padding = 4 - ( (total_bytes + 2*len) % 4 );
-	    mhod->padding = padding; /* high byte is padding length (0-3) */
+	    mhod->padding = padding;
 
 	    /* Make sure we have enough free space to write the string */
 	    if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len+padding) != 0) {
@@ -410,7 +410,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    /* e.g. len = 7 bytes, len%4 = 3, 4-3=1 -> requires 1 byte
 	       padding */
 	    padding = 4 - ( (total_bytes + len) % 4 );
-	    mhod->padding = padding; /* high byte is padding length (0-3) */
+	    mhod->padding = padding;
 	    /* Make sure we have enough free space to write the string */
 	    if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len+padding) != 0) {
 		return  -1;
