@@ -1,7 +1,7 @@
 EXTRA_DIST = resources
 
 dist-hook:
-	rm -rf `find $(distdir)/resources -name CVS`
+	rm -rf `find $(distdir)/resources -type d -name .svn`
 
 if HAVE_PYTHON
 test:

@@ -1,4 +1,4 @@
-If you install from CVS, call
+If you install from Subversion, call
 
 ./autogen.sh
 make
