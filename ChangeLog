@@ -1,3 +1,11 @@
+2007-06-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* po/ja.po
+	  po/sv.po
+	  po/it.po: Changed license to "same as gtkpod" to "same as
+	  libgpod" after consulting with translators. Waiting for response
+	  from the Hebrew and Spanish translators.
+
 2007-06-02  Daniele Forsi <dforsi at users.sourceforge.net>
 
         * po/it.po: updated Italian translation

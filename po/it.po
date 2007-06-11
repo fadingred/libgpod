@@ -1,8 +1,8 @@
-# Italian language translation for gtkpod.
+# Italian language translation for libgpod.
 # Copyright (C) 2003 Edward Matteucci
 # Copyright (C) 2007 Daniele Forsi
 #
-# This file is distributed under the same license as the gtkpod package.
+# This file is distributed under the same license as the libgpod package.
 #
 # Edward Matteucci <edward.matteucci@libero.it>, 2003, 2005.
 # Daniele Forsi <daniele@forsi.it>, 2007.

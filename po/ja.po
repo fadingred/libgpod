@@ -1,6 +1,6 @@
 # Japanese Translation Catalogue
-# Copyright (C) 2003 gtkpod
-# This file is distributed under the same license as the gtkpod package.
+# Copyright (C) 2007 libgpod
+# This file is distributed under the same license as the libgpod package.
 # Jorg Schuler <jcsjcs@users.sourceforge.net>, 2003.
 # 
 msgid ""

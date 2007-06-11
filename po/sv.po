@@ -1,5 +1,5 @@
 # Translation of gtkpod to Swedish.
-# This file is distributed under the same license as gtkpod.
+# This file is distributed under the same license as libgpod.
 # Copyright (C) Stefan Asserhäll <stefan.asserhall@comhem.se>, 2004, 2005, 2007.
 #
 msgid ""
