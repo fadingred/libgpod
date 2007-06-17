@@ -723,27 +723,26 @@ struct _Itdb_Track
   gchar   *albumartist;      /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *keywords;         /* see note for MHOD_ID in itdb_itunesdb.c */
 /* the following 6 are new in libgpod 0.5.0... */
-  /* You can set these strings to override the standard sortorder
-     suggested by libgpod. When set they take precedence over the
-     default 'artist', 'album'... fields.
+  /* You can set these strings to override the standard
+     sortorder. When set they take precedence over the default
+     'artist', 'album'... fields.
 
-     When reading the iTunesDB these fields are discarded, so you will
-     have to set them again before writing the iTunesDB.
+     For example, in the case of an artist name like "The Artist",
+     iTunes will set sort_artist to "Artist, The" followed by five
+     0x01 characters. Why five 0x01 characters are added is not
+     completely understood.
 
-     libgpod will automatically create an entry in the iTunesDB (but
-     not below) for sort_artist if 'artist' is something like "The
-     Artist" and sort_artist wasn't set by the application. In that
-     case 'Artist, The' followed by five 0x01 characters is used for
-     sorting and written to the iTunesDB. Why five 0x01 characters are
-     added is not completely understood, but analogous to what iTunes
-     does. libgpod will _not_ change the six fields below, however. */
-  gchar   *sort_artist;      /* artist name (for sorting)               */
+     If you do not set the sort_artist field, libgpod will pre-sort
+     the lists displayed by the iPod according to "Artist, The",
+     without setting the field.
+  */
+  gchar   *sort_artist;      /* artist (for sorting)                    */
   gchar   *sort_title;       /* title (for sorting)                     */
   gchar   *sort_album;       /* album (for sorting)                     */
   gchar   *sort_albumartist; /* album artist (for sorting)              */
   gchar   *sort_composer;    /* composer (for sorting)                  */
   gchar   *sort_tvshow;      /* tv show (for sorting)                   */
-/* ... to here */
+/* new fields in libgpod 0.5.0 up to here */
   guint32 id;                /* unique ID of track                      */
   gint32  size;              /* size of file in bytes                   */
   gint32  tracklen;          /* Length of track in ms                   */

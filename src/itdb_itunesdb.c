@@ -2371,15 +2371,22 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	      track->keywords = entry_utf8;
 	      break;
 	  case MHOD_ID_SORT_ARTIST:
+	      track->sort_artist = entry_utf8;
+	      break;
 	  case MHOD_ID_SORT_TITLE:
+	      track->sort_title = entry_utf8;
+	      break;
 	  case MHOD_ID_SORT_ALBUM:
+	      track->sort_album = entry_utf8;
+	      break;
 	  case MHOD_ID_SORT_ALBUMARTIST:
+	      track->sort_albumartist = entry_utf8;
+	      break;
 	  case MHOD_ID_SORT_COMPOSER:
+	      track->sort_composer = entry_utf8;
+	      break;
 	  case MHOD_ID_SORT_TVSHOW:
-	      /* we don't read those -- the application has to set
-		 them before each export / libgpod will create the
-		 sort_artist field before each export if not set */
-	      g_free (entry_utf8);
+	      track->sort_tvshow = entry_utf8;
 	      break;
 	  case MHOD_ID_SPLPREF:
 	  case MHOD_ID_SPLRULES:
@@ -4209,7 +4216,6 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	guint32 mhod_num = 0;
 	gulong mhit_seek = cts->pos;
 	MHODData mhod;
-	gchar *str;
 
 	g_return_val_if_fail (track, FALSE);
 
@@ -4349,14 +4355,12 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
-	str = get_sort_artist (track);
-	if (str)
+	if (track->sort_artist && *track->sort_artist)
 	{
 	    mhod.type = MHOD_ID_SORT_ARTIST;
-	    mhod.data.string = str;
+	    mhod.data.string = track->sort_artist;
 	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
-	    g_free (str);
 	}
 	if (track->sort_title && *track->sort_title)
 	{

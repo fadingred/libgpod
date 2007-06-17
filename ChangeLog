@@ -1,3 +1,13 @@
+2007-06-17 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c
+	  src/itdb.h: libgpod will not change the values for sort_artist.
+	  Furthermore, libgpod reads the stored values of
+	  sort_artist/_album... from the iTunesDB and makes them available
+	  through the Itdb_Track structure. Applications should modify
+	  these values along with the corresponding artist/album... fields
+	  if a particular sort order is required.
+
 2007-06-14 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* po/es.po: new version updated by Alejandro Lamas Daviña.
