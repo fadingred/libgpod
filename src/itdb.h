@@ -771,7 +771,7 @@ struct _Itdb_Track
 				playcount.                              */
   guint32 recent_playcount;  /* times track was played since last sync  */
   gboolean transferred;      /* has file been transferred to iPod?      */
-  gint16  BPM;               /* supposed to vary the playback speed     */
+  gint16  BPM;               /* BPM (beats per minute) of this track    */
   guint8  app_rating;        /* star rating set by appl. (not
 			      * iPod). If the rating set on the iPod
 			        and the rating field above differ, the

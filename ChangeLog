@@ -8,6 +8,8 @@
 	  these values along with the corresponding artist/album... fields
 	  if a particular sort order is required.
 
+	* src/itdb.h: corrected description for "BPM" (beats per minute)
+
 2007-06-14 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* po/es.po: new version updated by Alejandro Lamas Daviña.
