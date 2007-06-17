@@ -1,4 +1,9 @@
-2007-06-17 Jorg Schuler <jcsjcs at users.sourceforge.net>
+2007-06-17  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* libgpod-1.0.pc.in:
+	  add glib version and gobject-2.0 to 'Requires:'
+
+2007-06-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c
 	  src/itdb.h: libgpod will not change the values for sort_artist.
@@ -10,7 +15,7 @@
 
 	* src/itdb.h: corrected description for "BPM" (beats per minute)
 
-2007-06-14 Jorg Schuler <jcsjcs at users.sourceforge.net>
+2007-06-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* po/es.po: new version updated by Alejandro Lamas Daviña.
 
