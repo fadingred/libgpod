@@ -1,5 +1,8 @@
 2007-06-17  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
+	* configure.ac:
+	  bump version and soname for 0.5.0 release
+
 	* libgpod-1.0.pc.in:
 	  add glib version and gobject-2.0 to 'Requires:'
 
