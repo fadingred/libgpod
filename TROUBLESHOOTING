@@ -1,6 +1,16 @@
 Possible problems:
 ------------------
 
+* Compilation of applications that compiled fine with libgpod 0.4.2
+  fail with libgpod 0.5.0 or later because of unknown symbols.
+
+With version 0.5.0 of libgpod the namespace has been cleaned up. All
+exported symbols now start with either ITDB or Itdb. Applications
+using the old symbols will have to be adapted. Please see the
+ChangeLog entry from 27 April 2007 for details on the renaming.
+
+------------------------------------------------------------
+
 * If you get an error stating
 
 "possibly undefined macro: AC_PROG_INTLTOOL"
@@ -79,3 +89,6 @@ On Debian the following packages are required:
 python (e.g. python2.4)
 python-dev (e.g. python2.4-dev)
 python-eye3D
+
+------------------------------------------------------------
+

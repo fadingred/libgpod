@@ -1,3 +1,7 @@
+2007-06-18 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* TROUBLESHOOTING: comment concerning namespace cleanup
+
 2007-06-17  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* configure.ac:
