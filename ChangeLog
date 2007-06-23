@@ -1,3 +1,9 @@
+2007-06-23 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (mhod52_make_collate_keys): ignore empty
+	  sort strings -- fixes multiple display of same album on the
+	  iPod.
+
 2007-06-18 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* TROUBLESHOOTING: comment concerning namespace cleanup

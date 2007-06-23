@@ -229,7 +229,10 @@ enum MHOD52_SORTTYPE {
     MHOD52_SORTTYPE_ALBUM    = 0x04,
     MHOD52_SORTTYPE_ARTIST   = 0x05,
     MHOD52_SORTTYPE_GENRE    = 0x07,
-    MHOD52_SORTTYPE_COMPOSER = 0x12
+    MHOD52_SORTTYPE_COMPOSER = 0x12/*,
+    MHOD52_SORTTYPE_TVSHOW   = 0x1d,
+    MHOD52_SORTTYPE_TVSEASON = 0x1e,
+    MHOD52_SORTTYPE_TVEPISODE= 0x1f*/
 };
 
 struct mhod52track
@@ -3705,7 +3708,7 @@ static GList *mhod52_make_collate_keys (GList *tracks)
 	coltracks = g_list_prepend (coltracks, ct);
 
 	/* album */
-	if (tr->sort_album)
+	if (tr->sort_album && *tr->sort_album)
 	{
 	    ct->album = g_utf8_collate_key (tr->sort_album, -1);
 	}
@@ -3719,7 +3722,7 @@ static GList *mhod52_make_collate_keys (GList *tracks)
 	}
 
 	/* title */
-	if (tr->sort_title)
+	if (tr->sort_title && *tr->sort_title)
 	{
 	    ct->title = g_utf8_collate_key (tr->sort_title, -1);
 	}
@@ -3759,7 +3762,7 @@ static GList *mhod52_make_collate_keys (GList *tracks)
 	}
 
 	/* composer */
-	if (tr->sort_composer)
+	if (tr->sort_composer && *tr->sort_composer)
 	{
 	    ct->composer = g_utf8_collate_key (tr->sort_composer, -1);
 	}
@@ -4652,9 +4655,9 @@ static gboolean write_playlist (FExport *fexp,
 	mhod.data.mhod52coltracks = mhod52_make_collate_keys (pl->members);
 	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_TITLE;
 	mk_mhod (fexp, &mhod);
-	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_ALBUM;
-	mk_mhod (fexp, &mhod);
 	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_ARTIST;
+	mk_mhod (fexp, &mhod);
+	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_ALBUM;
 	mk_mhod (fexp, &mhod);
 	mhod.data2.mhod52sorttype = MHOD52_SORTTYPE_GENRE;
 	mk_mhod (fexp, &mhod);
