@@ -11,7 +11,7 @@ AM_CONFIG_HEADER(config.h)
 #
 LIBGPOD_MAJOR_VERSION=0
 LIBGPOD_MINOR_VERSION=5
-LIBGPOD_MICRO_VERSION=0
+LIBGPOD_MICRO_VERSION=2
 # If you need a modifier for the version number. 
 # Normally empty, but can be used to make "fixup" releases.
 LIBGPOD_EXTRAVERSION=
