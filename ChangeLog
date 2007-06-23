@@ -1,6 +1,9 @@
 2007-06-23  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* configure.ac:
+	  bump version to 0.5.3SVN for further development
+
+	* configure.ac:
 	  bump version for 0.5.2 release
 
 2007-06-23 Jorg Schuler <jcsjcs at users.sourceforge.net>
