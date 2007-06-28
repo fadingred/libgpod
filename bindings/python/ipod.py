@@ -277,21 +277,7 @@ class Track:
     # Note we don't free the underlying structure, as it's still used
     # by the itdb.
 
-    _proxied_attributes = ("title","ipod_path","album","artist","genre","filetype",
-                           "comment","category","composer","grouping","description",
-                           "podcasturl","podcastrss","chapterdata","subtitle","id",
-                           "size","tracklen","cd_nr","cds","track_nr","tracks",
-                           "bitrate","samplerate","samplerate_low","year","volume",
-                           "soundcheck","time_added","time_played","time_modified",
-                           "bookmark_time","rating","playcount","playcount2",
-                           "recent_playcount","transferred","BPM","app_rating",
-                           "type1","type2","compilation","starttime","stoptime",
-                           "checked","dbid","drm_userid","visible","filetype_marker",
-                           "artwork_count","artwork_size","samplerate2", "remember_playback_position",
-                           "time_released","has_artwork","flag4", "skip_when_shuffling",
-                           "lyrics_flag","movie_flag","mark_unplayed","samplecount",
-                           "chapterdata_raw","chapterdata_raw_length","artwork",
-                           "usertype")
+    _proxied_attributes = [k for k in gpod._Itdb_Track.__dict__.keys() if not k.startswith("_")]
 
     def __init__(self, filename=None,
                  proxied_track=None, podcast=False, ownerdb=None):
@@ -853,7 +839,7 @@ class PhotoAlbum:
 class Photo:
     """A photo in an iTunes Photo database."""
 
-    _proxied_attributes = ("id","creation_date","digitized_date","artwork_size")  
+    _proxied_attributes = [k for k in gpod._Itdb_Artwork.__dict__.keys() if not k.startswith("_")]
 
     def __init__(self, filename=None,
                  proxied_photo=None, ownerdb=None):
@@ -916,8 +902,7 @@ class Photo:
 class Thumbnail:
     """A thumbnail in an Photo."""
 
-    _proxied_attributes = ("type","filename","rotation","offset","size","width","height",
-                           "horizontal_padding", "vertical_padding")
+    _proxied_attributes = [k for k in gpod._Itdb_Thumb.__dict__.keys() if not k.startswith("_")]
 
     def __init__(self, proxied_thumbnail=None, ownerphoto=None):
         """Create a thumbnail object."""

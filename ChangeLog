@@ -1,3 +1,8 @@
+2007-06-28  Nicholas Piper  <nicholas at users.sourceforge.net>
+
+	* bindings/python/ipod.py: Remove hard-coding of
+	  Track/Artwork/Album attributes
+
 2007-06-23  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* configure.ac:
