@@ -1,3 +1,9 @@
+2007-06-23 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_artwork.c (itdb_thumb_free, itdb_thumb_duplicate): fix
+	  compile time error when compiling without GDKPIXBUF. Alternative
+	  fix: add '#include <glib-object.h>'. Thanks to Olivier Crête.
+
 2007-06-28  Nicholas Piper  <nicholas at users.sourceforge.net>
 
 	* bindings/python/ipod.py: Remove hard-coding of

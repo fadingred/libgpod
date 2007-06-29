@@ -849,9 +849,11 @@ void itdb_thumb_free (Itdb_Thumb *thumb)
     g_return_if_fail (thumb);
 
     g_free (thumb->image_data);
+#ifdef HAVE_GDKPIXBUF
     if (thumb->pixbuf) {
         g_object_unref (G_OBJECT (thumb->pixbuf));
     }
+#endif
     g_free (thumb->filename);
     g_free (thumb);
 }
@@ -883,9 +885,11 @@ Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb)
 	memcpy (new_thumb->image_data, thumb->image_data,
 		new_thumb->image_data_len);
     }
+#ifdef HAVE_GDKPIXBUF
     if (thumb->pixbuf) {
         g_object_ref (G_OBJECT (thumb->pixbuf));
     }
+#endif
     return new_thumb;
 }
 
