@@ -1,3 +1,10 @@
+2007-06-29 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * po/libgpod.po: added to SVN repository (new translators may be
+	  looking for it -- like yesterday).
+
+	* po/*.po: run 'make update-po'.
+
 2007-06-29  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/tests/Makefile.am:
