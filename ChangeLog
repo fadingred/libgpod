@@ -1,4 +1,9 @@
-2007-06-23 Jorg Schuler <jcsjcs at users.sourceforge.net>
+2007-06-29  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/tests/Makefile.am:
+	  include tests.py in EXTRA_DIST
+
+2007-06-29 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_artwork.c (itdb_thumb_free, itdb_thumb_duplicate): fix
 	  compile time error when compiling without GDKPIXBUF. Alternative

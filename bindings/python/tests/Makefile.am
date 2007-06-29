@@ -1,4 +1,6 @@
-EXTRA_DIST = resources
+EXTRA_DIST =            \
+        resources       \
+        tests.py
 
 dist-hook:
 	rm -rf `find $(distdir)/resources -type d -name .svn`
