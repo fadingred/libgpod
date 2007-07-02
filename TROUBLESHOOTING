@@ -88,7 +88,7 @@ On Debian the following packages are required:
 
 python (e.g. python2.4)
 python-dev (e.g. python2.4-dev)
-python-eye3D
+python-mutagen
 
 ------------------------------------------------------------
 

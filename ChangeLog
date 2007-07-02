@@ -1,3 +1,8 @@
+2007-07-02  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* TROUBLESHOOTING:
+	  python bindings now use the mutagen module instead of eyeD3
+
 2007-06-29 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * po/libgpod.po: added to SVN repository (new translators may be
