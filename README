@@ -16,8 +16,8 @@ answer).
 
 Quick HOWTO use libgpod for audio
 
-itdb_parse(): read the iTunesDB and ArtbookDB
-itdb_write(): write the iTunesDB and ArtbookDB
+itdb_parse(): read the iTunesDB and ArtworkDB
+itdb_write(): write the iTunesDB and ArtworkDB
 
 itdb_parse() will return a Itdb_iTunesDB structure with GLists
 containing all tracks (each track is represented by a Itdb_Track
@@ -58,13 +58,13 @@ Please note that iTunes additionally stores the artwork as tags in the
 original music file. That's also from where the data is read when
 artwork is displayed in iTunes, and there can be more than one piece
 of artwork. libgpod does not store the artwork as tags in the original
-music file. As a consequence, if you iTunes attempts to access the
+music file. As a consequence, if iTunes attempts to access the
 artwork, it will find none, and remove libgpod's artwork. Luckily,
 iTunes will only attempt to access the artwork if you select a track
-in Tunes. (To work around this, gtkpod keeps a list of the original
+in iTunes. (To work around this, gtkpod keeps a list of the original
 filename of all artwork and silently adds the thumbnails if they were
 'lost'. Your application might want to do something similar, or you
-can supply patches for optionally! adding tags to the original music
+can supply patches for (optionally!) adding tags to the original music
 files.)
 
 The Itdb_iTunesDB, Itdb_Playlist and Itdb_Track structures each have a

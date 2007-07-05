@@ -6,6 +6,10 @@
 	* src/itdb.h:
 	  remove references to Mac type timestamps
 
+	* README
+	  docs/reference/tmpl/itunesdb-db.sgml:
+	  fix a few typos
+
 2007-07-04  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* po/fr.po:
