@@ -309,21 +309,20 @@ typedef enum {
     ITDB_SPLFIELD_YEAR = 0x07,         /* Int  (e.g. from/to = 2004) */
     ITDB_SPLFIELD_GENRE = 0x08,        /* String */
     ITDB_SPLFIELD_KIND = 0x09,         /* String */
-    ITDB_SPLFIELD_DATE_MODIFIED = 0x0a,/* Int/Mac Timestamp (e.g. from/to =
-                                     bcf93280 == is before 6/19/2004)*/
+    ITDB_SPLFIELD_DATE_MODIFIED = 0x0a,/* Int (e.g. from/to = bcf93280 ==
+				     is before 6/19/2004)*/
     ITDB_SPLFIELD_TRACKNUMBER = 0x0b,  /* Int (e.g. from = 1, to = 2) */
     ITDB_SPLFIELD_SIZE = 0x0c,         /* Int (e.g. from/to = 0x00600000
 				     for 6MB) */
     ITDB_SPLFIELD_TIME = 0x0d,         /* Int (e.g. from/to = 83999 for
 				     1:23/83 seconds) */
     ITDB_SPLFIELD_COMMENT = 0x0e,      /* String */
-    ITDB_SPLFIELD_DATE_ADDED = 0x10,   /* Int/Mac Timestamp (e.g. from/to =
-                                     bcfa83ff == is after 6/19/2004) */
+    ITDB_SPLFIELD_DATE_ADDED = 0x10,   /* Int (e.g. from/to = bcfa83ff ==
+				     is after 6/19/2004) */
     ITDB_SPLFIELD_COMPOSER = 0x12,     /* String */
     ITDB_SPLFIELD_PLAYCOUNT = 0x16,    /* Int  (e.g. from/to = 1) */
-    ITDB_SPLFIELD_LAST_PLAYED = 0x17,  /* Int/Mac Timestamp (e.g. from =
-                                     bcfa83ff (6/19/2004) to =
-                                     0xbcfbd57f (6/20/2004)) */
+    ITDB_SPLFIELD_LAST_PLAYED = 0x17,  /* Int/ (e.g. from = bcfa83ff (6/19/2004)
+				     to = 0xbcfbd57f (6/20/2004)) */
     ITDB_SPLFIELD_DISC_NUMBER = 0x18,  /* Int  (e.g. from/to = 1) */
     ITDB_SPLFIELD_RATING = 0x19,       /* Int/Stars Rating (e.g. from/to =
                                      60 (3 stars)) */
@@ -341,7 +340,7 @@ typedef enum {
     ITDB_SPLFIELD_TVSHOW = 0x3e,       /* String */
     ITDB_SPLFIELD_SEASON_NR = 0x3f,    /* Int */
     ITDB_SPLFIELD_SKIPCOUNT = 0x44,    /* Int */
-    ITDB_SPLFIELD_LAST_SKIPPED = 0x45, /* Int/Mac Timestamp */
+    ITDB_SPLFIELD_LAST_SKIPPED = 0x45, /* Int */
     ITDB_SPLFIELD_ALBUMARTIST = 0x47   /* String */
 } ItdbSPLField;
 
@@ -482,10 +481,9 @@ struct _Itdb_Artwork {
     guint32 rating;        /* Rating from iPhoto * 20 (PhotoDB only) */
     gint32  unk036;
     time_t  creation_date;  /* Date the image file was created
-			      (creation date of image file (Mac type,
+			      (creation date of image file (PhotoDB only) */
+    time_t  digitized_date;/* Date the image was taken (EXIF information,
 			      PhotoDB only) */
-    time_t  digitized_date;/* Date the image was taken (EXIF
-			      information, Mac type, PhotoDB only) */
     guint32 artwork_size;  /* Size in bytes of the original source
 			      image (PhotoDB only -- don't touch in
 			      case of ArtworkDB!) */
@@ -758,9 +756,9 @@ struct _Itdb_Track
   gint32  year;              /* year                                    */
   gint32  volume;            /* volume adjustment                       */
   guint32 soundcheck;        /* volume adjustment "soundcheck"          */
-  time_t  time_added;        /* time when added (Mac type)              */
-  time_t  time_modified;     /* time of last modification (Mac type)    */
-  time_t  time_played;       /* time of last play (Mac type)            */
+  time_t  time_added;        /* time when added                         */
+  time_t  time_modified;     /* time of last modification               */
+  time_t  time_played;       /* time of last play                       */
   guint32 bookmark_time;     /* bookmark set for (AudioBook) in ms      */
   guint32 rating;            /* star rating (stars * RATING_STEP (20))  */
   guint32 playcount;         /* number of times track was played        */

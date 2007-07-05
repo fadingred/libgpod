@@ -3,6 +3,9 @@
 	* configure.ac:
 	  s/PACKAGE_/LIBGPOD_/ in configuration output
 
+	* src/itdb.h:
+	  remove references to Mac type timestamps
+
 2007-07-04  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* po/fr.po:
