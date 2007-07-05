@@ -188,8 +188,8 @@ Configuration for $PACKAGE $VERSION :
  Host System Type .....: $host
  Install path .........: $prefix
  Preprocessor .........: $CC $CPPFLAGS
- Compiler .............: $CC $CFLAGS $PACKAGE_CFLAGS
- Linker ...............: $CC $LDFLAGS $LIBS $PACKAGE_LIBS
+ Compiler .............: $CC $CFLAGS $LIBGPOD_CFLAGS
+ Linker ...............: $CC $LDFLAGS $LIBS $LIBGPOD_LIBS
  ArtworkDB support ....: $have_gdkpixbuf
  Python bindings ......: $with_python
 
