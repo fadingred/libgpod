@@ -92,7 +92,7 @@ AM_CONDITIONAL(HAVE_GDKPIXBUF, test x"$have_gdkpixbuf" = xyes)
 dnl **************************************************
 dnl * internationalization support
 dnl **************************************************
-ALL_LINGUAS="de es fr he it ja sv"
+ALL_LINGUAS="de es fr he it ja ro sv"
 
 GETTEXT_PACKAGE=libgpod
 AC_SUBST(GETTEXT_PACKAGE)
