@@ -46,11 +46,11 @@ _gpod_la_LIBADD = $(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la
 
 gpod_doc.i: $(srcdir)/gpod_doc.i.in $(srcdir)/gtkdoc-to-swig.xsl
 	cat $< > $@
-if ENABLE_GTK_DOC
-	-for xml in $(top_srcdir)/docs/reference/xml/*.xml; do \
-	    xsltproc $(srcdir)/gtkdoc-to-swig.xsl $$xml; \
-	done >> $@
-endif
+	-if test -x `which xsltproc`; then \
+	    for xml in $(top_srcdir)/docs/reference/xml/*.xml; do \
+		xsltproc $(srcdir)/gtkdoc-to-swig.xsl $$xml; \
+	    done >> $@; \
+	fi
 
 gpod_wrap.c: $(SWIG_INTERFACES) $(nodist_gpod_PYTHON)
 	$(SWIG) -python $(INCLUDES) -o $@ $<

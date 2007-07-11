@@ -1,3 +1,10 @@
+2007-07-11  Todd Zullinger <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/Makefile.am:
+	  try to convert the xml docs into python docstrings even when
+	  ENABLE_GTK_DOC isn't set so that tarball builds can get the
+	  full documentation in python.
+
 2007-07-07 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* configure.ac
