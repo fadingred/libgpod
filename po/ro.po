@@ -1,0 +1,674 @@
+# Romanian translation file for libgpod
+# Copyright (C) 2007 Alex Eftimie
+# This file is distributed under the same license as the libgpod package.
+# Alex Eftimie <alexeftimie at gmail dot com>, 2007
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gtkpod 0.52\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-06-30 08:46+0900\n"
+"PO-Revision-Date: 2007-07-09 00:02+0900\n"
+"Last-Translator: Alex Eftimie <alexeftimie at gmail dot com>\n"
+"Language-Team: none\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/db-artwork-parser.c:131
+#, c-format
+msgid "Unexpected mhod3 string type: %d\n"
+msgstr "Tip şir mhod3 nepotrivit: %d\n"
+
+#: ../src/db-artwork-parser.c:267
+#, c-format
+msgid "Could not find corresponding track (dbid: %s) for artwork entry.\n"
+msgstr "Nu am putut găsi piesa corespunzpătoare (dbid: %s) pentru obiectul artwork.\n"
+
+#: ../src/db-artwork-parser.c:293
+#, c-format
+msgid "iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)\n"
+msgstr "Dimesniunile artwork iTunesDB şi ArtworkDB sunt inconsistente (%d+%d != %d)\n"
+
+#: ../src/db-artwork-parser.c:463
+#, c-format
+msgid "Unexpected mhsd index: %d\n"
+msgstr "Index mhsd nepotrivit: %d\n"
+
+#: ../src/db-image-parser.c:118
+#, c-format
+msgid "Unexpected image type in mhni: size: %ux%u (%d), offset: %d\n"
+msgstr "Tip imagine nepotrivit în mhni: size: %ux%u (%d), offset: %d\n"
+
+#: ../src/itdb_artwork.c:199
+#, c-format
+msgid "Could not access file '%s'."
+msgstr "Nu am putut accesa fişierul '%s'."
+
+#: ../src/itdb_artwork.c:216 ../src/itdb_artwork.c:277
+#: ../src/itdb_artwork.c:337
+msgid "Artwork support not compiled into libgpod."
+msgstr "Suportul pentru artwork nu a fost compilat în libgpod."
+
+#: ../src/itdb_artwork.c:395
+#, c-format
+msgid "Illegal filename: '%s'.\n"
+msgstr "Nume de fişier ilegal: '%s'.\n"
+
+#: ../src/itdb_artwork.c:401
+msgid "Mountpoint not set.\n"
+msgstr "Punctul de montare nu a fost stabilit\n"
+
+#: ../src/itdb_artwork.c:554
+#, c-format
+msgid "Could not find on iPod: '%s'\n"
+msgstr "Nu am putut găsi pe iPod: '%s'\n"
+
+#: ../src/itdb_artwork.c:768
+#, c-format
+msgid ""
+"Unable to retrieve thumbnail (appears to be on iPod, but no image info "
+"available): type: %d, filename: '%s'\n"
+msgstr ""
+"Nu am putut obţine miniatura (apare ca fiind pe iPod, dar nu sunt disponibile "
+"informaţii despre imagine): tip: %d, nume fişier: '%s'\n"
+
+#: ../src/itdb_device.c:170
+msgid "Invalid"
+msgstr "Invalid"
+
+#: ../src/itdb_device.c:171 ../src/itdb_device.c:197
+msgid "Unknown"
+msgstr "Necunoscut"
+
+#: ../src/itdb_device.c:172
+msgid "Color"
+msgstr "Color"
+
+#: ../src/itdb_device.c:173
+msgid "Color U2"
+msgstr "Color U2"
+
+#: ../src/itdb_device.c:174
+msgid "Grayscale"
+msgstr "Cenuşiu"
+
+#: ../src/itdb_device.c:175
+msgid "Grayscale U2"
+msgstr "Cenuşiu U2"
+
+#: ../src/itdb_device.c:176
+msgid "Mini (Silver)"
+msgstr "Mini (Argintiu)"
+
+#: ../src/itdb_device.c:177
+msgid "Mini (Blue)"
+msgstr "Mini (Albastru)"
+
+#: ../src/itdb_device.c:178
+msgid "Mini (Pink)"
+msgstr "Mini (Roz)"
+
+#: ../src/itdb_device.c:179
+msgid "Mini (Green)"
+msgstr "Mini (Verde)"
+
+#: ../src/itdb_device.c:180
+msgid "Mini (Gold)"
+msgstr "Mini (Auriu)"
+
+#: ../src/itdb_device.c:181
+msgid "Shuffle"
+msgstr "Shuffle"
+
+#: ../src/itdb_device.c:182
+msgid "Nano (White)"
+msgstr "Nano (Alb)"
+
+#: ../src/itdb_device.c:183
+msgid "Nano (Black)"
+msgstr "Nano (Negru)"
+
+#: ../src/itdb_device.c:184
+msgid "Video (White)"
+msgstr "Video (Alb)"
+
+#: ../src/itdb_device.c:185
+msgid "Video (Black)"
+msgstr "Video (Negru)"
+
+#: ../src/itdb_device.c:186
+msgid "Mobile (1)"
+msgstr "Mobile (1)"
+
+#: ../src/itdb_device.c:187
+msgid "Video U2"
+msgstr "Video U2"
+
+#: ../src/itdb_device.c:188
+msgid "Nano (Silver)"
+msgstr "Nano (Argintiu)"
+
+#: ../src/itdb_device.c:189
+msgid "Nano (Blue)"
+msgstr "Nano (Albastru)"
+
+#: ../src/itdb_device.c:190
+msgid "Nano (Green)"
+msgstr "Nano (Verde)"
+
+#: ../src/itdb_device.c:191
+msgid "Nano (Pink)"
+msgstr "Nano (Roz)"
+
+#: ../src/itdb_device.c:198
+msgid "First Generation"
+msgstr "Prima generaţie"
+
+#: ../src/itdb_device.c:199
+msgid "Second Generation"
+msgstr "A doua generaţie"
+
+#: ../src/itdb_device.c:200
+msgid "Third Generation"
+msgstr "A treia generaţie"
+
+#: ../src/itdb_device.c:201
+msgid "Fourth Generation"
+msgstr "A patra generaţie"
+
+#: ../src/itdb_device.c:202
+msgid "Fifth Generation"
+msgstr "A cincea generaţie"
+
+#: ../src/itdb_device.c:203
+msgid "Sixth Generation"
+msgstr "A şasea generaţie"
+
+#: ../src/itdb_device.c:204
+msgid "Mobile Phone"
+msgstr "Telefon mobil"
+
+#: ../src/itdb_device.c:470
+#, c-format
+msgid "Could not open '%s' for writing."
+msgstr "Nu am putut deschide '%s' pentru scriere."
+
+#: ../src/itdb_device.c:479
+msgid "Device directory does not exist."
+msgstr "Dosarul dispozitivului nu există"
+
+#: ../src/itdb_itunesdb.c:451
+#, c-format
+msgid "Illegal seek to offset %ld (length %ld) in file '%s'."
+msgstr "Căutare ilegală la deplasarea %ld (lungime %ld) în fişierul '%s'."
+
+#: ../src/itdb_itunesdb.c:905
+#, c-format
+msgid "Not a Play Counts file: '%s' (missing mhdp header)."
+msgstr "Nu un fişier de contorizare a redărilor: '%s' (lipseşte antetul mhdp)."
+
+#: ../src/itdb_itunesdb.c:920
+#, c-format
+msgid "Play Counts file ('%s'): header length smaller than expected (%d<96)."
+msgstr "Fişier de contorizare a redărilor ('%s'): lungimea antetului mai mică decât este aşteptat (%d<96)."
+
+#: ../src/itdb_itunesdb.c:934
+#, c-format
+msgid "Play Counts file ('%s'): entry length smaller than expected (%d<12)."
+msgstr "Fişier de contorizare a redărilor ('%s'): lungimea intrării mai mică decât este aşteptat (%d<96)."
+
+#: ../src/itdb_itunesdb.c:1009
+#, c-format
+msgid "iTunesStats file ('%s'): entry length smaller than expected (%d<18)."
+msgstr "Fişier iTunesStats ('%s'): lungimea intrării mai mică decât este aşteptat (%d<18)."
+
+#: ../src/itdb_itunesdb.c:1331
+#, c-format
+msgid "iTunesDB corrupt: no MHOD at offset %ld in file '%s'."
+msgstr "iTunesDB coruptă: lipsă MHOD la deplasarea %ld în fişierul '%s'."
+
+#: ../src/itdb_itunesdb.c:1479
+#, c-format
+msgid "Unknown smart rule action at %ld: %x. Trying to continue.\n"
+msgstr "Acţiune regulă inteligentă necunoscută la %ld: %x. Încercând să continuu.\n"
+
+#: ../src/itdb_itunesdb.c:1510
+#, c-format
+msgid ""
+"Length of smart playlist rule field (%d) not as expected. Trying to continue "
+"anyhow.\n"
+msgstr "Lungimea câmpului regulă a listei de redare inteligentă (%d) neaşteptată. Încercând să continuu oricum\n"
+
+#: ../src/itdb_itunesdb.c:1553
+#, c-format
+msgid "iTunesDB corrupt: no SLst at offset %ld in file '%s'."
+msgstr "iTunesDB coruptă: lipsă SLst la deplasarea %ld în fişierul '%s'."
+
+#: ../src/itdb_itunesdb.c:1566
+#, c-format
+msgid ""
+"Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n"
+"\n"
+msgstr ""
+"Tip MHOD necunoscut (%d) întâlnit la prelucrarea iTunesDB. Ignorând.\n"
+"\n"
+
+#: ../src/itdb_itunesdb.c:1645
+#, c-format
+msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
+msgstr "iTunesDB coruptă: lungime 0 pentru bucata de la %ld în fişierul '%s'."
+
+#: ../src/itdb_itunesdb.c:1658
+#, c-format
+msgid ""
+"iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
+msgstr "iTunesDB coruptă: secţiunea '%s' nu a fost găsită în secţiunea '%s' începând de la %ld"
+
+#: ../src/itdb_itunesdb.c:1672
+#, c-format
+msgid ""
+"header length of '%s' smaller than expected (%d < %d) at offset %ld in file "
+"'%s'."
+msgstr ""
+"lungimea antetului '%s' mai mică decât este aşteptat (%d < %d) la deplasarea %ld"
+"în fişierul '%s'."
+
+#: ../src/itdb_itunesdb.c:1757
+#, c-format
+msgid "Not a iTunesDB: '%s' (missing mhdb header)."
+msgstr "Nu o iTunesDB: '%s' (lipsă antet mhdb)."
+
+#: ../src/itdb_itunesdb.c:1774
+#, c-format
+msgid ""
+"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). "
+"Aborting."
+msgstr ""
+"iTunesDB ('%s'): lungimea antetului bucăţii mhsd mai mică decât aşteptat (%d<32). "
+"Renunţând"
+
+#: ../src/itdb_itunesdb.c:1795
+#, c-format
+msgid "iTunesDB '%s' corrupt: mhsd expected at %ld."
+msgstr "iTunesDB '%s' coruptă: mhsd aşteptat la %ld."
+
+#: ../src/itdb_itunesdb.c:1912
+#, c-format
+msgid "Number of MHODs in mhip at %ld inconsistent in file '%s'."
+msgstr "Numărul de MHOD în mhip la %ld inconsistent în fişierul '%s'."
+
+#: ../src/itdb_itunesdb.c:1930
+#, c-format
+msgid "Itdb_Track ID '%d' not found.\n"
+msgstr "Itdb_Track ID '%d' nu a fost găsit.\n"
+
+#: ../src/itdb_itunesdb.c:2099
+#, c-format
+msgid "Number of MHODs in mhyp at %ld inconsistent in file '%s'."
+msgstr "Numărul de MHOD în mhyp la %ld inconsistent în fişierul '%s'."
+
+#: ../src/itdb_itunesdb.c:2109
+msgid "Master-PL"
+msgstr "Master-PL"
+
+#: ../src/itdb_itunesdb.c:2113
+msgid "Podcasts"
+msgstr "Podcasturi"
+
+#: ../src/itdb_itunesdb.c:2115
+msgid "Playlist"
+msgstr "Listă redare"
+
+#: ../src/itdb_itunesdb.c:2137
+#, c-format
+msgid ""
+"iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %"
+"ld in file '%s'."
+msgstr ""
+"iTunesDV coruptă: numărul de secţiuni mhip inconsistent în mhyp începând la"
+"%ld în fişierul '%s'."
+
+#: ../src/itdb_itunesdb.c:2478
+msgid "OTG Playlist"
+msgstr "Listă redare OTG"
+
+#: ../src/itdb_itunesdb.c:2496
+#, c-format
+msgid "Not a OTG playlist file: '%s' (missing mhpo header)."
+msgstr "Nu un fişier listă redare OTG: '%s' (lipsă antet mhpo)."
+
+#: ../src/itdb_itunesdb.c:2510
+#, c-format
+msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
+msgstr "Fişier listă redare OTG ('%s'): lungimea antetului mai mică decât aşteptat (%d<20)."
+
+#: ../src/itdb_itunesdb.c:2522
+#, c-format
+msgid "OTG playlist file ('%s'): entry length smaller than expected (%d<4)."
+msgstr "Fişier listă redare OTG ('%s'): lungimea intrării mai mică decât aşteptat (%d<4)."
+
+#: ../src/itdb_itunesdb.c:2557
+#, c-format
+msgid "OTG playlist file '%s': reference to non-existent track (%d)."
+msgstr "Fişier listă redare OTG ('%s'): referinţă către o piesă inexistentă (%d)."
+
+#: ../src/itdb_itunesdb.c:2602
+#, c-format
+msgid "OTG Playlist %d"
+msgstr "Listă redare OTG %d"
+
+#. this should not be -- issue warning
+#: ../src/itdb_itunesdb.c:2670
+msgid ""
+"iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to "
+"continue.\n"
+msgstr ""
+
+#. this should not be -- issue warning
+#: ../src/itdb_itunesdb.c:2733
+msgid ""
+"iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. "
+"Trying to continue.\n"
+msgstr ""
+
+#: ../src/itdb_itunesdb.c:2780
+#, c-format
+msgid ""
+"iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section "
+"found)"
+msgstr "iTunesDB '%s' coruptă: Nu am putut găsi lista de piese (lipsă "
+"secţiuni mhsd de tip 1)"
+
+#: ../src/itdb_itunesdb.c:2809
+#, c-format
+msgid ""
+"iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 "
+"sections found)"
+msgstr "iTunesDB '%s' coruptă: Nu am putut găsi liste de redare (lipsă "
+"secţiuni mhsd de tip 2 sau 3)"
+
+#: ../src/itdb_itunesdb.c:2831
+#, c-format
+msgid "iTunes directory not found: '%s' (or similar)."
+msgstr "Dosar iTunes negăsit: '%s' (sau similar)."
+
+#: ../src/itdb_itunesdb.c:2848
+#, c-format
+msgid "Music directory not found: '%s' (or similar)."
+msgstr "Dosar muzică negăsit: '%s' (sau similar)."
+
+#: ../src/itdb_itunesdb.c:2866
+#, c-format
+msgid "Control directory not found: '%s' (or similar)."
+msgstr "Dosar de control negăsit: '%s' (sau similar)."
+
+#: ../src/itdb_itunesdb.c:2984
+#, c-format
+msgid "File not found: '%s'."
+msgstr "Fişier negăsit: '%s'."
+
+#: ../src/itdb_itunesdb.c:4753
+#, c-format
+msgid "Opening of '%s' for writing failed (%s)."
+msgstr "Deschiderea '%s' pentru scriere eşuată (%s)."
+
+#: ../src/itdb_itunesdb.c:4764 ../src/itdb_itunesdb.c:4775
+#, c-format
+msgid "Writing to '%s' failed (%s)."
+msgstr "Scriere în '%s' eşuată (%s)."
+
+#: ../src/itdb_itunesdb.c:5129
+#, c-format
+msgid "Path not found: '%s' (or similar)."
+msgstr "Cale negăsită: '%s' (sau similară)."
+
+#: ../src/itdb_itunesdb.c:5348
+#, c-format
+msgid "Error renaming '%s' to '%s' (%s)."
+msgstr "Eroare la redenumirea '%s' în '%s' (%s)."
+
+#: ../src/itdb_itunesdb.c:5365 ../src/itdb_itunesdb.c:5382
+#, c-format
+msgid "Error removing '%s' (%s)."
+msgstr "Eroare la ştergerea '%s' (%s)."
+
+#: ../src/itdb_itunesdb.c:5538 ../src/itdb_itunesdb.c:5699
+msgid "Mountpoint not set."
+msgstr "Punct de montare nestabilit."
+
+#: ../src/itdb_itunesdb.c:5578
+#, c-format
+msgid "No 'F..' directories found in '%s'."
+msgstr "Nici un dosar 'F..' nu a fost găsit în '%s'."
+
+#: ../src/itdb_itunesdb.c:5599
+#, c-format
+msgid "Path not found: '%s'."
+msgstr "Cale negăsită: '%s'."
+
+#: ../src/itdb_itunesdb.c:5708
+#, c-format
+msgid "'%s' could not be accessed (%s)."
+msgstr "'%s' nu a putut fi accesat (%s)."
+
+#: ../src/itdb_itunesdb.c:5718
+#, c-format
+msgid ""
+"Destination file '%s' does not appear to be on the iPod mounted at '%s'."
+msgstr ""
+"Fişierul destinaţie '%s' nu pare să fie pe iPodul montat la '%s'."
+
+#: ../src/itdb_itunesdb.c:5922
+#, c-format
+msgid "Error opening '%s' for reading (%s)."
+msgstr "Eroare la deschiderea '%s' pentru citire (%s)."
+
+#: ../src/itdb_itunesdb.c:5933
+#, c-format
+msgid "Error opening '%s' for writing (%s)."
+msgstr "Eroare la deschiderea '%s' pentru scriere (%s)."
+
+#: ../src/itdb_itunesdb.c:5950
+#, c-format
+msgid "Error while reading from '%s' (%s)."
+msgstr "Eroarea la citirea din '%s' (%s)"
+
+#: ../src/itdb_itunesdb.c:5966
+#, c-format
+msgid "Error while writing to '%s' (%s)."
+msgstr "Eroare la scrierea în '%s' (%s)."
+
+#: ../src/itdb_itunesdb.c:5979 ../src/itdb_itunesdb.c:5989
+#, c-format
+msgid "Error when closing '%s' (%s)."
+msgstr "Eroare la închiderea '%s' (%s)."
+
+#: ../src/itdb_itunesdb.c:6354
+msgid "iPod"
+msgstr "iPod"
+
+#: ../src/itdb_itunesdb.c:6747
+#, c-format
+msgid "Problem creating iPod directory or file: '%s'."
+msgstr "Problemă la crearea dosarului iPod sau a fişierului: '%s'."
+
+#: ../src/itdb_photoalbum.c:109
+#, c-format
+msgid "Photos directory not found: '%s' (or similar)."
+msgstr "Dosarul imagini nu a fost găsit: '%s' (sau similar)."
+
+#: ../src/itdb_photoalbum.c:256 ../src/itdb_photoalbum.c:463
+msgid "Photo Library"
+msgstr "Biblioteca foto"
+
+#: ../src/itdb_photoalbum.c:370
+msgid "You need to specify the iPod model used before photos can be added."
+msgstr "Trebuie să specificaţi modelul de iPod folosit înainte de a putea"
+"adăuga imagini."
+
+#: ../src/itdb_photoalbum.c:391
+#, c-format
+msgid ""
+"Your iPod does not seem to support photos. Maybe you need to specify the "
+"correct iPod model number? It is currently set to 'x%s' (%s/%s)."
+msgstr "Modelul dvs de iPod se pare că nu suportă imagini. Poate trebuie să"
+"specificaţi modelul corect de iPod? În prezent este setat ca 'x%s' (%s/%s)."
+
+#: ../src/itdb_photoalbum.c:403
+#, c-format
+msgid "Could not access file '%s'. Photo not added."
+msgstr "Nu am putut accesa fişierul '%s'. Imaginea nu a fost adăugată."
+
+#: ../src/itdb_photoalbum.c:451
+msgid ""
+"Unexpected error in itdb_photodb_add_photo_internal() while adding photo, "
+"please report."
+msgstr ""
+"Eroare neaşteptată în itdb_photodb_add_photo_internal() la adăugarea imaginii, "
+"vă rugăm raportaţi-o."
+
+#: ../src/itdb_photoalbum.c:471
+msgid ""
+"Library compiled without gdk-pixbuf support. Picture support is disabled."
+msgstr ""
+"Biblioteca a fost compilată fără suport pentru gdk-pixbuf. Suportul pentru "
+"imagini este dezactivat."
+
+#. New action!
+#: ../src/itdb_playlist.c:79
+#, c-format
+msgid "Unknown action (%d) in smart playlist will be ignored.\n"
+msgstr "Acţiune necunoscută (%d) în lista de redare inteligentă va fi ignorată.\n"
+
+#: ../tests/test-photos.c:39
+#, c-format
+msgid ""
+"Usage to add photos:\n"
+"  %s add <mountpoint> <albumname> [<filename(s)>]\n"
+"  <albumname> should be set to 'NULL' to add photos to the master photo "
+"album\n"
+"  (Photo Library) only. If you don't specify any filenames an empty album "
+"will\n"
+"  be created.\n"
+msgstr ""
+"Mod de utilizare pentru a adăuga imagini:\n"
+"  %s add <mountpoint> <albumname> [<filename(s)>]\n"
+"  <albumname> trebuie setat ca 'NULL' pentru a adăuga imagini la albumul"
+"foto principal\n"
+"  Numai pentru (Photo Library). Dacă nu specificaţi nici un nume de fişier "
+"un album nou\n"
+"  va fi creat.\n"
+
+#: ../tests/test-photos.c:40
+#, c-format
+msgid ""
+"Usage to dump all photos to <output_dir>:\n"
+"  %s dump <mountpoint> <output_dir>\n"
+msgstr ""
+"Mod de utilizare pentru a afişa toate imaginile la <output_dir>:\n"
+"  %s dump <mountpoint> <output_dir>\n"
+
+#: ../tests/test-photos.c:41
+#, c-format
+msgid ""
+"Usage to list all photos IDs to stdout:\n"
+"  %s list <mountpoint>\n"
+msgstr ""
+"Mod de utilizare pentru a lista toate IDurile imaginilor la stdout:\n"
+"  %s list <mountpoint>\n"
+
+
+#: ../tests/test-photos.c:42
+#, c-format
+msgid ""
+"Usage to remove photo IDs from Photo Library:\n"
+"  %s remove <mountpoint> <albumname> [<ID(s)>]\n"
+"  <albumname> should be set to 'NULL' to remove photos from the iPod\n"
+"  altogether. If you don't specify any IDs, the photoalbum will be removed\n"
+"  instead.\n"
+"  WARNING: IDs may change when writing the PhotoDB file.\n"
+msgstr ""
+"Mod de utilizare pentru ştergerea ID de imagini din Biblioteca foto:\n"
+"  %s remove <mountpoint> <albumname> [<ID(s)>]\n"
+"  <albumname> trebuie lăsat 'NULL' pentru a şterge mai multe imagini\n"
+"  de pe iPod la un loc. Dacă nu specificaţi ID, tot albumul va fi şters.\n"
+"  ATENŢIE: IDurile se pot schimba la scrierea fişierului PhotoDB.\n"
+
+#: ../tests/test-photos.c:126
+msgid "Wrong number of command line arguments.\n"
+msgstr "Număr incorect de argumente în linia de comandă.\n"
+
+#: ../tests/test-photos.c:135
+#, c-format
+msgid "Error creating '%s' (mkdir)\n"
+msgstr "Eroare la crearea '%s' (mkdir)\n"
+
+#: ../tests/test-photos.c:141
+#, c-format
+msgid "Error: '%s' is not a directory\n"
+msgstr "Eroare: '%s' nu este un dosar\n"
+
+#: ../tests/test-photos.c:150 ../tests/test-photos.c:184
+#: ../tests/test-photos.c:313
+#, c-format
+msgid "Error reading iPod photo database (%s).\n"
+msgstr "Eroare la citirea bazei de date foto a iPod (%s).\n"
+
+#: ../tests/test-photos.c:156 ../tests/test-photos.c:190
+#: ../tests/test-photos.c:320
+msgid "Error reading iPod photo database.\n"
+msgstr "Eroare la citirea bazei de date foto a iPod.\n"
+
+#: ../tests/test-photos.c:174 ../tests/test-photos.c:233
+#: ../tests/test-photos.c:303 ../tests/test-photos.c:386
+msgid "Insufficient number of command line arguments.\n"
+msgstr "Număr de argumente în linia de comandă insuficient.\n"
+
+#: ../tests/test-photos.c:201
+msgid "<Unnamed>"
+msgstr "<Nedenumit>"
+
+#: ../tests/test-photos.c:216
+msgid "<No members>\n"
+msgstr "<Fără membri>\n"
+
+#: ../tests/test-photos.c:243
+#, c-format
+msgid ""
+"Error reading iPod photo database (%s).\n"
+"Will attempt to create a new database.\n"
+msgstr ""
+"Eroare la citirea bazei de date foto a iPod (%s).\n"
+"Se încearcă să se creeze una nouă.\n"
+
+#: ../tests/test-photos.c:249
+msgid ""
+"Error reading iPod photo database, will attempt to create a new database\n"
+msgstr ""
+"Eroare la citirea bazei de date foto a iPod, se încearcă să se creeze una nouă\n"
+
+#: ../tests/test-photos.c:274
+#, c-format
+msgid "Error adding photo (%s) to photo database: %s\n"
+msgstr "Eroare la adăugarea imaginii (%s) la baza de date de imagini: %s\n"
+
+#: ../tests/test-photos.c:331
+#, c-format
+msgid "Specified album '%s' not found. Aborting.\n"
+msgstr "Albumul specificat '%s' nu a fost găsit. Abandonând.\n"
+
+#: ../tests/test-photos.c:343
+msgid "Cannot remove Photo Library playlist. Aborting.\n"
+msgstr "Nu am putut înlătura lista de redare Bibliotecă foto. Abandonând.\n"
+
+#: ../tests/test-photos.c:364
+#, c-format
+msgid "Warning: could not find photo with ID <%d>. Skipping...\n"
+msgstr "Avertizare: nu am putut găsi imaginea cu ID <%d>. Omiţând...\n"
+
+#: ../tests/test-photos.c:410
+#, c-format
+msgid "Unknown command '%s'\n"
+msgstr "Comandă necunoscută '%s' \n"
