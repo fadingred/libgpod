@@ -2,6 +2,7 @@ import unittest
 import shutil
 import tempfile
 import os
+import types
 
 gpod = __import__('__init__')
 
@@ -61,6 +62,9 @@ class TestiPodFunctions(unittest.TestCase):
             self.assertEqual(len(self.db),n)
             self.db.remove(track, ipod=True)
             self.failIf(os.path.exists(track_file))
-            
+
+    def testVersion(self):
+        self.assertEqual(type(gpod.version_info), 
+                         types.TupleType)
 if __name__ == '__main__':
     unittest.main()

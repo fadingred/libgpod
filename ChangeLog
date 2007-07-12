@@ -1,3 +1,8 @@
+2007-07-12  Nicholas Piper  <nicholas at users.sourceforge.net>
+
+	* bindings/python/gpod.i.in: Add version and version_info
+	attributes to the Python bindings
+
 2007-07-11  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/Makefile.am:

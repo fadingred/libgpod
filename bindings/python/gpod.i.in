@@ -38,6 +38,13 @@ Python.  See the main gpod module for a more traditional Python
 interface."
 %enddef
 
+%pythoncode %{
+version_info = (@LIBGPOD_MAJOR_VERSION@, 
+		@LIBGPOD_MINOR_VERSION@, 
+		@LIBGPOD_MICRO_VERSION@)
+version = '.'.join(map(str, version_info))  
+%}
+
 %module(docstring=DOCSTRING) gpod
 %{
 #include "db-artwork-debug.h" 
@@ -49,6 +56,7 @@ interface."
 #include "itdb_device.h" 
 #include "itdb_private.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
+
 
 /* include prototypes for all functions so builds using
  * -Wmissing-prototypes don't fail. */
