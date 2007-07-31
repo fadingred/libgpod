@@ -286,7 +286,10 @@ class Track:
     # Note we don't free the underlying structure, as it's still used
     # by the itdb.
 
-    _proxied_attributes = [k for k in gpod._Itdb_Track.__dict__.keys() if not k.startswith("_")]
+    _proxied_attributes = [k for k in gpod._Itdb_Track.__dict__.keys()
+                            if not (k.startswith("_") or
+                                    k.startswith("reserved") or
+                                    k == "chapterdata")]
 
     def __init__(self, filename=None,
                  proxied_track=None, podcast=False, ownerdb=None):
@@ -898,7 +901,8 @@ class PhotoAlbum:
 class Photo:
     """A photo in an iTunes Photo database."""
 
-    _proxied_attributes = [k for k in gpod._Itdb_Artwork.__dict__.keys() if not k.startswith("_")]
+    _proxied_attributes = [k for k in gpod._Itdb_Artwork.__dict__.keys()
+                            if not (k.startswith("_") or k.startswith("reserved"))]
 
     def __init__(self, filename=None,
                  proxied_photo=None, ownerdb=None):
@@ -964,7 +968,8 @@ class Photo:
 class Thumbnail:
     """A thumbnail in an Photo."""
 
-    _proxied_attributes = [k for k in gpod._Itdb_Thumb.__dict__.keys() if not k.startswith("_")]
+    _proxied_attributes = [k for k in gpod._Itdb_Thumb.__dict__.keys()
+                            if not (k.startswith("_") or k.startswith("reserved"))]
 
     def __init__(self, proxied_thumbnail=None, ownerobject=None):
         """Create a thumbnail object."""
