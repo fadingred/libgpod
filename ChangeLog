@@ -1,3 +1,42 @@
+2007-07-31  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* bindings/python
+	  bindings/python/examples/coverart_fetch.py
+	  bindings/python/examples/save_photos.py
+	  bindings/python/gpod.i.in
+	  bindings/python/ipod.py
+	  bindings/python/tests
+	  bindings/python/tests/resources/tiny.png
+	  bindings/python/tests/tests.py
+	  configure.ac
+	  m4/python.m4
+	  TROUBLESHOOTING:
+	  merge changes from the bug-1723660 branch
+
+2007-07-27  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/gpod.i.in:
+	  s/top_srcdir/top_builddir to fix make distcheck
+
+	* configure.ac
+	  m4/python.m4:
+	  don't make the python gtk module a hard requirement
+
+	* TROUBLESHOOTING:
+	  note additional requirements for full python photo/thumbnail
+	  support
+
+2007-07-13  Nicholas Piper  <nicholas at users.sourceforge.net>
+
+	* bindings/python/ipod.py (Track.set_coverart_from_file): Rename
+	set_thumbnail function to set_coverart_from_file
+
+	* bindings/python/ipod.py Improve support for adding
+	Photos. Thanks to John Carr.
+
+	* bindings/python/examples/coverart_fetch.py: Adjust to
+	demonstrate new gtk pixbuf based coverart API
+
 2007-07-13  Todd Zullinger <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/examples/Makefile.am:

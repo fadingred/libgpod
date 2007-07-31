@@ -27,14 +27,16 @@ import gpod
 import sys
 import amazon
 import urllib
-import Image
-import tempfile
+import gtk
+from optparse import OptionParser
 
-ipod_mount = '/mnt/ipod'
-itdb = gpod.itdb_parse(ipod_mount, None)
-if not itdb:
-    print "Failed to read ipod at mountpoint %s" % ipod_mount
-    sys.exit(2)
+parser = OptionParser()
+parser.add_option("-m", "--mountpoint", dest="mountpoint",
+                  default="/mnt/ipod",
+                  help="use iPod at MOUNTPOINT", metavar="MOUNTPOINT")
+(options, args) = parser.parse_args()
+
+db = gpod.Database(options.mountpoint)
 
 # set your key here, or see amazon.py for a list of other places to
 # store it.
@@ -42,22 +44,21 @@ amazon.setLicense('')
 
 images = {}
 
-for track in gpod.sw_get_tracks(itdb):
-    print track.artist, track.album, track.title, " :",
-
-    #gpod.itdb_track_remove_thumbnails(track)
-
-    if track.artwork.artwork_size:
-        print "Already has artwork, skipping."
+for track in db:
+    if track.get_coverart().thumbnails:
+        #print " Already has artwork, skipping."
+        # note we could remove it with track.set_coverart(None)
         continue
 
-    if not (track.artist and track.album):
-        print "Need an artist AND album name, skipping."       
+    print "%(artist)s, %(album)s, %(title)s" % track
+
+    if not (track['artist'] and track['album']):
+        print " Need an artist AND album name, skipping."       
         continue
     
     # avoid fetching again if we already had a suitable image
-    if not images.has_key((track.album,track.artist)):
-        query = "%s + %s" % (track.artist, track.album)
+    if not images.has_key((track['album'],track['artist'])):
+        query = "%(album)s + %(artist)s" % track
         # nasty hacks to get better hits. Is there a library out there
         # for this?  Note we take out double quotes too: Amazon place 
         # this string literally into their XML response, so can end up 
@@ -65,10 +66,11 @@ for track in gpod.sw_get_tracks(itdb):
         # name="KeywordSearch"> which is not well formed :-( 
         for term in ["Disk 1", "Disk 2", '12"', '12 "','"','&']: 
             query = query.replace(term,"") 
-        print "Searching for %s: " % query,
+        print " Searching for %s: " % query
         try:
             albums = amazon.searchByKeyword(query,
-                                            type="lite",product_line="music")
+                                            type="lite",
+                                            product_line="music")
         except amazon.AmazonError, e:
             print e
             albums = []
@@ -77,32 +79,26 @@ for track in gpod.sw_get_tracks(itdb):
             continue
         album = albums[0]
 
-        hdle, filename = tempfile.mkstemp()
-        i = urllib.urlopen(album.ImageUrlLarge)
-        open(filename,"w").write(i.read())
-        img = Image.open(filename)
-        if not (img.size[0] > 10 or img.size[1] > 10):
-            os.unlink(filename)
-        else:
-            print "Fetched image for %s, %s" % (track.album,track.artist)
-            images[(track.album,track.artist)] = filename
+        try:
+            image_data = urllib.urlopen(album.ImageUrlLarge).read()
+        except:
+            print " Failed to download from %s" % album.ImageUrlLarge
+            continue
+        loader = gtk.gdk.PixbufLoader()
+        loader.write(image_data)
+        loader.close()
+        pixbuf = loader.get_pixbuf()
+        if (pixbuf.get_width() > 10 or pixbuf.get_height() > 10):
+            print " Fetched image"
+            images[(track['album'],track['artist'])] = pixbuf
 
     try:
-        r = gpod.itdb_track_set_thumbnails(track,images[(track.album,track.artist)])
-        if r != 1:
-            print "Failed to save image thumbnail to ipod."
-        else:
-            print "Added thumbnails for %s, %s" % (track.album,track.artist)
+        track.set_coverart(images[(track['album'],track['artist'])])
+        print " Added thumbnails"
     except KeyError:
-        print "No image available for %s, %s" % (track.album,track.artist)
+        print " No image available"
 
 
-print "Writing ipod database..."
-gpod.itdb_write(itdb, None)
-
-print "Cleaning up downloaded images..."
-# really, we should do this if any of the real work threw an exception
-# too. This is just a demo script :-)
-for filename in images.values():
-    os.unlink(filename)
-
+print "Saving database"
+db.close()
+print "Saved db"

@@ -126,6 +126,12 @@ AC_DEFUN([LIBGPOD_CHECK_PYTHON],
                 dnl check for mutagen module >= $PYTHON_MUTAGEN_MIN_VERSION
                 AM_CHECK_PYMOD(mutagen,$PYTHON_MUTAGEN_MIN_VERSION,mutagen.version_string,,with_python=no)
 
+                dnl this test should perhaps be re-enabled, but only produce a warning -- tmz
+                dnl if test "X$have_gdkpixbuf" == "Xyes" -a "X$have_pygobject" == "Xyes"; then
+                dnl     dnl check for gtk module >= $PYTHON_GTK_MIN_VERSION
+                dnl     AM_CHECK_PYMOD(gtk,$PYTHON_GTK_MIN_VERSION,'.'.join(map(str, gtk.ver)),,with_python=no)
+                dnl fi
+
                 dnl check for swig
                 if test "X$with_python" == Xyes; then
                     AC_PROG_SWIG($SWIG_MIN_VERSION)

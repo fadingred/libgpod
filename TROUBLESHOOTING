@@ -90,5 +90,8 @@ python (e.g. python2.4)
 python-dev (e.g. python2.4-dev)
 python-mutagen
 
+These are needed for full photo/thumbnail support:
+python-gtk2-dev (and python-gobject-dev, if using python-gtk2-dev >= 2.10)
+
 ------------------------------------------------------------
 

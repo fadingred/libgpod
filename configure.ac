@@ -93,6 +93,26 @@ fi
 AM_CONDITIONAL(HAVE_GDKPIXBUF, test x"$have_gdkpixbuf" = xyes)
 
 dnl **************************************************
+dnl * PYGOBJECT is optional
+dnl **************************************************
+
+AC_ARG_ENABLE(pygobject, [AC_HELP_STRING([--disable-pygobject],[Python API will lack GdkPixbuf support without PyGOBJECT])], 
+[case "${enableval}" in
+  no) have_pygobject=no ;;
+  *) have_pygobject=yes;;
+esac], have_pygobject=yes)
+AH_TEMPLATE([HAVE_PYGOBJECT], [Whether pygobject is installed, Python API will lack GdkPixbuf support without PyGOBJECT])
+if test x$have_pygobject = xyes; then
+   PKG_CHECK_MODULES(PYGOBJECT, pygobject-2.0 >= 2.8.0, have_pygobject=yes, have_pygobject=no)
+   if test x"$have_pygobject" = xyes; then
+      AC_DEFINE_UNQUOTED(HAVE_PYGOBJECT, 1)
+   fi
+   LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $PYGOBJECT_CFLAGS"
+   LIBGPOD_LIBS="$LIBGPOD_LIBS $PYGOBJECT_LIBS"
+fi
+AM_CONDITIONAL(HAVE_PYGOBJECT, test x"$have_pygobject" = xyes)
+
+dnl **************************************************
 dnl * internationalization support
 dnl **************************************************
 ALL_LINGUAS="de es fr he it ja ro sv"
@@ -195,6 +215,7 @@ Configuration for $PACKAGE $VERSION :
  Linker ...............: $CC $LDFLAGS $LIBS $LIBGPOD_LIBS
  ArtworkDB support ....: $have_gdkpixbuf
  Python bindings ......: $with_python
+ PyGObject support ....: $have_pygobject
 
  Now type 'make' to build $PACKAGE $VERSION,
  and then 'make install' for installation.

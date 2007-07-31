@@ -15,6 +15,15 @@ import locale
 import socket
 import datetime
 
+if hasattr(gpod, 'HAVE_GDKPIXBUF') and hasattr(gpod, 'HAVE_PYGOBJECT'):
+    try:
+        import gtk
+        pixbuf_support = True
+    except ImportError:
+        pixbuf_support = False
+else:
+    pixbuf_support = False
+
 defaultencoding = locale.getpreferredencoding()
 
 class DatabaseException(RuntimeError):
@@ -364,9 +373,22 @@ class Track:
             unicode_value = self['userdata']['%s_locale' % key].decode(self['userdata']['charset'])
         return unicode_value.encode(defaultencoding)
 
-    def set_thumbnail(self, filename):
+    def set_coverart_from_file(self, filename):
         gpod.itdb_track_set_thumbnails(self._track, filename)
         self._set_userdata_utf8('thumbnail', filename)
+
+    def set_coverart(self, pixbuf):
+        if pixbuf == None:
+            gpod.itdb_track_remove_thumbnails(self._track)
+        elif isinstance(pixbuf, Photo):
+            raise NotImplemented("Can't set coverart from existing coverart yet")
+        else:
+            gpod.itdb_track_set_thumbnails_from_pixbuf(self._track,
+                                                       pixbuf)
+
+    def get_coverart(self):
+        return Photo(proxied_photo=self._track.artwork,
+                     ownerdb=self._track.itdb)
 
     def copy_to_ipod(self):
         """Copy the track to the iPod."""
@@ -716,7 +738,9 @@ class PhotoDatabase:
     def __init__(self, mountpoint="/mnt/ipod"):
         """Create a Photo database object"""
         self._itdb = gpod.itdb_photodb_parse(mountpoint, None)
-        
+        if self._itdb == None:
+            self._itdb = gpod.itdb_photodb_create(mountpoint)
+
     def __str__(self):
         return self.__repr__()
 
@@ -727,7 +751,8 @@ class PhotoDatabase:
             len(self))
 
     def close(self):
-        pass
+        gpod.itdb_photodb_write(self._itdb, None)
+        gpod.itdb_photodb_free(self._itdb)
 
     def __len__(self):
         return gpod.sw_get_list_len(self._itdb.photos)
@@ -740,6 +765,33 @@ class PhotoDatabase:
                 index += len(self)
             return Photo(proxied_photo=gpod.sw_get_photo(self._itdb.photos, index),
                          ownerdb=self)
+
+    def new_PhotoAlbum(self,**kwargs):
+        """Create a new PhotoAlbum.
+        """
+        album = PhotoAlbum(self, **kwargs)
+        return album
+
+    def new_Photo(self,**kwargs):
+        """Create a new Photo.
+        """
+        kwargs['ownerdb'] = self
+        photo = Photo(**kwargs)
+        return photo
+
+    def remove(self, item):
+        """Remove a photo or album from a database.
+
+        item is either a Photo or PhotoAlbum object.
+        """
+
+        if isinstance(item, PhotoAlbum):
+            gpod.itdb_photodb_photoalbum_remove(self._itdb, item._pa, False)
+        elif isinstance(item, Photo):
+            gpod.itdb_photodb_remove_photo(self._itdb, None, item._photo)
+        else:
+            raise DatabaseException("Unable to remove a %s from database" % type(item))
+
     def get_device(self):
         return gpod.sw_ipod_device_to_dict(self._itdb.device)        
 
@@ -796,7 +848,14 @@ class PhotoAlbum:
         if proxied_photoalbum:
             self._pa = proxied_photoalbum
         else:
-            raise NotImplemented("Can't create new Photo Albums yet")
+            self._pa = gpod.itdb_photodb_photoalbum_create(self._db._itdb, title, pos)
+
+    def add(self, photo):
+        """Add photo to photo album."""
+        gpod.itdb_photodb_photoalbum_add_photo(self._db._itdb, self._pa, photo._photo, -1)
+
+    def remove(self, photo):
+        gpod.itdb_photodb_remove_photo(self._db._itdb, self._pa, photo._photo)
 
     def get_name(self):
         """Get the name of the photo album."""
@@ -844,10 +903,11 @@ class Photo:
     def __init__(self, filename=None,
                  proxied_photo=None, ownerdb=None):
         """Create a Photo object."""
+        error = None
 
         if filename:
-            # maybe use itdb_photodb_add_photo ?
-            raise NotImplemented("Can't create new Photos from files yet")
+            self._photo = gpod.itdb_photodb_add_photo(ownerdb._itdb, filename, -1, 0, error)
+            self._database = ownerdb
         elif proxied_photo:
             self._photo = proxied_photo
             self._database = ownerdb
@@ -895,8 +955,10 @@ class Photo:
             raise KeyError('No such key: %s' % item)
     
     def get_thumbnails(self):
-        return [Thumbnail(proxied_thumbnail=t, ownerphoto=self) for t in gpod.sw_get_artwork_thumbnails(self._photo)]
-
+        return [Thumbnail(proxied_thumbnail=t,
+                          ownerobject=self) for t in gpod.sw_get_artwork_thumbnails(
+            self._photo)]
+    
     thumbnails = property(get_thumbnails)
 
 class Thumbnail:
@@ -904,14 +966,14 @@ class Thumbnail:
 
     _proxied_attributes = [k for k in gpod._Itdb_Thumb.__dict__.keys() if not k.startswith("_")]
 
-    def __init__(self, proxied_thumbnail=None, ownerphoto=None):
+    def __init__(self, proxied_thumbnail=None, ownerobject=None):
         """Create a thumbnail object."""
 
         if not proxied_thumbnail:
             raise NotImplemented("Can't create new Thumbnails from scratch, create Photos instead")
 
         self._thumbnail = proxied_thumbnail
-        self.__photo = ownerphoto # so the photo doesn't get gc'd
+        self.__ownerobject = ownerobject
             
     def __str__(self):
         return self.__repr__()
@@ -946,7 +1008,14 @@ class Thumbnail:
         else:
             raise KeyError('No such key: %s' % item)
 
-    def save_image(self,filename):
-        return gpod.sw_save_itdb_thumb(
-            self.__photo._database._itdb,
-            self._thumbnail,filename)
+    if pixbuf_support:
+        def get_pixbuf(self):
+            # this deals with coverart and photo albums
+            if hasattr(self.__ownerobject._database,"_itdb"):
+                return gpod.itdb_thumb_get_gdk_pixbuf(
+                    self.__ownerobject._database._itdb.device,
+                    self._thumbnail)
+            else:
+                return gpod.itdb_thumb_get_gdk_pixbuf(
+                    self.__ownerobject._database.device,
+                    self._thumbnail)

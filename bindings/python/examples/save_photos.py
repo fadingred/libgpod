@@ -24,6 +24,10 @@
 
 import gpod
 
+if not hasattr(gpod.Thumbnail, 'get_pixbuf'):
+    print 'Sorry, gpod was built without pixbuf support.'
+    raise SystemExit
+
 photodb = gpod.PhotoDatabase("/mnt/ipod")
 
 print photodb
@@ -34,6 +38,6 @@ for album in photodb.PhotoAlbums:
         for thumbnail, n in zip(photo.thumbnails,
                                 range(0,len(photo.thumbnails))):
             print "   ", thumbnail
-            thumbnail.save_image("/tmp/%d-%d.png" % (photo['id'],n))
+            thumbnail.get_pixbuf().save("/tmp/%d-%d.png" % (photo['id'],n),"png")
 
 photodb.close()
