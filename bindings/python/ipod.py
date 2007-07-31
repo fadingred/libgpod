@@ -111,7 +111,7 @@ class Database:
 
         if not gpod.itdb_write_file(self._itdb, self._itdb_file, None):
             raise DatabaseException("Unable to save iTunes database %s" % self)
-        itdbext_file = "%s.ext" % (self._itdb_file)        
+        itdbext_file = "%s.ext" % (self._itdb_file)
         gtkpod.write(itdbext_file, self, self._itdb_file)
 
     def __getitem__(self, index):
@@ -205,7 +205,7 @@ class Database:
 
     Master   = property(get_master)
     Podcasts = property(get_podcasts)
-    Playlists= property(get_playlists) 
+    Playlists= property(get_playlists)
 
     def smart_update(self):
         """Update all smart playlists."""
@@ -233,7 +233,7 @@ class Database:
             self.Podcasts.add(track)
         else:
             self.Master.add(track)
-        track.__database = self # so the db doesn't get gc'd            
+        track.__database = self # so the db doesn't get gc'd
         return track
 
     def copy_delayed_files(self,callback=False):
@@ -302,7 +302,7 @@ class Track:
         object.
 
         If podcast is True then the track will be setup as a Podcast,
-        unless proxied_track is set. 
+        unless proxied_track is set.
 
         """
 
@@ -334,7 +334,7 @@ class Track:
                         if len(parts) == 2:
                             self[attrib[0]], self[attrib[1]] = parts
                         elif len(parts) == 1:
-                            self[attrib[0]] = parts[0]                           
+                            self[attrib[0]] = parts[0]
                     elif isinstance(value,mutagen.id3.TextFrame):
                         self[attrib] = value.text[0].encode('UTF-8','replace')
                 except KeyError:
@@ -455,7 +455,7 @@ class Track:
         return [self[k] for k in self._proxied_attributes]
 
     def pairs(self):
-        return [(k, self[k]) for k in self._proxied_attributes]        
+        return [(k, self[k]) for k in self._proxied_attributes]
 
     def __getitem__(self, item):
         if item == "userdata":
@@ -675,7 +675,7 @@ class Playlist:
     id     = property(get_id)
     smart  = property(get_smart)
     master = property(get_master)
-    podcast= property(get_podcast)    
+    podcast= property(get_podcast)
     order  = property(get_sort, set_sort)
 
     def __str__(self):
@@ -796,7 +796,7 @@ class PhotoDatabase:
             raise DatabaseException("Unable to remove a %s from database" % type(item))
 
     def get_device(self):
-        return gpod.sw_ipod_device_to_dict(self._itdb.device)        
+        return gpod.sw_ipod_device_to_dict(self._itdb.device)
 
     def get_photoalbums(self):
         """Get all photo albums."""
@@ -873,7 +873,7 @@ class PhotoAlbum:
 
     name       = property(get_name, set_name)
     album_type = property(get_album_type)
-    
+
     def __str__(self):
         return self.__repr__()
 
@@ -917,7 +917,7 @@ class Photo:
             self._database = ownerdb
         else:
             self._photo = gpod.itdb_artwork_new()
-            
+
     def __str__(self):
         return self.__repr__()
 
@@ -935,7 +935,7 @@ class Photo:
         return [self[k] for k in self._proxied_attributes]
 
     def pairs(self):
-        return [(k, self[k]) for k in self._proxied_attributes]        
+        return [(k, self[k]) for k in self._proxied_attributes]
 
     def __getitem__(self, item):
         if item in self._proxied_attributes:
@@ -957,12 +957,12 @@ class Photo:
             return setattr(self._photo, item, value)
         else:
             raise KeyError('No such key: %s' % item)
-    
+
     def get_thumbnails(self):
         return [Thumbnail(proxied_thumbnail=t,
                           ownerobject=self) for t in gpod.sw_get_artwork_thumbnails(
             self._photo)]
-    
+
     thumbnails = property(get_thumbnails)
 
 class Thumbnail:
@@ -979,7 +979,7 @@ class Thumbnail:
 
         self._thumbnail = proxied_thumbnail
         self.__ownerobject = ownerobject
-            
+
     def __str__(self):
         return self.__repr__()
 
@@ -997,7 +997,7 @@ class Thumbnail:
         return [self[k] for k in self._proxied_attributes]
 
     def pairs(self):
-        return [(k, self[k]) for k in self._proxied_attributes]        
+        return [(k, self[k]) for k in self._proxied_attributes]
 
     def __getitem__(self, item):
         if item in self._proxied_attributes:

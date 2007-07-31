@@ -13,6 +13,11 @@
 	  TROUBLESHOOTING:
 	  merge changes from the bug-1723660 branch
 
+	* bindings/python/ipod.py:
+	  ignore reserved (and chapterdata) attributes which are
+	  returned as gpointers
+	  cleanup some trailing whitespace
+
 2007-07-27  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/gpod.i.in:
