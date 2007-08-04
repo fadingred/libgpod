@@ -1,3 +1,8 @@
+2007-08-04  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* src/db-parse-context.h:
+	  remove duplicate copyright header
+
 2007-07-31  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* bindings/python
