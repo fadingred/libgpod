@@ -2,6 +2,8 @@ import unittest
 import shutil
 import tempfile
 import os
+import datetime
+import time
 import types
 
 gpod = __import__('__init__')
@@ -63,6 +65,21 @@ class TestiPodFunctions(unittest.TestCase):
             self.db.remove(track, ipod=True)
             self.failIf(os.path.exists(track_file))
 
+    def testDatestampSetting(self):
+        trackname = os.path.join(self.mp,
+                                 'iPod_Control',
+                                 'tiny.mp3')
+        t = self.db.new_Track(filename=trackname)
+        date = datetime.datetime.now()
+        t['time_added'] = date
+        self.assertEqual(date.year, t['time_added'].year)
+        self.assertEqual(date.second, t['time_added'].second)
+        # microsecond won't match, that's lost in the itdb
+        date = datetime.datetime.now()
+        t['time_added'] = time.mktime(date.timetuple())
+        self.assertEqual(date.year, t['time_added'].year)
+        self.assertEqual(date.second, t['time_added'].second)
+            
     def testVersion(self):
         self.assertEqual(type(gpod.version_info), 
                          types.TupleType)

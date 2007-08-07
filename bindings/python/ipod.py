@@ -461,7 +461,10 @@ class Track:
         if item == "userdata":
             return gpod.sw_get_track_userdata(self._track)
         elif item in self._proxied_attributes:
-            return getattr(self._track, item)
+            if item.startswith("time_"):
+                return datetime.datetime.fromtimestamp(getattr(self._track, item))
+            else:
+                return getattr(self._track, item)
         else:
             raise KeyError('No such key: %s' % item)
 

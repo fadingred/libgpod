@@ -56,6 +56,8 @@ version = '.'.join(map(str, version_info))
 #include "itdb.h" 
 #include "itdb_device.h" 
 #include "itdb_private.h"
+#include <time.h>
+#include <datetime.h>
 #ifdef HAVE_GDKPIXBUF
 #ifdef HAVE_PYGOBJECT
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -298,6 +300,7 @@ PyObject* sw_get_photo(GList *list, gint index) {
 #ifdef HAVE_GDKPIXBUF
 #ifdef HAVE_PYGOBJECT
    g_type_init ();
+   PyDateTime_IMPORT;
    init_pygobject ();
 #endif
 #endif
@@ -311,8 +314,59 @@ PyObject* sw_get_photo(GList *list, gint index) {
 # them utf8 encoded Strings.
 typedef char gchar;
 
-# treat time_t as long
-typedef long time_t;
+%typemap(in) time_t {
+  struct tm tmvalue;
+  PyObject* pydatetime = NULL;
+  if (PyDateTime_Check($input)) {
+    pydatetime = $input;
+    Py_INCREF(pydatetime);
+  } else if  ((PyInt_Check($input)) || (PyLong_Check($input)) || (PyFloat_Check($input))) {
+    PyObject* pyargs;
+    Py_INCREF($input);
+    pyargs = PyTuple_Pack(1, $input);
+    if ((pydatetime = PyDateTime_FromTimestamp(pyargs)) == NULL) {
+      Py_DECREF(pyargs);
+      Py_DECREF($input);
+      SWIG_fail;
+    }
+    Py_DECREF(pyargs);
+    Py_DECREF($input);
+  } else {
+    PyErr_SetString(PyExc_ValueError, "$symname: Value must be a datetime.datetime, int or float");
+    SWIG_fail;
+  }
+  tmvalue.tm_year = PyDateTime_GET_YEAR(pydatetime)  - 1900;
+  tmvalue.tm_mon  = PyDateTime_GET_MONTH(pydatetime) - 1;
+  tmvalue.tm_mday = PyDateTime_GET_DAY(pydatetime);
+  tmvalue.tm_hour = PyDateTime_DATE_GET_HOUR(pydatetime);
+  tmvalue.tm_min  = PyDateTime_DATE_GET_MINUTE(pydatetime);
+  tmvalue.tm_sec  = PyDateTime_DATE_GET_SECOND(pydatetime);
+
+  Py_DECREF(pydatetime);
+  
+  $1 = mktime(&tmvalue);
+  if ($1 == -1) {
+    PyErr_SetString(PyExc_ValueError, "$symname: Failed to parse provided time");	
+    SWIG_fail;    
+  }
+}
+
+%typemap(out) time_t {
+#ifdef 0
+  /* for libgpod 0.6.x.. maybe ? */
+  struct tm *tmvalue;
+  tmvalue = localtime(&$1);
+  $result = PyDateTime_FromDateAndTime(tmvalue->tm_year + 1900,
+				       tmvalue->tm_mon  + 1,
+				       tmvalue->tm_mday,
+				       tmvalue->tm_hour,
+				       tmvalue->tm_min,
+				       tmvalue->tm_sec,
+				       0);
+#else
+  $result = PyLong_FromUnsignedLong((unsigned long) $1);
+#endif
+}
 
 %typemap(in) guint8 {
    unsigned long ival;

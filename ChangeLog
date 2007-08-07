@@ -1,3 +1,16 @@
+2007-08-07  Nicholas Piper  <nicholas at users.sourceforge.net>
+
+	* bindings/python/gpod.i.in: Return an integer for time_t (note,
+	no to/from mac timestamp mapping required), accept an integer or
+	datetime object for a time_t
+
+	* bindings/python/ipod.py (Track.__getitem__): for the Python OO
+	interface, map reading time_* attributes in Tracks to a datetime
+	object
+
+	* bindings/python/tests/tests.py (TestiPodFunctions.testDatestampSetting): 
+	test reading/writing the Track timestamp attributes
+
 2007-08-04  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* src/db-parse-context.h:
