@@ -70,13 +70,6 @@ The time_t mapping has changed recently:
 |(SVN r1433 - r1669)     |timestamp    |timestamp    |
 |                        |integer      |integer      |
 |                        |             |             |
-|                        |             |             |
-+------------------------+-------------+-------------+
-|Not in any release      |Not possible |Not possible |
-|(SVN r1417 - r1432)     |(time_t not  |(time_t not  |
-|                        |mapped to    |mapped to    |
-|                        |Python type) |Python type) |
-|                        |             |             |
 +------------------------+-------------+-------------+
 |libgpod <= 0.4.2        |As an integer|As an integer|
 |(SVN < r1417)           |with a       |with a       |
