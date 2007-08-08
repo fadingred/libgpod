@@ -49,8 +49,8 @@ The time_t mapping has changed recently:
 |Version                 | Reading     | Writing     |
 |                        |             |             |
 +------------------------+-------------+-------------+
-|r1669 < libgpod         |C style API: |C style API: |
-|                        |As a unix    |As a unix    |
+|libgpod >= 0.5.4        |C style API: |C style API: |
+|(SVN >= r1672)          |As a unix    |As a unix    |
 |                        |timestamp    |timestamp    |
 |                        |integer      |integer or a |
 |                        |             |Python       |
@@ -66,34 +66,34 @@ The time_t mapping has changed recently:
 |                        |             |instance     |
 |                        |             |             |
 +------------------------+-------------+-------------+
-|r1433 < libgpod < r1669 |As a unix    |As a unix    |
-|                        |timestamp    |timestamp    |
+|libgpod 0.5.0 - 0.5.2   |As a unix    |As a unix    |
+|(SVN r1433 - r1669)     |timestamp    |timestamp    |
 |                        |integer      |integer      |
 |                        |             |             |
 |                        |             |             |
 +------------------------+-------------+-------------+
-|r1417 < libgpod < r1433 |Not possible |Not possible |
-|                        |(time_t not  |(time_t not  |
+|Not in any release      |Not possible |Not possible |
+|(SVN r1417 - r1432)     |(time_t not  |(time_t not  |
 |                        |mapped to    |mapped to    |
 |                        |Python type) |Python type) |
 |                        |             |             |
 +------------------------+-------------+-------------+
-|libgpod < r1417         |As an integer|As an integer|
-|                        |with a       |with a       |
+|libgpod <= 0.4.2        |As an integer|As an integer|
+|(SVN < r1417)           |with a       |with a       |
 |                        |2082844800   |2082844800   |
 |                        |offset       |offset       |
 +------------------------+-------------+-------------+
 
 This table means that as a user of the Python bindings, you likely
-want to detect libgpod < r1417. One way would be to test for the
-presence of some of the renamed constants in 0.5:
+want to detect libgpod < 0.5.0. One way would be to test for the
+presence of some of the renamed constants in libgpod >= 0.5.0:
 
-    # libgpod>= 0.5.2 doesn't use mac-type timestamps anymore.  check
+    # libgpod >= 0.5.0 doesn't use mac-type timestamps anymore.  check
     # if we're using a newer version by looking for a renamed constant.
     if hasattr(gpod, 'ITDB_SPL_STRING_MAXLEN'):
         track.time_released = int(time.mktime(ipod_date)
     else:
         track.time_release = int(time.mktime(ipod_date) + 2082844800
 
-(Since r1633 there exists a gpod.version_info tuple, which will make
-such things easier to cope with in the future.
+(Since libgpod 0.5.4 (SVN r1633) there exists a gpod.version_info
+tuple, which will make such things easier to cope with in the future.)
