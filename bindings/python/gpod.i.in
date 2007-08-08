@@ -300,10 +300,10 @@ PyObject* sw_get_photo(GList *list, gint index) {
 #ifdef HAVE_GDKPIXBUF
 #ifdef HAVE_PYGOBJECT
    g_type_init ();
-   PyDateTime_IMPORT;
    init_pygobject ();
 #endif
 #endif
+   PyDateTime_IMPORT;
 %}
 
 %include "gpod_doc.i"
