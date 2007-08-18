@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-03-21 17:30:57 jcs>
+/* Time-stamp: <2007-08-18 16:22:17 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -413,7 +413,11 @@ gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb)
 
 	if (artwork_dir)
 	{
-	    filename = itdb_get_path (artwork_dir, strchr( thumb->filename+1, ':') + 1);
+	    const gchar *name_on_disk = strchr( thumb->filename+1, ':');
+	    if (name_on_disk)
+	    {
+		filename = itdb_get_path (artwork_dir, name_on_disk + 1);
+	    }
 	    g_free (artwork_dir);
 	}
 

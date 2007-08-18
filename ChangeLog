@@ -15,7 +15,9 @@
 	* src/itdb_itunesdb (itdb_parse): don't call
 	  ipod_parse_artwork_db() if iTunesDB was not read successfully.
 
-	
+	* src/itdb_artwork.c (itdb_thumb_get_filename): check
+          returnvalue of strchr(). Thanks to Javier Kohen.
+
 2007-08-07  Nicholas Piper  <nicholas at users.sourceforge.net>
 
 	* bindings/python/gpod.i.in: Return an integer for time_t (note,
