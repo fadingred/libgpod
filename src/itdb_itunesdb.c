@@ -282,15 +282,6 @@ GQuark itdb_file_error_quark (void)
     return q;
 }
 
-/* Get length of utf16 string in number of characters (words) */
-static guint32 utf16_strlen (gunichar2 *utf16)
-{
-  guint32 i=0;
-  if (utf16)
-      while (utf16[i] != 0) ++i;
-  return i;
-}
-
 
 /* Read the contents of @filename and return a FContents
    struct. Returns NULL in case of error and @error is set
@@ -817,7 +808,7 @@ static gunichar2 *fixup_little_utf16 (gunichar2 *utf16_string)
     gint32 i;
     if (utf16_string)
     {
-	for(i=0; i<utf16_strlen(utf16_string); i++)
+	for(i=0; utf16_string[i]; i++)
 	{
 	    utf16_string[i] = GUINT16_SWAP_LE_BE (utf16_string[i]);
 	}
@@ -834,7 +825,7 @@ static gunichar2 *fixup_big_utf16 (gunichar2 *utf16_string)
     gint32 i;
     if (utf16_string)
     {
-	for(i=0; i<utf16_strlen(utf16_string); i++)
+	for(i=0; utf16_string[i]; i++)
 	{
 	    utf16_string[i] = GUINT16_SWAP_LE_BE (utf16_string[i]);
 	}
@@ -3848,20 +3839,20 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
       if (!cts->reversed)
       {
 	  /* convert to utf16  */
+	  glong len;
 	  gunichar2 *entry_utf16 = g_utf8_to_utf16 (mhod->data.string, -1,
-						    NULL, NULL, NULL);
-	  guint32 len = utf16_strlen (entry_utf16);
+						    NULL, &len, NULL);
 	  fixup_little_utf16 (entry_utf16);
 	  put_header (cts, "mhod");   /* header                     */
 	  put32lint (cts, 24);        /* size of header             */
-	  put32lint (cts, 2*len+40);  /* size of header + body      */
+	  put32lint (cts, sizeof (gunichar2)*len+40);  /* size of header + body      */
 	  put32lint (cts, mhod->type);/* type of the mhod           */
 	  put32_n0 (cts, 2);          /* unknown                    */
 	  /* end of header, start of data */
 	  put32lint (cts, 1);         /* string type UTF16          */
-	  put32lint (cts, 2*len);     /* size of string             */
+	  put32lint (cts, sizeof (gunichar2)*len);     /* size of string             */
 	  put32_n0 (cts, 2);          /* unknown                    */
-	  put_data (cts, (gchar *)entry_utf16, 2*len);/* the string */
+	  put_data (cts, (gchar *)entry_utf16, sizeof (gunichar2)*len);/* the string */
 	  g_free (entry_utf16);
       }
       else
@@ -3969,7 +3960,7 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
 	  {
 	      Itdb_SPLRule *splr = gl->data;
 	      ItdbSPLFieldType ft;
-	      gint len;
+	      glong len;
 	      gunichar2 *entry_utf16;
 	      g_return_if_fail (splr);
 	      ft = itdb_splr_get_field_type (splr);
@@ -3982,15 +3973,15 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
 	      {
 	      case ITDB_SPLFT_STRING:
 		  /* write string-type rule */
+		  len = 0;
 		  entry_utf16 = NULL;
 		  /* splr->string may be NULL */
 		  if (splr->string)
 		      entry_utf16 = g_utf8_to_utf16 (splr->string,
-						     -1,NULL,NULL,NULL);
-		  len = utf16_strlen (entry_utf16);
+						     -1,NULL,&len,NULL);
 		  fixup_big_utf16 (entry_utf16);
-		  put32bint (cts, 2*len); /* length of string     */
-		  put_data (cts, (gchar *)entry_utf16, 2*len);
+		  put32bint (cts, sizeof (gunichar2)*len); /* length of string     */
+		  put_data (cts, (gchar *)entry_utf16, sizeof (gunichar2)*len);
 		  g_free (entry_utf16);
 		  break;
 	      case ITDB_SPLFT_DATE:
@@ -5203,7 +5194,7 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 	Itdb_Track *tr = gl->data;
 	gchar *path;
 	gunichar2 *path_utf16;
-	guint32 pathlen;
+	glong pathlen;
 	gchar *mp3_desc[] = {"MPEG", "MP3", "mpeg", "mp3", NULL};
 	gchar *mp4_desc[] = {"AAC", "MP4", "aac", "mp4", NULL};
 	gchar *wav_desc[] = {"WAV", "wav", NULL};
@@ -5245,11 +5236,10 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 	/* shuffle uses forward slash separator, not colon */
 	path = g_strdup (tr->ipod_path);
 	itdb_filename_ipod2fs (path);
-	path_utf16 = g_utf8_to_utf16 (path, -1, NULL, NULL, NULL);
-	pathlen = utf16_strlen (path_utf16);
+	path_utf16 = g_utf8_to_utf16 (path, -1, NULL, &pathlen, NULL);
 	if (pathlen > 261) pathlen = 261;
 	fixup_little_utf16 (path_utf16);
-	put_data (cts, (gchar *)path_utf16, 2*pathlen);
+	put_data (cts, (gchar *)path_utf16, sizeof (gunichar2)*pathlen);
 	/* pad to 522 bytes */
 	put16_n0 (cts, 261-pathlen);
 	g_free(path);

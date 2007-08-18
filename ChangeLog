@@ -3,9 +3,14 @@
 	* src/db-artwork-writer.c (write_mhod_type_3): don't assume that
 	  length of a utf16 string is twice the length of a utf8 string
 	  (even though this was safe here because the strings in question
-	  were ASCII).
+	  were ASCII). Thanks to Javier Kohen for the patch.
+
 	  (write_mhod_type_1), (write_mhod_type_3):
-	  Don't pad by 4 bytes as this achieves nothing.
+	  Don't pad by 4 bytes as this achieves nothing. Thanks to Javier
+	  Kohen to point this out.
+
+	* src/itdb_itunesdb.c: make calls to utf16_strlen()
+	  unnecessary. Thanks to Javier Kohen for the patch.
 
 2007-08-07  Nicholas Piper  <nicholas at users.sourceforge.net>
 
