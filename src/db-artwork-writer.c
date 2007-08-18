@@ -329,6 +329,8 @@ write_mhod_type_1 (gchar *string, iPodBuffer *buffer)
 	mhod->string_len = get_gint32 (len, buffer->byte_order);
 
 	padding = 4 - ( (total_bytes + len) % 4 );
+	if (padding == 4)
+	    padding = 0;
 	mhod->padding = padding;
 	mhod->type = get_gint16 (0x01, buffer->byte_order);
 
@@ -350,7 +352,8 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 {
 	ArtworkDB_MhodHeaderArtworkType3 *mhod;
 	unsigned int total_bytes;
-	int len;
+	glong len;
+	const gint g2l = sizeof (gunichar2);
 	gunichar2 *utf16, *strp;
 	int i, padding;
 
@@ -371,8 +374,6 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 				       buffer->byte_order);
 	mhod->type = get_gint16 (3, buffer->byte_order);
 
-	len = strlen (string);
-
 	/* FIXME: Tidy this up, combine cases more */
 	/* Some magic: endianess-reversed (BE) mobile phones use UTF8
 	 * (version 1) with padding, standard iPods (LE) use UTF16
@@ -380,28 +381,31 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	switch (buffer->byte_order)
 	{
 	case G_LITTLE_ENDIAN:
+	    utf16 = g_utf8_to_utf16 (string, -1, NULL, &len, NULL);
+	    if (utf16 == NULL) {
+		return -1;
+	    }
+
 	    mhod->mhod_version = 2;
 	    /* number of bytes of the string encoded in UTF-16 */
-	    mhod->string_len = get_gint32 (2*len, buffer->byte_order);
-	    padding = 4 - ( (total_bytes + 2*len) % 4 );
+	    mhod->string_len = get_gint32 (g2l * len, buffer->byte_order);
+	    padding = 4 - ( (total_bytes + g2l*len) % 4 );
+	    if (padding == 4)
+		padding = 0;
 	    mhod->padding = padding;
+	    total_bytes += g2l*len + padding;
 
 	    /* Make sure we have enough free space to write the string */
-	    if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len+padding) != 0) {
+	    if (ipod_buffer_maybe_grow (buffer, total_bytes) != 0) {
+		g_free (utf16);
 		return  -1;
 	    }
 
-	    utf16 = g_utf8_to_utf16 (string, -1, NULL, NULL, NULL);
-	    if (utf16 == NULL) {		
-		return -1;
-	    }
 	    strp = (gunichar2 *)mhod->string;
-	    memcpy (strp, utf16, 2*len);
-	    g_free (utf16);
 	    for (i = 0; i < len; i++) {
-		strp[i] = get_gint16 (strp[i], buffer->byte_order);
+		strp[i] = get_gint16 (utf16[i], buffer->byte_order);
 	    }
-	    total_bytes += 2*len+padding;
+	    g_free (utf16);
 	    break;
 	case G_BIG_ENDIAN:
 	    mhod->mhod_version = 1;
@@ -410,6 +414,8 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    /* e.g. len = 7 bytes, len%4 = 3, 4-3=1 -> requires 1 byte
 	       padding */
 	    padding = 4 - ( (total_bytes + len) % 4 );
+	    if (padding == 4)
+		padding = 0;
 	    mhod->padding = padding;
 	    /* Make sure we have enough free space to write the string */
 	    if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len+padding) != 0) {
