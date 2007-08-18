@@ -12,6 +12,10 @@
 	* src/itdb_itunesdb.c: make calls to utf16_strlen()
 	  unnecessary. Thanks to Javier Kohen for the patch.
 
+	* src/itdb_itunesdb (itdb_parse): don't call
+	  ipod_parse_artwork_db() if iTunesDB was not read successfully.
+
+	
 2007-08-07  Nicholas Piper  <nicholas at users.sourceforge.net>
 
 	* bindings/python/gpod.i.in: Return an integer for time_t (note,

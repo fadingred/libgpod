@@ -2937,33 +2937,36 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 	    itdb_set_mountpoint (itdb, mp);
 	    itdb->filename = filename;
 	    success = itdb_parse_internal (itdb, error);
-	    if (!success) {
+	    if (success)
+	    {
+		/* We don't test the return value of ipod_parse_artwork_db
+		 * since the database content will be consistent even if
+		 * we fail to get the various thumbnails, we ignore the
+		 * error since older ipods don't have thumbnails.
+
+		 * FIXME: this probably should go into itdb_parse_file,
+		 * but I don't understand its purpose, and
+		 * ipod_parse_artwork_db needs the mountpoint field from
+		 * the itdb, which may not be available in the other
+		 * function
+
+		 * JCS: itdb_parse_file is used to read local repositories
+		 * (usually repositories stored in
+		 * ~/.gtkpod). ipod_parse_artwork_db (and the
+		 * corresponding artbook write function) should probably
+		 * be expanded to look for (write) the required files into
+		 * the same directory as itdb->filename in case
+		 * itdb->mountpoint does not exist. Because several local
+		 * repositories may exist in the same directory, the names
+		 * should be modified by the repository name.
+		 */
+		ipod_parse_artwork_db (itdb);
+	    }
+	    else
+	    {
 		itdb_free (itdb);
 		itdb = NULL;
 	    }
-	    /* We don't test the return value of ipod_parse_artwork_db
-	     * since the database content will be consistent even if
-	     * we fail to get the various thumbnails, we ignore the
-	     * error since older ipods don't have thumbnails.
-
-	     * FIXME: this probably should go into itdb_parse_file,
-	     * but I don't understand its purpose, and
-	     * ipod_parse_artwork_db needs the mountpoint field from
-	     * the itdb, which may not be available in the other
-	     * function
-
-	     * JCS: itdb_parse_file is used to read local repositories
-	     * (usually repositories stored in
-	     * ~/.gtkpod). ipod_parse_artwork_db (and the
-	     * corresponding artbook write function) should probably
-	     * be expanded to look for (write) the required files into
-	     * the same directory as itdb->filename in case
-	     * itdb->mountpoint does not exist. Because several local
-	     * repositories may exist in the same directory, the names
-	     * should be modified by the repository name.
-	     */
-	    ipod_parse_artwork_db (itdb);
-
 	}
     }
     else
