@@ -1,3 +1,15 @@
+2007-09-4 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb_itunesdb.c (itdb_get_control_dir):
+	  added support for iPhones
+
+	* itdb.h: added ITDB_IPOD_MODEL_IPHONE_1 enum
+
+	* itdb_device.c: added iPhone description
+	
+	TODO: define artwork definition in itdb_device.c -- currently
+	artwork is not supported.
+
 2007-08-18 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/db-artwork-writer.c (write_mhod_type_3): don't assume that

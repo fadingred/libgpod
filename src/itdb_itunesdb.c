@@ -6012,9 +6012,10 @@ gchar *itdb_get_control_dir (const gchar *mountpoint)
 {
     gchar *p_ipod[] = {"iPod_Control", NULL};
     gchar *p_mobile[] = {"iTunes", "iTunes_Control", NULL};
+    gchar *p_iphone[] = {"iTunes_Control", NULL};
     /* Use an array with all possibilities, so further extension will
        be easy */
-    gchar **paths[] = {p_ipod, p_mobile, NULL};
+    gchar **paths[] = {p_ipod, p_mobile, p_iphone, NULL};
     gchar ***ptr;
     gchar *result = NULL;
 

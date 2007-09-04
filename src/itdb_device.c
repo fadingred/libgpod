@@ -159,7 +159,8 @@ static const Itdb_IpodInfo ipod_info_table [] = {
      * one entry, e.g.:
        ModelNumStr: Mmobile1
     */
-    {"mobile1", -1, ITDB_IPOD_MODEL_MOBILE_1, ITDB_IPOD_GENERATION_MOBILE},
+    {"mobile1", -1, ITDB_IPOD_MODEL_MOBILE_1, ITDB_IPOD_GENERATION_MOBILE,  6},
+    {"iPhone1", -1, ITDB_IPOD_MODEL_IPHONE_1, ITDB_IPOD_GENERATION_MOBILE, 14},
 
     {NULL, 0, 0, 0, 0}
 };
@@ -189,6 +190,7 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Nano (Blue)"),
 	N_("Nano (Green)"),
 	N_("Nano (Pink)"),
+	N_("iPhone (1)"),
 	NULL
 };
 
@@ -264,6 +266,7 @@ static const Itdb_ArtworkFormat *ipod_artwork_info_table[] = {
 	ipod_nano_artwork_info,    /* Nano (Blue)   */
 	ipod_nano_artwork_info,    /* Nano (Green)  */
 	ipod_nano_artwork_info,    /* Nano (Pink)   */
+	NULL,                      /* iPhone (1) -- FIXME! */
 	NULL
 };
 
