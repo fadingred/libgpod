@@ -213,7 +213,7 @@ static const Itdb_ArtworkFormat ipod_photo_artwork_info[] = {
     {ITDB_THUMB_PHOTO_SMALL,       42,  30, 1009, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_LARGE,      130,  88, 1015, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_FULL_SCREEN,220, 176, 1013, THUMB_FORMAT_RGB565_BE_90},
-    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1019, THUMB_FORMAT_UYVY},
+    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1019, THUMB_FORMAT_UYVY_BE},
     {-1,                           -1,  -1,   -1, -1}
 };
 
@@ -231,13 +231,23 @@ static const Itdb_ArtworkFormat ipod_video_artwork_info[] = {
     {ITDB_THUMB_PHOTO_SMALL,       50,  41, 1036, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_LARGE,      130,  88, 1015, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_FULL_SCREEN,320, 240, 1024, THUMB_FORMAT_RGB565_LE},
-    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1019, THUMB_FORMAT_UYVY},
+    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1019, THUMB_FORMAT_UYVY_BE},
     {-1,                           -1,  -1,   -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_mobile_1_artwork_info[] = {
     {ITDB_THUMB_COVER_SMALL,       50,  50, 2002, THUMB_FORMAT_RGB565_BE},
     {ITDB_THUMB_COVER_LARGE,      150, 150, 2003, THUMB_FORMAT_RGB565_BE},
+    {-1,                           -1,  -1,   -1, -1}
+};
+
+static const Itdb_ArtworkFormat ipod_iphone_1_artwork_info[] = {
+    {ITDB_THUMB_COVER_LARGE,      256, 256, 3001, THUMB_FORMAT_REC_RGB555_LE},
+    {ITDB_THUMB_COVER_MEDIUM,     128, 128, 3002, THUMB_FORMAT_REC_RGB555_LE},
+    {ITDB_THUMB_COVER_SMALL,       64,  64, 3003, THUMB_FORMAT_REC_RGB555_LE},
+    {ITDB_THUMB_COVER_XLARGE,     320, 320, 3005, THUMB_FORMAT_RGB555_LE},
+    {ITDB_THUMB_COVER_XSMALL,      56,  56, 3006, THUMB_FORMAT_RGB555_LE,  8192}, /*pad data to  8192 bytes */
+    {ITDB_THUMB_COVER_SMEDIUM,     88,  88, 3007, THUMB_FORMAT_RGB555_LE, 16364}, /*pad data to 16384 bytes */
     {-1,                           -1,  -1,   -1, -1}
 };
 
@@ -266,7 +276,7 @@ static const Itdb_ArtworkFormat *ipod_artwork_info_table[] = {
 	ipod_nano_artwork_info,    /* Nano (Blue)   */
 	ipod_nano_artwork_info,    /* Nano (Green)  */
 	ipod_nano_artwork_info,    /* Nano (Pink)   */
-	NULL,                      /* iPhone (1) -- FIXME! */
+	ipod_iphone_1_artwork_info,/* iPhone (1)    */
 	NULL
 };
 

@@ -587,6 +587,11 @@ ipod_supports_cover_art (Itdb_Device *device)
 	    case ITDB_THUMB_PHOTO_FULL_SCREEN:
 	    case ITDB_THUMB_PHOTO_TV_SCREEN:
 		break;
+	    case ITDB_THUMB_COVER_XLARGE:
+	    case ITDB_THUMB_COVER_MEDIUM:
+	    case ITDB_THUMB_COVER_SMEDIUM:
+	    case ITDB_THUMB_COVER_XSMALL:
+		break;
 	    }
 	    formats++;
 	}
@@ -620,6 +625,11 @@ ipod_supports_photos (Itdb_Device *device)
 	    case ITDB_THUMB_PHOTO_FULL_SCREEN:
 	    case ITDB_THUMB_PHOTO_TV_SCREEN:
 		return TRUE;
+	    case ITDB_THUMB_COVER_XLARGE:
+	    case ITDB_THUMB_COVER_MEDIUM:
+	    case ITDB_THUMB_COVER_SMEDIUM:
+	    case ITDB_THUMB_COVER_XSMALL:
+		break;
 	    }
 	    formats++;
 	}

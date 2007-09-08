@@ -1,4 +1,27 @@
-2007-09-4 Jorg Schuler <jcsjcs at users.sourceforge.net>
+2007-09-08 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-image-parser.c
+	  src/itdb_device.c
+	  src/ithumb-writer.c
+	  src/db-image-parser.h
+	  src/itdb_device.h
+	  src/itdb.h
+	  src/itdb_artwork.c
+	  tests/test-covers.c: added support to read and write coverart on
+	  iPhones. New cover formats are: MEDIUM, XLARGE, XSMALL, SMEDIUM
+	  -- should be renamed if function becomes clearer.
+
+	  Introduced New image formats for the thumbnails
+	  (THUMB_FORMAT_RGB555, THUMB_FORMAT_REC_RGB555). Coding/decoding
+	  functions are pack_/unpack_RGB_555() and
+	  pack_/unpack_REC_RGB_555().
+
+	  Introduced possible padding for thumbnail files
+	  (Itdb_ArtworkFormat).
+
+	  * src/db-artwork-parser.c: make output filename unique.
+
+2007-09-04 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_itunesdb.c (itdb_get_control_dir):
 	  added support for iPhones

@@ -74,6 +74,10 @@ album/track artwork.  For working with photos, see the
 @ITDB_THUMB_PHOTO_LARGE: 
 @ITDB_THUMB_PHOTO_FULL_SCREEN: 
 @ITDB_THUMB_PHOTO_TV_SCREEN: 
+@ITDB_THUMB_COVER_XLARGE: 
+@ITDB_THUMB_COVER_MEDIUM: 
+@ITDB_THUMB_COVER_MEDIUM2: 
+@ITDB_THUMB_COVER_SMALL2: 
 
 <!-- ##### FUNCTION itdb_artwork_new ##### -->
 <para>

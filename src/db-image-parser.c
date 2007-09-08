@@ -113,6 +113,11 @@ ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_DB *db)
 	corr_id = get_gint32_db (db, mhni->correlation_id);
 	img->type = image_type_from_corr_id (device, corr_id);
 
+#if DEBUG_ARTWORK
+	printf ("corr_id: %d, of: %6d sz: %6d, x: %3d, y: %3d, xpad: %3d, ypad: %3d\n",
+		corr_id, img->offset, img->size, img->width, img->height, img->horizontal_padding, img->vertical_padding);
+#endif
+
 	if (img->type == -1)
 	{
 	    g_warning (_("Unexpected image type in mhni: size: %ux%u (%d), offset: %d\n"), 

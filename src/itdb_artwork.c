@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-08-18 16:22:17 jcs>
+/* Time-stamp: <2007-09-09 00:12:28 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -434,27 +434,217 @@ unpack_RGB_565 (guint16 *pixels, guint bytes_len, guint byte_order)
 	guint i;
 
 	g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
+
 	result = g_malloc ((bytes_len/2) * 3);
-	if (result == NULL) {
-		return NULL;
-	}
+
 	for (i = 0; i < bytes_len/2; i++) {
 		guint16 cur_pixel;
 		/* FIXME: endianness */
 		cur_pixel = get_gint16 (pixels[i], byte_order);
 		/* Unpack pixels */
-		result[3*i] = (cur_pixel & RED_MASK) >> RED_SHIFT;
-		result[3*i+1] = (cur_pixel & GREEN_MASK) >> GREEN_SHIFT;
-		result[3*i+2] = (cur_pixel & BLUE_MASK) >> BLUE_SHIFT;
+		result[3*i] = (cur_pixel & RED_MASK_565) >> RED_SHIFT_565;
+		result[3*i+1] = (cur_pixel & GREEN_MASK_565) >> GREEN_SHIFT_565;
+		result[3*i+2] = (cur_pixel & BLUE_MASK_565) >> BLUE_SHIFT_565;
 		
 		/* Normalize color values so that they use a [0..255] range */
-		result[3*i] <<= (8 - RED_BITS);
-		result[3*i+1] <<= (8 - GREEN_BITS);
-		result[3*i+2] <<= (8 - BLUE_BITS);
+		result[3*i] <<= (8 - RED_BITS_565);
+		result[3*i+1] <<= (8 - GREEN_BITS_565);
+		result[3*i+2] <<= (8 - BLUE_BITS_565);
 	}
 
 	return result;
 }
+
+static guchar *
+unpack_RGB_555 (guint16 *pixels, guint bytes_len, guint byte_order)
+{
+	guchar *result;
+	guint i;
+
+	g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
+
+	result = g_malloc ((bytes_len/2) * 3);
+
+	for (i = 0; i < bytes_len/2; i++) {
+		guint16 cur_pixel;
+		/* FIXME: endianness */
+		cur_pixel = get_gint16 (pixels[i], byte_order);
+		/* Unpack pixels */
+		result[3*i] = (cur_pixel & RED_MASK_555) >> RED_SHIFT_555;
+		result[3*i+1] = (cur_pixel & GREEN_MASK_555) >> GREEN_SHIFT_555;
+		result[3*i+2] = (cur_pixel & BLUE_MASK_555) >> BLUE_SHIFT_555;
+		
+		/* Normalize color values so that they use a [0..255] range */
+		result[3*i] <<= (8 - RED_BITS_555);
+		result[3*i+1] <<= (8 - GREEN_BITS_555);
+		result[3*i+2] <<= (8 - BLUE_BITS_555);
+	}
+
+	return result;
+}
+
+
+static guint16 *rearrange_pixels (guint16 *pixels_s, guint16 *pixels_d,
+				  gint width, gint height, gint row_stride)
+{
+    g_return_val_if_fail (width == height, pixels_d);
+
+    if (pixels_d == NULL)
+    {
+	pixels_d = g_malloc0 (sizeof (guint16)*width*height);
+    }
+
+    if (width == 1)
+    {
+	*pixels_d = *pixels_s;
+    }
+    else
+    {
+	rearrange_pixels (pixels_s + 0,
+			  pixels_d + 0 + 0,
+			  width/2, height/2,
+			  row_stride);
+	rearrange_pixels (pixels_s + (width/2)*(height/2),
+			  pixels_d + (height/2)*row_stride + 0,
+			  width/2, height/2,
+			  row_stride);
+	rearrange_pixels (pixels_s + 2*(width/2)*(height/2),
+			  pixels_d + width/2,
+			  width/2, height/2,
+			  row_stride);
+	rearrange_pixels (pixels_s + 3*(width/2)*(height/2),
+			  pixels_d + (height/2)*row_stride + width/2,
+			  width/2, height/2,
+			  row_stride);
+    }
+    
+    return pixels_d;
+}
+
+
+static guchar *
+unpack_rec_RGB_555 (guint16 *pixels, guint bytes_len, guint byte_order,
+		    gint width, gint height)
+{
+	guchar *result;
+	guint16 *use_pixels;
+	gboolean free_use_pixels = FALSE;
+	guint16 *pixels_arranged;
+
+	guint i;
+
+	g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
+	g_return_val_if_fail (2*width*height < G_MAXUINT, NULL);
+	g_return_val_if_fail (width==height, NULL);
+
+	if (2*width*height > bytes_len)
+	{
+	    use_pixels = g_malloc0 (2*width*height);
+	    g_memmove (use_pixels, pixels, bytes_len);
+	    free_use_pixels = TRUE;
+	}
+	else
+	{
+	    use_pixels = pixels;
+	}
+
+	pixels_arranged = rearrange_pixels (use_pixels, NULL,
+					    width, height, width);
+
+	if (pixels_arranged == NULL)
+	{
+	    return NULL;
+	}
+
+	result = g_malloc ((bytes_len/2) * 3);
+
+	for (i = 0; i < bytes_len/2; i++) {
+		guint16 cur_pixel;
+		/* FIXME: endianness */
+		cur_pixel = get_gint16 (pixels_arranged[i], byte_order);
+		/* Unpack pixels */
+		result[3*i] = (cur_pixel & RED_MASK_555) >> RED_SHIFT_555;
+		result[3*i+1] = (cur_pixel & GREEN_MASK_555) >> GREEN_SHIFT_555;
+		result[3*i+2] = (cur_pixel & BLUE_MASK_555) >> BLUE_SHIFT_555;
+		
+		/* Normalize color values so that they use a [0..255] range */
+		result[3*i] <<= (8 - RED_BITS_555);
+		result[3*i+1] <<= (8 - GREEN_BITS_555);
+		result[3*i+2] <<= (8 - BLUE_BITS_555);
+	}
+
+	g_free (pixels_arranged);
+	if (free_use_pixels)
+	{
+	    g_free (use_pixels);
+	}
+
+	return result;
+}
+
+
+#if DEBUG_ARTWORK
+static guchar *
+unpack_experimental (guint16 *pixels, guint bytes_len, guint byte_order,
+		     gint width, gint height)
+{
+	guchar *result;
+	guint16 *use_pixels;
+	gboolean free_use_pixels = FALSE;
+	guint16 *pixels_arranged = NULL;
+
+	guint i;
+
+	g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
+	g_return_val_if_fail (2*width*height < G_MAXUINT, NULL);
+	g_return_val_if_fail (width==height, NULL);
+
+	if (2*width*height > bytes_len)
+	{
+	    use_pixels = g_malloc0 (2*width*height);
+	    g_memmove (use_pixels, pixels, bytes_len);
+	    free_use_pixels = TRUE;
+	}
+	else
+	{
+	    use_pixels = pixels;
+	}
+
+/*	pixels_arranged = rearrange_pixels (use_pixels, NULL,
+					    width, height, width);
+
+	if (pixels_arranged == NULL)
+	{
+	    return NULL;
+	}
+*/
+
+	result = g_malloc ((bytes_len/2) * 3);
+
+	for (i = 0; i < bytes_len/2; i++) {
+		guint16 cur_pixel;
+		/* FIXME: endianness */
+		cur_pixel = get_gint16 (pixels[i], byte_order);
+		/* Unpack pixels */
+		result[3*i] = (cur_pixel & RED_MASK_555) >> RED_SHIFT_555;
+		result[3*i+1] = (cur_pixel & GREEN_MASK_555) >> GREEN_SHIFT_555;
+		result[3*i+2] = (cur_pixel & BLUE_MASK_555) >> BLUE_SHIFT_555;
+		
+		/* Normalize color values so that they use a [0..255] range */
+		result[3*i] <<= (8 - RED_BITS_555);
+		result[3*i+1] <<= (8 - GREEN_BITS_555);
+		result[3*i+2] <<= (8 - BLUE_BITS_555);
+	}
+
+	g_free (pixels_arranged);
+	if (free_use_pixels)
+	{
+	    g_free (use_pixels);
+	}
+
+	return result;
+}
+#endif
 
 
 /* limit8bit() and unpack_UYVY() adapted from imgconvert.c from the
@@ -472,7 +662,8 @@ static gint limit8bit (float x)
     return x;
 }
 static guchar *
-unpack_UYVY (guchar *yuvdata, gint bytes_len, gint width, gint height)
+unpack_UYVY (guchar *yuvdata, gint bytes_len, guint byte_order,
+	     gint width, gint height)
 {
     gint imgsize = width*3*height;
     guchar* rgbdata;
@@ -485,6 +676,7 @@ unpack_UYVY (guchar *yuvdata, gint bytes_len, gint width, gint height)
     gint h = 0;
 
     g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
+/*     printf ("w=%d h=%d s=%d\n", width, height, bytes_len); */
     g_return_val_if_fail (width * height * 2 == bytes_len, NULL);
 
     rgbdata =  g_malloc(imgsize);
@@ -598,6 +790,13 @@ get_pixel_data (Itdb_Device *device, Itdb_Thumb *thumb)
 static guchar *
 itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 {
+#if 0
+    #include <unistd.h>
+    #include <fcntl.h>
+    static gint i=0;
+    int fd;
+    gchar *name;
+#endif
 	void *pixels_raw;
 	guchar *pixels=NULL;
 	const Itdb_ArtworkFormat *img_info;
@@ -609,6 +808,14 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	g_return_val_if_fail (img_info, NULL);
 	
 	pixels_raw = get_pixel_data (device, thumb);
+
+#if 0
+    name = g_strdup_printf ("thumb_%03d.raw", i++);
+    fd = creat (name, S_IRWXU|S_IRWXG|S_IRWXO);
+    write (fd, pixels_raw, thumb->size);
+    close (fd);
+    g_free (name);
+#endif
 	if (pixels_raw == NULL) {
 		return NULL;
 	}
@@ -625,8 +832,39 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	    pixels = unpack_RGB_565 (pixels_raw, thumb->size,
 				     itdb_thumb_get_byteorder (img_info->format));
 	    break;
-	case THUMB_FORMAT_UYVY:
+	case THUMB_FORMAT_RGB555_LE_90:
+	case THUMB_FORMAT_RGB555_BE_90:
+	    /* FIXME: actually the previous two might require
+	       different treatment (used on iPod Photo for the full
+	       screen photo thumbnail) */
+	case THUMB_FORMAT_RGB555_LE:
+	case THUMB_FORMAT_RGB555_BE:
+	    pixels = unpack_RGB_555 (pixels_raw, thumb->size,
+				     itdb_thumb_get_byteorder (img_info->format));
+	    break;
+	case THUMB_FORMAT_REC_RGB555_LE_90:
+	case THUMB_FORMAT_REC_RGB555_BE_90:
+	    /* FIXME: actually the previous two might require
+	       different treatment (used on iPod Photo for the full
+	       screen photo thumbnail) */
+	case THUMB_FORMAT_REC_RGB555_LE:
+	case THUMB_FORMAT_REC_RGB555_BE:
+	    pixels = unpack_rec_RGB_555 (pixels_raw, thumb->size,
+					 itdb_thumb_get_byteorder (img_info->format),
+					 img_info->width, img_info->height);
+	    break;
+	case THUMB_FORMAT_EXPERIMENTAL_LE:
+	case THUMB_FORMAT_EXPERIMENTAL_BE:
+#if DEBUG_ARTWORK
+	    pixels = unpack_experimental (pixels_raw, thumb->size,
+					  itdb_thumb_get_byteorder (img_info->format),
+					  img_info->width, img_info->height);
+	    break;
+#endif
+	case THUMB_FORMAT_UYVY_LE:
+	case THUMB_FORMAT_UYVY_BE:
 	    pixels = unpack_UYVY (pixels_raw, thumb->size,
+				  itdb_thumb_get_byteorder (img_info->format),
 				  img_info->width, img_info->height);
 	    break;
 	}
@@ -701,6 +939,14 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 		width = 220;  height = 176;  break;
 	    case ITDB_THUMB_PHOTO_TV_SCREEN:
 		width = 720;  height = 480;  break;
+	    case ITDB_THUMB_COVER_XLARGE:
+		width = 320;  height = 320;  break;
+	    case ITDB_THUMB_COVER_MEDIUM:
+		width = 128;  height = 128;  break;
+	    case ITDB_THUMB_COVER_SMEDIUM:
+		width = 88;  height = 88;  break;
+	    case ITDB_THUMB_COVER_XSMALL:
+		width = 56;  height = 56;  break;
 	    }
 	    if (width == 0)
 	    {
@@ -814,6 +1060,10 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 	if (pad_y + height > img_info->height)
 	    height = img_info->height - pad_y;
 
+#if DEBUG_ARTWORK
+ 	printf ("px=%2d py=%2d x=%3d y=%3d\n", pad_x, pad_y, width, height);
+#endif
+
 	pixbuf_sub = gdk_pixbuf_new_subpixbuf (pixbuf_full,
 					       pad_x, pad_y,
 					       width, height);
@@ -903,14 +1153,24 @@ itdb_thumb_get_byteorder (const ItdbThumbFormat format)
 {
     switch (format)
     {
+    case THUMB_FORMAT_UYVY_LE:
     case THUMB_FORMAT_RGB565_LE:
     case THUMB_FORMAT_RGB565_LE_90:
+    case THUMB_FORMAT_RGB555_LE:
+    case THUMB_FORMAT_RGB555_LE_90:
+    case THUMB_FORMAT_REC_RGB555_LE:
+    case THUMB_FORMAT_REC_RGB555_LE_90:
+    case THUMB_FORMAT_EXPERIMENTAL_LE:
 	return G_LITTLE_ENDIAN;
+    case THUMB_FORMAT_UYVY_BE:
     case THUMB_FORMAT_RGB565_BE:
     case THUMB_FORMAT_RGB565_BE_90:
+    case THUMB_FORMAT_RGB555_BE:
+    case THUMB_FORMAT_RGB555_BE_90:
+    case THUMB_FORMAT_REC_RGB555_BE:
+    case THUMB_FORMAT_REC_RGB555_BE_90:
+    case THUMB_FORMAT_EXPERIMENTAL_BE:
 	return G_BIG_ENDIAN;
-    case THUMB_FORMAT_UYVY:
-	return -1;
     }
     g_return_val_if_reached (-1);
 }

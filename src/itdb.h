@@ -428,7 +428,11 @@ typedef enum {
     ITDB_THUMB_PHOTO_SMALL,
     ITDB_THUMB_PHOTO_LARGE,
     ITDB_THUMB_PHOTO_FULL_SCREEN,
-    ITDB_THUMB_PHOTO_TV_SCREEN
+    ITDB_THUMB_PHOTO_TV_SCREEN,
+    ITDB_THUMB_COVER_XLARGE,      /* iPhone: cover flow */
+    ITDB_THUMB_COVER_MEDIUM,      /* iPhone: cover view */
+    ITDB_THUMB_COVER_SMEDIUM,     /* iPhone: ??         */
+    ITDB_THUMB_COVER_XSMALL,      /* iPhone: ??         */
 } ItdbThumbType;
 
 

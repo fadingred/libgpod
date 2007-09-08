@@ -50,11 +50,22 @@ typedef enum _ItdbThumbFormat ItdbThumbFormat;
 
 enum _ItdbThumbFormat
 {
-    THUMB_FORMAT_UYVY,
+    THUMB_FORMAT_UYVY_LE,
+    THUMB_FORMAT_UYVY_BE,
     THUMB_FORMAT_RGB565_LE,
     THUMB_FORMAT_RGB565_LE_90,
     THUMB_FORMAT_RGB565_BE,
     THUMB_FORMAT_RGB565_BE_90,
+    THUMB_FORMAT_RGB555_LE,
+    THUMB_FORMAT_RGB555_LE_90,
+    THUMB_FORMAT_RGB555_BE,
+    THUMB_FORMAT_RGB555_BE_90,
+    THUMB_FORMAT_REC_RGB555_LE,
+    THUMB_FORMAT_REC_RGB555_LE_90,
+    THUMB_FORMAT_REC_RGB555_BE,
+    THUMB_FORMAT_REC_RGB555_BE_90,
+    THUMB_FORMAT_EXPERIMENTAL_LE,
+    THUMB_FORMAT_EXPERIMENTAL_BE,
 };
 
 
@@ -83,6 +94,7 @@ struct _Itdb_ArtworkFormat
 	gint16 height;
 	gint16 correlation_id;
         ItdbThumbFormat format;
+        gint32 padding;
 };
 
 G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_device_get_artwork_formats (Itdb_Device *device);
