@@ -1,3 +1,21 @@
+2007-09-15 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_device.c:
+	  Re-organized the representation of iPod models -- instead of 1st
+	  to 7th generation more well-known names like "iPod Nano 1G",
+	  "iPod Nano 2G"... are used.
+
+	  Added untested support for iPod Classic Artwork. Not clear which
+	  thumbnail type is used for what.
+
+	  src/itdb_track.c (itdb_track_set_thumbnails_internal):
+	  Please note: itdb_track_set_thumbnails() needs to be thought
+	  over to make sure all thumbnail types are added properly. Please
+	  see note in itdb_track.c for details.
+
+	  src/itdb.h: Added symbols for the new representation indicated
+	  above: ITDB_IPOD_GENERATION_*, ITDB_IPOD_MODEL_*
+
 2007-09-08 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/db-image-parser.c

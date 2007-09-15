@@ -400,48 +400,85 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
 						    gint rotation,
 						    GError **error)
 {					     
+    /* FIXME: this looks like it would work, but the problem is that
+     * gtkpod calls this function mostly with tracks that are not yet
+     * part of an iTunesDB. This means only the SMALL and LARGE thumbs
+     * are being added.
+     *
+     * One solution would be to add all kinds of cover thumbs and weed
+     * out the ones not supported when the ArtworkDB is written.
+     *
+     * Suggestions welcome!
+     */
+
     gboolean result = FALSE;
+    ItdbThumbType thumbtypes[] =
+	{ ITDB_THUMB_COVER_SMALL,
+	  ITDB_THUMB_COVER_LARGE,
+	  ITDB_THUMB_COVER_XLARGE,
+	  ITDB_THUMB_COVER_MEDIUM,
+	  ITDB_THUMB_COVER_SMEDIUM,
+	  ITDB_THUMB_COVER_XSMALL,
+	  -1 };
+    ItdbThumbType *thumbtype;
+    const Itdb_ArtworkFormat *formats=NULL;
 
     g_return_val_if_fail (track, FALSE);
+    g_return_val_if_fail (filename || image_data || pixbuf, FALSE);
+
+    if (track->itdb && track->itdb->device)
+    {
+	formats = itdb_device_get_artwork_formats (track->itdb->device);
+    }
 
     itdb_artwork_remove_thumbnails (track->artwork);
 
-    if (filename)
+    for (thumbtype=thumbtypes; *thumbtype!=-1; ++thumbtype)
     {
-	result = itdb_artwork_add_thumbnail (track->artwork,
-					     ITDB_THUMB_COVER_SMALL,
-					     filename, rotation, error);
-	if (result == TRUE)
+	if (formats)
+	{   /* check if thumbnail type is supported */
+	    const Itdb_ArtworkFormat *imgp=formats;
+	    for (imgp=formats; imgp->type!=-1; ++imgp)
+	    {
+		if (imgp->type == *thumbtype) break;
+	    }
+	    if (imgp->type == -1)
+	    {
+		continue;  /* for (thumbtype=...) */
+	    }
+	}
+	else
+	{   /* only add COVER_SMALL and COVER_LARGE */
+	    if ((*thumbtype != ITDB_THUMB_COVER_SMALL) &&
+		(*thumbtype != ITDB_THUMB_COVER_LARGE))
+	    {
+		continue;   /* for (thumbtype=...) */
+	    }
+	}
+
+	if (filename)
+	{
 	    result = itdb_artwork_add_thumbnail (track->artwork,
-						 ITDB_THUMB_COVER_LARGE,
+						 *thumbtype,
 						 filename, rotation, error);
-    }
-    if (image_data)
-    {
-	result = itdb_artwork_add_thumbnail_from_data (track->artwork,
-						       ITDB_THUMB_COVER_SMALL,
-						       image_data,
-						       image_data_len,
-						       rotation, error);
-	if (result == TRUE)
+	}
+	if (image_data)
+	{
 	    result = itdb_artwork_add_thumbnail_from_data (track->artwork,
-							   ITDB_THUMB_COVER_LARGE,
+							   *thumbtype,
 							   image_data,
 							   image_data_len,
 							   rotation, error);
-    }
-    if (pixbuf)
-    {
-        result = itdb_artwork_add_thumbnail_from_pixbuf (track->artwork,
-                                                         ITDB_THUMB_COVER_SMALL,
-                                                         pixbuf, rotation,
-                                                         error);
-        if (result == TRUE) {
-            result = itdb_artwork_add_thumbnail_from_pixbuf (track->artwork,
-                                                             ITDB_THUMB_COVER_LARGE,
-                                                             pixbuf, rotation,
-                                                             error);
+	}
+	if (pixbuf)
+	{
+	    result = itdb_artwork_add_thumbnail_from_pixbuf (track->artwork,
+							     *thumbtype,
+							     pixbuf, rotation,
+							     error);
         }
+	if (result == FALSE)
+	    break;  /* for (thumbtype=...) */
     }
 
     if (result == TRUE)

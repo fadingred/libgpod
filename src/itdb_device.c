@@ -80,80 +80,113 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"9282", 20, ITDB_IPOD_MODEL_REGULAR,     ITDB_IPOD_GENERATION_FOURTH, 50},
     {"9787", 25, ITDB_IPOD_MODEL_REGULAR_U2,  ITDB_IPOD_GENERATION_FOURTH, 50},
     {"9268", 40, ITDB_IPOD_MODEL_REGULAR,     ITDB_IPOD_GENERATION_FOURTH, 50},
-    {"A079", 20, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_FOURTH, 50},
-    {"A127", 20, ITDB_IPOD_MODEL_COLOR_U2,    ITDB_IPOD_GENERATION_FOURTH, 50},
-    {"9830", 60, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_FOURTH, 50},
 
     /* First Generation Mini */
-    {"9160",  4, ITDB_IPOD_MODEL_MINI,        ITDB_IPOD_GENERATION_FIRST,   6},
-    {"9436",  4, ITDB_IPOD_MODEL_MINI_BLUE,   ITDB_IPOD_GENERATION_FIRST,   6},
-    {"9435",  4, ITDB_IPOD_MODEL_MINI_PINK,   ITDB_IPOD_GENERATION_FIRST,   6},
-    {"9434",  4, ITDB_IPOD_MODEL_MINI_GREEN,  ITDB_IPOD_GENERATION_FIRST,   6},
-    {"9437",  4, ITDB_IPOD_MODEL_MINI_GOLD,   ITDB_IPOD_GENERATION_FIRST,   6},	
+    {"9160",  4, ITDB_IPOD_MODEL_MINI,        ITDB_IPOD_GENERATION_MINI_1,  6},
+    {"9436",  4, ITDB_IPOD_MODEL_MINI_BLUE,   ITDB_IPOD_GENERATION_MINI_1,  6},
+    {"9435",  4, ITDB_IPOD_MODEL_MINI_PINK,   ITDB_IPOD_GENERATION_MINI_1,  6},
+    {"9434",  4, ITDB_IPOD_MODEL_MINI_GREEN,  ITDB_IPOD_GENERATION_MINI_1,  6},
+    {"9437",  4, ITDB_IPOD_MODEL_MINI_GOLD,   ITDB_IPOD_GENERATION_MINI_1,  6},	
 
     /* Second Generation Mini */
-    {"9800",  4, ITDB_IPOD_MODEL_MINI,        ITDB_IPOD_GENERATION_SECOND,  6},
-    {"9802",  4, ITDB_IPOD_MODEL_MINI_BLUE,   ITDB_IPOD_GENERATION_SECOND,  6},
-    {"9804",  4, ITDB_IPOD_MODEL_MINI_PINK,   ITDB_IPOD_GENERATION_SECOND,  6},
-    {"9806",  4, ITDB_IPOD_MODEL_MINI_GREEN,  ITDB_IPOD_GENERATION_SECOND,  6},
-    {"9801",  6, ITDB_IPOD_MODEL_MINI,        ITDB_IPOD_GENERATION_SECOND, 20},
-    {"9803",  6, ITDB_IPOD_MODEL_MINI_BLUE,   ITDB_IPOD_GENERATION_SECOND, 20},
-    {"9805",  6, ITDB_IPOD_MODEL_MINI_PINK,   ITDB_IPOD_GENERATION_SECOND, 20},
-    {"9807",  6, ITDB_IPOD_MODEL_MINI_GREEN,  ITDB_IPOD_GENERATION_SECOND, 20},	
+    {"9800",  4, ITDB_IPOD_MODEL_MINI,        ITDB_IPOD_GENERATION_MINI_2,  6},
+    {"9802",  4, ITDB_IPOD_MODEL_MINI_BLUE,   ITDB_IPOD_GENERATION_MINI_2,  6},
+    {"9804",  4, ITDB_IPOD_MODEL_MINI_PINK,   ITDB_IPOD_GENERATION_MINI_2,  6},
+    {"9806",  4, ITDB_IPOD_MODEL_MINI_GREEN,  ITDB_IPOD_GENERATION_MINI_2,  6},
+    {"9801",  6, ITDB_IPOD_MODEL_MINI,        ITDB_IPOD_GENERATION_MINI_2, 20},
+    {"9803",  6, ITDB_IPOD_MODEL_MINI_BLUE,   ITDB_IPOD_GENERATION_MINI_2, 20},
+    {"9805",  6, ITDB_IPOD_MODEL_MINI_PINK,   ITDB_IPOD_GENERATION_MINI_2, 20},
+    {"9807",  6, ITDB_IPOD_MODEL_MINI_GREEN,  ITDB_IPOD_GENERATION_MINI_2, 20},	
 
     /* Photo / Fourth Generation */
     /* Buttons are integrated into the "touch wheel". */
-    {"9829", 30, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_FOURTH, 50},
-    {"9585", 40, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_FOURTH, 50},
-    {"9586", 60, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_FOURTH, 50},
-    {"9830", 60, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_FOURTH, 50},
+    {"A079", 20, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_PHOTO,  50},
+    {"A127", 20, ITDB_IPOD_MODEL_COLOR_U2,    ITDB_IPOD_GENERATION_PHOTO,  50},
+    {"9829", 30, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_PHOTO,  50},
+    {"9585", 40, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_PHOTO,  50},
+    {"9830", 60, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_PHOTO,  50},
+    {"9586", 60, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_PHOTO,  50},
+    {"9830", 60, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_PHOTO,  50},
 
     /* Shuffle / Fourth Generation */
-    {"9724", 0.5,ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_FOURTH,  3},
-    {"9725", 1,  ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_FOURTH,  3},
+    {"9724", 0.5,ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_SHUFFLE_1, 3},
+    {"9725", 1,  ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_SHUFFLE_1, 3},
     /* Shuffle / Sixth Generation */
     /* Square, connected to computer via cable */
-    {"A564", 1,  ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_SIXTH,  3},
+    {"A564", 1,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"A947", 1,  ITDB_IPOD_MODEL_SHUFFLE_PINK,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"A949", 1,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"A951", 1,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"A953", 1,  ITDB_IPOD_MODEL_SHUFFLE_ORANGE, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    /* Shuffle / Seventh Generation */
+    /* Square, connected to computer via cable -- look identicaly to
+     * Sixth Generation*/
+    {"B225", 1,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"B233", 1,  ITDB_IPOD_MODEL_SHUFFLE_PURPLE, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"B227", 1,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"B229", 1,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
 
-    /* Nano / Fifth Generation */
+    /* Nano / Fifth Generation (first nano generation) */
     /* Buttons are integrated into the "touch wheel". */
-    {"A350",  1, ITDB_IPOD_MODEL_NANO_WHITE,  ITDB_IPOD_GENERATION_FIFTH,   3},
-    {"A352",  1, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_FIFTH,   3},
-    {"A004",  2, ITDB_IPOD_MODEL_NANO_WHITE,  ITDB_IPOD_GENERATION_FIFTH,   3},
-    {"A099",  2, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_FIFTH,   3},
-    {"A005",  4, ITDB_IPOD_MODEL_NANO_WHITE,  ITDB_IPOD_GENERATION_FIFTH,   6},
-    {"A107",  4, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_FIFTH,   6},
+    {"A350",  1, ITDB_IPOD_MODEL_NANO_WHITE,  ITDB_IPOD_GENERATION_NANO_1,   3},
+    {"A352",  1, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_NANO_1,   3},
+    {"A004",  2, ITDB_IPOD_MODEL_NANO_WHITE,  ITDB_IPOD_GENERATION_NANO_1,   3},
+    {"A099",  2, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_NANO_1,   3},
+    {"A005",  4, ITDB_IPOD_MODEL_NANO_WHITE,  ITDB_IPOD_GENERATION_NANO_1,   6},
+    {"A107",  4, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_NANO_1,   6},
 
     /* Video / Fifth Generation */
     /* Buttons are integrated into the "touch wheel". */
-    {"A002", 30, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_FIFTH,  50},
-    {"A146", 30, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_FIFTH,  50},
-    {"A003", 60, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_FIFTH,  50},
-    {"A147", 60, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_FIFTH,  50},
+    {"A002", 30, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_VIDEO_1,  50},
+    {"A146", 30, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_VIDEO_1,  50},
+    {"A003", 60, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_VIDEO_1,  50},
+    {"A147", 60, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_VIDEO_1,  50},
 
     /* Video / Sixth Generation */
     /* Pretty much identical to fifth generation with better display,
      * extended battery operation time and gap-free playback */
-    {"A444", 30, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_SIXTH,  50},
-    {"A446", 30, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_SIXTH,  50},
-    {"A664", 30, ITDB_IPOD_MODEL_VIDEO_U2,    ITDB_IPOD_GENERATION_SIXTH,  50},
-    {"A448", 80, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_SIXTH,  50},
-    {"A450", 80, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_SIXTH,  50},
+    {"A444", 30, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_VIDEO_2,  50},
+    {"A446", 30, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_VIDEO_2,  50},
+    {"A664", 30, ITDB_IPOD_MODEL_VIDEO_U2,    ITDB_IPOD_GENERATION_VIDEO_2,  50},
+    {"A448", 80, ITDB_IPOD_MODEL_VIDEO_WHITE, ITDB_IPOD_GENERATION_VIDEO_2,  50},
+    {"A450", 80, ITDB_IPOD_MODEL_VIDEO_BLACK, ITDB_IPOD_GENERATION_VIDEO_2,  50},
 
-    /* Nano / Sixth Generation */
+    /* Nano / Sixth Generation (second nano generation) */
     /* Pretty much identical to fifth generation with better display,
      * extended battery operation time and gap-free playback */
-    {"A477",  2, ITDB_IPOD_MODEL_NANO_SILVER, ITDB_IPOD_GENERATION_SIXTH,   3},
-    {"A426",  4, ITDB_IPOD_MODEL_NANO_SILVER, ITDB_IPOD_GENERATION_SIXTH,   6},
-    {"A428",  4, ITDB_IPOD_MODEL_NANO_BLUE,   ITDB_IPOD_GENERATION_SIXTH,   6},
-    {"A487",  4, ITDB_IPOD_MODEL_NANO_GREEN,  ITDB_IPOD_GENERATION_SIXTH,   6},
-    {"A489",  4, ITDB_IPOD_MODEL_NANO_PINK,   ITDB_IPOD_GENERATION_SIXTH,   6},
-    {"A497",  8, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_SIXTH,  14},
+    {"A477",  2, ITDB_IPOD_MODEL_NANO_SILVER, ITDB_IPOD_GENERATION_NANO_2,   3},
+    {"A426",  4, ITDB_IPOD_MODEL_NANO_SILVER, ITDB_IPOD_GENERATION_NANO_2,   6},
+    {"A428",  4, ITDB_IPOD_MODEL_NANO_BLUE,   ITDB_IPOD_GENERATION_NANO_2,   6},
+    {"A487",  4, ITDB_IPOD_MODEL_NANO_GREEN,  ITDB_IPOD_GENERATION_NANO_2,   6},
+    {"A489",  4, ITDB_IPOD_MODEL_NANO_PINK,   ITDB_IPOD_GENERATION_NANO_2,   6},
+    {"A497",  8, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_NANO_2,  14},
 
     /* HP iPods, need contributions for this table */
     /* Buttons are integrated into the "touch wheel". */
     {"E436", 40, ITDB_IPOD_MODEL_REGULAR,     ITDB_IPOD_GENERATION_FOURTH, 50},
-    {"S492", 30, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_FOURTH, 50},
+    {"S492", 30, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_PHOTO,  50},
+
+    /* iPod Classic G1 */
+    /* First generation with "cover flow" */
+    {"B029",  80, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_1, 50},
+    {"B147",  80, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_1, 50},
+    {"B145", 160, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_1, 50},
+    {"B150", 160, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_1, 50},
+
+    /* iPod nano video G1 (Third Nano Generation) */
+    /* First generation of video support for nano */
+    {"A978",   4, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_3,  6},
+    {"A980",   8, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_3, 14},
+    {"B261",   8, ITDB_IPOD_MODEL_NANO_BLACK,     ITDB_IPOD_GENERATION_NANO_3, 14},
+    {"B249",   8, ITDB_IPOD_MODEL_NANO_BLUE,      ITDB_IPOD_GENERATION_NANO_3, 14},
+    {"B253",   8, ITDB_IPOD_MODEL_NANO_GREEN,     ITDB_IPOD_GENERATION_NANO_3, 14},
+    {"B257",   8, ITDB_IPOD_MODEL_NANO_RED,       ITDB_IPOD_GENERATION_NANO_3, 14},
+
+    /* iPod touch G1 */
+    /* With touch screen */
+    {"A623",   8, ITDB_IPOD_MODEL_TOUCH_BLACK,    ITDB_IPOD_GENERATION_TOUCH_1, 14},
+    {"A627",  16, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_TOUCH_1, 28},
+
 
     /* No known model number -- create a Device/SysInfo file with
      * one entry, e.g.:
@@ -191,19 +224,41 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Nano (Green)"),
 	N_("Nano (Pink)"),
 	N_("iPhone (1)"),
+	N_("Shuffle (Silver)"),
+	N_("Shuffle (Pink)"),
+	N_("Shuffle (Blue)"),
+	N_("Shuffle (Green)"),
+	N_("Shuffle (Orange)"),
+	N_("Shuffle (Purple)"),
+	N_("Classic (Silver)"),
+	N_("Classic (Black)"),
+	N_("Touch (Black)"),
 	NULL
 };
 
 /* One entry for each of Itdb_IpodGeneration (itdb.h) */
 static const gchar *ipod_generation_name_table [] = {
 	N_("Unknown"),
-	N_("First Generation"),
-	N_("Second Generation"),
-	N_("Third Generation"),
-	N_("Fourth Generation"),
-	N_("Fifth Generation"),
-	N_("Sixth Generation"),
-	N_("Mobile Phone"),
+	N_("Regular (1st Gen.)"),
+	N_("Regular (2nd Gen.)"),
+	N_("Regular (3rd Gen.)"),
+	N_("Regular (4th Gen.)"),
+	N_("Photo"),
+	N_("Mobile Phones"),
+	N_("Mini (1st Gen.)"),
+	N_("Mini (2nd Gen.)"),
+	N_("Shuffle (1st Gen.)"),
+	N_("Shuffle (2nd Gen.)"),
+	N_("Shuffle (3rd Gen.)"),
+	N_("Nano (1st Gen.)"),
+	N_("Nano (2nd Gen.)"),
+	N_("Nano Video (Read-Only)"),
+	N_("Video (1st Gen.)"),
+	N_("Video (2nd Gen.)"),
+	N_("Classic (Read-Only)"),
+	N_("Touch (Reead-Only)"),
+	N_("Unused"),
+	N_("Unused"),
 	NULL
 };
 
@@ -251,33 +306,23 @@ static const Itdb_ArtworkFormat ipod_iphone_1_artwork_info[] = {
     {-1,                           -1,  -1,   -1, -1}
 };
 
+static const Itdb_ArtworkFormat ipod_classic_1_artwork_info[] = {
+    /* officially 55x55 -- verify! */
+    {ITDB_THUMB_COVER_XSMALL,      56,  56, 1061, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_COVER_MEDIUM,     128, 128, 1055, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_COVER_XLARGE,     320, 320, 1060, THUMB_FORMAT_RGB565_LE},
 
-/* This will be indexed using a value from the ITDB_IPOD_MODEL enum */
-static const Itdb_ArtworkFormat *ipod_artwork_info_table[] = {
-        NULL,                      /* Invalid       */
-	NULL,                      /* Unknown       */
-	ipod_photo_artwork_info,   /* Color         */
-	ipod_photo_artwork_info,   /* Color U2      */
-	NULL,                      /* Grayscale     */ 
-	NULL,                      /* Grayscale U2  */
-	NULL,                      /* Mini (Silver) */
-	NULL,                      /* Mini (Blue)   */
-	NULL,                      /* Mini (Pink)   */
-	NULL,                      /* Mini (Green)  */
-	NULL,                      /* Mini (Gold)   */
-	NULL,                      /* Shuffle       */
-	ipod_nano_artwork_info,    /* Nano (White)  */
-	ipod_nano_artwork_info,    /* Nano (Black)  */
-	ipod_video_artwork_info,   /* Video (White) */
-	ipod_video_artwork_info,   /* Video (Black) */
-	ipod_mobile_1_artwork_info,/* Mobile (1)    */
-	ipod_video_artwork_info,   /* Video U2      */
-	ipod_nano_artwork_info,    /* Nano (Silver) */
-	ipod_nano_artwork_info,    /* Nano (Blue)   */
-	ipod_nano_artwork_info,    /* Nano (Green)  */
-	ipod_nano_artwork_info,    /* Nano (Pink)   */
-	ipod_iphone_1_artwork_info,/* iPhone (1)    */
-	NULL
+    /* not sure if the THUMB_FORMAT is correct */
+    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1067, THUMB_FORMAT_UYVY_BE},
+    /* not sure if the THUMB_FORMAT is correct */
+    {ITDB_THUMB_PHOTO_FULL_SCREEN,320, 240, 1064, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_SMALL,       64,  64, 1066, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_LARGE,      320, 320, 1060, THUMB_FORMAT_RGB565_LE},
+/*  These are the same as for the iPod video... -- labeled by the iPod as
+    "chapter images" */
+    {ITDB_THUMB_COVER_SMALL,      100, 100, 1028, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_COVER_LARGE,      200, 200, 1029, THUMB_FORMAT_RGB565_LE},
+    {-1,                           -1,  -1,   -1, -1}
 };
 
 
@@ -599,7 +644,49 @@ itdb_device_get_artwork_formats (Itdb_Device *device)
 
     g_return_val_if_fail (info, NULL);
 
-    return ipod_artwork_info_table[info->ipod_model];
+    switch (info->ipod_generation)
+    {
+    case ITDB_IPOD_GENERATION_UNKNOWN:
+    case ITDB_IPOD_GENERATION_FIRST:
+    case ITDB_IPOD_GENERATION_SECOND:
+    case ITDB_IPOD_GENERATION_THIRD:
+    case ITDB_IPOD_GENERATION_FOURTH:
+	return NULL;
+    case ITDB_IPOD_GENERATION_PHOTO:
+	return ipod_photo_artwork_info;
+    case ITDB_IPOD_GENERATION_MOBILE:
+	switch (info->ipod_model)
+	{
+	case ITDB_IPOD_MODEL_MOBILE_1:
+	    return ipod_mobile_1_artwork_info;
+	case ITDB_IPOD_MODEL_IPHONE_1:
+	    return ipod_iphone_1_artwork_info;
+	default:
+	    g_return_val_if_reached (NULL);
+	}
+    case ITDB_IPOD_GENERATION_MINI_1:
+    case ITDB_IPOD_GENERATION_MINI_2:
+    case ITDB_IPOD_GENERATION_SHUFFLE_1:
+    case ITDB_IPOD_GENERATION_SHUFFLE_2:
+    case ITDB_IPOD_GENERATION_SHUFFLE_3:
+	return NULL;
+    case ITDB_IPOD_GENERATION_NANO_1:
+    case ITDB_IPOD_GENERATION_NANO_2:
+	return ipod_nano_artwork_info;
+    case ITDB_IPOD_GENERATION_NANO_3:
+	return NULL; /* FIXME: */
+    case ITDB_IPOD_GENERATION_VIDEO_1:
+    case ITDB_IPOD_GENERATION_VIDEO_2:
+	return ipod_video_artwork_info;
+    case ITDB_IPOD_GENERATION_CLASSIC_1:
+	return ipod_classic_1_artwork_info;
+    case ITDB_IPOD_GENERATION_TOUCH_1:
+	return NULL; /* FIXME: */
+    case ITDB_IPOD_GENERATION_FIFTH:
+    case ITDB_IPOD_GENERATION_SIXTH:
+	return NULL;
+    }
+    g_return_val_if_reached (NULL);
 }
 
 
