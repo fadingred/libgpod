@@ -5,6 +5,7 @@
 	* src/itdb_itunesdb.c (mk_mhbd): write extended header needed
           for new iPod Nanos (3G Video) and iPod Classics.
 
+	  src/itdb_sysinfo.c
 	  src/itdb_device.c
 	  src/itdb_device.h: Code to parse SysInfoExtended and SysInfo
 	  for the FireWireGUID. You must either copy the iPod
