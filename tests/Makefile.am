@@ -1,5 +1,5 @@
 if HAVE_GDKPIXBUF
-TESTTHUMBS=test-thumbnails test-write-thumbnails test-photos get-timezone
+TESTTHUMBS=test-thumbnails test-write-thumbnails test-photos get-timezone 
 
 test_thumbnails_SOURCES = test-covers.c
 test_thumbnails_CFLAGS = $(AM_CFLAGS)
@@ -33,9 +33,14 @@ test_ls_LDADD =
 test_init_ipod_SOURCES = test-init-ipod.c
 test_init_ipod_LDADD = 
 
+test_checksum_SOURCES = test-checksum.c
+
+test_firewire_id_SOURCES = test-fw-id.c
+
 get_timezone_SOURCES = get-timezone.c
 
-noinst_PROGRAMS=test-itdb test-ls $(TESTTHUMBS) $(TESTTAGLIB) $(TESTMISC)
+noinst_PROGRAMS=test-itdb test-ls test-checksum test-firewire-id \
+	        $(TESTTHUMBS) $(TESTTAGLIB) $(TESTMISC)
 
 INCLUDES=$(LIBGPOD_CFLAGS) -I$(top_srcdir)/src -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
 LIBS=$(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la

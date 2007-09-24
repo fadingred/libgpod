@@ -1,3 +1,30 @@
+2007-09-24 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	** code courtesy of Christophe Fergeau **
+
+	* src/itdb_itunesdb.c (mk_mhbd): write extended header needed
+          for new iPod Nanos (3G Video) and iPod Classics.
+
+	  src/itdb_device.c
+	  src/itdb_device.h: Code to parse SysInfoExtended and SysInfo
+	  for the FireWireGUID. You must either copy the iPod
+	  description XML file to Device/SysInfoExtended or add a line
+	  'FirewireGuid: 000A27....' to Device/SysInfo. You can get
+	  your FirewireGuid by using the tests/test-fw-id test program.
+
+	* src/sha1.c
+	  src/sha1.h
+	  src/itdb_sha1.c
+	  src/itdb_sha1.h
+	  New files for obscure hash generation code.
+
+	* src/Makefile.am: added new files.
+
+        * tests/test-checksum.c
+	  tests/test-fw-id.c
+	  tests/Makefile.am: test programs to retrieve the
+	  FirewireGuid and calculate/write the obscure hash.
+
 2007-09-15 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_device.c:

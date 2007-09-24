@@ -100,6 +100,10 @@ struct _Itdb_ArtworkFormat
 G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_device_get_artwork_formats (Itdb_Device *device);
 G_GNUC_INTERNAL gint itdb_device_musicdirs_number (Itdb_Device *device);
 G_GNUC_INTERNAL void itdb_device_autodetect_endianess (Itdb_Device *device);
+G_GNUC_INTERNAL gboolean itdb_device_read_sysinfo_xml (Itdb_Device *device, 
+						       GError **error);
+G_GNUC_INTERNAL guint64 itdb_device_get_firewire_id (Itdb_Device *device);
+
 G_END_DECLS
 
 #endif

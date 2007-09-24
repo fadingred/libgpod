@@ -223,6 +223,7 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Nano (Blue)"),
 	N_("Nano (Green)"),
 	N_("Nano (Pink)"),
+	N_("Nano (Red)"),
 	N_("iPhone (1)"),
 	N_("Shuffle (Silver)"),
 	N_("Shuffle (Pink)"),
@@ -471,12 +472,13 @@ gboolean itdb_device_read_sysinfo (Itdb_Device *device)
 	g_free (sysinfo_path);
     }
     g_free (dev_path);
+
+    itdb_device_read_sysinfo_xml (device, NULL);
+
     /* indicate that sysinfo is identical to what is on the iPod */
     device->sysinfo_changed = FALSE;
     return result;
 }
-
-
 
 /* used by itdb_device_write_sysinfo() */
 static void write_sysinfo_entry (const gchar *key,
@@ -925,7 +927,6 @@ const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generatio
  *
  * Return value: true if @device can display artwork.
  */
-
 gboolean itdb_device_supports_artwork (Itdb_Device *device)
 {
     if (device == NULL) {
@@ -1034,4 +1035,27 @@ static void itdb_device_set_timezone_info (Itdb_Device *device)
         /* Adjust for DST */
         device->timezone_shift += 3600;
     }
+}
+
+/**
+ * itdb_device_get_firewire_id
+ * @device: an #Itdb_Device
+ *
+ * Returns the Firewire ID for @device, this is useful to calculate the 
+ * iTunesDB checksum which is expected by newer iPod models
+ * (iPod classic/fat nanos)
+ *
+ * Return value: the guint64 firewire id, or 0 if we don't know it
+ **/
+guint64 itdb_device_get_firewire_id (Itdb_Device *device)
+{
+    gchar *fwid;
+
+    g_assert (device->sysinfo != NULL);
+
+    fwid = g_hash_table_lookup (device->sysinfo, "FirewireGuid");
+    if (fwid == NULL) {
+	return 0;
+    }
+    return g_ascii_strtoull (fwid, NULL, 16);
 }

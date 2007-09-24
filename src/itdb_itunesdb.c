@@ -110,12 +110,15 @@
 #include "db-artwork-parser.h"
 #include "itdb_device.h"
 #include "itdb_private.h"
+#include "itdb_sha1.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <glib-object.h>
 #include <glib/gi18n-lib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/types.h>
@@ -3401,7 +3404,7 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   cts = fexp->wcontents;
 
   put_header (cts, "mhbd");
-  put32lint (cts, 104); /* header size */
+  put32lint (cts, 188); /* header size */
   put32lint (cts, -1);  /* size of whole mhdb -- fill in later */
   put32lint (cts, 1);   /* ? */
   /* Version number: 0x01: iTunes 2
@@ -3416,13 +3419,33 @@ static void mk_mhbd (FExport *fexp, guint32 children)
 		     0x10: iTunes 6.0.1(?)
 		     0x11: iTunes 6.0.2
                      0x12 = iTunes 6.0.5.
-		     0x13 = iTunes 7 */
-  fexp->itdb->version = 0x13;
+		     0x13 = iTunes 7 
+                     0x14 = iTunes 7.1
+                     0x15 = iTunes 7.2
+                     0x19 = iTunes 7.4
+    Be aware that newer ipods won't work if the library version number is too 
+    old
+  */
+  fexp->itdb->version = 0x19;
   put32lint (cts, fexp->itdb->version);
   put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
-  put32lint (cts, 2);   /* ? */
-  put32_n0 (cts, 17);   /* dummy space */
+  /* 0x20 */
+  put16lint (cts, 2);   /* always seems to be 2 */
+  put16_n0  (cts, 7);  /* unknown */
+  /* 0x30 */
+  put16lint (cts, 1);   /* ? but iPod Classic/fat Nanos won't display any song
+			 * if it's not 1 */
+  put16_n0  (cts, 10);  /* unknown */
+  /* 0x46 */
+  put16lint (cts, 0);   /* langauge */
+  put64lint (cts, 0);   /* library persistent ID */
+  /* 0x50 */
+  put32lint (cts, 0);   /* unknown: seen: 0x05 for nano 3G */
+  put32lint (cts, 0);   /* unknown: seen: 0x4d for nano 3G */
+  put32_n0 (cts, 5);    /* 20 bytes hash */
+  put32lint (cts, 0);   /* timezone offset in seconds */
+  put32_n0 (cts, 19);   /* dummy space */
 }
 
 /* Fill in the length of a standard header */
@@ -4920,6 +4943,122 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
     return result;
 }
 
+static unsigned char *
+calculate_db_checksum (const char *itdb_path, guint64 fwid)
+{
+    int fd;
+    struct stat stat_buf;
+    int result;
+    unsigned char *itdb_data;
+    unsigned char *checksum;
+
+    fd = open (itdb_path, O_RDONLY);
+    if (fd < 0) {
+	g_warning ("Couldn't open %s", itdb_path);
+	return NULL;
+    }
+
+    result = fstat (fd, &stat_buf);
+    if (result != 0) {
+	g_warning ("Couldn't stat %s", itdb_path);
+	close (fd);
+	return NULL;
+    }
+
+    if (stat_buf.st_size < 0x80) {
+	g_warning ("%s is too small", itdb_path);
+	close (fd);
+	return NULL;
+    }
+
+    itdb_data = mmap (NULL, stat_buf.st_size, 
+		      PROT_READ | PROT_WRITE, 
+		      MAP_PRIVATE, fd, 0);
+    if (itdb_data == MAP_FAILED) {
+	g_warning ("Couldn't mmap %s", itdb_path);
+	close (fd);
+	return NULL;
+    }
+
+    /* Those fields must be zero'ed out for the sha1 calculation */
+    memset(itdb_data+0x18, 0, 8);
+    memset(itdb_data+0x32, 0, 20);
+    memset(itdb_data+0x58, 0, 20);
+
+    checksum = itdb_compute_hash (fwid, itdb_data, stat_buf.st_size);
+
+    munmap (itdb_data, stat_buf.st_size);
+    close (fd);
+
+    return checksum;
+}
+
+static gboolean itdb_write_checksum_to_file (const char *path, 
+					     const unsigned char *checksum,
+					     size_t size)
+{
+    FILE *f;
+    int result;
+    size_t count;
+
+    f = fopen (path, "rb+");
+    if (f == NULL) {
+	return FALSE;
+    }
+    
+    result = fseek (f, 0x58, SEEK_SET);
+    if (result != 0) {
+	fclose (f);
+	return FALSE;
+    }
+    
+    count = fwrite (checksum, size, 1, f);
+    fclose (f);
+   
+    return (count == 1);
+}
+
+static gboolean itdb_write_checksum (Itdb_iTunesDB *db)
+{
+    guint64 fwid;
+    char *itdb_path;
+    unsigned char *checksum;
+    gboolean result;
+
+    if (db->device == NULL) {
+	return FALSE;
+    }
+
+    fwid = itdb_device_get_firewire_id (db->device);
+    if (fwid == 0) {
+	return FALSE;
+    }
+
+    itdb_path = itdb_get_itunesdb_path (itdb_get_mountpoint (db));
+    checksum = calculate_db_checksum (itdb_path, fwid);
+
+    if (checksum == NULL) {
+	g_free (itdb_path);
+	return FALSE;
+    }
+
+    result = itdb_write_checksum_to_file (itdb_path, checksum, 
+					  strlen ((char *)checksum));
+    g_free (itdb_path);
+
+    {
+	unsigned int i;
+	g_print ("Checksum: ");
+	for (i = 0; i < strlen ((char *)checksum); i++) {
+	    g_print ("%02x ", checksum[i]);
+	}
+    }
+    g_print ("\n");
+    g_free (checksum);
+    
+    return result;
+}
+
 /**
  * itdb_write:
  * @itdb: the #Itdb_iTunesDB to write to disk
@@ -4965,8 +5104,16 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
     g_free (itunes_filename);
     g_free (itunes_path);
 
-    if (result == TRUE)
+    if (result != FALSE)
     {
+	/* Set checksum (ipods require it starting from iPod Classic 
+	 * and fat Nanos)
+	 */
+	result = itdb_write_checksum (itdb);
+	if (!result) {
+	    g_warning ("Couldn't set checksum");
+	}
+
 	/* Write SysInfo file if it has changed */
 	if (itdb->device->sysinfo_changed)
 	{
