@@ -1,9 +1,17 @@
+2007-09-26 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_device.c: remove "read only" notice on Nano Video
+          description.
+
+	* ChangeLog: explained better about SysInfo* files.
+
 2007-09-24 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	** code courtesy of Christophe Fergeau **
 
 	* src/itdb_itunesdb.c (mk_mhbd): write extended header needed
-          for new iPod Nanos (3G Video) and iPod Classics.
+          for new iPod Nanos (3G Video) and iPod Classics (must fill
+          in SysInfo or SysInfoFileExtended -- see below).
 
 	  src/itdb_sysinfo.c
 	  src/itdb_device.c
@@ -11,7 +19,9 @@
 	  for the FireWireGUID. You must either copy the iPod
 	  description XML file to Device/SysInfoExtended or add a line
 	  'FirewireGuid: 000A27....' to Device/SysInfo. You can get
-	  your FirewireGuid by using the tests/test-fw-id test program.
+	  your FirewireGuid by looking at /proc/bus/usb/devices and
+	  search for a serial number close to the "Apple" entry. The
+	  serial number will probably start with 000A27.
 
 	* src/sha1.c
 	  src/sha1.h
