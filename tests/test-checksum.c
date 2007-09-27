@@ -93,7 +93,7 @@ calculate_db_checksum (const char *itdb_path, guint64 fwid)
     memset(itdb_data+0x32, 0, 20);
     memset(itdb_data+0x58, 0, 20);
 
-    checksum = itdb_compute_hash (fwid, itdb_data, stat_buf.st_size);
+    checksum = itdb_compute_hash (fwid, itdb_data, stat_buf.st_size, NULL);
 
     munmap (itdb_data, stat_buf.st_size);
     close (fd);

@@ -211,13 +211,15 @@ static unsigned char *generate_key (guint64 fwid)
 
 unsigned char *itdb_compute_hash (guint64 firewire_id,
                                   const unsigned char *itdb,
-                                  unsigned long size)
+                                  unsigned long size, 
+				  gsize *len)
 {
     unsigned char *key;
     unsigned char *hash;
     SHA_INFO context;
     int i;
-
+    const gsize CHECKSUM_LEN = 20;
+    
     key = generate_key(firewire_id);
 
     /* hmac sha1 */
@@ -227,7 +229,7 @@ unsigned char *itdb_compute_hash (guint64 firewire_id,
     }
 
     /* 20 bytes for the checksum, and 1 trailing \0 */
-    hash = g_new0 (unsigned char, 21);
+    hash = g_new0 (unsigned char, CHECKSUM_LEN + 1);
     sha_init(&context);
     sha_update(&context, key, 64);
     sha_update(&context, itdb, size);
@@ -238,10 +240,14 @@ unsigned char *itdb_compute_hash (guint64 firewire_id,
 
     sha_init(&context);
     sha_update(&context, key, 64);
-    sha_update(&context, hash, 20);
+    sha_update(&context, hash, CHECKSUM_LEN);
     sha_final(hash, &context);
 
     g_free (key);
+
+    if (len != NULL) {
+	*len = CHECKSUM_LEN;
+    }
 
     return hash;
 }

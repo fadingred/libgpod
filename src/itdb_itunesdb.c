@@ -4944,7 +4944,7 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 }
 
 static unsigned char *
-calculate_db_checksum (const char *itdb_path, guint64 fwid)
+calculate_db_checksum (const char *itdb_path, guint64 fwid, gsize *len)
 {
     int fd;
     struct stat stat_buf;
@@ -4985,7 +4985,7 @@ calculate_db_checksum (const char *itdb_path, guint64 fwid)
     memset(itdb_data+0x32, 0, 20);
     memset(itdb_data+0x58, 0, 20);
 
-    checksum = itdb_compute_hash (fwid, itdb_data, stat_buf.st_size);
+    checksum = itdb_compute_hash (fwid, itdb_data, stat_buf.st_size, len);
 
     munmap (itdb_data, stat_buf.st_size);
     close (fd);
@@ -5023,6 +5023,7 @@ static gboolean itdb_write_checksum (Itdb_iTunesDB *db)
     guint64 fwid;
     char *itdb_path;
     unsigned char *checksum;
+    gsize len;
     gboolean result;
 
     if (db->device == NULL) {
@@ -5035,15 +5036,14 @@ static gboolean itdb_write_checksum (Itdb_iTunesDB *db)
     }
 
     itdb_path = itdb_get_itunesdb_path (itdb_get_mountpoint (db));
-    checksum = calculate_db_checksum (itdb_path, fwid);
+    checksum = calculate_db_checksum (itdb_path, fwid, &len);
 
     if (checksum == NULL) {
 	g_free (itdb_path);
 	return FALSE;
     }
 
-    result = itdb_write_checksum_to_file (itdb_path, checksum, 
-					  strlen ((char *)checksum));
+    result = itdb_write_checksum_to_file (itdb_path, checksum, len);
     g_free (itdb_path);
 
     {

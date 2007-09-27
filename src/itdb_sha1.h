@@ -33,5 +33,5 @@
 
 unsigned char *itdb_compute_hash (guint64 firewire_id,
                                   const unsigned char *itdb,
-                                  unsigned long size);
+                                  unsigned long size, gsize *len);
 #endif

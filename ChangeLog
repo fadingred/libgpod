@@ -1,3 +1,14 @@
+2007-09-27  Christophe,,,  <teuf@atchoum>
+
+	* src/itdb_itunesdb.c: (calculate_db_checksum),
+	(itdb_write_checksum):
+	* src/itdb_sha1.c: (itdb_compute_hash):
+	* src/itdb_sha1.h: propagate the calculated checksum length as an out
+	parameter to the checksumming functions, fixes a bug where a partial 
+	checksum would be written if it contained a \0
+	* tests/test-checksum.c: (calculate_db_checksum): update test program
+	to that API change
+
 2007-09-26 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_device.c: remove "read only" notice on Nano Video
