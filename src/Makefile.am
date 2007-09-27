@@ -24,7 +24,7 @@ libgpodincludedir = $(includedir)/gpod-1.0/gpod
 libgpodinclude_HEADERS = itdb.h
 noinst_HEADERS = 		\
 	db-artwork-debug.h	\
-	db-artwork-parser.h 	\	
+	db-artwork-parser.h 	\
 	db-image-parser.h   	\
 	db-itunes-parser.h  	\
 	db-parse-context.h  	\
