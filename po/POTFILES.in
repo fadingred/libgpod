@@ -19,3 +19,5 @@ tests/test-covers.c
 tests/test-ls.c
 tests/test-photos.c
 tests/test-write-covers.c
+tests/test-init-ipod.c
+tools/read-sysinfoextended-sgutils.c
