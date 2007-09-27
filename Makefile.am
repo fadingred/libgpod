@@ -1,4 +1,4 @@
-SUBDIRS=src tests po m4 docs bindings 
+SUBDIRS=src tools tests po m4 docs bindings 
 
 # build documentation when doing a distcheck.
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc

@@ -1,4 +1,15 @@
-2007-09-27  Christophe,,,  <teuf@atchoum>
+2007-09-27  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.ac: build tool to generate the iPod SysInfoExtended file
+	if sgutils is detected
+	* Makefile.am:
+	* tools/
+	* tools/Makefile.am: changes to optionally build the sgutils-based tool
+	* tools/read-sysinfoextended-sgutils.c: (do_sg_inquiry),
+	(read_sysinfo_extended), (main): new file, reads the SysInfoExtended
+	file from the iPod using SCSI queries
+
+2007-09-27  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: (calculate_db_checksum),
 	(itdb_write_checksum):

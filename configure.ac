@@ -60,6 +60,15 @@ PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.4.0 gobject-2.0)
 LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
 
 dnl **************************************************
+dnl * sgutils is necessary to get the xml device file from the ipod
+dnl **************************************************
+AC_CHECK_LIB(sgutils, sg_ll_inquiry,
+             [SGUTILS_LIBS="-lsgutils"; have_sgutils=yes], 
+	     have_sgutils=no)
+AC_SUBST(SGUTILS_LIBS)
+AM_CONDITIONAL(HAVE_SGUTILS, test x"$have_sgutils" = xyes)
+
+dnl **************************************************
 dnl * TagLib is only used by test-rebuild-db 
 dnl **************************************************
 PKG_CHECK_MODULES(TAGLIB, taglib, have_taglib=yes, have_taglib=no)
@@ -200,6 +209,7 @@ docs/reference/version.xml
 m4/Makefile
 po/Makefile.in
 src/Makefile
+tools/Makefile
 tests/Makefile
 libgpod-1.0.pc
 ])
