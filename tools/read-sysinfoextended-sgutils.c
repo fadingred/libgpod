@@ -119,7 +119,6 @@ main (int argc, char **argv)
 	const char *mountpoint = argv[2];
 	char *device_path;
 	char *filename;
-	const char *components[] = { "SysInfoExtended", NULL };
 	gboolean success;
 
 	device_path = itdb_get_device_dir (mountpoint);
@@ -130,7 +129,7 @@ main (int argc, char **argv)
 	    return 1;
 	}
 
-	filename = itdb_resolve_path (device_path, components);
+	filename = g_build_filename (device_path, "SysInfoExtended", NULL);
 	g_free (device_path);
 	if (filename == NULL) {
 	    g_print (_("Couldn't resolve SysInfoExtended path on %s"),

@@ -1,3 +1,9 @@
+2007-09-28  Christophe Fergeau  <christophe@anevia.com>
+
+	* tools/read-sysinfoextended-sgutils.c: (main): use g_build_filename
+	instead of itdb_resolve_filename since the latter will fail if
+	SysInfoExtended does not already exist
+
 2007-09-27  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac: build tool to generate the iPod SysInfoExtended file
