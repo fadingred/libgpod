@@ -1,4 +1,8 @@
-2007-09-28  Christophe Fergeau  <christophe@anevia.com>
+2007-09-30  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: fix typo and don't mark iPod Classic as read-only
+
+2007-09-28  Christophe Fergeau  <teuf@gnome.org>
 
 	* tools/read-sysinfoextended-sgutils.c: (main): use g_build_filename
 	instead of itdb_resolve_filename since the latter will fail if

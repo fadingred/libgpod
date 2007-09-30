@@ -256,8 +256,8 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Nano Video (3rd Gen.)"),
 	N_("Video (1st Gen.)"),
 	N_("Video (2nd Gen.)"),
-	N_("Classic (Read-Only)"),
-	N_("Touch (Reead-Only)"),
+	N_("Classic"),
+	N_("Touch (Read-Only)"),
 	N_("Unused"),
 	N_("Unused"),
 	NULL
