@@ -5045,15 +5045,6 @@ static gboolean itdb_write_checksum (Itdb_iTunesDB *db)
 
     result = itdb_write_checksum_to_file (itdb_path, checksum, len);
     g_free (itdb_path);
-
-    {
-	unsigned int i;
-	g_print ("Checksum: ");
-	for (i = 0; i < strlen ((char *)checksum); i++) {
-	    g_print ("%02x ", checksum[i]);
-	}
-    }
-    g_print ("\n");
     g_free (checksum);
     
     return result;
