@@ -4861,6 +4861,49 @@ static void prepare_itdb_for_write (FExport *fexp)
 }
 
 
+static gboolean write_db_checksum (FExport *fexp, GError **error)
+{
+    guint64 fwid;
+    guchar backup18[8];
+    guchar backup32[20];
+    unsigned char *itdb_data;
+    unsigned char *checksum;
+    gsize len;
+
+    fwid = itdb_device_get_firewire_id (fexp->itdb->device);
+    if (fwid == 0) {
+	g_set_error (error, 0, -1, "Couldn't find the iPod firewire ID");
+	return FALSE;
+    }
+
+    if (fexp->wcontents->pos < 0x6c) {
+	g_set_error (error, 0, -1, "iTunesDB file too small to write checksum");
+	return FALSE;
+    }
+    itdb_data = (unsigned char *)fexp->wcontents->contents;
+
+    memcpy (backup18, itdb_data+0x18, sizeof (backup18));
+    memcpy (backup32, itdb_data+0x32, sizeof (backup32));
+
+    /* Those fields must be zero'ed out for the sha1 calculation */
+    memset(itdb_data+0x18, 0, 8);
+    memset(itdb_data+0x32, 0, 20);
+    memset(itdb_data+0x58, 0, 20);
+
+    checksum = itdb_compute_hash (fwid, itdb_data, fexp->wcontents->pos, &len);
+    if (checksum == NULL) {
+	g_set_error (error, 0, -1, "Failed to compute checksum");
+	return FALSE;
+    }
+    memcpy (itdb_data+0x58, checksum, len);    
+    g_free (checksum);
+
+    memcpy (itdb_data+0x18, backup18, sizeof (backup18));
+    memcpy (itdb_data+0x32, backup32, sizeof (backup32));
+
+    return TRUE;
+}
+
 /**
  * itdb_write_file:
  * @itdb: the #Itdb_iTunesDB to save
@@ -4918,6 +4961,11 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 	    if (write_mhsd_playlists (fexp, 2))
 	    {
 		fix_header (cts, mhbd_seek);
+
+		/* Set checksum (ipods require it starting from iPod Classic 
+		 * and fat Nanos)
+		 */
+		write_db_checksum (fexp, &fexp->error);
 	    }
 	}
     }
@@ -4944,113 +4992,6 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
        disconnect as soon as gtkpod returns */
     sync ();
 
-    return result;
-}
-
-static unsigned char *
-calculate_db_checksum (const char *itdb_path, guint64 fwid, gsize *len)
-{
-    int fd;
-    struct stat stat_buf;
-    int result;
-    unsigned char *itdb_data;
-    unsigned char *checksum;
-
-    fd = open (itdb_path, O_RDONLY);
-    if (fd < 0) {
-	g_warning ("Couldn't open %s", itdb_path);
-	return NULL;
-    }
-
-    result = fstat (fd, &stat_buf);
-    if (result != 0) {
-	g_warning ("Couldn't stat %s", itdb_path);
-	close (fd);
-	return NULL;
-    }
-
-    if (stat_buf.st_size < 0x80) {
-	g_warning ("%s is too small", itdb_path);
-	close (fd);
-	return NULL;
-    }
-
-    itdb_data = mmap (NULL, stat_buf.st_size, 
-		      PROT_READ | PROT_WRITE, 
-		      MAP_PRIVATE, fd, 0);
-    if (itdb_data == MAP_FAILED) {
-	g_warning ("Couldn't mmap %s", itdb_path);
-	close (fd);
-	return NULL;
-    }
-
-    /* Those fields must be zero'ed out for the sha1 calculation */
-    memset(itdb_data+0x18, 0, 8);
-    memset(itdb_data+0x32, 0, 20);
-    memset(itdb_data+0x58, 0, 20);
-
-    checksum = itdb_compute_hash (fwid, itdb_data, stat_buf.st_size, len);
-
-    munmap (itdb_data, stat_buf.st_size);
-    close (fd);
-
-    return checksum;
-}
-
-static gboolean itdb_write_checksum_to_file (const char *path, 
-					     const unsigned char *checksum,
-					     size_t size)
-{
-    FILE *f;
-    int result;
-    size_t count;
-
-    f = fopen (path, "rb+");
-    if (f == NULL) {
-	return FALSE;
-    }
-    
-    result = fseek (f, 0x58, SEEK_SET);
-    if (result != 0) {
-	fclose (f);
-	return FALSE;
-    }
-    
-    count = fwrite (checksum, size, 1, f);
-    fclose (f);
-   
-    return (count == 1);
-}
-
-static gboolean itdb_write_checksum (Itdb_iTunesDB *db)
-{
-    guint64 fwid;
-    char *itdb_path;
-    unsigned char *checksum;
-    gsize len;
-    gboolean result;
-
-    if (db->device == NULL) {
-	return FALSE;
-    }
-
-    fwid = itdb_device_get_firewire_id (db->device);
-    if (fwid == 0) {
-	return FALSE;
-    }
-
-    itdb_path = itdb_get_itunesdb_path (itdb_get_mountpoint (db));
-    checksum = calculate_db_checksum (itdb_path, fwid, &len);
-
-    if (checksum == NULL) {
-	g_free (itdb_path);
-	return FALSE;
-    }
-
-    result = itdb_write_checksum_to_file (itdb_path, checksum, len);
-    g_free (itdb_path);
-    g_free (checksum);
-    
     return result;
 }
 
@@ -5101,14 +5042,6 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 
     if (result != FALSE)
     {
-	/* Set checksum (ipods require it starting from iPod Classic 
-	 * and fat Nanos)
-	 */
-	result = itdb_write_checksum (itdb);
-	if (!result) {
-	    g_warning ("Couldn't set checksum");
-	}
-
 	/* Write SysInfo file if it has changed */
 	if (itdb->device->sysinfo_changed)
 	{

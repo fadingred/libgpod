@@ -9,6 +9,13 @@
 	* src/itdb_device.c: added artwork definition file (cover only)
 	  for iPod Nano Videos (3G). Thanks to Simon Schulz.
 
+	* src/itdb_itunesdb.c: integrate checksum writing into the
+	  creation of the iTunesDB instead of modifying the iTunesDB file
+	  in place (Christophe)
+
+	* src/itdb_device.c: re-use artwork definition for iPod classic
+	  also for iPod Nanos 3G.
+
 2007-09-30  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: (itdb_write_checksum): remove debugging g_print

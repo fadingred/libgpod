@@ -307,14 +307,6 @@ static const Itdb_ArtworkFormat ipod_iphone_1_artwork_info[] = {
     {-1,                           -1,  -1,   -1, -1}
 };
 
-static const Itdb_ArtworkFormat ipod_nano3_artwork_info[] = {
-    {ITDB_THUMB_COVER_SMALL,      56,  55, 1061, THUMB_FORMAT_RGB565_LE, 0x1810}, /*pad data to 0x1810 bytes*/
-    {ITDB_THUMB_COVER_LARGE,     320, 320, 1062, THUMB_FORMAT_RGB565_LE},
-    {ITDB_THUMB_COVER_MEDIUM,     128, 128, 1055, THUMB_FORMAT_RGB565_LE},
-    {-1,                           -1,  -1,   -1, -1}
-};
-
-
 static const Itdb_ArtworkFormat ipod_classic_1_artwork_info[] = {
     /* officially 55x55 -- verify! */
     {ITDB_THUMB_COVER_XSMALL,      56,  56, 1061, THUMB_FORMAT_RGB565_LE},
@@ -333,6 +325,9 @@ static const Itdb_ArtworkFormat ipod_classic_1_artwork_info[] = {
     {ITDB_THUMB_COVER_LARGE,      200, 200, 1029, THUMB_FORMAT_RGB565_LE},
     {-1,                           -1,  -1,   -1, -1}
 };
+
+/* these seem to be identical... */
+#define ipod_nano3_artwork_info ipod_classic_1_artwork_info
 
 
 static void itdb_device_set_timezone_info (Itdb_Device *device);
