@@ -1,0 +1,34 @@
+Starting with the iPod Classics and the Video Nanos, libgpod needs an 
+additional configuration step to correctly modify the iPod content. libgpod 
+needs to know the so-called iPod "firewire id", otherwise the iPod won't 
+recognize what libgpod wrote to it and will behave as if it's empty.
+
+There are two ways to set up the iPod to make libgpod able to find its firewire
+id.
+
+The 1st one is mostly automated. First, make sure you have libsgutils installed
+before running configure/autogen.sh. If you built libgpod without it, install 
+it and run configure/make/make install. You should now have an 
+ipod-read-sysinfo-extended tool available. Run it with the iPod device path 
+(eg /dev/sda) and the iPod mount point (eg /mnt/ipod) as arguments. This may 
+require root privileges. ipod-read-sysinfo-extended will read an XML
+file from the iPod and write it as 
+/mnt/ipod/iPod_Control/Device/SysInfoExtended. See 
+http://ipodlinux.org/Device_Information for more details about the method used.
+Having that file is enough for libgpod to figure out the iPod firewire id.
+
+The 2nd method requires more manual intervention. First, you need to get your
+firewire id manually. To do that, run "sudo lsusb -v | grep -i Serial" (without
+the "") with your iPod plugged in, this should print a 16 character long string
+like 00A1234567891231. Once you have that number, create/edit 
+/mnt/ipod/iPod_Control/Device/SysInfo (if your iPod is mounted at /mnt/ipod).
+Add to that file the line below:
+FirewireGuid: 0xffffffffffffffff
+(replace ffffffffffffffff with the string you obtained at the previous step
+and don't forget the trailing 0x before the string)
+Save that file, and you should be all set. Be careful when using apps which 
+lets you manually specify which iPod model you own, they may overwrite that 
+file when you do that. So if after doing that libgpod still seems to write 
+invalid content to the iPod, double-check the content of that SysInfo file to
+make sure the FirewireGuid line you added isn't gone. If that happens, readd it
+to the end of the file, and make sure libgpod rewrite the iPod content.

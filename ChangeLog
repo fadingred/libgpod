@@ -1,5 +1,10 @@
 2007-10-01  Christophe Fergeau <teuf@gnome.org>
 
+	* README.SysInfo: add explanations about how the iPod needs to be 
+	set up so that libgpod can read the firewire id
+
+2007-10-01  Christophe Fergeau <teuf@gnome.org>
+
 	* src/itdb_itunesdb.c: get rid of unused headers
 
 2007-09-26 Jorg Schuler <jcsjcs at users.sourceforge.net>
