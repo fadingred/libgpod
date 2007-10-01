@@ -3500,7 +3500,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   g_return_if_fail (track);
 
   put_header (cts, "mhit");
-  put32lint (cts, 0x148);/* header size */
+  put32lint (cts, 0x184);/* header size */
   put32lint (cts, -1);   /* size of whole mhit -- fill in later */
   put32lint (cts, -1);   /* nr of mhods in this mhit -- later   */
   put32lint (cts, track->id); /* track index number */
@@ -3585,7 +3585,11 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->unk252);
   put16lint (cts, track->gapless_track_flag);
   put16lint (cts, track->gapless_album_flag);
-  put32_n0 (cts, 17); /* padding */
+  put32_n0 (cts, 23);
+  put32lint (cts, track->id); /* Needed on fat nanos/ipod classic to get art
+			       * in the right sidepane
+			       */
+  put32_n0 (cts, 8); /* padding */
 }
 
 

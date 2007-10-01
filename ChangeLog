@@ -1,3 +1,14 @@
+2007-09-26 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * src/itdb_itunesdb.c (mk_mhit): write extended mhit header for
+	  new iPod Nanos and Classics so they display artwork (Christophe)
+
+	* src/db-artwork-writer (ipod_artwork_set_ids): modify the
+	  assignment of IDs for artwork (Christophe)
+
+	* src/itdb_device.c: added artwork definition file (cover only)
+	  for iPod Nano Videos (3G). Thanks to Simon Schulz.
+
 2007-09-30  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: (itdb_write_checksum): remove debugging g_print

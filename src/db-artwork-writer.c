@@ -999,20 +999,22 @@ static unsigned int
 ipod_artwork_db_set_ids (Itdb_iTunesDB *db)
 {
 	GList *it;
-	unsigned int id;
-	
-	id = 64;
+	unsigned int max_id;
+
+	max_id = 0;
 	for (it = db->tracks; it != NULL; it = it->next) {
 		Itdb_Track *song;
 
 		song = (Itdb_Track *)it->data;
+		if (max_id <= song->id) {
+		  max_id = song->id;
+		}
 		if (song->artwork->thumbnails != NULL) {
-			song->artwork->id = id;
-			id++;
+			song->artwork->id = song->id;
 		}
 	}
 	
-	return id;
+	return max_id;
 }
 
 int
