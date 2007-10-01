@@ -1,3 +1,7 @@
+2007-10-01  Christophe Fergeau <teuf@gnome.org>
+
+	* src/itdb_itunesdb.c: get rid of unused headers
+
 2007-09-26 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/itdb_itunesdb.c (mk_mhit): write extended mhit header for

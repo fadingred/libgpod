@@ -118,8 +118,6 @@
 #include <glib/gi18n-lib.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/types.h>
 #include <time.h>
