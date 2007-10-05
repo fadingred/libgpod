@@ -1,3 +1,8 @@
+2007-10-05  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_itunesdb.c: (itdb_write_file): set Itdb_Track::id
+	before writing the artwork since artwork writing uses them
+
 2007-10-01  Christophe Fergeau <teuf@gnome.org>
 
 	* README.SysInfo: add explanations about how the iPod needs to be 

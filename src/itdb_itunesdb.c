@@ -4931,16 +4931,6 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
     if (!itdb->device->byte_order)
 	itdb_device_autodetect_endianess (itdb->device);
 
-#if HAVE_GDKPIXBUF
-    /* only write ArtworkDB if we deal with an iPod
-       FIXME: figure out a way to store the artwork data when storing
-       to local directories. At the moment it's the application's task
-       to handle this. */
-    if (itdb_device_supports_artwork (itdb->device)) {
-		ipod_write_artwork_db (itdb);
-    }
-#endif
-
     fexp = g_new0 (FExport, 1);
     fexp->itdb = itdb;
     fexp->wcontents = wcontents_new (filename);
@@ -4949,7 +4939,21 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
     cts->reversed = (itdb->device->byte_order == G_BIG_ENDIAN);
 
     prepare_itdb_for_write (fexp);
-    
+
+#if HAVE_GDKPIXBUF
+    /* only write ArtworkDB if we deal with an iPod
+       FIXME: figure out a way to store the artwork data when storing
+       to local directories. At the moment it's the application's task
+       to handle this. */
+    /* The ArtworkDB must be written after the call to
+     * prepare_itdb_for_write since it needs Itdb_Track::id to be set
+     * to its final value to write properly on nano video/ipod classics
+     */
+    if (itdb_device_supports_artwork (itdb->device)) {
+		ipod_write_artwork_db (itdb);
+    }
+#endif
+
     mk_mhbd (fexp, 3);   /* three mhsds */
     /* write tracklist */
     if (write_mhsd_tracks (fexp))
