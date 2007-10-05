@@ -1,4 +1,17 @@
-2007-10-05  Christophe Fergeau  <teuf@gnome.org
+2007-10-05  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c:
+          Remove duplicate reference to ithmb file
+
+          The iPod classic artwork formats contained two references to an 
+	  ithmb file using 1060 as its filename. This confuses the ithumb 
+	  writing code which can't handle that properly. Fixes that for now by
+	  removing the entry. We could probably be more clever in 
+	  itdb_write_ithumb_files and generate two lists of iThumbWriters,
+	  one for artwork and another one for photos. This would fix that bug 
+	  as well
+
+2007-10-05  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-writer.c: (itdb_track_filter_thumbnails),
 	(itdb_filter_thumbnails), (ipod_write_artwork_db):
