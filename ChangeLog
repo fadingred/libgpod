@@ -1,5 +1,10 @@
 2007-10-05  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_sha1.c: (generate_key): move cryptic calculations 
+	into the precomputed tables. Patch by Simon Schulz.
+
+2007-10-05  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_device.c:
           Remove duplicate reference to ithmb file
 
