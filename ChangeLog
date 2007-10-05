@@ -1,3 +1,19 @@
+2007-10-05  Christophe Fergeau  <teuf@gnome.org
+
+	* src/db-artwork-writer.c: (itdb_track_filter_thumbnails),
+	(itdb_filter_thumbnails), (ipod_write_artwork_db):
+	* src/itdb_track.c: (itdb_track_set_thumbnails_internal):
+         Set thumbnails for all known cover types in itdb_track_set_thumbnails
+
+         itdb_track_set_thumbnails can be called when the track isn't attached
+	 to any device (eg it's natural to create a track, fill its metadata 
+	 including the cover art, and then add it to an iTunesDB and its 
+	 associated device). This means we can't know which artwork types the
+	 iPod corresponding to the iTunesDB will be able to handle. i
+	 Consequently, we create Itdb_Thumb objects for all known cover types,
+	 and we filter that list when we don't have a choice (ie when we're 
+	 about to write the ArtworkDB and the thumbnails)
+
 2007-10-05  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: (itdb_write_file): set Itdb_Track::id

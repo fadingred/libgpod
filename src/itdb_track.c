@@ -435,27 +435,6 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
 
     for (thumbtype=thumbtypes; *thumbtype!=-1; ++thumbtype)
     {
-	if (formats)
-	{   /* check if thumbnail type is supported */
-	    const Itdb_ArtworkFormat *imgp=formats;
-	    for (imgp=formats; imgp->type!=-1; ++imgp)
-	    {
-		if (imgp->type == *thumbtype) break;
-	    }
-	    if (imgp->type == -1)
-	    {
-		continue;  /* for (thumbtype=...) */
-	    }
-	}
-	else
-	{   /* only add COVER_SMALL and COVER_LARGE */
-	    if ((*thumbtype != ITDB_THUMB_COVER_SMALL) &&
-		(*thumbtype != ITDB_THUMB_COVER_LARGE))
-	    {
-		continue;   /* for (thumbtype=...) */
-	    }
-	}
-
 	if (filename)
 	{
 	    result = itdb_artwork_add_thumbnail (track->artwork,
