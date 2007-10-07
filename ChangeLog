@@ -1,3 +1,12 @@
+2007-10-07  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: (itdb_device_requires_checksum):
+	* src/itdb_itunesdb.c: (write_db_checksum):
+	* src/itdb_private.h: add an itdb_device_requires_checksum function so 
+	that we only error out because of checksum writing issues on ipods which 
+	require a checksum. Ideally, we should restore the old file when there is
+	a fatal checksum writing error, but libgpod isn't currently doing that
+
 2007-10-05  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_sha1.c: (generate_key): move cryptic calculations 

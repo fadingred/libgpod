@@ -1061,3 +1061,25 @@ guint64 itdb_device_get_firewire_id (Itdb_Device *device)
     }
     return g_ascii_strtoull (fwid, NULL, 16);
 }
+
+G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device) 
+{
+    const Itdb_IpodInfo *info;
+
+    if (device == NULL) {
+        return FALSE;
+    }
+
+    info = itdb_device_get_ipod_info (device);
+    if (info == NULL) {
+        return FALSE;
+    }
+    switch (info->ipod_generation) {
+        case ITDB_IPOD_GENERATION_CLASSIC_1: 
+            return TRUE;
+        case ITDB_IPOD_GENERATION_NANO_3:
+            return TRUE;
+        default:
+            return FALSE;
+    }
+}

@@ -4867,9 +4867,9 @@ static gboolean write_db_checksum (FExport *fexp, GError **error)
     unsigned char *itdb_data;
     unsigned char *checksum;
     gsize len;
-
+    
     fwid = itdb_device_get_firewire_id (fexp->itdb->device);
-    if (fwid == 0) {
+    if ((fwid == 0) && (itdb_device_requires_checksum (fexp->itdb->device))) {
 	g_set_error (error, 0, -1, "Couldn't find the iPod firewire ID");
 	return FALSE;
     }
