@@ -1075,11 +1075,29 @@ G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device)
         return FALSE;
     }
     switch (info->ipod_generation) {
-        case ITDB_IPOD_GENERATION_CLASSIC_1: 
-            return TRUE;
-        case ITDB_IPOD_GENERATION_NANO_3:
-            return TRUE;
-        default:
+    case ITDB_IPOD_GENERATION_CLASSIC_1: 
+    case ITDB_IPOD_GENERATION_NANO_3:
+      return TRUE;
+
+    case ITDB_IPOD_GENERATION_UNKNOWN:
+    case ITDB_IPOD_GENERATION_FIRST:
+    case ITDB_IPOD_GENERATION_SECOND:
+    case ITDB_IPOD_GENERATION_THIRD:
+    case ITDB_IPOD_GENERATION_FOURTH:
+    case ITDB_IPOD_GENERATION_PHOTO:
+    case ITDB_IPOD_GENERATION_MOBILE:
+    case ITDB_IPOD_GENERATION_MINI_1:
+    case ITDB_IPOD_GENERATION_MINI_2:
+    case ITDB_IPOD_GENERATION_SHUFFLE_1:
+    case ITDB_IPOD_GENERATION_SHUFFLE_2:
+    case ITDB_IPOD_GENERATION_SHUFFLE_3:
+    case ITDB_IPOD_GENERATION_NANO_1:
+    case ITDB_IPOD_GENERATION_NANO_2:
+    case ITDB_IPOD_GENERATION_VIDEO_1:
+    case ITDB_IPOD_GENERATION_VIDEO_2:
+    case ITDB_IPOD_GENERATION_TOUCH_1:
+    case ITDB_IPOD_GENERATION_FIFTH:
+    case ITDB_IPOD_GENERATION_SIXTH:
             return FALSE;
     }
 }
