@@ -1100,4 +1100,6 @@ G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device)
     case ITDB_IPOD_GENERATION_SIXTH:
             return FALSE;
     }
+
+    return FALSE;
 }
