@@ -1,3 +1,8 @@
+2007-10-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* gnome-autogen.sh: switch to newer version of that file 
+	(with automake 1.10 support)
+
 2007-10-09  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_device.c: (itdb_device_requires_checksum): add missing 

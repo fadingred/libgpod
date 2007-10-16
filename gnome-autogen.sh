@@ -7,15 +7,15 @@ srcdir=${srcdir:-.}
 
 # default version requirements ...
 REQUIRED_AUTOCONF_VERSION=${REQUIRED_AUTOCONF_VERSION:-2.53}
-REQUIRED_AUTOMAKE_VERSION=${REQUIRED_AUTOMAKE_VERSION:-1.4}
-REQUIRED_LIBTOOL_VERSION=${REQUIRED_LIBTOOL_VERSION:-1.5}
-REQUIRED_GETTEXT_VERSION=${REQUIRED_GETTEXT_VERSION:-0.12}
+REQUIRED_AUTOMAKE_VERSION=${REQUIRED_AUTOMAKE_VERSION:-1.9}
+REQUIRED_LIBTOOL_VERSION=${REQUIRED_LIBTOOL_VERSION:-1.4.3}
+REQUIRED_GETTEXT_VERSION=${REQUIRED_GETTEXT_VERSION:-0.10.40}
 REQUIRED_GLIB_GETTEXT_VERSION=${REQUIRED_GLIB_GETTEXT_VERSION:-2.2.0}
-REQUIRED_INTLTOOL_VERSION=${REQUIRED_INTLTOOL_VERSION:-0.30}
+REQUIRED_INTLTOOL_VERSION=${REQUIRED_INTLTOOL_VERSION:-0.25}
 REQUIRED_PKG_CONFIG_VERSION=${REQUIRED_PKG_CONFIG_VERSION:-0.14.0}
 REQUIRED_GTK_DOC_VERSION=${REQUIRED_GTK_DOC_VERSION:-1.0}
 REQUIRED_DOC_COMMON_VERSION=${REQUIRED_DOC_COMMON_VERSION:-2.3.0}
-REQUIRED_GNOME_DOC_UTILS_VERSION=${REQUIRED_GNOME_DOC_UTILS_VERSION:-0.3.2}
+REQUIRED_GNOME_DOC_UTILS_VERSION=${REQUIRED_GNOME_DOC_UTILS_VERSION:-0.4.2}
 
 # a list of required m4 macros.  Package can set an initial value
 REQUIRED_M4MACROS=${REQUIRED_M4MACROS:-}
@@ -23,19 +23,25 @@ FORBIDDEN_M4MACROS=${FORBIDDEN_M4MACROS:-}
 
 # Not all echo versions allow -n, so we check what is possible. This test is
 # based on the one in autoconf.
-case `echo "testing\c"; echo 1,2,3`,`echo -n testing; echo 1,2,3` in
-  *c*,-n*) ECHO_N= ;;
-  *c*,*  ) ECHO_N=-n ;;
-  *)       ECHO_N= ;;
+ECHO_C=
+ECHO_N=
+case `echo -n x` in
+-n*)
+  case `echo 'x\c'` in
+  *c*) ;;
+  *)   ECHO_C='\c';;
+  esac;;
+*)
+  ECHO_N='-n';;
 esac
 
 # some terminal codes ...
 boldface="`tput bold 2>/dev/null`"
 normal="`tput sgr0 2>/dev/null`"
 printbold() {
-    echo $ECHO_N "$boldface"
+    echo $ECHO_N "$boldface" $ECHO_C
     echo "$@"
-    echo $ECHO_N "$normal"
+    echo $ECHO_N "$normal" $ECHO_C
 }    
 printerr() {
     echo "$@" >&2
@@ -85,7 +91,7 @@ version_check() {
     fi
     printbold "checking for $vc_package $vc_comparator $vc_min_version..."
     for vc_checkprog in $vc_checkprogs; do
-	echo $ECHO_N "  testing $vc_checkprog... "
+	echo $ECHO_N "  testing $vc_checkprog... " $ECHO_C
 	if $vc_checkprog --version < /dev/null > /dev/null 2>&1; then
 	    vc_actual_version=`$vc_checkprog --version | head -n 1 | \
                                sed 's/^.*[ 	]\([0-9.]*[a-z]*\).*$/\1/'`
@@ -138,6 +144,17 @@ add_to_cm_macrodirs() {
     "$1 "* | *" $1 "* | *" $1") ;;
     *) cm_macrodirs="$cm_macrodirs $1";;
     esac
+}
+
+# Usage:
+#     print_m4macros_error
+# Prints an error message saying that autoconf macros were misused
+print_m4macros_error() {
+    printerr "***Error***: some autoconf macros required to build $PKG_NAME"
+    printerr "  were not found in your aclocal path, or some forbidden"
+    printerr "  macros were found.  Perhaps you need to adjust your"
+    printerr "  ACLOCAL_FLAGS?"
+    printerr
 }
 
 # Usage:
@@ -202,6 +219,10 @@ check_m4macros() {
 	    fi
 	done
     fi
+    if [ "$cm_status" != 0 ]; then
+        print_m4macros_error
+        return $cm_status
+    fi
     if [ -n "$FORBIDDEN_M4MACROS" ]; then
 	printbold "Checking for forbidden M4 macros..."
 	# check that each macro file is in one of the macro dirs
@@ -220,11 +241,7 @@ check_m4macros() {
 	done
     fi
     if [ "$cm_status" != 0 ]; then
-	printerr "***Error***: some autoconf macros required to build $PKG_NAME"
-	printerr "  were not found in your aclocal path, or some forbidden"
-	printerr "  macros were found.  Perhaps you need to adjust your"
-	printerr "  ACLOCAL_FLAGS?"
-	printerr
+        print_m4macros_error
     fi
     return $cm_status
 }
@@ -240,8 +257,13 @@ want_pkg_config=false
 want_gtk_doc=false
 want_gnome_doc_utils=false
 
-configure_files="`find $srcdir -name '{arch}' -prune -o -name '.?*' -prune -o -name configure.ac -print -o -name configure.in -print`"
+configure_files="`find $srcdir -name '{arch}' -prune -o -name '_darcs' -prune -o -name '.??*' -prune -o -name configure.ac -print -o -name configure.in -print`"
 for configure_ac in $configure_files; do
+    dirname=`dirname $configure_ac`
+    if [ -f $dirname/NO-AUTO-GEN ]; then
+	echo skipping $dirname -- flagged as no auto-gen
+	continue
+    fi
     if grep "^A[CM]_PROG_LIBTOOL" $configure_ac >/dev/null ||
        grep "^LT_INIT" $configure_ac >/dev/null; then
 	want_libtool=true
@@ -289,11 +311,12 @@ AUTOHEADER=`echo $AUTOCONF | sed s/autoconf/autoheader/`
 
 case $REQUIRED_AUTOMAKE_VERSION in
     1.4*) automake_progs="automake-1.4" ;;
-    1.5*) automake_progs="automake-1.5 automake-1.6 automake-1.7 automake-1.8 automake-1.9" ;;
-    1.6*) automake_progs="automake-1.6 automake-1.7 automake-1.8 automake-1.9" ;;
-    1.7*) automake_progs="automake-1.7 automake-1.8 automake-1.9" ;;
-    1.8*) automake_progs="automake-1.8 automake-1.9" ;;
-    1.9*) automake_progs="automake-1.9" ;;
+    1.5*) automake_progs="automake-1.10 automake-1.9 automake-1.8 automake-1.7 automake-1.6 automake-1.5" ;;
+    1.6*) automake_progs="automake-1.10 automake-1.9 automake-1.8 automake-1.7 automake-1.6" ;;
+    1.7*) automake_progs="automake-1.10 automake-1.9 automake-1.8 automake-1.7" ;;
+    1.8*) automake_progs="automake-1.10 automake-1.9 automake-1.8" ;;
+    1.9*) automake_progs="automake-1.10 automake-1.9" ;;
+    1.10*) automake_progs="automake-1.10" ;;
 esac
 version_check automake AUTOMAKE "$automake_progs" $REQUIRED_AUTOMAKE_VERSION \
     "http://ftp.gnu.org/pub/gnu/automake/automake-$REQUIRED_AUTOMAKE_VERSION.tar.gz" || DIE=1
@@ -351,7 +374,7 @@ if [ "$DIE" -eq 1 ]; then
   exit 1
 fi
 
-if [ "$#" = 0 ]; then
+if [ "$#" = 0 -a "x$NOCONFIGURE" = "x" ]; then
   printerr "**Warning**: I am going to run \`configure' with no arguments."
   printerr "If you wish to pass any to it, please specify them on the"
   printerr \`$0\'" command line."
@@ -442,22 +465,31 @@ for configure_ac in $configure_files; do
 
 	# Finally, run automake to create the makefiles ...
 	printbold "Running $AUTOMAKE..."
-        cp -pf COPYING COPYING.autogen_bak
-        cp -pf INSTALL INSTALL.autogen_bak
+        if [ -f COPYING ]; then
+          cp -pf COPYING COPYING.autogen_bak
+        fi
+        if [ -f INSTALL ]; then
+          cp -pf INSTALL INSTALL.autogen_bak
+        fi
 	if [ $REQUIRED_AUTOMAKE_VERSION != 1.4 ]; then
 	    $AUTOMAKE --gnu --add-missing --force --copy || exit 1
 	else
 	    $AUTOMAKE --gnu --add-missing --copy || exit 1
 	fi
-        cmp COPYING COPYING.autogen_bak || cp -pf COPYING.autogen_bak COPYING
-        cmp INSTALL INSTALL.autogen_bak || cp -pf INSTALL.autogen_bak INSTALL
-        rm -f COPYING.autogen_bak INSTALL.autogen_bak
+        if [ -f COPYING.autogen_bak ]; then
+          cmp COPYING COPYING.autogen_bak > /dev/null || cp -pf COPYING.autogen_bak COPYING
+          rm -f COPYING.autogen_bak
+        fi
+        if [ -f INSTALL.autogen_bak ]; then
+          cmp INSTALL INSTALL.autogen_bak > /dev/null || cp -pf INSTALL.autogen_bak INSTALL
+          rm -f INSTALL.autogen_bak
+        fi
 
 	cd "$topdir"
     fi
 done
 
-conf_flags="--enable-maintainer-mode --enable-gtk-doc"
+conf_flags="--enable-maintainer-mode"
 
 if test x$NOCONFIGURE = x; then
     printbold Running $srcdir/configure $conf_flags "$@" ...
