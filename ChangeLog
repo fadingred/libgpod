@@ -1,3 +1,10 @@
+2007-10-16  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* autogen.sh: add --enable-gtk-doc to the gnome-autogen.sh
+	call. This allows make distcheck to work correctly and to use
+	an unmodified copy of gnome-autogen.sh from the upstream
+	gnome-common package.
+
 2007-10-16  Christophe Fergeau  <teuf@gnome.org>
 
 	* gnome-autogen.sh: switch to newer version of that file 

@@ -11,4 +11,4 @@ PKG_NAME="libgpod"
     echo " top-level $PKG_NAME directory"
     exit 1
 }
-REQUIRED_AUTOMAKE_VERSION=1.7 . $srcdir/gnome-autogen.sh
+REQUIRED_AUTOMAKE_VERSION=1.7 . $srcdir/gnome-autogen.sh --enable-gtk-doc
