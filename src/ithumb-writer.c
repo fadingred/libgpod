@@ -406,7 +406,7 @@ ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gin
 /*	printf ("%s %s\n", buf, filename);*/
 
 	g_free (buf);
-
+        g_free (artwork_dir);
 	return filename;
 }
 

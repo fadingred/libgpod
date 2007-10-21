@@ -1,3 +1,8 @@
+2007-10-21  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_photoalbum.c: (itdb_get_photos_dir):
+	* src/ithumb-writer.c: (ipod_image_get_ithmb_filename):
+
 2007-10-16  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* autogen.sh: add --enable-gtk-doc to the gnome-autogen.sh

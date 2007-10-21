@@ -24,7 +24,7 @@
 |
 |  This product is not supported/written/published by Apple!
 |
-|  $Id: itdb_photoalbum.c,v 1.17 2007/03/21 08:37:20 jcsjcs Exp $
+|  $Id$
 */
 #include <config.h>
 
@@ -136,6 +136,7 @@ gchar *itdb_get_photos_dir (const gchar *mountpoint)
 
     for (ptr=paths; *ptr && !result; ++ptr)
     {
+        g_free (result);
 	result = itdb_resolve_path (mountpoint, (const gchar **)*ptr);
     }
     return result;
