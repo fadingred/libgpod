@@ -102,7 +102,7 @@ dump_mhod_type_3 (ArtworkDB_MhodHeaderArtworkType3 *mhod3)
 	g_print ("\tString length: %u\n", GINT_FROM_LE (mhod3->string_len));
 	g_print ("\tMHOD version: %u\n", GINT_FROM_LE (mhod3->mhod_version));
 	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhod3->unknown4));
-	str = get_utf16_string (mhod3->string, mhod3->string_len);
+	str = get_utf16_string (mhod3->string, GINT_FROM_LE (mhod3->string_len));
 	g_print ("\tString: %s\n", str);
 	g_free (str);
 }

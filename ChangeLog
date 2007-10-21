@@ -2,6 +2,13 @@
 
 	Patch from Filippo Giunchedi <filippo@esaurito.net>
 
+	* src/db-artwork-debug.c: (dump_mhod_type_3): add missing byte-swap
+	which resulted in over huge allocation
+
+2007-10-21  Christophe Fergeau  <teuf@gnome.org>
+
+	Patch from Filippo Giunchedi <filippo@esaurito.net>
+
 	* src/db-artwork-debug.c: (dump_mhba): fix dumping function in debug
 	mode
 	* src/db-itunes-parser.h: indentation fixes
