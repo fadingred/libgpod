@@ -220,15 +220,21 @@ dump_mhba (MhbaHeader *mhba)
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhba->total_len));
 	g_print ("\tNumber of Data Objects: %d\n", GINT_FROM_LE (mhba->num_mhods));
 	g_print ("\tNumber of pictures in the album: %d\n", GINT_FROM_LE (mhba->num_mhias));
-	g_print ("\tPlaylist ID: %08x\n", GINT_FROM_LE (mhba->playlist_id));
-	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhba->unknown2));
-	g_print ("\tUnknown3: %04x\n", GINT_FROM_LE (mhba->unknown3));
-	g_print ("\tMaster playlist: %02x\n", GINT_FROM_LE (mhba->master));
-	g_print ("\tRepeat: %02x\n", GINT_FROM_LE (mhba->repeat));
-	g_print ("\tRandom: %02x\n", GINT_FROM_LE (mhba->random));
-	g_print ("\tTransition direction: %02x\n", GINT_FROM_LE (mhba->transition_direction));
+	g_print ("\tAlbum ID: %08x\n", GINT_FROM_LE (mhba->album_id));
+	g_print ("\tUnk024: %04x\n", GINT_FROM_LE (mhba->unk024));
+	g_print ("\tUnk028: %04x\n", GINT16_FROM_LE (mhba->unk028));
+	g_print ("\tAlbum type: %02x\n", GUINT_FROM_LE (mhba->album_type));
+	g_print ("\tPlay music: %02x\n", GUINT_FROM_LE (mhba->playmusic));
+	g_print ("\tRepeat: %02x\n", GUINT_FROM_LE (mhba->repeat));
+	g_print ("\tRandom: %02x\n", GUINT_FROM_LE (mhba->random));
+	g_print ("\tShow titles: %02x\n", GUINT_FROM_LE (mhba->show_titles));
+	g_print ("\tTransition direction: %02x\n", GUINT_FROM_LE (mhba->transition_direction));
 	g_print ("\tSlide duration: %08x\n", GINT_FROM_LE (mhba->slide_duration));
-	g_print ("\tPrev playlist ID: %08x\n", GINT_FROM_LE (mhba->prev_playlist_id));
+	g_print ("\tTransition duration: %08x\n", GINT_FROM_LE (mhba->transition_duration));
+	g_print ("\tUnk044: %02x\n", GINT_FROM_LE (mhba->unk044));
+	g_print ("\tUnk048: %02x\n", GINT_FROM_LE (mhba->unk048));
+	g_print ("\tSong ID: %08x\n", GINT_FROM_LE (mhba->song_id));
+	g_print ("\tPrevious album ID: %08x\n", GINT_FROM_LE (mhba->prev_album_id));
 }
 
 #endif

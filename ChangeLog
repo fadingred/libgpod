@@ -1,5 +1,13 @@
 2007-10-21  Christophe Fergeau  <teuf@gnome.org>
 
+	Patch from Filippo Giunchedi <filippo@esaurito.net>
+
+	* src/db-artwork-debug.c: (dump_mhba): fix dumping function in debug
+	mode
+	* src/db-itunes-parser.h: indentation fixes
+
+2007-10-21  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_photoalbum.c: (itdb_get_photos_dir):
 	* src/ithumb-writer.c: (ipod_image_get_ithmb_filename):
 

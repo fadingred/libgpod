@@ -20,7 +20,7 @@
  * 
  *  This product is not supported/written/published by Apple!
  *
- * $Id: db-itunes-parser.h,v 1.11 2007/04/27 14:09:59 jcsjcs Exp $
+ * $Id$
  */
 
 
@@ -631,13 +631,13 @@ struct _MhbaHeader {
 	guint8 repeat;     /* repeat the slideshow (from iPhoto setting) */
 	guint8 random;     /* show the slides in random order (from iPhoto
 			      setting) */
-        guint8 show_titles;/* show slide captions (from iPhoto setting) */
+	guint8 show_titles;/* show slide captions (from iPhoto setting) */
 	guint8 transition_direction; /* 0=none, 1=left-to-right,
 			      2=right-to-left, 3=top-to-bottom,
 			      4=bottom-to-top (from iPhoto setting) */
-        gint32 slide_duration; /* in seconds (from iPhoto setting) */
+	gint32 slide_duration; /* in seconds (from iPhoto setting) */
 	gint32 transition_duration; /* in milliseconds (from iPhoto setting) */
-        gint32 unk044;     /* unknown, seems to always be 0 */
+	gint32 unk044;     /* unknown, seems to always be 0 */
 	gint32 unk048;     /* unknown, seems to always be 0 */
 	gint64 song_id;    /* dbid2 of track in iTunesDB to play during
 			      slideshow (from iPhoto setting) */
