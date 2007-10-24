@@ -769,7 +769,7 @@ write_mhla (Itdb_DB *db, iPodBuffer *buffer)
 	total_bytes = get_gint32 (mhla->header_len, buffer->byte_order);
 	if (buffer->db_type == DB_TYPE_PHOTO) {
 	    unsigned int bytes_written;
-
+            unsigned int num_children = 0;
 	    for (it = db_get_photodb(db)->photoalbums; it != NULL; it = it->next) {
 		Itdb_PhotoAlbum *album = (Itdb_PhotoAlbum *)it->data;
 
@@ -783,7 +783,9 @@ write_mhla (Itdb_DB *db, iPodBuffer *buffer)
 		    return -1;
 		}
 		total_bytes += bytes_written;
-		mhla->num_children++;
+		num_children++;
+		mhla->num_children = get_gint32 (num_children,
+                                                 buffer->byte_order);
 	    }
 	}
 
