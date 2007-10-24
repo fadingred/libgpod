@@ -1,3 +1,10 @@
+2007-10-24  Christophe Fergeau  <teuf@gnome.org>
+
+	Patch from Filippo Giunchedi <filippo@esaurito.net>
+
+	* src/db-artwork-parser.c: (parse_mhba): another missing endianness
+	conversion
+
 2007-10-21  Christophe Fergeau  <teuf@gnome.org>
 
 	Patch from Filippo Giunchedi <filippo@esaurito.net>

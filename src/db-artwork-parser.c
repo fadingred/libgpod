@@ -363,7 +363,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 		}
 		db_parse_context_set_total_len (mhod_ctx,  get_gint32(mhod->total_len, ctx->byte_order));
 		mhod1 = (MhodHeaderArtworkType1*)mhod;
-		album->name = g_strndup ((gchar *)mhod1->string, mhod1->string_len);
+		album->name = g_strndup ((gchar *)mhod1->string, get_gint32(mhod1->string_len, ctx->byte_order));
 		cur_offset += mhod_ctx->total_len;
 		dump_mhod_type_1 (mhod1);
 		g_free (mhod_ctx);
