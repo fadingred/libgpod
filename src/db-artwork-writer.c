@@ -242,14 +242,6 @@ enum MhsdType {
 	MHSD_TYPE_MHLF = 3
 };
 
-enum iPodThumbnailType {
-	IPOD_THUMBNAIL_FULL_SIZE = 0,
-	IPOD_THUMBNAIL_NOW_PLAYING = 1,
-	IPOD_PHOTO_LITTLE = 3,
-	IPOD_PHOTO_FULL_SIZE = 4
-};
-
-
 #define RETURN_SIZE_FOR(id, size) if (strncmp (id, header_id, 4) == 0) return (size)
 
 
@@ -795,10 +787,10 @@ write_mhla (Itdb_DB *db, iPodBuffer *buffer)
 }
 
 static int
-write_mhif (Itdb_DB *db, iPodBuffer *buffer, enum iPodThumbnailType type)
+write_mhif (Itdb_DB *db, iPodBuffer *buffer,
+            const Itdb_ArtworkFormat *img_info)
 {
 	MhifHeader *mhif;
-	const Itdb_ArtworkFormat *img_info;
 
 	mhif = (MhifHeader *)init_header (buffer, "mhif", sizeof (MhifHeader));
 	if (mhif == NULL) {
@@ -806,10 +798,6 @@ write_mhif (Itdb_DB *db, iPodBuffer *buffer, enum iPodThumbnailType type)
 	}
 	mhif->total_len = mhif->header_len;
 
-	img_info = itdb_get_artwork_info_from_type (db_get_device(db), type);
-	if (img_info == NULL) {
-		return -1;
-	}
 	mhif->correlation_id = get_gint32 (img_info->correlation_id,
 					   buffer->byte_order);
 	mhif->image_size = get_gint32 (img_info->height * img_info->width * 2,
@@ -820,14 +808,37 @@ write_mhif (Itdb_DB *db, iPodBuffer *buffer, enum iPodThumbnailType type)
 	return get_gint32 (mhif->header_len, buffer->byte_order);
 }
 
+static gboolean
+should_write (const Itdb_ArtworkFormat *formats, DbType db_type)
+{
+        g_return_val_if_fail (formats->type != -1, FALSE);
+
+        switch (formats->type) {
+        case ITDB_THUMB_COVER_SMALL:
+        case ITDB_THUMB_COVER_LARGE:
+        case ITDB_THUMB_COVER_XLARGE:
+        case ITDB_THUMB_COVER_MEDIUM:
+        case ITDB_THUMB_COVER_SMEDIUM:
+        case ITDB_THUMB_COVER_XSMALL:
+                return (db_type == DB_TYPE_ITUNES);
+        case ITDB_THUMB_PHOTO_SMALL:
+        case ITDB_THUMB_PHOTO_LARGE:
+        case ITDB_THUMB_PHOTO_FULL_SCREEN:
+        case ITDB_THUMB_PHOTO_TV_SCREEN:
+                return (db_type == DB_TYPE_PHOTO);
+        }
+
+        g_return_val_if_reached (FALSE);
+}
+
 static int
 write_mhlf (Itdb_DB *db, iPodBuffer *buffer)
 {
 	MhlfHeader *mhlf;
 	unsigned int total_bytes;
 	int bytes_written;
-	iPodBuffer *sub_buffer;
-	enum iPodThumbnailType thumb_type = IPOD_THUMBNAIL_FULL_SIZE;
+        const Itdb_ArtworkFormat *formats; 
+        unsigned int num_children;
 
 	mhlf = (MhlfHeader *)init_header (buffer, "mhlf", sizeof (MhlfHeader));
 	if (mhlf == NULL) {
@@ -835,69 +846,39 @@ write_mhlf (Itdb_DB *db, iPodBuffer *buffer)
 	}
 
 	total_bytes = get_gint32 (mhlf->header_len, buffer->byte_order);
+        num_children = 0;
+        mhlf->num_files = get_gint32 (num_children, buffer->byte_order);
 
-	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
-	if (sub_buffer == NULL) {
-		return -1;
-	}
+        formats = itdb_device_get_artwork_formats (db_get_device(db));
+        if (formats == NULL) {
+                return total_bytes;
+        }
 
-	switch (buffer->db_type) {
-	case DB_TYPE_ITUNES:
-		thumb_type = IPOD_THUMBNAIL_FULL_SIZE;
-		break;
-	case DB_TYPE_PHOTO:
-		thumb_type = IPOD_PHOTO_FULL_SIZE;
-		break;
-	}
-	bytes_written = write_mhif (db
-				  , sub_buffer
-				  , thumb_type);
-	ipod_buffer_destroy (sub_buffer);
-	if (bytes_written == -1) {
-		return -1;
-	}
-	total_bytes += bytes_written;
+        while (formats->type != -1) {
+	        iPodBuffer *sub_buffer;
+                if (!should_write (formats, buffer->db_type)) {
+                        formats++;
+                        continue;
+                }
+        	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
+        	if (sub_buffer == NULL) {
+        		return -1;
+        	}
 
-	/* Only update number of children when all went well to try to get
-	 * something somewhat consistent when there are errors
-	 */
-	/* For the ArworkDB file, there are only 2 physical file storing
-	 * thumbnails: F1016_1.ithmb for the bigger thumbnails (39200 bytes)
-	 * and F1017_1.ithmb for the 'now playing' thumbnails (6272)
-	 */
-	mhlf->num_files = get_gint32 (1, buffer->byte_order);
-
-	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
-	if (sub_buffer == NULL) {
-		return -1;
-	}
-
-	switch (buffer->db_type) {
-	case DB_TYPE_ITUNES:
-		thumb_type = IPOD_THUMBNAIL_NOW_PLAYING;
-		break;
-	case DB_TYPE_PHOTO:
-		thumb_type = IPOD_PHOTO_LITTLE;
-		break;
-	}
-	bytes_written = write_mhif (db
-				  , sub_buffer
-				  , thumb_type);
-	ipod_buffer_destroy (sub_buffer);
-	if (bytes_written == -1) {
-		return -1;
-	}
-	total_bytes += bytes_written;
-
-	/* Only update number of children when all went well to try to get
-	 * something somewhat consistent when there are errors
-	 */
-	/* For the ArworkDB file, there are only 2 physical file storing
-	 * thumbnails: F1016_1.ithmb for the bigger thumbnails (39200 bytes)
-	 * and F1017_1.ithmb for the 'now playing' thumbnails (6272)
-	 */
-	mhlf->num_files = get_gint32 (2, buffer->byte_order);
-
+        	bytes_written = write_mhif (db, sub_buffer, formats);
+	        			    
+        	ipod_buffer_destroy (sub_buffer);
+        	if (bytes_written == -1) {
+        		return -1;
+        	}
+        	total_bytes += bytes_written;
+                num_children++;
+        	/* Only update number of children when all went well to try 
+                 * to get something somewhat consistent when there are errors
+        	 */
+        	mhlf->num_files = get_gint32 (num_children, buffer->byte_order);
+                formats++;
+        }
 	dump_mhl ((MhlHeader *)mhlf, "mhlf");
 
 	return total_bytes;

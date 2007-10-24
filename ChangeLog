@@ -1,5 +1,12 @@
 2007-10-24  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/db-artwork-writer.c: (write_mhif), (should_write),
+	(write_mhlf): don't hardcode the number of mhif entries we write, but
+	write as many entries as the number of thumbnail formats supported by
+	the device
+
+2007-10-24  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/db-artwork-writer.c: (write_mhla): yet another missing endianness
 	conversion
 
