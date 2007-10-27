@@ -61,6 +61,22 @@
 #define BLUE_SHIFT_555 0
 #define BLUE_MASK_555 (((1 << BLUE_BITS_555)-1) << BLUE_SHIFT_555)
 
+#define ALPHA_BITS_888 8
+#define ALPHA_SHIFT_888 24
+#define ALPHA_MASK_888  (((1 << ALPHA_BITS_888)-1) << ALPHA_SHIFT_888)
+
+#define RED_BITS_888   8
+#define RED_SHIFT_888 16
+#define RED_MASK_888  (((1 << RED_BITS_888)-1) << RED_SHIFT_888)
+
+#define GREEN_BITS_888 8
+#define GREEN_SHIFT_888 8
+#define GREEN_MASK_888 (((1 << GREEN_BITS_888)-1) << GREEN_SHIFT_888)
+
+#define BLUE_BITS_888 8
+#define BLUE_SHIFT_888 0
+#define BLUE_MASK_888 (((1 << BLUE_BITS_888)-1) << BLUE_SHIFT_888)
+
 G_GNUC_INTERNAL Itdb_Thumb *ipod_image_new_from_mhni (MhniHeader *mhni, 
 						      Itdb_DB *db);
 

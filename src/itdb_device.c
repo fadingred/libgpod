@@ -314,9 +314,10 @@ static const Itdb_ArtworkFormat ipod_classic_1_artwork_info[] = {
     {ITDB_THUMB_COVER_XLARGE,     320, 320, 1060, THUMB_FORMAT_RGB565_LE},
 
     /* not sure if the THUMB_FORMAT is correct */
-    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1067, THUMB_FORMAT_UYVY_BE},
+/*    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1067, THUMB_FORMAT_UYVY_BE},*/
+    {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1067, THUMB_FORMAT_RGB565_BE},
     /* not sure if the THUMB_FORMAT is correct */
-    {ITDB_THUMB_PHOTO_FULL_SCREEN,320, 240, 1064, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_PHOTO_FULL_SCREEN,320, 240, 1064, THUMB_FORMAT_RGB888_LE},
     {ITDB_THUMB_PHOTO_SMALL,       64,  64, 1066, THUMB_FORMAT_RGB565_LE},
 /*  These are the same as for the iPod video... -- labeled by the iPod as
     "chapter images" */

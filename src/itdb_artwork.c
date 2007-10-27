@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-09-09 00:12:28 jcs>
+/* Time-stamp: <2007-10-27 21:54:23 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -483,6 +483,36 @@ unpack_RGB_555 (guint16 *pixels, guint bytes_len, guint byte_order)
 	return result;
 }
 
+static guchar *
+unpack_RGB_888 (guint16 *pixels, guint bytes_len, guint byte_order)
+{
+	guchar *result;
+	guint i;
+	guint32 *pixels32;
+
+	result = g_malloc ((bytes_len/4) * 3);
+
+	pixels32 = (guint32 *)pixels;
+
+	for (i = 0; i < bytes_len/4; i++) {
+		guint32 cur_pixel;
+		/* FIXME: endianness */
+		cur_pixel = get_gint32 (pixels32[i], byte_order);
+		/* Unpack pixels */
+		result[3*i] = (cur_pixel & RED_MASK_888) >> RED_SHIFT_888;
+		result[3*i+1] = (cur_pixel & GREEN_MASK_888) >> GREEN_SHIFT_888;
+		result[3*i+2] = (cur_pixel & BLUE_MASK_888) >> BLUE_SHIFT_888;
+		
+		/* Normalize color values so that they use a [0..255] range */
+		/* (not necessary for 888 encoding) */
+/* 		result[3*i] <<= (8 - RED_BITS_888); */
+/* 		result[3*i+1] <<= (8 - GREEN_BITS_888); */
+/* 		result[3*i+2] <<= (8 - BLUE_BITS_888); */
+	}
+
+	return result;
+}
+
 
 static guint16 *rearrange_pixels (guint16 *pixels_s, guint16 *pixels_d,
 				  gint width, gint height, gint row_stride)
@@ -589,57 +619,30 @@ unpack_experimental (guint16 *pixels, guint bytes_len, guint byte_order,
 		     gint width, gint height)
 {
 	guchar *result;
-	guint16 *use_pixels;
-	gboolean free_use_pixels = FALSE;
-	guint16 *pixels_arranged = NULL;
-
 	guint i;
+	guint32 *rpixels;
 
-	g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
-	g_return_val_if_fail (2*width*height < G_MAXUINT, NULL);
-	g_return_val_if_fail (width==height, NULL);
+	g_return_val_if_fail (bytes_len < (G_MAXUINT/3), NULL);
 
-	if (2*width*height > bytes_len)
-	{
-	    use_pixels = g_malloc0 (2*width*height);
-	    g_memmove (use_pixels, pixels, bytes_len);
-	    free_use_pixels = TRUE;
-	}
-	else
-	{
-	    use_pixels = pixels;
-	}
+	result = g_malloc ((bytes_len/4) * 3);
 
-/*	pixels_arranged = rearrange_pixels (use_pixels, NULL,
-					    width, height, width);
+	rpixels = (guint32 *)pixels;
 
-	if (pixels_arranged == NULL)
-	{
-	    return NULL;
-	}
-*/
-
-	result = g_malloc ((bytes_len/2) * 3);
-
-	for (i = 0; i < bytes_len/2; i++) {
-		guint16 cur_pixel;
+	for (i = 0; i < bytes_len/4; i++) {
+		guint32 cur_pixel;
 		/* FIXME: endianness */
-		cur_pixel = get_gint16 (pixels[i], byte_order);
+		cur_pixel = get_gint32 (rpixels[i], byte_order);
+printf ("%8x\n", cur_pixel);
 		/* Unpack pixels */
-		result[3*i] = (cur_pixel & RED_MASK_555) >> RED_SHIFT_555;
-		result[3*i+1] = (cur_pixel & GREEN_MASK_555) >> GREEN_SHIFT_555;
-		result[3*i+2] = (cur_pixel & BLUE_MASK_555) >> BLUE_SHIFT_555;
+		result[3*i] = (cur_pixel & RED_MASK_888) >> RED_SHIFT_888;
+		result[3*i+1] = (cur_pixel & GREEN_MASK_888) >> GREEN_SHIFT_888;
+		result[3*i+2] = (cur_pixel & BLUE_MASK_888) >> BLUE_SHIFT_888;
 		
 		/* Normalize color values so that they use a [0..255] range */
-		result[3*i] <<= (8 - RED_BITS_555);
-		result[3*i+1] <<= (8 - GREEN_BITS_555);
-		result[3*i+2] <<= (8 - BLUE_BITS_555);
-	}
-
-	g_free (pixels_arranged);
-	if (free_use_pixels)
-	{
-	    g_free (use_pixels);
+		/* (not really necessary for 888 encoding) */
+/* 		result[3*i] <<= (8 - RED_BITS_888); */
+/* 		result[3*i+1] <<= (8 - GREEN_BITS_888); */
+/* 		result[3*i+2] <<= (8 - BLUE_BITS_888); */
 	}
 
 	return result;
@@ -840,6 +843,15 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	case THUMB_FORMAT_RGB555_LE:
 	case THUMB_FORMAT_RGB555_BE:
 	    pixels = unpack_RGB_555 (pixels_raw, thumb->size,
+				     itdb_thumb_get_byteorder (img_info->format));
+	    break;
+	case THUMB_FORMAT_RGB888_LE_90:
+	case THUMB_FORMAT_RGB888_BE_90:
+	    /* FIXME: actually the previous two might require
+	       different treatment */
+	case THUMB_FORMAT_RGB888_LE:
+	case THUMB_FORMAT_RGB888_BE:
+	    pixels = unpack_RGB_888 (pixels_raw, thumb->size,
 				     itdb_thumb_get_byteorder (img_info->format));
 	    break;
 	case THUMB_FORMAT_REC_RGB555_LE_90:
@@ -1158,6 +1170,8 @@ itdb_thumb_get_byteorder (const ItdbThumbFormat format)
     case THUMB_FORMAT_RGB565_LE_90:
     case THUMB_FORMAT_RGB555_LE:
     case THUMB_FORMAT_RGB555_LE_90:
+    case THUMB_FORMAT_RGB888_LE:
+    case THUMB_FORMAT_RGB888_LE_90:
     case THUMB_FORMAT_REC_RGB555_LE:
     case THUMB_FORMAT_REC_RGB555_LE_90:
     case THUMB_FORMAT_EXPERIMENTAL_LE:
@@ -1167,6 +1181,8 @@ itdb_thumb_get_byteorder (const ItdbThumbFormat format)
     case THUMB_FORMAT_RGB565_BE_90:
     case THUMB_FORMAT_RGB555_BE:
     case THUMB_FORMAT_RGB555_BE_90:
+    case THUMB_FORMAT_RGB888_BE:
+    case THUMB_FORMAT_RGB888_BE_90:
     case THUMB_FORMAT_REC_RGB555_BE:
     case THUMB_FORMAT_REC_RGB555_BE_90:
     case THUMB_FORMAT_EXPERIMENTAL_BE:

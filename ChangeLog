@@ -1,3 +1,20 @@
+2007-10-27 Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * src/itdb_device.c (ipod_classic_1_artwork_info)
+	  src/ithumb-writer.c (pack_RGB_888, pack_RGB_565, pack_RGB_555,
+	                       pack_rec_RGB_555, ithumb_writer_write_thumbnail)
+	  src/db-image-parser.h (_888 definitions)
+	  src/itdb_device.h (RGB888 thumb format enum definitions)
+	  src/itdb_artwork.c (unpack_RGB_888, unpack_experimental,
+	                      itdb_thumb_get_rgb_data)
+
+	  Partial support for photos on new iPod Nano 3G and iPod
+	  Classics.
+
+	  Photos should be displayed correctly on the iPod but the video
+	  output will show garbage (couldn't try video output per se, but
+	  from the data iTunes produces this is clear).
+
 2007-10-24  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-writer.c: (write_mhif), (should_write),
