@@ -664,6 +664,47 @@ static gint limit8bit (float x)
     }
     return x;
 }
+
+// swapping U and V planes this unpacks YV12
+static guchar *
+unpack_I420 (guchar *yuvdata, gint bytes_len, guint byte_order,
+		gint width, gint height)
+{
+	gint imgsize = width*3*height;
+	gint yuvdim = width*height;
+	guchar* rgbdata;
+	gint row, col;
+	gint z = 0;
+	gint h = 0;
+	gint y, u, v;
+	gint ustart = yuvdim;
+	gint vstart = yuvdim + yuvdim / 4;
+
+	g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
+	g_return_val_if_fail (width * height * 2 == bytes_len, NULL);
+
+	rgbdata = g_malloc(imgsize);
+
+	// FIXME could be faster
+	while(h < yuvdim){
+		y = yuvdata[h];
+
+		row = h / width;
+		col = h % width;
+
+		u = yuvdata[ustart + (row/2)*(width/2) + col/2];
+		v = yuvdata[vstart + (row/2)*(width/2) + col/2];
+
+		rgbdata[z] = limit8bit((y-16)*1.164 + (v-128)*1.596); 
+		rgbdata[z+1] = limit8bit((y-16)*1.164 - (v-128)*0.813 - (u-128)*0.391); 
+		rgbdata[z+2] = limit8bit((y-16)*1.164 + (u-128)*2.018); 
+
+		z+=3;
+		h++;
+	}
+	return rgbdata;
+}
+
 static guchar *
 unpack_UYVY (guchar *yuvdata, gint bytes_len, guint byte_order,
 	     gint width, gint height)
@@ -876,6 +917,12 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	case THUMB_FORMAT_UYVY_LE:
 	case THUMB_FORMAT_UYVY_BE:
 	    pixels = unpack_UYVY (pixels_raw, thumb->size,
+				  itdb_thumb_get_byteorder (img_info->format),
+				  img_info->width, img_info->height);
+	    break;
+	case THUMB_FORMAT_I420_LE:
+	case THUMB_FORMAT_I420_BE:
+	    pixels = unpack_I420 (pixels_raw, thumb->size,
 				  itdb_thumb_get_byteorder (img_info->format),
 				  img_info->width, img_info->height);
 	    break;
@@ -1175,6 +1222,7 @@ itdb_thumb_get_byteorder (const ItdbThumbFormat format)
     case THUMB_FORMAT_REC_RGB555_LE:
     case THUMB_FORMAT_REC_RGB555_LE_90:
     case THUMB_FORMAT_EXPERIMENTAL_LE:
+	case THUMB_FORMAT_I420_LE:
 	return G_LITTLE_ENDIAN;
     case THUMB_FORMAT_UYVY_BE:
     case THUMB_FORMAT_RGB565_BE:
@@ -1186,6 +1234,7 @@ itdb_thumb_get_byteorder (const ItdbThumbFormat format)
     case THUMB_FORMAT_REC_RGB555_BE:
     case THUMB_FORMAT_REC_RGB555_BE_90:
     case THUMB_FORMAT_EXPERIMENTAL_BE:
+	case THUMB_FORMAT_I420_BE:
 	return G_BIG_ENDIAN;
     }
     g_return_val_if_reached (-1);

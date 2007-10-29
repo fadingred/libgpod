@@ -297,6 +297,15 @@ pack_rec_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
     return deranged_pixels;
 }
 
+static guchar *
+pack_I420 (GdkPixbuf *orig_pixbuf, const Itdb_ArtworkFormat *img_info,
+	   gint horizontal_padding, gint vertical_padding,
+	   guint32 *thumb_size)
+{
+	// FIXME do something
+    g_return_val_if_fail (img_info, NULL);
+    return NULL;
+}
 
 /* pack_UYVY() is adapted from imgconvert.c from the GPixPod project
  * (www.gpixpod.org) */
@@ -698,6 +707,13 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     case THUMB_FORMAT_UYVY_BE:
     case THUMB_FORMAT_UYVY_LE:
 	pixels = pack_UYVY (pixbuf, writer->img_info,
+			    thumb->horizontal_padding,
+			    thumb->vertical_padding,
+	                    &thumb->size);
+	break;
+    case THUMB_FORMAT_I420_BE:
+    case THUMB_FORMAT_I420_LE:
+	pixels = pack_I420 (pixbuf, writer->img_info,
 			    thumb->horizontal_padding,
 			    thumb->vertical_padding,
 	                    &thumb->size);
