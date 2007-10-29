@@ -1,3 +1,9 @@
+2007-10-30  Christophe Fergeau <teuf@gnome.org>
+
+	Patch from Filippo Giunchedi <filippo@esaurito.net>
+
+	* src/db-artwork-debug.c: (dump_mhni): another endianness fix
+
 2007-10-29  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_artwork.c:

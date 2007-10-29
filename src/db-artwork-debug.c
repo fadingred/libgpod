@@ -122,8 +122,8 @@ dump_mhni (MhniHeader *mhni)
 		 GINT_FROM_LE (mhni->correlation_id));
 	g_print ("\tithmb offset: %u bytes\n", GINT_FROM_LE (mhni->ithmb_offset));
 	g_print ("\tImage size: %u bytes\n", GINT_FROM_LE (mhni->image_size));
-	g_print ("\tVertical padding: %d\n", GINT_FROM_LE (mhni->vertical_padding));
-	g_print ("\tHorizontal padding: %d\n", GINT_FROM_LE (mhni->horizontal_padding));
+	g_print ("\tVertical padding: %d\n", GINT16_FROM_LE (mhni->vertical_padding));
+	g_print ("\tHorizontal padding: %d\n", GINT16_FROM_LE (mhni->horizontal_padding));
 	g_print ("\tImage dimensions: %ux%u\n", width, height);
 }
 
