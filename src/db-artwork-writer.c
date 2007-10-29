@@ -43,21 +43,16 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-/* FIXME: Writing aborts if a file exceeds the following size because
-   the mremap() further down will fail (at least most of the time on
-   most systems). As a workaround the size was increased from 2 MB to
-   16 MB. */
-#define IPOD_MMAP_SIZE 16 * 1024 * 1024
+#define DEFAULT_GSTRING_SIZE 128*1024
 
-struct iPodMmapBuffer {
-	int fd;
-	void *mmap_area;
-	size_t size;
+struct iPodSharedDataBuffer {
+	GString *data;
+	char *filename;
 	int ref_count;
 };
 
 struct _iPodBuffer {
-	struct iPodMmapBuffer *mmap;
+	struct iPodSharedDataBuffer *shared;
 	off_t offset;
 	guint byte_order;
 	DbType db_type;
@@ -65,20 +60,30 @@ struct _iPodBuffer {
 
 typedef struct _iPodBuffer iPodBuffer;
 
-static void
-ipod_mmap_buffer_destroy (struct iPodMmapBuffer *buf)
+static gboolean
+ipod_gstring_flush (struct iPodSharedDataBuffer *shared, GError **error)
 {
-	munmap (buf->mmap_area, buf->size);
-	close (buf->fd);
-	g_free (buf);
+	gboolean result;
+
+	result = g_file_set_contents (shared->filename, 
+				      shared->data->str, shared->data->len,
+				      error);
+	if (!result) {
+		return FALSE;
+	}
+	g_string_free (shared->data, TRUE);
+	g_free (shared->filename);
+	g_free (shared);
+
+	return TRUE;
 }
 
 static void
 ipod_buffer_destroy (iPodBuffer *buffer)
 {
-	buffer->mmap->ref_count--;
-	if (buffer->mmap->ref_count == 0) {
-		ipod_mmap_buffer_destroy (buffer->mmap);
+	buffer->shared->ref_count--;
+	if (buffer->shared->ref_count == 0) {
+		ipod_gstring_flush (buffer->shared, NULL);
 	}
 	g_free (buffer);
 }
@@ -87,79 +92,18 @@ ipod_buffer_destroy (iPodBuffer *buffer)
 static void *
 ipod_buffer_get_pointer (iPodBuffer *buffer)
 {
-	return &((unsigned char *)buffer->mmap->mmap_area)[buffer->offset];
+	if (buffer->shared->data->str == NULL) {
+		return NULL;
+	}
+	g_assert (buffer->offset < buffer->shared->data->len);
+	return &((unsigned char *)buffer->shared->data->str)[buffer->offset];
 }
 
-static int
-ipod_buffer_grow_file (struct iPodMmapBuffer *mmap_buf, off_t new_size)
+static void
+ipod_buffer_maybe_grow (iPodBuffer *buffer, off_t size)
 {
-	int result;
-
-	result = lseek (mmap_buf->fd, new_size, SEEK_SET);
-	if (result == (off_t)-1) {
-		g_print ("Failed to grow file to %lu: %s\n",
-                        (unsigned long)new_size, strerror (errno));
-		return -1;
-	}
-	result = 0;
-	result = write (mmap_buf->fd, &result, 1);
-	if (result != 1) {
-		g_print ("Failed to write a byte at %lu: %s\n",
-                        (unsigned long)new_size, strerror (errno));
-		return -1;
-	}
-
-	return 0;
-}
-
-
-static void *
-ipod_buffer_grow_mapping (iPodBuffer *buffer, size_t size)
-{
-	void *new_address;
-#ifdef HAVE_MREMAP
-
-	new_address = mremap (buffer->mmap->mmap_area, buffer->mmap->size,
-			      buffer->mmap->size + size, 0);
-#else
-	munmap (buffer->mmap->mmap_area, buffer->mmap->size);
-	new_address = mmap (buffer->mmap->mmap_area, buffer->mmap->size + size,
-			    PROT_READ | PROT_WRITE, MAP_SHARED,
-			    buffer->mmap->fd, 0);
-#endif
-	/* Don't allow libc to move the current mapping since this would
-	 * force us to be very careful wrt pointers in the rest of the code
-	 */
-	if (new_address != buffer->mmap->mmap_area) {
-		return MAP_FAILED;
-	}
-
-	return new_address;
-}
-
-
-static int
-ipod_buffer_maybe_grow (iPodBuffer *buffer, off_t offset)
-{
-	void *new_address;
-
-	if (buffer->offset + offset <= buffer->mmap->size) {
-		return 0;
-	}
-
-	new_address = ipod_buffer_grow_mapping (buffer, IPOD_MMAP_SIZE);
-	if (new_address == MAP_FAILED) {
-		g_print ("Failed to mremap buffer\n");
-		return -1;
-	}
-
-	if (ipod_buffer_grow_file (buffer->mmap,
-				   buffer->mmap->size + IPOD_MMAP_SIZE) != 0) {
-		return -1;
-	}
-	buffer->mmap->size += IPOD_MMAP_SIZE;
-
-	return 0;
+	g_string_set_size (buffer->shared->data, 
+			   buffer->shared->data->len + size);
 }
 
 static iPodBuffer *
@@ -167,19 +111,18 @@ ipod_buffer_get_sub_buffer (iPodBuffer *buffer, off_t offset)
 {
 	iPodBuffer *sub_buffer;
 
-	if (ipod_buffer_maybe_grow (buffer, offset) != 0) {
-		return NULL;
-	}
+	g_assert (buffer->offset + offset <= buffer->shared->data->len);
+
 	sub_buffer = g_new0 (iPodBuffer, 1);
 	if (sub_buffer == NULL) {
 		return NULL;
 	}
-	sub_buffer->mmap = buffer->mmap;
+	sub_buffer->shared = buffer->shared;
 	sub_buffer->offset = buffer->offset + offset;
 	sub_buffer->byte_order = buffer->byte_order;
 	sub_buffer->db_type = buffer->db_type;
 
-	buffer->mmap->ref_count++;
+	buffer->shared->ref_count++;
 
 	return sub_buffer;
 }
@@ -187,49 +130,25 @@ ipod_buffer_get_sub_buffer (iPodBuffer *buffer, off_t offset)
 static iPodBuffer *
 ipod_buffer_new (const char *filename, guint byte_order, DbType db_type)
 {
-	int fd;
-	struct iPodMmapBuffer *mmap_buf;
+	struct iPodSharedDataBuffer *shared;
 	iPodBuffer *buffer;
-	void *mmap_area;
 
-	fd = open (filename, O_RDWR | O_CREAT | O_TRUNC,
-		   S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	if (fd == -1) {
-		g_print ("Failed to open %s: %s\n",
-			 filename, strerror (errno));
+	shared = g_new0 (struct iPodSharedDataBuffer, 1);
+	if (shared == NULL) {
 		return NULL;
 	}
-
-	mmap_area = mmap (0, IPOD_MMAP_SIZE, PROT_READ | PROT_WRITE,
-			  MAP_SHARED, fd, 0);
-	if (mmap_area == MAP_FAILED) {
-		g_print ("Failed to mmap %s in memory: %s\n", filename,
-			 strerror (errno));
-		close (fd);
-		return NULL;
-	}
-	mmap_buf = g_new0 (struct iPodMmapBuffer, 1);
-	if (mmap_buf == NULL) {
-		munmap (mmap_area, IPOD_MMAP_SIZE);
-		close (fd);
-		return NULL;
-	}
-	mmap_buf->mmap_area = mmap_area;
-	mmap_buf->size = IPOD_MMAP_SIZE;
-	mmap_buf->ref_count = 1;
-	mmap_buf->fd = fd;
-
-	if (ipod_buffer_grow_file (mmap_buf, IPOD_MMAP_SIZE) != 0) {
-		ipod_mmap_buffer_destroy (mmap_buf);
-		return  NULL;
-	}
+	shared->filename = g_strdup (filename);
+	shared->data = g_string_sized_new (DEFAULT_GSTRING_SIZE);
+	shared->ref_count = 1;
 
 	buffer = g_new0 (iPodBuffer, 1);
 	if (buffer == NULL) {
-		ipod_mmap_buffer_destroy (mmap_buf);
+		g_free (shared->filename);
+		g_string_free (shared->data, TRUE);
+		g_free (shared);
 		return NULL;
 	}
-	buffer->mmap = mmap_buf;
+	buffer->shared = shared;
 	buffer->byte_order = byte_order;
 	buffer->db_type = db_type;
 
@@ -277,10 +196,12 @@ init_header (iPodBuffer *buffer, gchar _header_id[4], guint header_len)
 		header_len = padded_size;
 	}
 	g_assert (header_len > sizeof (MHeader));
-	if (ipod_buffer_maybe_grow (buffer, header_len) != 0) {
+	ipod_buffer_maybe_grow (buffer, header_len);
+
+	mh = (MHeader*)ipod_buffer_get_pointer (buffer);
+	if (mh == NULL) {
 		return NULL;
 	}
-	mh = (MHeader*)ipod_buffer_get_pointer (buffer);
 	memset (mh, 0, header_len);
 
 	header_id = g_strndup (_header_id, 4);
@@ -327,10 +248,11 @@ write_mhod_type_1 (gchar *string, iPodBuffer *buffer)
 	mhod->type = get_gint16 (0x01, buffer->byte_order);
 
 	/* Make sure we have enough free space to write the string */
-	if (ipod_buffer_maybe_grow (buffer, total_bytes + len + padding ) != 0) {
-		return  -1;
-	}
+	ipod_buffer_maybe_grow (buffer, len + padding);
 	mhod = ipod_buffer_get_pointer (buffer);
+	if (mhod == NULL) {
+		return -1;
+	}
 	memcpy (mhod->string, string, len);
 	total_bytes += len + padding;
 	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
@@ -389,11 +311,12 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
  	    total_bytes += g2l*len + padding;
 
 	    /* Make sure we have enough free space to write the string */
-	    if (ipod_buffer_maybe_grow (buffer, total_bytes) != 0) {
-		g_free (utf16);
-		return  -1;
-	    }
+	    ipod_buffer_maybe_grow (buffer, g2l*len + padding);
 	    mhod = ipod_buffer_get_pointer (buffer);
+	    if (mhod == NULL) {
+		    g_free (utf16);
+		    return  -1;
+	    }
 	    strp = (gunichar2 *)mhod->string;
 	    for (i = 0; i < len; i++) {
 		strp[i] = get_gint16 (utf16[i], buffer->byte_order);
@@ -402,6 +325,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    break;
 	case G_BIG_ENDIAN:
 	    mhod->mhod_version = 1;
+            /* FIXME: len isn't initialized */
 	    mhod->string_len = get_gint32 (len, buffer->byte_order);
 	    /* pad string if necessary */
 	    /* e.g. len = 7 bytes, len%4 = 3, 4-3=1 -> requires 1 byte
@@ -411,10 +335,11 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 		padding = 0;
 	    mhod->padding = padding;
 	    /* Make sure we have enough free space to write the string */
-	    if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len+padding) != 0) {
-		return  -1;
-	    }
+	    ipod_buffer_maybe_grow (buffer, len+padding);
 	    mhod = ipod_buffer_get_pointer (buffer);
+	    if (mhod == NULL) {
+		    return -1;
+	    }
 	    memcpy (mhod->string, string, len);
 	    total_bytes += (len+padding);
 	}
@@ -1086,7 +1011,6 @@ ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 {
 	iPodBuffer *buf;
 	int bytes_written;
-	int result;
 	char *filename;
 	int id_max;
 	Itdb_DB db;
@@ -1115,33 +1039,22 @@ ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 	buf = ipod_buffer_new (filename, itdb->device->byte_order, DB_TYPE_ITUNES);
 	if (buf == NULL) {
 		g_print ("Couldn't create %s\n", filename);
-		g_free (filename);
+	        g_free (filename);
 		return -1;
 	}
+	g_free (filename);
 	bytes_written = write_mhfd (&db, buf, id_max);
 
-	/* Refcount of the mmap buffer should drop to 0 and this should
+	/* Refcount of the shared buffer should drop to 0 and this should
 	 * sync buffered data to disk
-	 * FIXME: it's probably less error-prone to add a ipod_buffer_mmap_sync
-	 * call...
 	 */
 	ipod_buffer_destroy (buf);
 
 	if (bytes_written == -1) {
 		g_print ("Failed to save %s\n", filename);
-		g_free (filename);
 		/* FIXME: maybe should unlink the file we may have created */
 		return -1;
 	}
-
-	result = truncate (filename, bytes_written);
-	if (result != 0) {
-		g_print ("Failed to truncate %s: %s\n",
-			 filename, strerror (errno));
-		g_free (filename);
-		return -1;
-	}
-	g_free (filename);
 	return 0;
 }
 
@@ -1150,7 +1063,6 @@ ipod_write_photo_db (Itdb_PhotoDB *photodb)
 {
 	iPodBuffer *buf;
 	int bytes_written;
-	int result;
 	char *filename;
 	int id_max;
 	Itdb_DB db;
@@ -1174,28 +1086,17 @@ ipod_write_photo_db (Itdb_PhotoDB *photodb)
 	id_max = itdb_get_free_photo_id( photodb );
 	bytes_written = write_mhfd (&db, buf, id_max);
 
-	/* Refcount of the mmap buffer should drop to 0 and this should
+	/* Refcount of the shared buffer should drop to 0 and this should
 	 * sync buffered data to disk
-	 * FIXME: it's probably less error-prone to add a ipod_buffer_mmap_sync
-	 * call...
 	 */
 	ipod_buffer_destroy (buf);
+        g_free (filename);
 
 	if (bytes_written == -1) {
 		g_print ("Failed to save %s\n", filename);
-		g_free (filename);
 		/* FIXME: maybe should unlink the file we may have created */
 		return -1;
 	}
-
-	result = truncate (filename, bytes_written);
-	if (result != 0) {
-		g_print ("Failed to truncate %s: %s\n",
-			 filename, strerror (errno));
-		g_free (filename);
-		return -1;
-	}
-	g_free (filename);
 	return 0;
 }
 #else

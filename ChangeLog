@@ -1,5 +1,10 @@
 2007-10-29  Christophe Fergeau <teuf@gnome.org>
 
+	* configure.ac: remove mremap check
+	* src/db-artwork-writer.c: get rid mmap/mremap use
+
+2007-10-29  Christophe Fergeau <teuf@gnome.org>
+
 	* src/db-artwork-writer.c: reread the pointer for memory mapped
 	buffers when it may have changed
 	    
