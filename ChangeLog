@@ -1,3 +1,13 @@
+2007-10-29  Christophe Fergeau <teuf@gnome.org>
+
+	* src/db-artwork-writer.c: reread the pointer for memory mapped
+	buffers when it may have changed
+	    
+	Artwork writing works by mapping structs to memory and by directly 
+	accessing/modifying it. This works until we need to move the
+	mmap base address. This patch makes sure we reset the struct
+	mapping every time the mmap base pointer may have changed
+
 2007-10-27 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/itdb_device.c (ipod_classic_1_artwork_info)

@@ -330,6 +330,7 @@ write_mhod_type_1 (gchar *string, iPodBuffer *buffer)
 	if (ipod_buffer_maybe_grow (buffer, total_bytes + len + padding ) != 0) {
 		return  -1;
 	}
+	mhod = ipod_buffer_get_pointer (buffer);
 	memcpy (mhod->string, string, len);
 	total_bytes += len + padding;
 	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
@@ -385,14 +386,14 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    if (padding == 4)
 		padding = 0;
 	    mhod->padding = padding;
-	    total_bytes += g2l*len + padding;
+ 	    total_bytes += g2l*len + padding;
 
 	    /* Make sure we have enough free space to write the string */
 	    if (ipod_buffer_maybe_grow (buffer, total_bytes) != 0) {
 		g_free (utf16);
 		return  -1;
 	    }
-
+	    mhod = ipod_buffer_get_pointer (buffer);
 	    strp = (gunichar2 *)mhod->string;
 	    for (i = 0; i < len; i++) {
 		strp[i] = get_gint16 (utf16[i], buffer->byte_order);
@@ -413,6 +414,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    if (ipod_buffer_maybe_grow (buffer, total_bytes + 2*len+padding) != 0) {
 		return  -1;
 	    }
+	    mhod = ipod_buffer_get_pointer (buffer);
 	    memcpy (mhod->string, string, len);
 	    total_bytes += (len+padding);
 	}
@@ -470,6 +472,7 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 		return -1;
 	}
 	total_bytes += bytes_written;
+	mhni = ipod_buffer_get_pointer (buffer);
 	mhni->total_len = get_gint32 (total_bytes, buffer->byte_order);
 	/* Only update number of children when all went well to try to get
 	 * something somewhat consistent when there are errors
@@ -512,6 +515,7 @@ write_mhod (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 		return -1;
 	}
 	total_bytes += bytes_written;
+	mhod = ipod_buffer_get_pointer (buffer);
 	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
 
 	dump_mhod (mhod);
@@ -590,6 +594,7 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 			return -1;
 		}
 		total_bytes += bytes_written;
+		mhii = ipod_buffer_get_pointer (buffer);
 		num_children++;
 		it = it->next;
 	}
@@ -651,6 +656,7 @@ write_mhli (Itdb_DB *db, iPodBuffer *buffer )
 		}
 		it = it->next;
 	}
+	mhli = ipod_buffer_get_pointer (buffer);
 	mhli->num_children = get_gint32 (num_thumbs, buffer->byte_order);
 	dump_mhl ((MhlHeader *)mhli, "mhli");
 
@@ -725,6 +731,7 @@ write_mhba (Itdb_PhotoAlbum *album, iPodBuffer *buffer)
 	    return -1;
 	}
 	total_bytes += bytes_written;
+	mhba = ipod_buffer_get_pointer (buffer);
 
 	for (it = album->members; it != NULL; it = it->next) {
 	        Itdb_Artwork *photo = it->data;
@@ -741,6 +748,7 @@ write_mhba (Itdb_PhotoAlbum *album, iPodBuffer *buffer)
 		}
 		total_bytes += bytes_written;
 	}
+	mhba = ipod_buffer_get_pointer (buffer);
 	mhba->total_len = get_gint32( total_bytes, buffer->byte_order );
 	dump_mhba ( mhba );
 	return total_bytes;
@@ -775,6 +783,7 @@ write_mhla (Itdb_DB *db, iPodBuffer *buffer)
 		    return -1;
 		}
 		total_bytes += bytes_written;
+		mhla = ipod_buffer_get_pointer (buffer);
 		num_children++;
 		mhla->num_children = get_gint32 (num_children,
                                                  buffer->byte_order);
@@ -872,6 +881,8 @@ write_mhlf (Itdb_DB *db, iPodBuffer *buffer)
         		return -1;
         	}
         	total_bytes += bytes_written;
+		mhlf = ipod_buffer_get_pointer (buffer);
+
                 num_children++;
         	/* Only update number of children when all went well to try 
                  * to get something somewhat consistent when there are errors
@@ -924,6 +935,7 @@ write_mhsd (Itdb_DB *db, iPodBuffer *buffer, enum MhsdType type)
 		return -1;
 	} else {
 		total_bytes += bytes_written;
+		mhsd = ipod_buffer_get_pointer (buffer);
 		mhsd->total_len = get_gint32 (total_bytes, buffer->byte_order);
 	}
 
@@ -940,6 +952,7 @@ write_mhfd (Itdb_DB *db, iPodBuffer *buffer, int id_max)
 	int bytes_written;
 	int i;
 
+	
 	mhfd = (MhfdHeader *)init_header (buffer, "mhfd", sizeof (MhfdHeader));
 	if (mhfd == NULL) {
 		return -1;
@@ -969,6 +982,7 @@ write_mhfd (Itdb_DB *db, iPodBuffer *buffer, int id_max)
 			return -1;
 		}
 		total_bytes += bytes_written;
+		mhfd = ipod_buffer_get_pointer (buffer);
 		mhfd->total_len = get_gint32 (total_bytes, buffer->byte_order);
 		mhfd->num_children = get_gint32 (i, buffer->byte_order);
 	}
