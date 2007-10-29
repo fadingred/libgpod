@@ -1,5 +1,10 @@
 2007-10-29  Christophe Fergeau <teuf@gnome.org>
 
+	* src/itdb_device.c: the iPod Touch probably uses the same image format
+	as the iPhone
+
+2007-10-29  Christophe Fergeau <teuf@gnome.org>
+
 	* configure.ac: raise glib requirement to 2.8 (because of
 	g_file_set_contents)
 

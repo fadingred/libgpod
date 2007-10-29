@@ -686,7 +686,7 @@ itdb_device_get_artwork_formats (Itdb_Device *device)
     case ITDB_IPOD_GENERATION_CLASSIC_1:
 	return ipod_classic_1_artwork_info;
     case ITDB_IPOD_GENERATION_TOUCH_1:
-	return NULL; /* FIXME: */
+	return ipod_iphone_1_artwork_info;
     case ITDB_IPOD_GENERATION_FIFTH:
     case ITDB_IPOD_GENERATION_SIXTH:
 	return NULL;
