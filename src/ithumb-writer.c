@@ -302,7 +302,7 @@ pack_I420 (GdkPixbuf *orig_pixbuf, const Itdb_ArtworkFormat *img_info,
 	   gint horizontal_padding, gint vertical_padding,
 	   guint32 *thumb_size)
 {
-	// FIXME do something
+	/* FIXME do something */
     g_return_val_if_fail (img_info, NULL);
     return NULL;
 }

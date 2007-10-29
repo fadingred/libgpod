@@ -1,5 +1,11 @@
 2007-10-29  Christophe Fergeau <teuf@gnome.org>
 
+	* src/itdb_artwork.c:
+	* src/ithumb-writer.c: replace // comments with /* */ pairs, fixes
+	compilation on my machine
+
+2007-10-29  Christophe Fergeau <teuf@gnome.org>
+
 	Patch from Filippo Giunchedi <filippo@esaurito.net>
 
 	* src/itdb_artwork.c: add I420 unpacker

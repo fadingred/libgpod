@@ -665,7 +665,7 @@ static gint limit8bit (float x)
     return x;
 }
 
-// swapping U and V planes this unpacks YV12
+/* swapping U and V planes this unpacks YV12 */
 static guchar *
 unpack_I420 (guchar *yuvdata, gint bytes_len, guint byte_order,
 		gint width, gint height)
@@ -685,7 +685,7 @@ unpack_I420 (guchar *yuvdata, gint bytes_len, guint byte_order,
 
 	rgbdata = g_malloc(imgsize);
 
-	// FIXME could be faster
+	/* FIXME could be faster */
 	while(h < yuvdim){
 		y = yuvdata[h];
 
