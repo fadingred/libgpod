@@ -1,3 +1,19 @@
+2007-10-30  Christophe Fergeau  <christophe@anevia.com>
+
+	Additional clean-ups after the glib requirement bumping pointed out by
+	tmz on IRC
+
+	* libgpod-1.0.pc.in: bump glib requirement there as well
+	* src/Makefile.am:
+	* src/db-parse-context.c:
+	* src/glib-compat.h:
+	* src/itdb_artwork.c:
+	* src/itdb_itunesdb.c:
+	* src/itdb_photoalbum.c:
+	* src/itdb_private.h:
+	* src/ithumb-writer.c: get rid of glib-compat.h since we raised the
+	minimum version to 2.8
+
 2007-10-30  Christophe Fergeau <teuf@gnome.org>
 
 	Patch from Filippo Giunchedi <filippo@esaurito.net>

@@ -28,7 +28,6 @@ noinst_HEADERS = 		\
 	db-image-parser.h   	\
 	db-itunes-parser.h  	\
 	db-parse-context.h  	\
-	glib-compat.h 		\
 	itdb_device.h  		\
 	itdb_endianness.h 	\
 	itdb_private.h   	\

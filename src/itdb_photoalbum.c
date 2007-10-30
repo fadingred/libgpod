@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <glib/gi18n-lib.h>
+#include <glib/gstdio.h>
 #ifdef HAVE_GDKPIXBUF
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #endif

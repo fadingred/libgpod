@@ -32,7 +32,6 @@
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-#include "glib-compat.h"
 #include "itdb_device.h"
 #include "itdb.h"
 
