@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-06-01 23:03:58 jcs>
+/* Time-stamp: <2007-11-03 20:27:36 jcs>
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -31,6 +31,7 @@
 #include "itdb_private.h"
 #include "itdb_device.h"
 #include "db-artwork-parser.h"
+#include "db-image-parser.h"
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -416,33 +417,33 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 
     for(result = TRUE; format->type != -1 && result == TRUE; format++)
     {
-	if((format->type == ITDB_THUMB_COVER_SMALL) ||
-	   (format->type == ITDB_THUMB_COVER_LARGE))
-	    continue;
-	if (filename)
+	if (itdb_thumb_type_is_valid_for_db (format->type, DB_TYPE_PHOTO))
 	{
-	    result = itdb_artwork_add_thumbnail (artwork,
-						 format->type,
-						 filename,
-						 rotation,
-						 error);
-	}
-	if (image_data)
-	{
-	    result = itdb_artwork_add_thumbnail_from_data (artwork,
-							   format->type,
-							   image_data,
-							   image_data_len,
-							   rotation,
-							   error);
-	}
-	if (pixbuf) 
-	{
-	  result = itdb_artwork_add_thumbnail_from_pixbuf (artwork,
-							   format->type, 
-							   pixbuf,
-							   rotation,
-							   error);
+	    if (filename)
+	    {
+		result = itdb_artwork_add_thumbnail (artwork,
+						     format->type,
+						     filename,
+						     rotation,
+						     error);
+	    }
+	    if (image_data)
+	    {
+		result = itdb_artwork_add_thumbnail_from_data (artwork,
+							       format->type,
+							       image_data,
+							       image_data_len,
+							       rotation,
+							       error);
+	    }
+	    if (pixbuf) 
+	    {
+		result = itdb_artwork_add_thumbnail_from_pixbuf (artwork,
+								 format->type, 
+								 pixbuf,
+								 rotation,
+								 error);
+	    }
 	}
     }
 

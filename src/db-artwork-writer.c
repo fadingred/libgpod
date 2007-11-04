@@ -381,11 +381,10 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 					   buffer->byte_order);
 	mhni->ithmb_offset =   get_gint32 (thumb->offset,
 					   buffer->byte_order);
-
-	mhni->vertical_padding =
-	    get_gint16 (thumb->vertical_padding, buffer->byte_order);
-	mhni->horizontal_padding =
-	    get_gint16 (thumb->horizontal_padding, buffer->byte_order);
+	mhni->vertical_padding = get_gint16 (thumb->vertical_padding,
+					     buffer->byte_order);
+	mhni->horizontal_padding = get_gint16 (thumb->horizontal_padding,
+					       buffer->byte_order);
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {
@@ -492,24 +491,26 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 	mhii->digitized_date = get_guint32 (mactime, buffer->byte_order);
 
 	mhii->orig_img_size = get_gint32 (artwork->artwork_size, buffer->byte_order);
-	it = artwork->thumbnails;
 	num_children = 0;
-	while (it != NULL) {
+	for (it=artwork->thumbnails; it!=NULL; it=it->next)
+	{
 		iPodBuffer *sub_buffer;
 		Itdb_Thumb *thumb;
 		const Itdb_ArtworkFormat *img_info;
+
+		thumb = (Itdb_Thumb *)it->data;
+		img_info = itdb_get_artwork_info_from_type (
+		    db_get_device(db), thumb->type);
+		if (img_info == NULL) {
+		    /* skip this thumb */
+		    continue;
+		}
 
 		mhii->num_children = get_gint32 (num_children,
 						 buffer->byte_order);
 		mhii->total_len = get_gint32 (total_bytes, buffer->byte_order);
 		sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 		if (sub_buffer == NULL) {
-			return -1;
-		}
-		thumb = (Itdb_Thumb *)it->data;
-		img_info = itdb_get_artwork_info_from_type (
-		    db_get_device(db), thumb->type);
-		if (img_info == NULL) {
 			return -1;
 		}
 		bytes_written = write_mhod (db, thumb, img_info->correlation_id,
@@ -521,7 +522,6 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 		total_bytes += bytes_written;
 		mhii = ipod_buffer_get_pointer (buffer);
 		num_children++;
-		it = it->next;
 	}
 
 	mhii->num_children = get_gint32 (num_children, buffer->byte_order);
@@ -561,7 +561,6 @@ write_mhli (Itdb_DB *db, iPodBuffer *buffer )
 		Itdb_Track *song;
 		int bytes_written;
 		iPodBuffer *sub_buffer;
-
 		if (buffer->db_type == DB_TYPE_ITUNES) {
 			song = (Itdb_Track*)it->data;
 			if (!song->artwork || (song->artwork->id == 0)) {
@@ -742,24 +741,22 @@ write_mhif (Itdb_DB *db, iPodBuffer *buffer,
 	return get_gint32 (mhif->header_len, buffer->byte_order);
 }
 
-static gboolean
-should_write (const Itdb_ArtworkFormat *formats, DbType db_type)
+G_GNUC_INTERNAL gboolean
+itdb_thumb_type_is_valid_for_db (const ItdbThumbType thumb_type, DbType db_type)
 {
-        g_return_val_if_fail (formats->type != -1, FALSE);
-
-        switch (formats->type) {
+        switch (thumb_type) {
         case ITDB_THUMB_COVER_SMALL:
         case ITDB_THUMB_COVER_LARGE:
         case ITDB_THUMB_COVER_XLARGE:
         case ITDB_THUMB_COVER_MEDIUM:
         case ITDB_THUMB_COVER_SMEDIUM:
         case ITDB_THUMB_COVER_XSMALL:
-                return (db_type == DB_TYPE_ITUNES);
+	    return (db_type == DB_TYPE_ITUNES);
         case ITDB_THUMB_PHOTO_SMALL:
         case ITDB_THUMB_PHOTO_LARGE:
         case ITDB_THUMB_PHOTO_FULL_SCREEN:
         case ITDB_THUMB_PHOTO_TV_SCREEN:
-                return (db_type == DB_TYPE_PHOTO);
+	    return (db_type == DB_TYPE_PHOTO);
         }
 
         g_return_val_if_reached (FALSE);
@@ -790,7 +787,7 @@ write_mhlf (Itdb_DB *db, iPodBuffer *buffer)
 
         while (formats->type != -1) {
 	        iPodBuffer *sub_buffer;
-                if (!should_write (formats, buffer->db_type)) {
+                if (!itdb_thumb_type_is_valid_for_db (formats->type, buffer->db_type)) {
                         formats++;
                         continue;
                 }

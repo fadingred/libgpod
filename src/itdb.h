@@ -447,7 +447,7 @@ struct _Itdb_SPLRules
 
 /* Types of thumbnails in Itdb_Image */
 typedef enum { 
-    ITDB_THUMB_COVER_SMALL,
+    ITDB_THUMB_COVER_SMALL = 0,
     ITDB_THUMB_COVER_LARGE,
     ITDB_THUMB_PHOTO_SMALL,
     ITDB_THUMB_PHOTO_LARGE,

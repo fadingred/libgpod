@@ -1,3 +1,30 @@
+2007-11-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	Added support for video output of photos for iPod Nano Videos and
+	iPod Classics.
+
+	* src/ithumb-writer.c
+	  (pack_I420): added packer for iPod Nano Video and iPod Classic
+	  TV output photo format.
+	  (itdb_write_ithumb_files): make sure only valid thumbnail types
+	  are written.
+
+	* src/db-image-parser.h: added declaration for
+	  itdb_thumb_type_is_valid_for_db() 
+
+	* src/itdb_photoalbum.c (itdb_photodb_add_photo_internal): make
+	  sure only photo thumbnails are added.
+
+	* src/db-artwork-writer.c
+
+	  (write_mhii): correctly skip unneeded thumbnails (thumbnails not
+	  relevant for the current iPod type).
+
+	  (should_write): renamed to itdb_thumb_type_is_valid_for_db()
+
+	  src/itdb.h
+	  src/itdb_artwork.c: minor formatting.
+
 2007-10-30  Christophe Fergeau  <christophe@anevia.com>
 
 	Additional clean-ups after the glib requirement bumping pointed out by
@@ -12,7 +39,7 @@
 	* src/itdb_photoalbum.c:
 	* src/itdb_private.h:
 	* src/ithumb-writer.c: get rid of glib-compat.h since we raised the
-	minimum version to 2.8
+	  minimum version to 2.8
 
 2007-10-30  Christophe Fergeau <teuf@gnome.org>
 
@@ -24,7 +51,7 @@
 
 	* src/itdb_artwork.c:
 	* src/ithumb-writer.c: replace // comments with /* */ pairs, fixes
-	compilation on my machine
+	  compilation on my machine
 
 2007-10-29  Christophe Fergeau <teuf@gnome.org>
 
@@ -38,12 +65,12 @@
 2007-10-29  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_device.c: the iPod Touch probably uses the same image format
-	as the iPhone
+	  as the iPhone
 
 2007-10-29  Christophe Fergeau <teuf@gnome.org>
 
 	* configure.ac: raise glib requirement to 2.8 (because of
-	g_file_set_contents)
+	  g_file_set_contents)
 
 2007-10-29  Christophe Fergeau <teuf@gnome.org>
 
@@ -53,12 +80,12 @@
 2007-10-29  Christophe Fergeau <teuf@gnome.org>
 
 	* src/db-artwork-writer.c: reread the pointer for memory mapped
-	buffers when it may have changed
+	  buffers when it may have changed
 	    
-	Artwork writing works by mapping structs to memory and by directly 
-	accessing/modifying it. This works until we need to move the
-	mmap base address. This patch makes sure we reset the struct
-	mapping every time the mmap base pointer may have changed
+	  Artwork writing works by mapping structs to memory and by
+	  directly accessing/modifying it. This works until we need to
+	  move the mmap base address. This patch makes sure we reset the
+	  struct mapping every time the mmap base pointer may have changed
 
 2007-10-27 Jorg Schuler <jcsjcs at users.sourceforge.net>
 
@@ -80,9 +107,9 @@
 2007-10-24  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-writer.c: (write_mhif), (should_write),
-	(write_mhlf): don't hardcode the number of mhif entries we write, but
-	write as many entries as the number of thumbnail formats supported by
-	the device
+	  (write_mhlf): don't hardcode the number of mhif entries we
+	  write, but write as many entries as the number of thumbnail
+	  formats supported by the device
 
 2007-10-24  Christophe Fergeau  <teuf@gnome.org>
 

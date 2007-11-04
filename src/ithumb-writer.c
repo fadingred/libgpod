@@ -1,4 +1,4 @@
-/*  Time-stamp: <2007-10-27 22:01:00 jcs>
+/*  Time-stamp: <2007-11-04 09:46:51 jcs>
  *
  *  Copyright (C) 2005 Christophe Fergeau
  *
@@ -303,9 +303,74 @@ pack_I420 (GdkPixbuf *orig_pixbuf, const Itdb_ArtworkFormat *img_info,
 	   gint horizontal_padding, gint vertical_padding,
 	   guint32 *thumb_size)
 {
-	/* FIXME do something */
+    GdkPixbuf *pixbuf;
+    gint width, height;
+    gint orig_height, orig_width;
+    gint rowstride;
+    gint h, z;
+    guchar *pixels, *yuvdata;
+    gint yuvsize, halfyuv;
+    gint ustart, vstart;
+
     g_return_val_if_fail (img_info, NULL);
-    return NULL;
+
+    width = img_info->width;
+    height = img_info->height;
+
+    g_object_get (G_OBJECT (orig_pixbuf), 
+		  "height", &orig_height, "width", &orig_width, NULL);
+
+    /* copy into new pixmap with padding applied */
+    pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB,
+			     gdk_pixbuf_get_has_alpha (orig_pixbuf),
+			     8,
+			     width, height);
+    gdk_pixbuf_copy_area (orig_pixbuf, 0, 0, orig_width, orig_height,
+			  pixbuf, horizontal_padding, vertical_padding);
+
+    g_object_get (G_OBJECT (pixbuf), 
+		  "rowstride", &rowstride,
+		  "pixels", &pixels, NULL);
+
+    halfyuv = width*height;
+
+    yuvsize = 2*halfyuv;
+    *thumb_size = yuvsize;
+
+    yuvdata = g_malloc (yuvsize);
+
+    ustart = halfyuv;
+    vstart = ustart + halfyuv/4;
+
+    /* FIXME: consider rowstride -- currently we assume rowstride==width */
+    for (z=0,h=0; h < halfyuv; ++h)
+    {
+	gint r,g,b;
+	gint u, v, y;
+	gint row, col;
+
+	r = pixels[z];
+	g = pixels[z+1];
+	b = pixels[z+2];
+
+	y = (( 66*r + 129*g +  25*b + 128) >> 8) + 16;
+	u = ((-38*r -  74*g + 112*b + 128) >> 8) + 128;
+	v = ((112*r -  94*g -  18*b + 128) >> 8) + 128;
+
+	row = h / width;
+	col = h % width;
+
+	yuvdata[h] = y;
+	yuvdata[ustart + (row/2)*(width/2) + col/2] = u;
+	yuvdata[vstart + (row/2)*(width/2) + col/2] = v;
+
+	if (gdk_pixbuf_get_has_alpha(pixbuf))
+	    z+=4;
+	else
+	    z+=3;
+    }
+
+    return yuvdata;
 }
 
 /* pack_UYVY() is adapted from imgconvert.c from the GPixPod project
@@ -1212,26 +1277,16 @@ itdb_write_ithumb_files (Itdb_DB *db)
 	while (format->type != -1) {
 		iThumbWriter *writer;
 
-		switch (format->type) {
-		case ITDB_THUMB_COVER_XLARGE:
-		case ITDB_THUMB_COVER_MEDIUM:
-		case ITDB_THUMB_COVER_SMEDIUM:
-		case ITDB_THUMB_COVER_XSMALL:
-		case ITDB_THUMB_COVER_SMALL:
-		case ITDB_THUMB_COVER_LARGE:
-		case ITDB_THUMB_PHOTO_SMALL:
-		case ITDB_THUMB_PHOTO_LARGE:
-		case ITDB_THUMB_PHOTO_FULL_SCREEN:
-		case ITDB_THUMB_PHOTO_TV_SCREEN:
-		        ithmb_rearrange_existing_thumbnails (db, format );
-			writer = ithumb_writer_new (mount_point, 
-						    format,
-						    db->db_type, 
-						    device->byte_order);
-			if (writer != NULL) {
-				writers = g_list_prepend (writers, writer);
-			}
-			break;
+		if (itdb_thumb_type_is_valid_for_db (format->type, db->db_type))
+		{
+		    ithmb_rearrange_existing_thumbnails (db, format );
+		    writer = ithumb_writer_new (mount_point, 
+						format,
+						db->db_type, 
+						device->byte_order);
+		    if (writer != NULL) {
+			writers = g_list_prepend (writers, writer);
+		    }
 		}
 		format++;
 	}

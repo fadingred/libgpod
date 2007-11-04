@@ -1,5 +1,4 @@
-/* Time-stamp: <2007-10-27 21:54:23 jcs>
-|
+/*
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
 | 
@@ -1214,6 +1213,7 @@ itdb_thumb_get_byteorder (const ItdbThumbFormat format)
     switch (format)
     {
     case THUMB_FORMAT_UYVY_LE:
+    case THUMB_FORMAT_I420_LE:
     case THUMB_FORMAT_RGB565_LE:
     case THUMB_FORMAT_RGB565_LE_90:
     case THUMB_FORMAT_RGB555_LE:
@@ -1223,9 +1223,9 @@ itdb_thumb_get_byteorder (const ItdbThumbFormat format)
     case THUMB_FORMAT_REC_RGB555_LE:
     case THUMB_FORMAT_REC_RGB555_LE_90:
     case THUMB_FORMAT_EXPERIMENTAL_LE:
-	case THUMB_FORMAT_I420_LE:
 	return G_LITTLE_ENDIAN;
     case THUMB_FORMAT_UYVY_BE:
+    case THUMB_FORMAT_I420_BE:
     case THUMB_FORMAT_RGB565_BE:
     case THUMB_FORMAT_RGB565_BE_90:
     case THUMB_FORMAT_RGB555_BE:
@@ -1235,7 +1235,6 @@ itdb_thumb_get_byteorder (const ItdbThumbFormat format)
     case THUMB_FORMAT_REC_RGB555_BE:
     case THUMB_FORMAT_REC_RGB555_BE_90:
     case THUMB_FORMAT_EXPERIMENTAL_BE:
-	case THUMB_FORMAT_I420_BE:
 	return G_BIG_ENDIAN;
     }
     g_return_val_if_reached (-1);

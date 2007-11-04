@@ -82,6 +82,9 @@ G_GNUC_INTERNAL Itdb_Thumb *ipod_image_new_from_mhni (MhniHeader *mhni,
 
 G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_DB *db);
 
+G_GNUC_INTERNAL gboolean
+itdb_thumb_type_is_valid_for_db (const ItdbThumbType thumb_type, DbType db_type);
+
 G_GNUC_INTERNAL
 const Itdb_ArtworkFormat *itdb_get_artwork_info_from_type (
     Itdb_Device *ipod, ItdbThumbType image_type);
