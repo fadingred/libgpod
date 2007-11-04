@@ -1,5 +1,9 @@
 2007-11-04  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* itdb_itunesdb.c (itdb_create_directories): Add support for
+	  iPhones (wrong directories were created). Thanks to Jesse
+	  Bouwman for the patch.
+	
 	Added support for video output of photos for iPod Nano Videos and
 	iPod Classics.
 
