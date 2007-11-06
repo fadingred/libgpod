@@ -6643,6 +6643,11 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	calconnotes = FALSE;
 	devicefile = TRUE;
 	break;
+    case ITDB_IPOD_MODEL_TOUCH_BLACK:
+	podpath = g_strdup ("iTunes_Control");
+	calconnotes = FALSE;
+	devicefile = TRUE;
+	break;
     case ITDB_IPOD_MODEL_UNKNOWN:
 	podpath = g_strdup ("iPod_Control");
 	calconnotes = TRUE;
