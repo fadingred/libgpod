@@ -59,6 +59,23 @@ PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.8.0 gobject-2.0)
 LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
 
 dnl **************************************************
+dnl * expand $libdir 
+dnl * by default, it looks like ${prefix}/lib
+dnl * we want to expand prefix
+dnl **************************************************
+expanded_libdir=`(
+    case $prefix in 
+        NONE) prefix=$ac_default_prefix ;; 
+        *) ;; 
+    esac
+    case $exec_prefix in 
+        NONE) exec_prefix=$prefix ;; 
+        *) ;; 
+    esac
+    eval echo $libdir
+)`
+
+dnl **************************************************
 dnl * sgutils is necessary to get the xml device file from the ipod
 dnl **************************************************
 AC_CHECK_LIB(sgutils, sg_ll_inquiry,
@@ -66,6 +83,37 @@ AC_CHECK_LIB(sgutils, sg_ll_inquiry,
 	     have_sgutils=no)
 AC_SUBST(SGUTILS_LIBS)
 AM_CONDITIONAL(HAVE_SGUTILS, test x"$have_sgutils" = xyes)
+
+dnl ***********************************************************************
+dnl * HAL is optional, but is required if you want things to "just work"
+dnl * when a recent iPod is plugged in
+dnl * libgpod by itself doesn't use HAL at all, HAL is just used to build a 
+dnl * helper program which is then installed as a HAL callout
+dnl ***********************************************************************
+AC_ARG_WITH(hal, AC_HELP_STRING([--without-hal],
+        [Disable HAL support]))
+
+AC_ARG_WITH(hal_callouts_dir, AC_HELP_STRING([--with-hal-callouts-dir=DIR],
+	[Directory where HAL expects its callout scripts to be located]), , 
+	with_hal_callouts_dir="${expanded_libdir}/hal")
+HALCALLOUTSDIR="$with_hal_callouts_dir"
+AC_SUBST(HALCALLOUTSDIR)
+
+if test "x$with_hal" != "xno"; then
+  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6, enable_hal=yes, enable_hal=no)
+  if test "x$enable_hal" != "xyes" -a "x$with_hal" = "xyes"; then
+      AC_MSG_ERROR([HAL support explicitly requested but HAL couldn't be found])
+  fi
+
+  if test "x$enable_hal" == "xyes"; then
+        AC_DEFINE(HAVE_HAL, 1, [Define if you have HAL support])
+        AC_SUBST(HAL_CFLAGS)
+	AC_SUBST(HAL_LIBS)
+  fi
+fi
+AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal" = xyes)
+
+
 
 dnl **************************************************
 dnl * TagLib is only used by test-rebuild-db 

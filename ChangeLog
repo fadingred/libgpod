@@ -1,3 +1,14 @@
+2007-11-06  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.ac:
+	* tools/20-libgpod-sysinfo-extended.fdi:
+	* tools/Makefile.am:
+	* tools/hal-callout.c: 
+	* tools/ipod-scsi-inquiry.c: 
+	* tools/read-sysinfoextended-sgutils.c: add hal callout which
+	automatically write SysinfoExtended to iPods when they are plugged
+	if it's properly installed
+
 2007-11-06  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* itdb_itunesdb.c (itdb_create_directories): Add support for

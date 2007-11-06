@@ -23,83 +23,12 @@
 #include <config.h>
 #endif
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <scsi/sg_cmds.h>
-#include <sys/stat.h>
-
 #include <glib.h>
 #include <glib/gi18n.h>
 
 #include "itdb.h"
 
-
-/* do_sg_inquiry and read_sysinfo_extended were heavily
- * inspired from libipoddevice
- */
-static unsigned char
-do_sg_inquiry (int fd, int page, char *buf, char **start)
-{
-    const unsigned int IPOD_BUF_LENGTH = 252;
-
-    if (sg_ll_inquiry (fd, 0, 1, page, buf, IPOD_BUF_LENGTH, 1, 0) != 0) {
-	*start = NULL;
-	return 0;
-    } else {
-	*start = buf + 4;
-	return (unsigned char)buf[3];
-    }
-}
-
-static char *
-read_sysinfo_extended (const char *device)
-{
-    int fd;
-    const unsigned int IPOD_XML_PAGE = 0xc0;
-    unsigned char len;
-    char buf[512];
-    char *start;
-    char *offsets;
-    GString *xml_sysinfo;
-    unsigned int i;
-
-    fd = open (device, O_RDWR);
-    if (fd < 0) {
-	return NULL;
-    }
-
-    len = do_sg_inquiry (fd, IPOD_XML_PAGE, buf, &start);
-    if (start == NULL || len == 0) {
-	close(fd);
-	return NULL;
-    }
-
-    offsets = g_new (char, len+1);
-    memcpy(offsets, start, len);
-    offsets[len] = 0;
-
-    xml_sysinfo = g_string_new_len (NULL, 512);
-    if (xml_sysinfo == NULL) {
-	g_free (offsets);
-	close (fd);
-	return NULL;
-    }
-
-    for (i = 0; offsets[i]; i++) {
-	bzero(buf, 512);
-	len = do_sg_inquiry (fd, offsets[i], buf, &start);
-	start[len] = 0;
-	g_string_append (xml_sysinfo, start);
-    }
-    
-    g_free (offsets);
-    close (fd);
-
-    return g_string_free (xml_sysinfo, FALSE);
-}
+extern char *read_sysinfo_extended (const char *device);
 
 int
 main (int argc, char **argv)
@@ -108,7 +37,7 @@ main (int argc, char **argv)
     
     if (argc < 3) {
       g_print (_("usage: %s <device> <mountpoint>\n"), g_basename (argv[0]));
-	exit (0);
+	return 1;
     }
 
     xml = read_sysinfo_extended (argv[1]);

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?> <!-- -*- SGML -*- -->
+
+<deviceinfo version="0.2">
+  <device>
+    <match key="@info.parent:storage.vendor" contains="Apple">
+      <match key="@info.parent:storage.model" contains="iPod">
+        <match key="volume.fsusage" contains="filesystem"> 
+          <append key="info.callouts.add" type="strlist">libgpod-callout</append>
+        </match>
+      </match>
+    </match>
+  </device>
+</deviceinfo>
+
