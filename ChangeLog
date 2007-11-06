@@ -1,5 +1,10 @@
 2007-11-06  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac: raise version number and soname in preparation for a
+	0.6.0 release
+
+2007-11-06  Christophe Fergeau  <teuf@gnome.org>
+
 	* configure.ac:
 	* tools/20-libgpod-sysinfo-extended.fdi:
 	* tools/Makefile.am:
