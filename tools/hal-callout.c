@@ -1,7 +1,35 @@
+/* Copyright (c) 2007, Christophe Fergeau  <teuf@gnome.org>
+ * Part of the libgpod project.
+ * 
+ * URL: http://www.gtkpod.org/
+ * URL: http://gtkpod.sourceforge.net/
+ *
+ * The code contained in this file is free software; you can redistribute
+ * it and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either version
+ * 2.1 of the License, or (at your option) any later version.
+ *
+ * This file is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this code; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * iTunes and iPod are trademarks of Apple
+ *
+ * This product is not supported/written/published by Apple!
+ *
+ */
+
 #include <errno.h>
 #include <glib.h>
 #include <glib/gstdio.h>
-#define __USE_BSD /* for mkdtemp */
+#ifndef __USE_BSD
+  #define __USE_BSD /* for mkdtemp */
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mount.h>
@@ -53,7 +81,7 @@ static gboolean write_sysinfo_extended (const char *mountpoint,
         if (devdirpath == NULL) {
                 return FALSE;
         }
-        filename = itdb_get_path (devdirpath, "SysInfoExtended");
+        filename = g_build_filename (devdirpath, "SysInfoExtended", NULL);
         g_free (devdirpath);
         if (filename == NULL) {
                 return FALSE;

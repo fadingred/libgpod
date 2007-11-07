@@ -1,3 +1,13 @@
+2007-11-07  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* tools/hal-callout.c (mount_ipod): fix bug that prevented
+	  creation of the SysInfoExtended file if it hadn't already
+	  existed.
+	  Add copyright header.
+
+	* tools/ipod-scsi-inquiry.c: added project name to the copyright
+	  header. 
+
 2007-11-06  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac: raise version number and soname in preparation for a

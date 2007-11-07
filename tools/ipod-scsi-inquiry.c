@@ -1,4 +1,8 @@
 /* Copyright (c) 2007, Christophe Fergeau  <teuf@gnome.org>
+ * Part of the libgpod project.
+ * 
+ * URL: http://www.gtkpod.org/
+ * URL: http://gtkpod.sourceforge.net/
  *
  * The code contained in this file is free software; you can redistribute
  * it and/or modify it under the terms of the GNU Lesser General Public
