@@ -1,3 +1,8 @@
+2007-11-08  Christophe Fergeau  <teuf@gnome.org>
+
+	* tools/hal-callout.c: (mount_ipod): use g_get_tmp_dir instead of
+	hardcoding /tmp
+
 2007-11-07  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* tools/hal-callout.c (mount_ipod): fix bug that prevented

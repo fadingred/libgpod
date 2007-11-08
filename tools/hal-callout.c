@@ -49,8 +49,7 @@ static char *mount_ipod (const char *dev_path)
         if (fstype == NULL) {
                 return NULL;
         }
-        filename = g_build_filename (G_DIR_SEPARATOR_S, "tmp", "ipodXXXXXX",
-                                     NULL);
+        filename = g_build_filename (g_get_tmp_dir (), "ipodXXXXXX", NULL);
         if (filename == NULL) {
                 return NULL;
         }
