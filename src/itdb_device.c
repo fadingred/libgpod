@@ -1074,6 +1074,7 @@ G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device)
     switch (info->ipod_generation) {
     case ITDB_IPOD_GENERATION_CLASSIC_1: 
     case ITDB_IPOD_GENERATION_NANO_3:
+    case ITDB_IPOD_GENERATION_TOUCH_1:
       return TRUE;
 
     case ITDB_IPOD_GENERATION_UNKNOWN:
@@ -1092,7 +1093,6 @@ G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device)
     case ITDB_IPOD_GENERATION_NANO_2:
     case ITDB_IPOD_GENERATION_VIDEO_1:
     case ITDB_IPOD_GENERATION_VIDEO_2:
-    case ITDB_IPOD_GENERATION_TOUCH_1:
     case ITDB_IPOD_GENERATION_FIFTH:
     case ITDB_IPOD_GENERATION_SIXTH:
             return FALSE;

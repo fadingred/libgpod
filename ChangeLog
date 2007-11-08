@@ -1,3 +1,8 @@
+2007-11-08  Christophe Fergeau  <christophe@anevia.com>
+
+	* src/itdb_device.c: (itdb_device_requires_checksum): the iPod Touch
+	needs a firewire id as well
+
 2007-11-08  Christophe Fergeau  <teuf@gnome.org>
 
 	* tools/hal-callout.c: (mount_ipod): use g_get_tmp_dir instead of
