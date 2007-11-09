@@ -145,8 +145,10 @@ db_parse_context_get_m_header_internal (DBParseContext *ctx, const char *id, off
 		g_strreverse (header_id);
 	}
 	if (strncmp (id, header_id, 4) != 0) {
+	        g_free (header_id);
 		return NULL;
 	}
+
 	g_free (header_id);
 
 	/* FIXME: this test sucks for compat: if a field is smaller than 

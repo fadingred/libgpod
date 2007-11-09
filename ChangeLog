@@ -1,3 +1,8 @@
+2007-11-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-parse-context.c (db_parse_context_get_m_header_internal):
+	  fixed memory leak.
+
 2007-11-08  Christophe Fergeau  <christophe@anevia.com>
 
 	* src/itdb_device.c: (itdb_device_requires_checksum): the iPod Touch
