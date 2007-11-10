@@ -297,16 +297,6 @@ static const Itdb_ArtworkFormat ipod_mobile_1_artwork_info[] = {
     {-1,                           -1,  -1,   -1, -1}
 };
 
-static const Itdb_ArtworkFormat ipod_iphone_1_artwork_info[] = {
-    {ITDB_THUMB_COVER_LARGE,      256, 256, 3001, THUMB_FORMAT_REC_RGB555_LE},
-    {ITDB_THUMB_COVER_MEDIUM,     128, 128, 3002, THUMB_FORMAT_REC_RGB555_LE},
-    {ITDB_THUMB_COVER_SMALL,       64,  64, 3003, THUMB_FORMAT_REC_RGB555_LE},
-    {ITDB_THUMB_COVER_XLARGE,     320, 320, 3005, THUMB_FORMAT_RGB555_LE},
-    {ITDB_THUMB_COVER_XSMALL,      56,  56, 3006, THUMB_FORMAT_RGB555_LE,  8192}, /*pad data to  8192 bytes */
-    {ITDB_THUMB_COVER_SMEDIUM,     88,  88, 3007, THUMB_FORMAT_RGB555_LE, 16364}, /*pad data to 16384 bytes */
-    {-1,                           -1,  -1,   -1, -1}
-};
-
 static const Itdb_ArtworkFormat ipod_touch_1_artwork_info[] = {
     {ITDB_THUMB_COVER_LARGE,      256, 256, 3001, THUMB_FORMAT_REC_RGB555_LE},
     {ITDB_THUMB_COVER_MEDIUM,     128, 128, 3002, THUMB_FORMAT_REC_RGB555_LE},
@@ -336,9 +326,10 @@ static const Itdb_ArtworkFormat ipod_classic_1_artwork_info[] = {
     {-1,                           -1,  -1,   -1, -1}
 };
 
-/* these seem to be identical... */
+/* these are identical... */
 #define ipod_nano3_artwork_info ipod_classic_1_artwork_info
-
+/* these might be identical... Please report if not*/
+#define ipod_iphone_1_artwork_info ipod_touch_1_artwork_info
 
 static void itdb_device_set_timezone_info (Itdb_Device *device);
 

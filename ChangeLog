@@ -18,6 +18,10 @@
 	  Touch. I'm not sure how reasonable the "PHOTO_LARGE,
 	  _FULL_SCREEN, _TV_SCREEN" classification is, however...
 
+	* src/itdb_device.c: use the same photo thumbnail definitions for
+	  the iPhone as well as the iPod Touch until further input is
+	  received.
+
 2007-11-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/db-parse-context.c (db_parse_context_get_m_header_internal):
