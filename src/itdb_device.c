@@ -307,6 +307,20 @@ static const Itdb_ArtworkFormat ipod_iphone_1_artwork_info[] = {
     {-1,                           -1,  -1,   -1, -1}
 };
 
+static const Itdb_ArtworkFormat ipod_touch_1_artwork_info[] = {
+    {ITDB_THUMB_COVER_LARGE,      256, 256, 3001, THUMB_FORMAT_REC_RGB555_LE},
+    {ITDB_THUMB_COVER_MEDIUM,     128, 128, 3002, THUMB_FORMAT_REC_RGB555_LE},
+    {ITDB_THUMB_COVER_SMALL,       64,  64, 3003, THUMB_FORMAT_REC_RGB555_LE},
+    {ITDB_THUMB_COVER_XLARGE,     320, 320, 3005, THUMB_FORMAT_RGB555_LE},
+    {ITDB_THUMB_COVER_XSMALL,      56,  56, 3006, THUMB_FORMAT_RGB555_LE,  8192}, /*pad data to  8192 bytes */
+    {ITDB_THUMB_COVER_SMEDIUM,     88,  88, 3007, THUMB_FORMAT_RGB555_LE, 16364}, /*pad data to 16384 bytes */
+    {ITDB_THUMB_PHOTO_SMALL,       56,  55, 3004, THUMB_FORMAT_RGB555_LE, 8192},
+    {ITDB_THUMB_PHOTO_LARGE,       80,  79, 3011, THUMB_FORMAT_RGB555_LE},
+    {ITDB_THUMB_PHOTO_FULL_SCREEN,160, 120, 3009, THUMB_FORMAT_RGB555_LE},
+    {ITDB_THUMB_PHOTO_TV_SCREEN,  640, 480, 3008, THUMB_FORMAT_RGB555_LE},
+    {-1,                           -1,  -1,   -1, -1}
+};
+
 static const Itdb_ArtworkFormat ipod_classic_1_artwork_info[] = {
     /* officially 55x55 -- verify! */
     {ITDB_THUMB_COVER_XSMALL,      56,  56, 1061, THUMB_FORMAT_RGB565_LE},
@@ -682,7 +696,7 @@ itdb_device_get_artwork_formats (Itdb_Device *device)
     case ITDB_IPOD_GENERATION_CLASSIC_1:
 	return ipod_classic_1_artwork_info;
     case ITDB_IPOD_GENERATION_TOUCH_1:
-	return ipod_iphone_1_artwork_info;
+	return ipod_touch_1_artwork_info;
     case ITDB_IPOD_GENERATION_FIFTH:
     case ITDB_IPOD_GENERATION_SIXTH:
 	return NULL;

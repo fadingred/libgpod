@@ -5,6 +5,10 @@
 	  handled, the rest (type 2: image transition style) are being
 	  discarded.
 
+	* src/itdb_device.c: added photo thumbnail definitions for iPod
+	  Touch. I'm not sure how reasonable the "PHOTO_LARGE,
+	  _FULL_SCREEN, _TV_SCREEN" classification is, however...
+
 2007-11-09  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/db-parse-context.c (db_parse_context_get_m_header_internal):
