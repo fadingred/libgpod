@@ -1,3 +1,5 @@
+====== libgpod 0.6.0 ======
+
 2007-11-10  Christophe Fergeau <teuf@gnome.org>
 
 	* Makefile.am: add README.SysInfo to EXTRADIST
