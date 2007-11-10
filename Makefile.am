@@ -8,6 +8,7 @@ pkgconfig_DATA = libgpod-1.0.pc
 
 EXTRA_DIST =                    \
 	TROUBLESHOOTING		\
+	README.SysInfo		\
         intltool-merge.in       \
         intltool-update.in      \
         intltool-extract.in     \

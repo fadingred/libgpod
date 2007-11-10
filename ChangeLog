@@ -1,5 +1,9 @@
 2007-11-10  Christophe Fergeau <teuf@gnome.org>
 
+	* Makefile.am: add README.SysInfo to EXTRADIST
+
+2007-11-10  Christophe Fergeau <teuf@gnome.org>
+
 	* NEWS: update for 0.6.0 release
 	* README.SysInfo: explain how to get the firewire id from an iPod Touch
 
