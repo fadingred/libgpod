@@ -20,9 +20,10 @@ Having that file is enough for libgpod to figure out the iPod firewire id.
 The 2nd method requires more manual intervention. First, you need to get your
 firewire id manually. To do that, run "sudo lsusb -v | grep -i Serial" (without
 the "") with your iPod plugged in, this should print a 16 character long string
-like 00A1234567891231. Once you have that number, create/edit 
-/mnt/ipod/iPod_Control/Device/SysInfo (if your iPod is mounted at /mnt/ipod).
-Add to that file the line below:
+like 00A1234567891231. For an iPod Touch, this number will be much longer than
+16 characters, the firewire ID is constituted by the first 16 characters.
+Once you have that number, create/edit /mnt/ipod/iPod_Control/Device/SysInfo 
+(if your iPod is mounted at /mnt/ipod). Add to that file the line below:
 FirewireGuid: 0xffffffffffffffff
 (replace ffffffffffffffff with the string you obtained at the previous step
 and don't forget the trailing 0x before the string)
@@ -32,3 +33,9 @@ file when you do that. So if after doing that libgpod still seems to write
 invalid content to the iPod, double-check the content of that SysInfo file to
 make sure the FirewireGuid line you added isn't gone. If that happens, readd it
 to the end of the file, and make sure libgpod rewrite the iPod content.
+
+
+
+Once that is done, if you compiled libgpod from source, you can test that 
+libgpod can find the firewire ID on your iPod by running 
+libgpod/tests/test-firewire-id /ipod/mount/point

@@ -1,0 +1,56 @@
+Overview of changes in libgpod 0.6.0
+====================================
+
+* support for iPod Classics and Video Nanos
+
+The database from these models is protected by a checksum. When this checksum 
+doesn't match the content of the iPod database, the iPod won't show any 
+track (ie it will look empty). Support for writing this checksum has been 
+implemented in this release thanks to the awesome work of a few people in
+#gtkpod. However, to calculate this checksum, a so called "firewire ID" is 
+needed which is different from iPod to iPod. Since reading it from the iPod
+requires special permissions, the firewire ID must be written in a regular 
+file on the iPod so that libgpod can find it and use it to generate the
+checksum. 
+
+libgpod installs a HAL callout to do that automatically when 
+everything is installed in an appropriate place. It can also be done manually,
+see README.SysInfo for more information.
+
+Cover art should be working except for non square covers, preliminary photo 
+support but this hasn't been widely tested yet.
+
+
+* support for iPhone and iPod Touch
+
+This requires manual user intervention: the devices must be jailbroken and 
+mounted through sshfs. The iPod Touch also needs a firewire ID which must be
+manually set, see README.SysInfo
+
+Cover art is implemented but not tested at all, ditto for photo support on 
+the iPod Touch
+
+
+* additional tools to get the firewire id from new iPods including a HAL
+  callout which will make the process totally automatic when it's properly 
+  installed. These tools need libsgutils to be installed.
+
+* endianness fixes in the artwork writing code
+* now depends on glib 2.8 or newer
+
+Huge thanks to wtbw and Simon Schulz without whom that release wouldn't have 
+been possible. Thanks as well to the people on #gtkpod for the testing they 
+provided.
+
+Other contributors to the release:
+- Jesse Bouwman
+- Alex Eftimie
+- Christophe Fergeau
+- Filippo Giunchedi
+- Javier Kohen
+- Tobias Kreisel
+- Eric Lassauge
+- Nicholas Piper
+- Jorg Schuler
+- Simon Schulz
+- Todd Zullinger

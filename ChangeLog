@@ -1,3 +1,8 @@
+2007-11-10  Christophe Fergeau <teuf@gnome.org>
+
+	* NEWS: update for 0.6.0 release
+	* README.SysInfo: explain how to get the firewire id from an iPod Touch
+
 2007-11-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/db-artwork-parser.c (parse_mhba): fix double g_free on mhba
@@ -14,7 +19,7 @@
 	* src/db-parse-context.c (db_parse_context_get_m_header_internal):
 	  fixed memory leak.
 
-2007-11-08  Christophe Fergeau  <christophe@anevia.com>
+2007-11-08  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_device.c: (itdb_device_requires_checksum): the iPod Touch
 	needs a firewire id as well
