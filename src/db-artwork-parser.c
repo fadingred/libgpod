@@ -26,6 +26,7 @@
 #include <config.h>
 #endif
 
+#include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -315,8 +316,6 @@ static int
 parse_mhba (DBParseContext *ctx, GError *error)
 {
 	MhbaHeader *mhba;
-	ArtworkDB_MhodHeader *mhod;
-	DBParseContext *mhod_ctx;
 	DBParseContext *mhia_ctx;
 	Itdb_PhotoAlbum *album;
 	Itdb_PhotoDB *photodb;
@@ -352,22 +351,37 @@ parse_mhba (DBParseContext *ctx, GError *error)
 					  ctx->byte_order);
 
 	cur_offset = ctx->header_len;
-	mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	num_children = get_gint32 (mhba->num_mhods, ctx->byte_order);
-	while ((num_children > 0) && (mhod_ctx != NULL)) {
-	        MhodHeaderArtworkType1 *mhod1;
-		/* FIXME: First mhod is album name, whats the others for? */
-		mhod = db_parse_context_get_m_header (mhod_ctx, ArtworkDB_MhodHeader, "mhod");
-		if (mhod == NULL) {
-			return -1;
-		}
-		db_parse_context_set_total_len (mhod_ctx,  get_gint32(mhod->total_len, ctx->byte_order));
-		mhod1 = (MhodHeaderArtworkType1*)mhod;
-		album->name = g_strndup ((gchar *)mhod1->string, get_gint32(mhod1->string_len, ctx->byte_order));
-		cur_offset += mhod_ctx->total_len;
-		dump_mhod_type_1 (mhod1);
+	while (num_children > 0)
+	{
+	    MhodHeaderArtworkType1 *mhod1;
+	    ArtworkDB_MhodHeader *mhod;
+	    DBParseContext *mhod_ctx;
+
+	    mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
+	    /* FIXME: First mhod is album name, whats the others for? */
+	    mhod = db_parse_context_get_m_header (mhod_ctx,
+						  ArtworkDB_MhodHeader, "mhod");
+	    if (mhod == NULL) {
 		g_free (mhod_ctx);
-		num_children--;
+		return -1;
+	    }
+	    db_parse_context_set_total_len (mhod_ctx,
+					    get_gint32(mhod->total_len, ctx->byte_order));
+	    mhod1 = (MhodHeaderArtworkType1*)mhod;
+	    switch (mhod1->type)
+	    {  /* FIXME: type==1 is album name. type==2 seems to be
+		* the transtition type between photos,
+		* e.g. "Dissolve". Not handled yet. */
+	    case 1:
+		album->name = g_strndup ((gchar *)mhod1->string,
+					 get_gint32(mhod1->string_len, ctx->byte_order));
+		dump_mhod_type_1 (mhod1);
+		break;
+	    }
+	    cur_offset += mhod_ctx->total_len;
+	    g_free (mhod_ctx);
+	    num_children--;
 	}
 
 	mhia_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
