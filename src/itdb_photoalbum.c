@@ -687,11 +687,21 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 	 * and remove them from the database */
         if (remove_pics)
 	{
-            for (it = album->members; it != NULL; it = it->next )
+            GList *pics;
+            /* we can't let itdb_photodb_remove_photo modify album->members
+             * while we're iterating through it, that's it's moved to pics
+             * first. itdb_photodb_remove_photo frees the memory used
+             * by 'photo' so a g_list_free is all we have to do to free 
+             * pics memory when we are done iterating
+             */
+            pics = album->members;
+            album->members = NULL;
+            for (it = pics; it != NULL; it = it->next )
 	    {
                 Itdb_Artwork *photo = it->data;
                 itdb_photodb_remove_photo (db, NULL, photo);
             }
+            g_list_free (pics);
         }
         db->photoalbums = g_list_remove (db->photoalbums, album);
 	itdb_photodb_photoalbum_free (album);
