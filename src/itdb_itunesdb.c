@@ -5695,7 +5695,7 @@ gchar *itdb_cp_get_dest_filename (Itdb_Track *track,
 	do
 	{   /* we need to loop until we find an unused filename */
 	    dest_components[1] = 
-		g_strdup_printf("gtkpod%06d%s",
+		g_strdup_printf("libgpod%06d%s",
 				rand + oops, original_suffix);
 	    ipod_fullfile = itdb_resolve_path (
 		parent_dir_filename,
@@ -5866,7 +5866,7 @@ Itdb_Track *itdb_cp_finalize (Itdb_Track *track,
  *
  * For storage, the directories "f00 ... fnn" will be used randomly.
  *
- * The filename is constructed as "gtkpod"&lt;random number&gt; and copied
+ * The filename is constructed as "libgpod"&lt;random number&gt; and copied
  * to @track-&gt;ipod_path. If this file already exists, &lt;random number&gt;
  * is adjusted until an unused filename is found.
  *
