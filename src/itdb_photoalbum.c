@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-11-03 20:27:36 jcs>
+/*
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -678,8 +678,6 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 				     Itdb_PhotoAlbum *album,
 				     gboolean remove_pics)
 {
-        GList *it;
-
         g_return_if_fail (db);
         g_return_if_fail (album);
 
@@ -687,21 +685,16 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 	 * and remove them from the database */
         if (remove_pics)
 	{
-            GList *pics;
-            /* we can't let itdb_photodb_remove_photo modify album->members
-             * while we're iterating through it, that's it's moved to pics
-             * first. itdb_photodb_remove_photo frees the memory used
-             * by 'photo' so a g_list_free is all we have to do to free 
-             * pics memory when we are done iterating
-             */
-            pics = album->members;
-            album->members = NULL;
-            for (it = pics; it != NULL; it = it->next )
+	    /* we can't iterate over album->members because
+	       itdb_photodb_remove_photo() modifies album->members in
+	       a not easily predicable way (e.g. @photo may exist in the
+	       album several times). Therefore we remove photos until
+	       album->members is empty. */
+	    while (album->members)
 	    {
-                Itdb_Artwork *photo = it->data;
-                itdb_photodb_remove_photo (db, NULL, photo);
-            }
-            g_list_free (pics);
+		Itdb_Artwork *photo = album->members->data;
+		itdb_photodb_remove_photo (db, NULL, photo);
+	    }
         }
         db->photoalbums = g_list_remove (db->photoalbums, album);
 	itdb_photodb_photoalbum_free (album);

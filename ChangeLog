@@ -1,11 +1,15 @@
+2007-11-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_photoalbum.c (itdb_photodb_photoalbum_remove): make
+	  sure same photo isn't freed multiple times if it was added in an
+	  album multiple times.
+
 2007-11-13  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_photoalbum.c: fix bug in itdb_photodb_photoalbum_remove,
 	when removing all the photos from the photodatabase, we were
 	erasing elements and iterating over the list at the same time,
 	which resulted in the function not working properly
-
-====== libgpod 0.6.0 ======
 
 2007-11-10  Christophe Fergeau <teuf@gnome.org>
 
