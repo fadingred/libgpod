@@ -615,10 +615,7 @@ void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
         for (it = db->photoalbums; it != NULL; it = it->next)
 	{
             Itdb_PhotoAlbum *_album = it->data;
-	    while (g_list_find (_album->members, photo))
-	    {
-		_album->members = g_list_remove (_album->members, photo);
-	    }
+            _album->members = g_list_remove_all (_album->members, photo);
         }
         /* Remove the photo from the image list */
 	db->photos = g_list_remove (db->photos, photo);

@@ -1,3 +1,8 @@
+2007-11-14  Christophe <teuf@gnome.org>
+
+	* src/itdb_photoalbum.c: use g_list_remove all instead of an
+	inefficient combination of g_list_find + g_list_remove
+
 2007-11-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_photoalbum.c (itdb_photodb_photoalbum_remove): make
