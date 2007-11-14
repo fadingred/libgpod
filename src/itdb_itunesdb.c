@@ -385,10 +385,17 @@ gchar * itdb_resolve_path (const gchar *root,
     cur_dir = g_dir_open(good_path,0,NULL);
     if (cur_dir) while ((dir_file = g_dir_read_name(cur_dir)))
     {
-	gchar *file_utf8 = g_filename_to_utf8(dir_file,-1,NULL,NULL,NULL);
-	gchar *file_stdcase = g_utf8_casefold(file_utf8,-1);
-	gboolean found = !g_utf8_collate(file_stdcase,component_stdcase);
+	gchar *file_utf8;
+	gchar *file_stdcase;
+	gboolean found;
 	gchar *new_good_path;
+      
+	file_utf8 = g_filename_to_utf8(dir_file,-1,NULL,NULL,NULL);
+	if (file_utf8 == NULL) {
+	    continue;
+	}
+	file_stdcase = g_utf8_casefold(file_utf8,-1);
+	found = !g_utf8_collate(file_stdcase,component_stdcase);
 	g_free(file_stdcase);
 	if(!found)
 	{

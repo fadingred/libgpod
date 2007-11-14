@@ -1,5 +1,10 @@
 2007-11-14  Christophe <teuf@gnome.org>
 
+	* src/itdb_itunesdb.c: ignore invalid UTF-8 paths which might have
+	been added to the iPod by the user
+
+2007-11-14  Christophe <teuf@gnome.org>
+
 	* src/itdb_photoalbum.c: use g_list_remove all instead of an
 	inefficient combination of g_list_find + g_list_remove
 
