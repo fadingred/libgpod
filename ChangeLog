@@ -1,5 +1,11 @@
 2007-11-14  Christophe <teuf@gnome.org>
 
+	* src/itdb_itunesdb.c: get rid of local g_mkdir_with_parents copy
+	since we now depend on glib 2.8 which have it. Replace mkdir with
+	g_mkdir
+
+2007-11-14  Christophe <teuf@gnome.org>
+
 	* src/itdb_itunesdb.c: ignore invalid UTF-8 paths which might have
 	been added to the iPod by the user
 

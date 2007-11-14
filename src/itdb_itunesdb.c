@@ -6537,83 +6537,6 @@ gchar *db_get_mountpoint(Itdb_DB *db)
  *             Create iPod directory hierarchy                      *
  *                                                                  *
 \*------------------------------------------------------------------*/
-
-/* mkdir_with_parents is copied from GLIB2.8 (gfileutils.c, V1.78), as
- * it is new to V2.8. May be replaced with g_mkdir_with_parents() in a
- * couple of years. */
-
-/**
- * mkdir_with_parents:
- * @pathname: a pathname in the GLib file name encoding
- * @mode: permissions to use for newly created directories
- *
- * Create a directory if it doesn't already exist. Create intermediate
- * parent directories as needed, too.
- *
- * Returns: 0 if the directory already exists, or was successfully
- * created. Returns -1 if an error occurred, with errno set.
- *
- */
-static int
-mkdir_with_parents (const gchar *pathname,
-		      int          mode)
-{
-  gchar *fn, *p;
-
-  if (pathname == NULL || *pathname == '\0')
-    {
-      errno = EINVAL;
-      return -1;
-    }
-
-  fn = g_strdup (pathname);
-
-  if (g_path_is_absolute (fn))
-    p = (gchar *) g_path_skip_root (fn);
-  else
-    p = fn;
-
-  do
-    {
-      while (*p && !G_IS_DIR_SEPARATOR (*p))
-	p++;
-      
-      if (!*p)
-	p = NULL;
-      else
-	*p = '\0';
-      
-      if (!g_file_test (fn, G_FILE_TEST_EXISTS))
-	{
-	  if (g_mkdir (fn, mode) == -1)
-	    {
-	      int errno_save = errno;
-	      g_free (fn);
-	      errno = errno_save;
-	      return -1;
-	    }
-	}
-      else if (!g_file_test (fn, G_FILE_TEST_IS_DIR))
-	{
-	  g_free (fn);
-	  errno = ENOTDIR;
-	  return -1;
-	}
-      if (p)
-	{
-	  *p++ = G_DIR_SEPARATOR;
-	  while (*p && G_IS_DIR_SEPARATOR (*p))
-	    p++;
-	}
-    }
-  while (p);
-
-  g_free (fn);
-
-  return 0;
-}
-
-	
 static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 {
     const gchar *mp;
@@ -6671,7 +6594,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     pbuf = g_build_filename (mp, podpath, NULL);
     if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
     {
-	if (mkdir_with_parents(pbuf, 0777) != 0)
+	if (g_mkdir_with_parents(pbuf, 0777) != 0)
 	{
 	    goto error_dir;
 	}
@@ -6682,7 +6605,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     pbuf = g_build_filename (mp, podpath, "Music", NULL);
     if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
     {
-	if((mkdir(pbuf, 0777) != 0))
+	if((g_mkdir(pbuf, 0777) != 0))
 	{
 	    goto error_dir;
 	}
@@ -6693,7 +6616,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     pbuf = g_build_filename (mp, podpath, "iTunes", NULL);
     if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
     {
-	if((mkdir(pbuf, 0777) != 0))
+	if((g_mkdir(pbuf, 0777) != 0))
 	{
 	    goto error_dir;
 	}
@@ -6709,7 +6632,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	pbuf = g_build_filename (mp, podpath, "Artwork", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
-	    if((mkdir(pbuf, 0777) != 0)) {
+	    if((g_mkdir(pbuf, 0777) != 0)) {
 		goto error_dir;
 	    }
 	}
@@ -6723,7 +6646,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	pbuf = g_build_filename (mp, "Photos", "Thumbs", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
-	    if (mkdir_with_parents(pbuf, 0777) != 0)
+	    if (g_mkdir_with_parents(pbuf, 0777) != 0)
 	    {
 		goto error_dir;
 	    }
@@ -6756,7 +6679,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	g_free (num);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
-	    if((mkdir(pbuf, 0777) != 0))
+	    if((g_mkdir(pbuf, 0777) != 0))
 	    {
 		goto error_dir;
 	    }
@@ -6770,7 +6693,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	pbuf = g_build_filename (mp, "Calendars", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
-	    if((mkdir(pbuf, 0777) != 0))
+	    if((g_mkdir(pbuf, 0777) != 0))
 	    {
 		goto error_dir;
 	    }
@@ -6781,7 +6704,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	pbuf = g_build_filename (mp, "Contacts", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
-	    if((mkdir(pbuf, 0777) != 0))
+	    if((g_mkdir(pbuf, 0777) != 0))
 	    {
 		goto error_dir;
 	    }
@@ -6791,7 +6714,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	pbuf = g_build_filename (mp, "Notes", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
-	    if((mkdir(pbuf, 0777) != 0))
+	    if((g_mkdir(pbuf, 0777) != 0))
 	    {
 		goto error_dir;
 	    }
@@ -6807,7 +6730,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	pbuf = g_build_filename (mp, podpath, "Device", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
-	    if((mkdir(pbuf, 0777) != 0))
+	    if((g_mkdir(pbuf, 0777) != 0))
 	    {
 		goto error_dir;
 	    }
