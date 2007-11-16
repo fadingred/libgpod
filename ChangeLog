@@ -1,3 +1,7 @@
+2007-11-16  Christophe Fergeau <teuf@gnome.org>
+
+	* src/itdb_device.c: fix typoes in iPod Touch model lists
+
 2007-11-14  Christophe <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: use libgpod as the prefix of music files to

@@ -185,7 +185,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     /* iPod touch G1 */
     /* With touch screen */
     {"A623",   8, ITDB_IPOD_MODEL_TOUCH_BLACK,    ITDB_IPOD_GENERATION_TOUCH_1, 14},
-    {"A627",  16, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_TOUCH_1, 28},
+    {"A627",  16, ITDB_IPOD_MODEL_TOUCH_BLACK,    ITDB_IPOD_GENERATION_TOUCH_1, 28},
 
 
     /* No known model number -- create a Device/SysInfo file with
@@ -257,7 +257,7 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Video (1st Gen.)"),
 	N_("Video (2nd Gen.)"),
 	N_("Classic"),
-	N_("Touch (Read-Only)"),
+	N_("Touch"),
 	N_("Unused"),
 	N_("Unused"),
 	NULL
