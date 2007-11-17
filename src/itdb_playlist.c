@@ -1,4 +1,4 @@
-/* Time-stamp: <2007-02-25 11:52:48 jcs>
+/* Time-stamp: <2007-11-17 15:01:39 jcs>
 |
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
@@ -424,7 +424,7 @@ gboolean itdb_splr_eval (Itdb_SPLRule *splr, Itdb_Track *track)
 	handled = TRUE;
 	break;
     case ITDB_SPLFIELD_TIME:
-	intcomp = track->tracklen/1000;
+	intcomp = track->tracklen;
 	handled = TRUE;
 	break;
     case ITDB_SPLFIELD_COMPILATION:

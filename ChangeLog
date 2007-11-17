@@ -1,3 +1,15 @@
+2007-11-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_playlist.c (itdb_splr_eval): track length in rules for
+	  smart playlists was treated as seconds, but the iPod treats them
+	  as milliseconds. If you told libgpod to create a smart playlist
+	  with tracks less than 100 secs in length, but the life update of
+	  the iPod would interpret that rule as "tracks less than 100 msec
+	  in length", giving a vastly different result. Tested with iPod
+	  Nano 1G and iPod nano Video (3G).
+
+	  Requires corresponding fix in GUIs using this function.
+
 2007-11-16  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_device.c: fix typoes in iPod Touch model lists
