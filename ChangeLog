@@ -1,4 +1,4 @@
-2007-11-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2007-11-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_playlist.c (itdb_splr_eval): track length in rules for
 	  smart playlists was treated as seconds, but the iPod treats them
