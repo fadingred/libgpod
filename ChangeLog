@@ -1,3 +1,7 @@
+2007-11-25  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* autogen.sh: pass any user-specified options to configure
+
 2007-11-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_playlist.c (itdb_splr_eval): track length in rules for
