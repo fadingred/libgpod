@@ -41,6 +41,7 @@ AM_MAINTAINER_MODE
 
 AC_GNU_SOURCE
 AC_PROG_CC
+AM_PROG_CC_C_O
 
 # AC_PROG_CXX is only needed for the test program tests/test-rebuild-db.cc.
 # You can safely remove AC_PROG_CXX and the test program (edit tests/Makefile.am)
@@ -134,19 +135,27 @@ dnl **************************************************
 
 AC_ARG_ENABLE(gdk-pixbuf, [AC_HELP_STRING([--disable-gdk-pixbuf],[ArtworkDB will be disabled without gdk-pixbuf])], 
 [case "${enableval}" in
-  no) have_gdkpixbuf=no ;;
-  *) have_gdkpixbuf=yes;;
-esac], have_gdkpixbuf=yes)
+  no) enable_gdkpixbuf=no ;;
+  *) enable_gdkpixbuf=yes;;
+esac])
 AH_TEMPLATE([HAVE_GDKPIXBUF], [Whether gdk-pixbuf is installed, ArtworkDB writing support will be disabled if it can't be found])
-if test x$have_gdkpixbuf = xyes; then
-   PKG_CHECK_MODULES(GDKPIXBUF, gdk-pixbuf-2.0 >= 2.6.0, have_gdkpixbuf=yes, have_gdkpixbuf=no)
-   if test x"$have_gdkpixbuf" = xyes; then
-      AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF, 1)
+if test x$enable_gdkpixbuf != xno; then
+   GDKPIXBUF_REQ="gdk-pixbuf-2.0"
+   PKG_CHECK_MODULES(GDKPIXBUF, $GDKPIXBUF_REQ >= 2.6.0, have_gdkpixbuf=yes, have_gdkpixbuf=no)
+   if test x"$enable_gdkpixbuf" = xyes -a x"$have_gdkpixbuf" = xno; then
+      AC_MSG_ERROR([gdk-pixbuf support explicitly requested but gdk-pixbuf couldn't be found])
    fi
+fi
+if test x"$have_gdkpixbuf" = xyes; then
+   AC_DEFINE_UNQUOTED(HAVE_GDKPIXBUF, 1)
    LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $GDKPIXBUF_CFLAGS"
    LIBGPOD_LIBS="$LIBGPOD_LIBS $GDKPIXBUF_LIBS"
+else
+   have_gdkpixbuf=no
+   GDKPIXBUF_REQ=""
 fi
 AM_CONDITIONAL(HAVE_GDKPIXBUF, test x"$have_gdkpixbuf" = xyes)
+AC_SUBST(GDKPIXBUF_REQ)
 
 dnl **************************************************
 dnl * PYGOBJECT is optional
@@ -154,17 +163,22 @@ dnl **************************************************
 
 AC_ARG_ENABLE(pygobject, [AC_HELP_STRING([--disable-pygobject],[Python API will lack GdkPixbuf support without PyGOBJECT])], 
 [case "${enableval}" in
-  no) have_pygobject=no ;;
-  *) have_pygobject=yes;;
-esac], have_pygobject=yes)
+  no) enable_pygobject=no ;;
+  *) enable_pygobject=yes;;
+esac])
 AH_TEMPLATE([HAVE_PYGOBJECT], [Whether pygobject is installed, Python API will lack GdkPixbuf support without PyGOBJECT])
-if test x$have_pygobject = xyes; then
+if test x$enable_pygobject != xno; then
    PKG_CHECK_MODULES(PYGOBJECT, pygobject-2.0 >= 2.8.0, have_pygobject=yes, have_pygobject=no)
-   if test x"$have_pygobject" = xyes; then
-      AC_DEFINE_UNQUOTED(HAVE_PYGOBJECT, 1)
+   if test x"$enable_pygobject" = xyes -a x"$have_pygobject" = xno; then
+      AC_MSG_ERROR([pygobject support explicitly requested but pygobject couldn't be found])
    fi
+fi
+if test x"$have_pygobject" = xyes; then
+   AC_DEFINE_UNQUOTED(HAVE_PYGOBJECT, 1)
    LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $PYGOBJECT_CFLAGS"
    LIBGPOD_LIBS="$LIBGPOD_LIBS $PYGOBJECT_LIBS"
+else
+   have_pygobject=no
 fi
 AM_CONDITIONAL(HAVE_PYGOBJECT, test x"$have_pygobject" = xyes)
 

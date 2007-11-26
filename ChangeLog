@@ -1,3 +1,13 @@
+2007-11-26  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* configure.ac
+	  libgpod-1.0.pc.in:
+	  conditionally add gdk-pixbuf to pkg-config Requires.
+	  exit with an error if gdk-pixbuf or pygobject are explicitly
+	  requested and not found.
+	  add AM_PROG_CC_C_O to make automake happy about per-target
+	  flags in tests/Makefile.am
+
 2007-11-25  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* autogen.sh: pass any user-specified options to configure
