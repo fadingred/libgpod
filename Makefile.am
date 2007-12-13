@@ -3,6 +3,8 @@ SUBDIRS=src tools tests po m4 docs bindings
 # build documentation when doing a distcheck.
 DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
 
+ACLOCAL_AMFLAGS = -I m4
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libgpod-1.0.pc
 

@@ -1,3 +1,8 @@
+2007-12-13  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* Makefile.am: add ACLOCAL_AMFLAGS to fix some autoreconf
+	  issues (thanks to Frank Lichtenheld at Debian)
+
 2007-11-26  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* configure.ac
