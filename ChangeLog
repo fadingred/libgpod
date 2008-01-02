@@ -1,3 +1,9 @@
+2008-01-02  Christophe Fergeau <teuf@gnome.org>
+
+	* src/itdb_device.c: fix ITDB_THUMB_PHOTO_FULL_SCREEN format on
+	ipod classic and nano video, thanks to Tomas Carnecky for pointing
+	that out
+
 2007-12-13  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* Makefile.am: add ACLOCAL_AMFLAGS to fix some autoreconf
