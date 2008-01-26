@@ -63,6 +63,7 @@ Itdb_Track *itdb_track_new (void)
     Itdb_Track *track = g_new0 (Itdb_Track, 1);
 
     track->artwork = itdb_artwork_new ();
+    track->chapterdata = itdb_chapterdata_new ();
 
     track->visible = 1;
     return track;
@@ -272,7 +273,7 @@ void itdb_track_free (Itdb_Track *track)
     g_free (track->sort_composer);
     g_free (track->sort_tvshow);
 
-    g_free (track->chapterdata_raw);
+    itdb_chapterdata_free (track->chapterdata);
 
     itdb_artwork_free (track->artwork);
 
@@ -372,12 +373,7 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
 
 
     /* Copy chapterdata */
-    if (tr->chapterdata_raw)
-    {
-	tr_dup->chapterdata_raw = g_new (gchar, tr->chapterdata_raw_length);
-	memcpy (tr_dup->chapterdata_raw, tr->chapterdata_raw,
-		tr->chapterdata_raw_length);
-    }
+    tr_dup->chapterdata = itdb_chapterdata_duplicate (tr->chapterdata);
 
     /* Copy thumbnail data */
     tr_dup->artwork = itdb_artwork_duplicate (tr->artwork);

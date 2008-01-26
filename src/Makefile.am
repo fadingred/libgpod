@@ -7,6 +7,7 @@ libgpod_la_SOURCES = 		\
 	db-image-parser.c   	\
 	db-parse-context.c  	\
 	itdb_artwork.c   	\
+	itdb_chapterdata.c   	\
 	itdb_device.c  		\
 	itdb_itunesdb.c 	\
 	itdb_photoalbum.c 	\

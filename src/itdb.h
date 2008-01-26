@@ -66,6 +66,8 @@ typedef struct _Itdb_PhotoDB Itdb_PhotoDB;
 typedef struct _Itdb_Playlist Itdb_Playlist;
 typedef struct _Itdb_PhotoAlbum Itdb_PhotoAlbum;
 typedef struct _Itdb_Track Itdb_Track;
+typedef struct _Itdb_Chapter Itdb_Chapter;
+typedef struct _Itdb_Chapterdata Itdb_Chapterdata;
 
 
 /* ------------------------------------------------------------ *\
@@ -435,6 +437,37 @@ struct _Itdb_SPLRules
 };
 
 
+/* ------------------------------------------------------------ *\
+ *
+ * Chapters
+ *
+\* ------------------------------------------------------------ */
+
+struct _Itdb_Chapter
+{
+    guint32 startpos;
+    gchar *chaptertitle;          /* data in UTF8  */
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
+};
+
+
+struct _Itdb_Chapterdata
+{
+    GList *chapters;
+    guint32 unk024;
+    guint32 unk028;
+    guint32 unk032;
+    /* reserved for future use */
+    gint32 reserved_int1;
+    gint32 reserved_int2;
+    gpointer reserved1;
+    gpointer reserved2;
+};
+
 
 /* ------------------------------------------------------------ *\
  *
@@ -741,7 +774,7 @@ struct _Itdb_Track
   gchar   *description;      /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *podcasturl;       /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *podcastrss;       /* see note for MHOD_ID in itdb_itunesdb.c */
-  gpointer chapterdata;      /* not yet supported. Help welcome.        */
+  Itdb_Chapterdata *chapterdata; /* see note for MHOD_ID in itdb_itunesdb.c */
   gchar   *subtitle;         /* see note for MHOD_ID in itdb_itunesdb.c */
 /* the following 6 are new in libgpod 0.4.2... */
   gchar   *tvshow;           /* see note for MHOD_ID in itdb_itunesdb.c */
@@ -1225,6 +1258,18 @@ Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb);
 void itdb_thumb_free (Itdb_Thumb *thumb);
 Itdb_Thumb *itdb_thumb_new (void);
 gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb);
+/* itdb_chapterdata_... */
+Itdb_Chapterdata *itdb_chapterdata_new (void);
+void itdb_chapterdata_free (Itdb_Chapterdata *chapterdata);
+Itdb_Chapterdata *itdb_chapterdata_duplicate (Itdb_Chapterdata *chapterdata);
+void itdb_chapterdata_remove_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *chapter);
+void itdb_chapterdata_remove_chapters (Itdb_Chapterdata *chapterdata);
+Itdb_Chapter *itdb_chapter_new (void);
+void itdb_chapter_free (Itdb_Chapter *chapter);
+Itdb_Chapter *itdb_chapter_duplicate (Itdb_Chapter *chapter);
+gboolean itdb_chapterdata_add_chapter (Itdb_Chapterdata *chapterdata,
+				       gint32 startpos,
+				       gchar *chaptertitle);
 
 #ifndef LIBGPOD_DISABLE_DEPRECATED
 /* time functions */

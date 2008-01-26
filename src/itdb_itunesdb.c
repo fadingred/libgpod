@@ -258,8 +258,7 @@ struct _MHODData
     {
 	gint32 track_pos;
 	gchar *string;
-	gchar *chapterdata_raw;
-	Itdb_Track *chapterdata_track; /* for writing chapterdata */
+	Itdb_Chapterdata *chapterdata;
 	Itdb_SPLPref *splpref;
 	Itdb_SPLRules *splrules;
 	GList *mhod52coltracks;
@@ -766,7 +765,6 @@ static guint64 get64lint (FContents *cts, glong seek)
    Reversed Endian Sensitive (big endian)
    ------------------------------------------------------------ */
 
-#if 0
 static guint16 get16bint (FContents *cts, glong seek)
 {
     g_return_val_if_fail (cts, 0);
@@ -775,7 +773,7 @@ static guint16 get16bint (FContents *cts, glong seek)
     else
 	return raw_get16lint (cts, seek);
 }
-#endif
+
 static guint32 get32bint (FContents *cts, glong seek)
 {
     g_return_val_if_fail (cts, 0);
@@ -827,7 +825,7 @@ static gunichar2 *fixup_little_utf16 (gunichar2 *utf16_string)
 }
 
 /* Fix big endian UTF16 String to correct byteorder if necessary (only
- * strings in smart playlists are big endian) */
+ * strings in smart playlists and chapter data are big endian) */
 static gunichar2 *fixup_big_utf16 (gunichar2 *utf16_string)
 {
 #   if (G_BYTE_ORDER == G_LITTLE_ENDIAN)
@@ -1419,14 +1417,52 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 	  return result;  /* *ml==-1, result.valid==FALSE */
       }
       break;
-  case MHOD_ID_CHAPTERDATA: 
-      /* we'll just copy the entire data section */
-      xl = mhod_len - header_length;
-      result.data.chapterdata_raw = g_new0 (gchar, xl);
-      if (!seek_get_n_bytes (cts, result.data.chapterdata_raw, seek, xl))
+  case MHOD_ID_CHAPTERDATA:
+      result.data.chapterdata = itdb_chapterdata_new();
+      result.data.chapterdata->unk024 = get32lint (cts, seek);
+      result.data.chapterdata->unk028 = get32lint (cts, seek+4);
+      result.data.chapterdata->unk032 = get32lint (cts, seek+8);
+      seek += 12; /* get past unks */
+      if (check_header_seek (cts, "sean", seek+4))
       {
-	  g_free (result.data.chapterdata_raw);
-	  return result;  /* *ml==-1, result.valid==FALSE */
+	  gint i;
+	  guint32 numchapters;
+	  numchapters = get32bint (cts, seek+12) - 1; /* minus 1 for hedr atom */
+	  seek += 20; /* move to atom data */
+	  for (i=0; i<numchapters; ++i)
+	  {
+	      if (check_header_seek (cts, "chap", seek+4))
+	      {
+		  guint32 length;
+		  guint32 startpos;
+		  gunichar2 *string_utf16;
+		  startpos = get32bint (cts, seek+8);
+		  seek += 20;
+		  if (check_header_seek (cts, "name", seek+4))
+		  {
+		      length = get16bint (cts, seek+20);
+		      string_utf16 = g_new0 (gunichar2, (length+1));
+		      if (!seek_get_n_bytes (cts, (gchar *)string_utf16,
+				  seek+22, length*2))
+		      {
+			  g_free (string_utf16);
+			  itdb_chapterdata_free (result.data.chapterdata);
+			  return result;  /* *ml==-1, result.valid==FALSE */
+		      }
+		      fixup_big_utf16 (string_utf16);
+		      itdb_chapterdata_add_chapter(result.data.chapterdata,startpos,g_utf16_to_utf8 (
+				  string_utf16, -1, NULL, NULL, NULL));
+		      g_free (string_utf16);
+		      seek += length * 2 + 22;
+		  }
+	      }
+	  }
+	  if (check_header_seek (cts, "hedr", seek+4))
+	  {
+	      guint32 hedrlength = get32bint(cts, seek);
+	      seek += hedrlength;
+	  }
+
       }
       break;
   case MHOD_ID_SPLPREF:  /* Settings for smart playlist */
@@ -2406,14 +2442,10 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	  switch (type)
 	  {
 	  case MHOD_ID_CHAPTERDATA:
-	      /* we just read the entire chapterdata info until we
-		 have a better way to parse and represent it */
 	      mhod = get_mhod (fimp, seek, &zip);
-	      if (mhod.valid && mhod.data.chapterdata_raw)
+	      if (mhod.valid && mhod.data.chapterdata)
 	      {
-		  track->chapterdata_raw = mhod.data.chapterdata_raw;
-		  track->chapterdata_raw_length =
-		      zip - get32lint (cts, seek+4);
+		  track->chapterdata = mhod.data.chapterdata;
 		  mhod.valid = FALSE;
 	      }
 	      break;
@@ -3347,7 +3379,6 @@ static void put64lint (WContents *cts, guint64 n)
 /* ------------------------------------------------------------
    Reversed Endian Sensitive (big endian)
    ------------------------------------------------------------ */
-#if 0
 static void put16bint (WContents *cts, guint16 n)
 {
     if (cts->reversed)
@@ -3355,7 +3386,7 @@ static void put16bint (WContents *cts, guint16 n)
     else
 	raw_put16bint (cts, n);
 }
-#endif
+
 static void put24bint (WContents *cts, guint32 n)
 {
     if (cts->reversed)
@@ -3379,6 +3410,7 @@ static void put32bfloat (WContents *cts, float f)
     else
 	raw_put32bfloat (cts, f);
 }
+#endif
 
 static void put32bint_seek (WContents *cts, guint32 n, gulong seek)
 {
@@ -3387,7 +3419,7 @@ static void put32bint_seek (WContents *cts, guint32 n, gulong seek)
     else
 	raw_put32bint_seek (cts, n, seek);
 }
-#endif
+
 static void put64bint (WContents *cts, guint64 n)
 {
     if (cts->reversed)
@@ -3934,16 +3966,58 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
       put32_n0 (cts, 4);             /* unknown                    */
       break;
   case MHOD_ID_CHAPTERDATA:
-      g_return_if_fail (mhod->data.chapterdata_track);
+      g_return_if_fail (mhod->data.chapterdata);
       {
-	  Itdb_Track *track = mhod->data.chapterdata_track;
-	  put_header (cts, "mhod");   /* header                     */
-	  put32lint (cts, 24);        /* size of header             */
-	  put32lint (cts, 24+track->chapterdata_raw_length); /*size */
-	  put32lint (cts, mhod->type); /* type of the entry          */
-	  put32_n0 (cts, 2);          /* unknown                    */
-	  put_data (cts, track->chapterdata_raw,
-		    track->chapterdata_raw_length);
+	  gulong header_seek = cts->pos; /* needed to fix length */
+	  GList *gl;
+	  gint numchapters = g_list_length (mhod->data.chapterdata->chapters);
+	  put_header (cts, "mhod");       /* header      */
+	  put32lint (cts, 24);            /* header size */
+	  put32lint (cts, -1);            /* total length, fix later  */
+	  put32lint (cts, mhod->type);    /* entry type  */
+	  put32_n0 (cts, 2);              /* unknown     */
+	  put32lint (cts, mhod->data.chapterdata->unk024); /* unknown */
+	  put32lint (cts, mhod->data.chapterdata->unk028); /* unknown */
+	  put32lint (cts, mhod->data.chapterdata->unk032); /* unknown */
+	  put32bint (cts, -1);            /* total length of sean atom, fix later  */
+	  put_header (cts, "sean");
+	  put32bint (cts, 1);             /* unknown     */
+	  put32bint (cts, numchapters+1); /* children    */
+	  put32bint (cts, 0);             /* unknown     */
+	  for (gl=mhod->data.chapterdata->chapters; gl; gl=gl->next)
+	  {
+	      gunichar2 *title_utf16;
+	      Itdb_Chapter *chapter = gl->data;
+/*	      gint len = strlen(chapter->chaptertitle); */
+		  glong len;
+	      title_utf16 = NULL;
+	      title_utf16 = g_utf8_to_utf16 (chapter->chaptertitle,
+		      -1,NULL,&len,NULL);
+	      fixup_big_utf16 (title_utf16);
+	      put32bint (cts, 42+2*len); /* total length  */
+	      put_header (cts, "chap");
+	      put32bint (cts, chapter->startpos); /* should we check if startpos=0 here? */
+	      put32bint (cts, 1);        /* children */
+	      put32bint (cts, 0);        /* unknown  */
+	      put32bint (cts, 22+2*len); /* length   */
+	      put_header (cts, "name");
+	      put32bint (cts, 1);        /* unknown  */
+	      put32_n0 (cts, 2);         /* unknown  */
+	      put16bint (cts, len);
+	      put_data (cts, (gchar *)title_utf16, 2*len);
+	      g_free (title_utf16);
+
+	  }
+	  put32bint (cts, 28); /* size     */
+	  put_header (cts, "hedr");
+	  put32bint (cts, 1);  /* unknown  */
+	  put32bint (cts, 0);  /* children */
+	  put32_n0 (cts, 2);   /* unknown  */
+	  put32bint (cts, 1);  /* unknown  */
+	  
+	  
+	  put32bint_seek (cts, cts->pos-(header_seek+36), header_seek+36); /* fix length of sean atom */
+	  fix_header (cts, header_seek);
       }
       break;
   case MHOD_ID_SPLPREF:
@@ -4427,10 +4501,10 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
-	if (track->chapterdata_raw && track->chapterdata_raw_length)
+	if (track->chapterdata && track->chapterdata->chapters)
 	{
 	    mhod.type = MHOD_ID_CHAPTERDATA;
-	    mhod.data.chapterdata_track = track;
+	    mhod.data.chapterdata = track->chapterdata;
 	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}

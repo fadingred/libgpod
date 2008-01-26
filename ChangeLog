@@ -1,3 +1,11 @@
+2007-11-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * src/itdb_track.c
+	* src/itdb_itunesdb.c
+	* src/itdb_chapterdata
+	* src/itdb.h
+	* src/Makefile.am: applied chapterdata patch by Michael Tiffany.
+
 2008-01-02  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_device.c: fix ITDB_THUMB_PHOTO_FULL_SCREEN format on
