@@ -1,4 +1,9 @@
-2007-11-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2008-01-26  Michael Tiffany <tiffman at users.sourceforge.net>
+
+        * src/itdb_chapterdata.c: file missed being added in
+	previous checkin
+
+2008-01-26  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/itdb_track.c
 	* src/itdb_itunesdb.c
