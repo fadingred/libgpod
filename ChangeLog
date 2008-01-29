@@ -1,3 +1,11 @@
+2008-30-01  Christophe Fergeau  <teuf@gnome.org>
+
+	Patch by Martin Aumueller 	
+
+	* tests/test-ls.c: make sure the various fields we are trying to
+	print aren't NULL, this fixes a crash that was observed with
+	iphones
+
 2007-11-15  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: don't use itdb_filename_ipod2fs to generate

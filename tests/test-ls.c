@@ -70,7 +70,9 @@ static void
 display_track (Itdb_Track *track, const char *prefix) 
 {
     g_print ("%s%s - %s - %s\n", prefix,  
-	     track->artist, track->album, track->title);
+	     track->artist ? track->artist : "(null)",
+	     track->album ? track->album : "(null)",
+	     track->title ? track->title : "(null)");
     g_print ("%s\t%s\n", prefix, track->ipod_path);
 }
 
