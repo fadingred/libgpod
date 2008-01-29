@@ -1,3 +1,12 @@
+2007-11-15  Christophe Fergeau  <teuf@gnome.org>
+	
+	* src/db-artwork-writer.c:
+	* src/db-parse-context.c:
+	* src/itdb_device.c:
+	* src/itdb_itunesdb.c:
+	* src/ithumb-writer.c: don't include unistd.h on systems which
+	don't have it
+
 2007-11-16  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: rework itdb_cp for MacOSX/Windows

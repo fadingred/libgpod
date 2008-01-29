@@ -122,7 +122,9 @@
 #include <sys/statvfs.h>
 #include <sys/types.h>
 #include <time.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #define ITUNESDB_DEBUG 0
 #define ITUNESDB_MHIT_DEBUG 0

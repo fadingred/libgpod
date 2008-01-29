@@ -21,7 +21,9 @@
  *  This product is not supported/written/published by Apple!
  *
  */
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -29,7 +31,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #include <glib.h>
 #include "db-parse-context.h"
