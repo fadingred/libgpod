@@ -1,5 +1,11 @@
 2007-11-15  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_itunesdb.c: don't use itdb_filename_ipod2fs to generate
+	the filename to put on the shuffle since on windows that would use
+	\ as a path separator instead of the correct /
+
+2007-11-15  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_private.h:
 	* src/itdb_itunesdb.c: add itdb_file_set_contents to workaround a
 	rename issue on sshfs (existing files on the FS can't be

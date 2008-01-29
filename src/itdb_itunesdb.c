@@ -5365,9 +5365,9 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 
 	put24bint (cts, 0x200);
 		
-	/* shuffle uses forward slash separator, not colon */
 	path = g_strdup (tr->ipod_path);
-	itdb_filename_ipod2fs (path);
+	/* shuffle uses forward slash separator, not colon */
+        g_strdelimit (path, ":", '/');
 	path_utf16 = g_utf8_to_utf16 (path, -1, NULL, &pathlen, NULL);
 	if (pathlen > 261) pathlen = 261;
 	fixup_little_utf16 (path_utf16);
