@@ -34,6 +34,8 @@
 #include "db-image-parser.h"
 #include "itdb_endianness.h"
 
+#include <glib/gstdio.h>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
@@ -65,13 +67,13 @@ typedef struct _iPodBuffer iPodBuffer;
 static gboolean
 ipod_gstring_flush (struct iPodSharedDataBuffer *shared, GError **error)
 {
-	gboolean result;
+	gboolean success;
 
-	result = g_file_set_contents (shared->filename, 
-				      shared->data->str, shared->data->len,
-				      error);
-	if (!result) {
-		return FALSE;
+	success = itdb_file_set_contents (shared->filename, 
+	 	 		          shared->data->str, shared->data->len,
+				          error);
+	if (!success) {
+                return FALSE;
 	}
 	g_string_free (shared->data, TRUE);
 	g_free (shared->filename);

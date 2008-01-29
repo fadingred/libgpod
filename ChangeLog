@@ -1,4 +1,13 @@
 2007-11-15  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_private.h:
+	* src/itdb_itunesdb.c: add itdb_file_set_contents to workaround a
+	rename issue on sshfs (existing files on the FS can't be
+	atomatically erased during a rename). Use it in wcontents_write
+	* src/db-artwork-writer.c: use itdb_file_set_contents to write the
+	ArtworkDB
+
+2007-11-15  Christophe Fergeau  <teuf@gnome.org>
 	
 	* src/db-artwork-writer.c:
 	* src/db-parse-context.c:

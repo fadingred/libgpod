@@ -156,4 +156,7 @@ G_GNUC_INTERNAL guint64 device_time_time_t_to_mac (Itdb_Device *device,
 						 time_t timet);
 G_GNUC_INTERNAL gint itdb_musicdirs_number_by_mountpoint (const gchar *mountpoint);
 G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device);
+G_GNUC_INTERNAL gboolean itdb_file_set_contents (const char *filename, 
+                                                 const char *data, gssize len, 
+                                                 GError **error);
 #endif

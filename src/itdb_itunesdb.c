@@ -4842,44 +4842,12 @@ static WContents *wcontents_new (const gchar *filename)
  * cts->error accordingly. */
 static gboolean wcontents_write (WContents *cts)
 {
-    int fd;
-
     g_return_val_if_fail (cts, FALSE);
     g_return_val_if_fail (cts->filename, FALSE);
 
-    fd = creat (cts->filename, S_IRWXU|S_IRWXG|S_IRWXO);
-
-    if (fd == -1)
-    {
-	cts->error = g_error_new (G_FILE_ERROR,
-				  g_file_error_from_errno (errno),
-				  _("Opening of '%s' for writing failed (%s)."),
-				  cts->filename, g_strerror (errno));
-	return FALSE;
-    }
-    if (cts->contents && cts->pos)
-    {
-	ssize_t written = write (fd, cts->contents, cts->pos);
-	if (written == -1)
-	{
-	    cts->error = g_error_new (G_FILE_ERROR,
-				      g_file_error_from_errno (errno),
-				      _("Writing to '%s' failed (%s)."),
-				      cts->filename, g_strerror (errno));
-	    close (fd);
-	    return FALSE;
-	}
-    }
-    fd = close (fd);
-    if (fd == -1)
-    {
-	cts->error = g_error_new (G_FILE_ERROR,
-				  g_file_error_from_errno (errno),
-				  _("Writing to '%s' failed (%s)."),
-				  cts->filename, g_strerror (errno));
-	return FALSE;
-    }
-    return TRUE;
+    cts->error = NULL;
+    return itdb_file_set_contents (cts->filename, cts->contents, 
+                                   cts->pos, &cts->error);
 }
 
 
@@ -6159,6 +6127,49 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 }
 
 
+G_GNUC_INTERNAL gboolean
+itdb_file_set_contents (const char *filename, 
+                        const char *data, gssize len, 
+                        GError **error)
+{
+    gchar *backup;
+    gboolean success;
+
+    /* sshfs (which is used to access iPhones/iTouches) can't successfully
+     * rename a file if the destination file already exist.
+     * We first move away the existing file to workaround that limitation
+     *                            */
+    if (g_file_test (filename, G_FILE_TEST_EXISTS)) {
+        gint result;
+        backup = g_strdup_printf ("%sXXXXXX", filename);
+        result = g_rename (filename, backup);
+        if (result != 0) {
+            g_free (backup);
+            return FALSE;
+        }
+    } else {
+        backup = NULL;
+    }
+
+    success = g_file_set_contents (filename, data, len, error);
+    if (!success) {
+        if (backup != NULL) {
+            g_rename (backup, filename);
+            g_free (backup);
+        }
+        return FALSE;
+    }
+
+    /* File saving was
+     * ok, clean up our
+     * mess */
+    if (backup != NULL) {
+        g_unlink (backup);
+        g_free (backup);
+    }
+
+    return TRUE;
+}
 
 
 /**
