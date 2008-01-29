@@ -1,3 +1,8 @@
+2007-11-16  Christophe Fergeau <teuf@gnome.org>
+
+	* src/itdb_itunesdb.c: rework itdb_cp for MacOSX/Windows
+	portability
+
 2008-01-26  Michael Tiffany <tiffman at users.sourceforge.net>
 
         * src/itdb_chapterdata.c: file missed being added in

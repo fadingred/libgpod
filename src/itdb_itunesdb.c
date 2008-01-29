@@ -6037,6 +6037,7 @@ gchar *itdb_filename_on_ipod (Itdb_Track *track)
 }
 
 
+/* Use open instead of fopen.  fwrite is really slow on the Mac. */
 /**
  * itdb_cp:
  * @from_file: source file
@@ -6051,10 +6052,13 @@ gchar *itdb_filename_on_ipod (Itdb_Track *track)
 gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 		  GError **error)
 {
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
     gchar *data;
     glong bread, bwrite;
-    FILE *file_in = NULL;
-    FILE *file_out = NULL;
+    int file_in = -1;
+    int file_out = -1;
 
 #if ITUNESDB_DEBUG
     fprintf(stderr, "Entered itunesdb_cp: '%s', '%s'\n", from_file, to_file);
@@ -6065,8 +6069,8 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 
     data = g_malloc (ITUNESDB_COPYBLK);
 
-    file_in = fopen (from_file, "r");
-    if (file_in == NULL)
+    file_in = g_open (from_file, O_RDONLY | O_BINARY, 0);
+    if (file_in < 0)
     {
 	g_set_error (error,
 		     G_FILE_ERROR,
@@ -6076,8 +6080,9 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 	goto err_out;
     }
 
-    file_out = fopen (to_file, "w");
-    if (file_out == NULL)
+    file_out =  g_open (to_file, O_CREAT|O_WRONLY|O_TRUNC|O_BINARY,
+                        S_IRWXU|S_IRWXG|S_IRWXO);
+    if (file_out < 0)
     {
 	g_set_error (error,
 		     G_FILE_ERROR,
@@ -6088,25 +6093,23 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
     }
 
     do {
-	bread = fread (data, 1, ITUNESDB_COPYBLK, file_in);
+	bread = read (file_in, data, ITUNESDB_COPYBLK);
 #if ITUNESDB_DEBUG
 	fprintf(stderr, "itunesdb_cp: read %ld bytes\n", bread);
 #endif
-	if (bread == 0)
+	if (bread < 0)
 	{
-	    if (feof (file_in) == 0)
-	    {   /* error -- not end of file! */
-		g_set_error (error,
-			     G_FILE_ERROR,
-			     g_file_error_from_errno (errno),
-			     _("Error while reading from '%s' (%s)."),
-			     from_file, g_strerror (errno));
-		goto err_out;
-	    }
+	    /* error -- not end of file! */
+	    g_set_error (error,
+			 G_FILE_ERROR,
+			 g_file_error_from_errno (errno),
+			 _("Error while reading from '%s' (%s)."),
+			 from_file, g_strerror (errno));
+	    goto err_out;
 	}
 	else
 	{
-	    bwrite = fwrite (data, 1, bread, file_out);
+	    bwrite = write (file_out, data, bread);
 #if ITUNESDB_DEBUG
 	    fprintf(stderr, "itunesdb_cp: wrote %ld bytes\n", bwrite);
 #endif
@@ -6122,9 +6125,9 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 	}
     } while (bread != 0);
 
-    if (fclose (file_in) != 0)
+    if (close (file_in) != 0)
     {
-	file_in = NULL;
+	file_in = -1;
 	g_set_error (error,
 		     G_FILE_ERROR,
 		     g_file_error_from_errno (errno),
@@ -6132,9 +6135,9 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 		     from_file, g_strerror (errno));
 	goto err_out;
     }
-    if (fclose (file_out) != 0)
+    if (close (file_out) != 0)
     {
-	file_out = NULL;
+	file_out = -1;
 	g_set_error (error,
 		     G_FILE_ERROR,
 		     g_file_error_from_errno (errno),
@@ -6146,9 +6149,9 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
     return TRUE;
 
   err_out:
-    if (file_in)  fclose (file_in);
-    if (file_out) fclose (file_out);
-    remove (to_file);
+    if (file_in >= 0)  close (file_in);
+    if (file_out >= 0) close (file_out);
+    g_unlink (to_file);
     g_free (data);
     return FALSE;
 }
