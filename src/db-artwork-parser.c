@@ -309,6 +309,7 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	    g_free (mhod_ctx);
 	    mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	}
+        g_free (mhod_ctx);
 	return 0;
 }
 
@@ -393,6 +394,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 		g_free (mhia_ctx);
 		mhia_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	}
+        g_free (mhia_ctx);
 	photodb = db_get_photodb (ctx->db);
 	g_return_val_if_fail (photodb, -1);
 	photodb->photoalbums = g_list_append (photodb->photoalbums,
@@ -433,6 +435,7 @@ parse_mhl (DBParseContext *ctx, GError *error,
 		g_free (mhi_ctx);
 		mhi_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	}
+        g_free (mhi_ctx);
 
 	return 0;
 
