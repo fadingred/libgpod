@@ -304,13 +304,15 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 		return -1;
 	    }
 
-	    mhod->encoding = 2;
+	    mhod->encoding = 2; /* 8 bit field, no need to byteswap */
+
 	    /* number of bytes of the string encoded in UTF-16 */
 	    mhod->string_len = get_gint32 (g2l * len, buffer->byte_order);
 	    padding = 4 - ( (total_bytes + g2l*len) % 4 );
 	    if (padding == 4)
 		padding = 0;
-	    mhod->padding_len = padding;
+	    mhod->padding_len = padding; /* 8 bit field, no need to byteswap */
+
  	    total_bytes += g2l*len + padding;
 
 	    /* Make sure we have enough free space to write the string */
@@ -327,7 +329,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    g_free (utf16);
 	    break;
 	case G_BIG_ENDIAN:
-	    mhod->encoding = 1;
+	    mhod->encoding = 1; /* 8 bit field, no need to byteswap */
             /* FIXME: len isn't initialized */
 	    mhod->string_len = get_gint32 (len, buffer->byte_order);
 	    /* pad string if necessary */
@@ -336,7 +338,8 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    padding = 4 - ( (total_bytes + len) % 4 );
 	    if (padding == 4)
 		padding = 0;
-	    mhod->padding_len = padding;
+	    mhod->padding_len = padding; /* 8 bit field, no need to byteswap */
+
 	    /* Make sure we have enough free space to write the string */
 	    ipod_buffer_maybe_grow (buffer, len+padding);
 	    mhod = ipod_buffer_get_pointer (buffer);

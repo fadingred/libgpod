@@ -375,7 +375,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 	    {  /* FIXME: type==1 is album name. type==2 seems to be
 		* the transtition type between photos,
 		* e.g. "Dissolve". Not handled yet. */
-	    case 1:
+	    case MHOD_ARTWORK_TYPE_ALBUM_NAME:
 		album->name = g_strndup ((gchar *)mhod1->string,
 					 get_gint32(mhod1->string_len, ctx->byte_order));
 		dump_mhod_type_1 (mhod1);

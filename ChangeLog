@@ -1,5 +1,11 @@
 2008-02-03  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/db-artwork-parser.c: use enum name instead of hardcoded int
+	* src/db-artwork-writer.c: add comments about values that aren't
+	swapped because they are 8 bit values
+
+2008-02-03  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/db-itunes-parser.h: merge ArtworkDB_MhodHeaderArtworkType3
 	and MhodHeaderArtworkType1 into a single struct called
 	ArtworkDB_MhodHeaderString
