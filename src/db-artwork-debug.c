@@ -70,39 +70,22 @@ get_utf16_string (void* buffer, gint length)
 	return result;	
 }
 
-G_GNUC_INTERNAL void
-dump_mhod_type_1 (MhodHeaderArtworkType1 *mhod1) 
-{
-	g_print ("MHOD [artwork type 1] (%d):\n", sizeof (MhodHeaderArtworkType1));
-	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod1->header_len));
-	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod1->total_len));
-	g_print ("\tPadding: %04x\n", GINT_FROM_LE (mhod1->padding));
-	g_print ("\tType: %04x\n", GINT_FROM_LE (mhod1->type));
-	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhod1->unknown1));
-	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhod1->unknown2));
-	g_print ("\tString length: %u\n", GINT_FROM_LE (mhod1->string_len));
-	g_print ("\tUnknown3: %08x\n", GINT_FROM_LE (mhod1->unknown3));
-	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhod1->unknown4));
-	/* FIXME: do I need to translate UTF-8 to local encoding? */
-	g_print ("\tString: \"%.*s\"\n", GINT_FROM_LE (mhod1->string_len), mhod1->string);
-}
-
 G_GNUC_INTERNAL void 
-dump_mhod_type_3 (ArtworkDB_MhodHeaderArtworkType3 *mhod3) 
+dump_mhod_string (ArtworkDB_MhodHeaderString *mhod) 
 {
 	gchar *str;
 
-	g_print ("MHOD [artwork type 3] (%d):\n", sizeof (ArtworkDB_MhodHeaderArtworkType3));
-	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod3->header_len));
-	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod3->total_len));
-	g_print ("\tPadding: %04x\n", GINT_FROM_LE (mhod3->padding));
-	g_print ("\tType: %04x\n", GINT_FROM_LE (mhod3->type));
-	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhod3->unknown1));
-	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhod3->unknown2));
-	g_print ("\tString length: %u\n", GINT_FROM_LE (mhod3->string_len));
-	g_print ("\tMHOD version: %u\n", GINT_FROM_LE (mhod3->mhod_version));
-	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhod3->unknown4));
-	str = get_utf16_string (mhod3->string, GINT_FROM_LE (mhod3->string_len));
+	g_print ("MHOD [artwork type string] (%d):\n", sizeof (ArtworkDB_MhodHeaderString));
+	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod->header_len));
+	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod->total_len));
+	g_print ("\tPadding: %04x\n", GINT_FROM_LE (mhod->padding_len));
+	g_print ("\tType: %04x\n", GINT_FROM_LE (mhod->type));
+	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhod->unknown1));
+	g_print ("\tUnknown2: %08x\n", GINT_FROM_LE (mhod->unknown2));
+	g_print ("\tString length: %u\n", GINT_FROM_LE (mhod->string_len));
+	g_print ("\tEncoding: %u\n", GINT_FROM_LE (mhod->encoding));
+	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhod->unknown4));
+	str = get_utf16_string (mhod->string, GINT_FROM_LE (mhod->string_len));
 	g_print ("\tString: %s\n", str);
 	g_free (str);
 }

@@ -1,5 +1,11 @@
 2008-02-03  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/db-artwork-debug.c:
+	* src/db-artwork-debug.h: fix mhod type1 and mhod type3 dumping
+	when debugging is enabled
+
+2008-02-03  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/db-artwork-debug.h: merge mhod type1 and mhod type3 dumping
 	functions
 	* src/db-artwork-writer.c: adjust to the change above

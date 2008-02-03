@@ -27,13 +27,12 @@
 
 #include "db-itunes-parser.h"
 
-/*#define DEBUG_ARTWORKDB*/
+/* #define DEBUG_ARTWORKDB */
 
 #ifdef DEBUG_ARTWORKDB
 extern G_GNUC_INTERNAL void dump_mhif (MhifHeader *mhif);
 extern G_GNUC_INTERNAL void dump_mhia (MhiaHeader *mhia);
-extern G_GNUC_INTERNAL void dump_mhod_type_1 (MhodHeaderArtworkType1 *mhod);
-extern G_GNUC_INTERNAL void dump_mhod_type_3 (ArtworkDB_MhodHeaderArtworkType3 *mhod);
+extern G_GNUC_INTERNAL void dump_mhod_string (ArtworkDB_MhodHeaderString *mhod);
 extern G_GNUC_INTERNAL void dump_mhni (MhniHeader *mhni);
 extern G_GNUC_INTERNAL void dump_mhod (ArtworkDB_MhodHeader *mhod);
 extern G_GNUC_INTERNAL void dump_mhii (MhiiHeader *mhii);
