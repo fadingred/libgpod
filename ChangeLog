@@ -1,5 +1,13 @@
 2008-02-03  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/db-artwork-debug.h: merge mhod type1 and mhod type3 dumping
+	functions
+	* src/db-artwork-writer.c: adjust to the change above
+	* src/db-artwork-parser.c: merge mhod type1 and mhod type3 parsing
+	* src/db-itunes-parser.h: remove obsolete comment
+
+2008-02-03  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/db-artwork-parser.c: use enum name instead of hardcoded int
 	* src/db-artwork-writer.c: add comments about values that aren't
 	swapped because they are 8 bit values

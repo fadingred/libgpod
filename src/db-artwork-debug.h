@@ -44,8 +44,7 @@ extern G_GNUC_INTERNAL void dump_mhba (MhbaHeader *mhba);
 #else 
 #define dump_mhif(x)
 #define dump_mhia(x)
-#define dump_mhod_type_1(x)
-#define dump_mhod_type_3(x)
+#define dump_mhod_string(x)
 #define dump_mhni(x)
 #define dump_mhod(x)
 #define dump_mhii(x)

@@ -261,7 +261,7 @@ write_mhod_type_1 (gchar *string, iPodBuffer *buffer)
 	total_bytes += len + padding;
 	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
 
-	dump_mhod_type_1 (mhod);
+	dump_mhod_string (mhod);
 
 	return total_bytes;
 }
@@ -351,7 +351,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	}
 	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
 
-	dump_mhod_type_3 (mhod);
+	dump_mhod_string (mhod);
 
 	return total_bytes;
 }

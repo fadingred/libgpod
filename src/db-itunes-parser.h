@@ -364,7 +364,7 @@ struct _ArtworkDB_MhodHeaderString {
 	unsigned char header_id[4];
 	gint32 header_len;
 	gint32 total_len;
-        gint16 type; /* 3 */
+        gint16 type;
         gint8  unknown13;
 	gint8  padding_len;
 	gint32 unknown1;
