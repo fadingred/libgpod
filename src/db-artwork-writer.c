@@ -223,32 +223,32 @@ init_header (iPodBuffer *buffer, gchar _header_id[4], guint header_len)
 static int
 write_mhod_type_1 (gchar *string, iPodBuffer *buffer)
 {
-	MhodHeaderArtworkType1 *mhod;
+	ArtworkDB_MhodHeaderString *mhod;
 	unsigned int total_bytes;
 	int len;
 	int padding;
 
 	g_assert (string != NULL);
 
-	mhod = (MhodHeaderArtworkType1 *)init_header (buffer, "mhod",
-						      sizeof (MhodHeaderArtworkType1));
+	total_bytes = sizeof (ArtworkDB_MhodHeaderString);
+	mhod = (ArtworkDB_MhodHeaderString *)init_header (buffer, "mhod",
+                                                          total_bytes);
 	if (mhod == NULL) {
 		return -1;
 	}
-	total_bytes = sizeof (MhodHeaderArtworkType1);
 	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
 	/* Modify header length, since iTunes only puts the length of
 	 * MhodHeader in header_len
 	 */
 	mhod->header_len = get_gint32 (sizeof (ArtworkDB_MhodHeader), buffer->byte_order);
-	mhod->unknown3 = get_gint32 (0x01, buffer->byte_order);
+	mhod->encoding = get_gint32 (0x01, buffer->byte_order);
 	len = strlen (string);
 	mhod->string_len = get_gint32 (len, buffer->byte_order);
 
 	padding = 4 - ( (total_bytes + len) % 4 );
 	if (padding == 4)
 	    padding = 0;
-	mhod->padding = padding;
+	mhod->padding_len = padding;
 	mhod->type = get_gint16 (0x01, buffer->byte_order);
 
 	/* Make sure we have enough free space to write the string */
@@ -269,7 +269,7 @@ write_mhod_type_1 (gchar *string, iPodBuffer *buffer)
 static int
 write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 {
-	ArtworkDB_MhodHeaderArtworkType3 *mhod;
+	ArtworkDB_MhodHeaderString *mhod;
 	unsigned int total_bytes;
 	glong len;
 	const gint g2l = sizeof (gunichar2);
@@ -278,13 +278,12 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 
 	g_assert (string != NULL);
 
-	mhod = (ArtworkDB_MhodHeaderArtworkType3 *)
-	    init_header (buffer, "mhod",
-			 sizeof (ArtworkDB_MhodHeaderArtworkType3));
+	total_bytes = sizeof (ArtworkDB_MhodHeaderString);
+	mhod = (ArtworkDB_MhodHeaderString *) init_header (buffer, "mhod", 
+                                                           total_bytes);
 	if (mhod == NULL) {
 		return -1;
 	}
-	total_bytes = sizeof (ArtworkDB_MhodHeaderArtworkType3);
 	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
 	/* Modify header length, since iTunes only puts the length of
 	 * MhodHeader in header_len
@@ -305,13 +304,13 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 		return -1;
 	    }
 
-	    mhod->mhod_version = 2;
+	    mhod->encoding = 2;
 	    /* number of bytes of the string encoded in UTF-16 */
 	    mhod->string_len = get_gint32 (g2l * len, buffer->byte_order);
 	    padding = 4 - ( (total_bytes + g2l*len) % 4 );
 	    if (padding == 4)
 		padding = 0;
-	    mhod->padding = padding;
+	    mhod->padding_len = padding;
  	    total_bytes += g2l*len + padding;
 
 	    /* Make sure we have enough free space to write the string */
@@ -328,7 +327,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    g_free (utf16);
 	    break;
 	case G_BIG_ENDIAN:
-	    mhod->mhod_version = 1;
+	    mhod->encoding = 1;
             /* FIXME: len isn't initialized */
 	    mhod->string_len = get_gint32 (len, buffer->byte_order);
 	    /* pad string if necessary */
@@ -337,7 +336,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 	    padding = 4 - ( (total_bytes + len) % 4 );
 	    if (padding == 4)
 		padding = 0;
-	    mhod->padding = padding;
+	    mhod->padding_len = padding;
 	    /* Make sure we have enough free space to write the string */
 	    ipod_buffer_maybe_grow (buffer, len+padding);
 	    mhod = ipod_buffer_get_pointer (buffer);

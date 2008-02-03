@@ -1,9 +1,17 @@
-2008-02-30  Christophe Fergeau  <teuf@gnome.org>
+2008-02-03  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/db-itunes-parser.h: merge ArtworkDB_MhodHeaderArtworkType3
+	and MhodHeaderArtworkType1 into a single struct called
+	ArtworkDB_MhodHeaderString
+	* src/db-artwork-parser.c: 
+	* src/db-artwork-writer.c: adjust to the above change
+
+2008-02-03  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-parser.c: add missing g_free that could cause
 	memory leaks
 
-2008-30-01  Christophe Fergeau  <teuf@gnome.org>
+2008-01-30  Christophe Fergeau  <teuf@gnome.org>
 
 	Patch by Martin Aumueller 	
 

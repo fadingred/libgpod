@@ -71,10 +71,8 @@ typedef struct _MhiaHeader MhiaHeader;
 
 typedef struct _MhitHeader471 MhitHeader471;
 /* MHOD typedef mess */
-typedef struct _ArtworkDB_MhodHeaderArtworkType3 ArtworkDB_MhodHeaderArtworkType3;
+typedef struct _ArtworkDB_MhodHeaderString ArtworkDB_MhodHeaderString;
 typedef struct _MhodHeaderString MhodHeaderString;
-typedef struct _MhodHeaderArtworkType1 MhodHeaderArtworkType1;
-/* typedef struct _MhodHeaderArtworkType3 MhodHeaderArtworkType3; */
 typedef struct _MhodHeaderSmartPlaylistData MhodHeaderSmartPlaylistData;
 typedef struct _MhodHeaderSmartPlaylistRuleString MhodHeaderSmartPlaylistRuleString; 
 typedef struct _MhodHeaderSmartPlaylistRuleNonString MhodHeaderSmartPlaylistRuleNonString;
@@ -362,56 +360,22 @@ enum MhodArtworkType {
 	MHOD_ARTWORK_TYPE_IMAGE      = 5  /* container: full resolution image (in the Photo Database) */
 };
 
-struct _MhodHeaderArtworkType1 {
-	unsigned char header_id[4];
-	gint32 header_len;
-	gint32 total_len;
-	gint16 type; 
-	gint8 unknown;
-	gint8 padding;
-	gint32 unknown1;
-	gint32 unknown2;
-	gint32 string_len;
-	gint32 unknown3; /* might be the string encoding */
-	gint32 unknown4; /* always zero? */
-	unsigned char string[];
-};
-
-#if 0
-/* not used at all */
-struct _MhodHeaderArtworkType3 {
-	unsigned char header_id[4];
-	gint32 header_len;
-	gint32 total_len;
-	gint16 type; /* 3 */
-	gint16 padding; /* high byte is padding length (0-3) */
-	gint32 unknown1;
-	gint32 unknown2;
-	gint32 string_len;
-	gint32 mhod_version;
-	gint32 unknown4;
-	gunichar2 string[];
-};
-#endif
-
-struct _ArtworkDB_MhodHeaderArtworkType3 {
+struct _ArtworkDB_MhodHeaderString {
 	unsigned char header_id[4];
 	gint32 header_len;
 	gint32 total_len;
         gint16 type; /* 3 */
         gint8  unknown13;
-	gint8  padding;
+	gint8  padding_len;
 	gint32 unknown1;
 	gint32 unknown2;
 	gint32 string_len;
-	gint8 mhod_version; /* 0,1: string is UTF8, 2: string is
-			       UTF16-LE */
+	gint8 encoding; /* 0,1: string is UTF8, 2: string is UTF16-LE */
         gint8 unknown5;
         gint16 unknown6;
 	gint32 unknown4;
         gchar  string[];
 };
-
 
 enum MhodLimitType {
 	MHOD_LIMIT_MINUTES = 1,

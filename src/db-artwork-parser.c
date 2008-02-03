@@ -114,23 +114,24 @@ get_utf16_string (void* buffer, gint length, guint byte_order)
 }
 
 static char *
-mhod3_get_ithmb_filename (DBParseContext *ctx, ArtworkDB_MhodHeaderArtworkType3 *mhod3)
+mhod3_get_ithmb_filename (DBParseContext *ctx, 
+                          ArtworkDB_MhodHeaderString *mhod3)
 {
        char *filename=NULL;
 
        g_assert (mhod3 != NULL);
 
-       if (mhod3->mhod_version == 2)
+       if (mhod3->encoding == 2)
 	   filename = get_utf16_string ((gunichar2 *)mhod3->string,
 					get_gint32 (mhod3->string_len, ctx->byte_order),
 					ctx->byte_order);
-       else if ((mhod3->mhod_version == 0) ||
-		(mhod3->mhod_version == 1))
+       else if ((mhod3->encoding == 0) ||
+		(mhod3->encoding == 1))
 	   filename = g_strndup (mhod3->string,
 				 get_gint32 (mhod3->string_len, ctx->byte_order));
        else
 	   g_warning (_("Unexpected mhod3 string type: %d\n"),
-		      mhod3->mhod_version);
+		      mhod3->encoding);
        return filename;
 }
 
@@ -140,7 +141,7 @@ parse_mhod_3 (DBParseContext *ctx,
 	      Itdb_Thumb *thumb, GError *error)
 {
 	ArtworkDB_MhodHeader *mhod;
-	ArtworkDB_MhodHeaderArtworkType3 *mhod3;
+	ArtworkDB_MhodHeaderString *mhod3;
 	gint32 mhod3_type;
 
 	mhod = db_parse_context_get_m_header (ctx, ArtworkDB_MhodHeader, "mhod");
@@ -149,10 +150,10 @@ parse_mhod_3 (DBParseContext *ctx,
 	}
 	db_parse_context_set_total_len (ctx, get_gint32 (mhod->total_len, ctx->byte_order));
 	
-	if (get_gint32 (mhod->total_len, ctx->byte_order) < sizeof (ArtworkDB_MhodHeaderArtworkType3)){
+	if (get_gint32 (mhod->total_len, ctx->byte_order) < sizeof (ArtworkDB_MhodHeaderString)){
 		return -1;
 	}
-	mhod3 = (ArtworkDB_MhodHeaderArtworkType3*)mhod;
+	mhod3 = (ArtworkDB_MhodHeaderString*)mhod;
 	mhod3_type = get_gint16 (mhod3->type, ctx->byte_order);
 	if (mhod3_type != MHOD_ARTWORK_TYPE_FILE_NAME) {
 		return -1;
@@ -355,7 +356,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 	num_children = get_gint32 (mhba->num_mhods, ctx->byte_order);
 	while (num_children > 0)
 	{
-	    MhodHeaderArtworkType1 *mhod1;
+	    ArtworkDB_MhodHeaderString *mhod1;
 	    ArtworkDB_MhodHeader *mhod;
 	    DBParseContext *mhod_ctx;
 
@@ -369,7 +370,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 	    }
 	    db_parse_context_set_total_len (mhod_ctx,
 					    get_gint32(mhod->total_len, ctx->byte_order));
-	    mhod1 = (MhodHeaderArtworkType1*)mhod;
+	    mhod1 = (ArtworkDB_MhodHeaderString*)mhod;
 	    switch (mhod1->type)
 	    {  /* FIXME: type==1 is album name. type==2 seems to be
 		* the transtition type between photos,
