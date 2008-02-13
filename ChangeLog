@@ -1,3 +1,8 @@
+2008-02-13  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/ipod.py: Track.set_thumbnail() was renamed
+	  to Track.set_coverart_from_file() a long time ago
+
 2008-02-03  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-debug.c:

@@ -315,7 +315,7 @@ class Track:
             self._set_userdata_utf8('filename',filename)
             possible_image = os.path.join(os.path.split(filename)[0],'folder.jpg')
             if os.path.exists(possible_image):
-                self.set_thumbnail(possible_image)
+                self.set_coverart_from_file(possible_image)
             try:
                 audiofile = MP3(self._userdata_into_default_locale('filename'))
             except Exception, e:
