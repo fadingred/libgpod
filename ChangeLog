@@ -1,3 +1,8 @@
+2008-03-02  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* configure.ac
+	  m4/python.m4: shell portability fixes (courtesy of Klaus Heinz)
+
 2008-02-13  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/ipod.py: Track.set_thumbnail() was renamed

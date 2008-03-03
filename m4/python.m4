@@ -99,7 +99,7 @@ AC_DEFUN([LIBGPOD_CHECK_PYTHON],
     fi
     AC_MSG_RESULT($with_python)
 
-    if test "X$with_python" == Xyes; then
+    if test "X$with_python" = Xyes; then
         if test -z "$PYTHON"; then
             AC_PATH_PROG(PYTHON, python)
         fi
@@ -108,7 +108,7 @@ AC_DEFUN([LIBGPOD_CHECK_PYTHON],
             AM_PATH_PYTHON($PYTHON_MIN_VERSION)
             AM_CHECK_PYTHON_HEADERS(with_python="yes",with_python="no")
     
-            if test "X$with_python" == Xyes; then
+            if test "X$with_python" = Xyes; then
                 dnl test for python ldflags
                 dnl copied from the Redland RDF bindings, http://librdf.org/
                 if test `uname` = Darwin; then
@@ -127,13 +127,13 @@ AC_DEFUN([LIBGPOD_CHECK_PYTHON],
                 AM_CHECK_PYMOD(mutagen,$PYTHON_MUTAGEN_MIN_VERSION,mutagen.version_string,,with_python=no)
 
                 dnl this test should perhaps be re-enabled, but only produce a warning -- tmz
-                dnl if test "X$have_gdkpixbuf" == "Xyes" -a "X$have_pygobject" == "Xyes"; then
+                dnl if test "X$have_gdkpixbuf" = "Xyes" -a "X$have_pygobject" = "Xyes"; then
                 dnl     dnl check for gtk module >= $PYTHON_GTK_MIN_VERSION
                 dnl     AM_CHECK_PYMOD(gtk,$PYTHON_GTK_MIN_VERSION,'.'.join(map(str, gtk.ver)),,with_python=no)
                 dnl fi
 
                 dnl check for swig
-                if test "X$with_python" == Xyes; then
+                if test "X$with_python" = Xyes; then
                     AC_PROG_SWIG($SWIG_MIN_VERSION)
                     with_python="$has_swig"
                 fi
