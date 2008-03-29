@@ -1,3 +1,8 @@
+2008-03-29  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* tests/test-rebuild-db.cc: include string.h to fix builds
+	  with gcc 4.3 (fixes SF tracker #1928618)
+
 2008-03-02  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* configure.ac
