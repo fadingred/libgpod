@@ -21,7 +21,8 @@ libgpod_la_SOURCES = 		\
 
 libgpod_la_LDFLAGS = -version-info $(LIBGPOD_SO_VERSION) -no-undefined
 
-libgpodincludedir = $(includedir)/gpod-1.0/gpod
+libgpodincludebase = $(includedir)/gpod-1.0
+libgpodincludedir = $(libgpodincludebase)/gpod
 libgpodinclude_HEADERS = itdb.h
 noinst_HEADERS = 		\
 	db-artwork-debug.h	\
@@ -38,3 +39,7 @@ noinst_HEADERS = 		\
 
 INCLUDES=$(LIBGPOD_CFLAGS)
 LIBS=$(LIBGPOD_LIBS)
+
+uninstall-hook:
+	-rmdir --ignore-fail-on-non-empty $(DESTDIR)$(libgpodincludedir)
+	-rmdir --ignore-fail-on-non-empty $(DESTDIR)$(libgpodincludebase)

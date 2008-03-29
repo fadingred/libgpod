@@ -79,3 +79,6 @@ EXTRA_DIST += version.xml.in
 # Build the documentation when creating tarballs
 dist-hook-local:
 	$(MAKE) all
+
+uninstall-hook:
+	-rmdir --ignore-fail-on-non-empty $(DESTDIR)$(TARGET_DIR)

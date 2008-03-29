@@ -60,4 +60,7 @@ gpod.py: $(SWIG_INTERFACES)
 
 test:
 	$(MAKE) -C tests test
+
+uninstall-hook:
+	-rmdir --ignore-fail-on-non-empty $(DESTDIR)$(gpoddir)
 endif
