@@ -1,3 +1,8 @@
+2008-01-26  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * bindings/python/examples/Makefile.am
+	  Added fix_empty_artist_field.py provided by Thomas Perl.
+
 2008-03-29  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/Makefile.am
