@@ -3,6 +3,9 @@
 	* configure.ac:
 	  Bump version to 0.6.1SVN
 
+	* bindings/python/ipod.py: write shuffle data (thanks to Diogo
+	  Dutra)
+
 2008-04-19  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * bindings/python/examples/Makefile.am

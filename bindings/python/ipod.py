@@ -111,6 +111,9 @@ class Database:
 
         if not gpod.itdb_write_file(self._itdb, self._itdb_file, None):
             raise DatabaseException("Unable to save iTunes database %s" % self)
+        if gpod.itdb_get_mountpoint(self._itdb):
+            if not gpod.itdb_shuffle_write(self._itdb, None):
+                raise DatabaseException("Unable to save shuffle database on %s" % self._itdb.mountpoint)
         itdbext_file = "%s.ext" % (self._itdb_file)
         gtkpod.write(itdbext_file, self, self._itdb_file)
 
