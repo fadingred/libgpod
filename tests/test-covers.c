@@ -56,13 +56,13 @@ save_song_thumbnails (Itdb_Track *song)
 		thumb = (Itdb_Thumb *)it->data;
 		g_return_if_fail (thumb);
 
-		filename = NULL;
 		filename = g_strdup_printf ("%03d_%s-%s-%s-%d-%016"G_GINT64_MODIFIER"x.png",
 					    count++,
 					    song->artist, song->album, 
 					    song->title, thumb->type, 
 					    song->dbid);
 		if (filename != NULL) {
+		        g_print ("  %s\n", filename);
 			save_itdb_thumb (song->itdb, thumb, filename);
 			g_free (filename);
 		}
@@ -74,11 +74,13 @@ static void
 save_thumbnails (Itdb_iTunesDB *db)
 {
 	GList *it;
+	gint count = 0;
 
 	for (it = db->tracks; it != NULL; it = it->next) {
 		Itdb_Track *song;
 		
 		song = (Itdb_Track *)it->data;
+		g_print ("Track %d\n", count++);
 		save_song_thumbnails (song);
 	}
 }

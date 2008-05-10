@@ -1,3 +1,8 @@
+2008-05-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* tests/test-covers.c: print more status messages.
+
+
 2008-05-01  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* configure.ac:
