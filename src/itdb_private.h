@@ -146,7 +146,7 @@ G_GNUC_INTERNAL void itdb_splr_free (Itdb_SPLRule *splr);
 G_GNUC_INTERNAL const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb);
 G_GNUC_INTERNAL gchar *db_get_mountpoint (Itdb_DB *db);
 G_GNUC_INTERNAL Itdb_Device *db_get_device(Itdb_DB *db);
-G_GNUC_INTERNAL gint itdb_get_free_photo_id ( Itdb_PhotoDB *db );
+G_GNUC_INTERNAL gint itdb_get_max_photo_id ( Itdb_PhotoDB *db );
 G_GNUC_INTERNAL Itdb_iTunesDB *db_get_itunesdb (Itdb_DB *db);
 G_GNUC_INTERNAL Itdb_PhotoDB *db_get_photodb (Itdb_DB *db);
 G_GNUC_INTERNAL gint itdb_thumb_get_byteorder (ItdbThumbFormat format);

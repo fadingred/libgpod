@@ -1,7 +1,16 @@
+2008-05-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * src/itdb_photoalbum.c
+	  src/itdb_private.h
+	  src/db-artwork-writer.c: renamed itdb_get_free_photo_id() to
+	  itdb_get_max_photo_id() and implemented Jacob Hoffman-Andrew's
+	  patch about the photo_ids and album_ids being shared.
+
+	* tests/test-covers.c: print more info (marginally)
+
 2008-05-10  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* tests/test-covers.c: print more status messages.
-
 
 2008-05-01  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 

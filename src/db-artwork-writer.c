@@ -1086,8 +1086,8 @@ ipod_write_photo_db (Itdb_PhotoDB *photodb)
 		g_free (filename);
 		return -1;
 	}
-	id_max = itdb_get_free_photo_id( photodb );
-	bytes_written = write_mhfd (&db, buf, id_max);
+	id_max = itdb_get_max_photo_id( photodb );
+	bytes_written = write_mhfd (&db, buf, id_max+1);
 
 	/* Refcount of the shared buffer should drop to 0 and this should
 	 * sync buffered data to disk

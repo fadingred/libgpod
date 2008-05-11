@@ -309,19 +309,26 @@ void itdb_photodb_free (Itdb_PhotoDB *photodb)
 
 
 
-G_GNUC_INTERNAL gint itdb_get_free_photo_id ( Itdb_PhotoDB *db ) 
+G_GNUC_INTERNAL gint itdb_get_max_photo_id ( Itdb_PhotoDB *db ) 
 {
-	gint photo_id = 0;
+	gint max_seen_id = 0;
 	GList *it;
 
 	for (it = db->photos; it != NULL; it = it->next) {
 		Itdb_Artwork *artwork;
 
 		artwork = (Itdb_Artwork *)it->data;
-		if( artwork->id > photo_id )
-			photo_id = artwork->id;
+		if( artwork->id > max_seen_id )
+			max_seen_id = artwork->id;
 	}
-	return photo_id + 1;
+        for (it = db->photoalbums; it != NULL; it = it->next) {
+		Itdb_PhotoAlbum *album;
+		album = (Itdb_PhotoAlbum *)it->data;
+		if ( album->album_id > max_seen_id )
+			max_seen_id = album->album_id;
+		
+	}
+	return max_seen_id;
 }
 
 static void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *album)
