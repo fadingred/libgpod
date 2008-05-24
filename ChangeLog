@@ -1,3 +1,9 @@
+2008-05-24  Christophe Fergeau <teuf at gnome.org>
+
+	Patch from Jacob Hoffman-Andrews <jsha at newview.org>
+
+	* tools/hal-callout.c: add missing #include <unistd.h>
+
 2008-05-17  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* tests/test-covers.c: print more info (marginally)
