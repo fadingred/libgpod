@@ -306,9 +306,20 @@ static const Itdb_ArtworkFormat ipod_touch_1_artwork_info[] = {
     {ITDB_THUMB_COVER_XLARGE,     320, 320, 3005, THUMB_FORMAT_RGB555_LE},
     {ITDB_THUMB_COVER_XSMALL,      56,  56, 3006, THUMB_FORMAT_RGB555_LE,  8192}, /*pad data to  8192 bytes */
     {ITDB_THUMB_COVER_SMEDIUM,     88,  88, 3007, THUMB_FORMAT_RGB555_LE, 16364}, /*pad data to 16384 bytes */
-    {ITDB_THUMB_PHOTO_SMALL,       56,  55, 3004, THUMB_FORMAT_RGB555_LE, 8192},
-    {ITDB_THUMB_PHOTO_LARGE,       80,  79, 3011, THUMB_FORMAT_RGB555_LE},
+
+    /* In the album list, if a photo is being used to represent a whole album,
+       PHOTO_SMALL is used.  We specify TRUE for the crop option so we fill
+       the square completely. */
+    {ITDB_THUMB_PHOTO_SMALL,       56,  55, 3004, THUMB_FORMAT_RGB555_LE, 8192, TRUE},
+    /* In thumbnail view, PHOTO_LARGE is used.  It's actually 79x79, with a 4px
+       white border on the right and bottom.  We specify TRUE for the crop option
+       so we fill the square completely. */
+    {ITDB_THUMB_PHOTO_LARGE,       80,  79, 3011, THUMB_FORMAT_RGB555_LE, 0, TRUE},
     {ITDB_THUMB_PHOTO_FULL_SCREEN,160, 120, 3009, THUMB_FORMAT_RGB555_LE},
+    /* When viewing an individual photo, PHOTO_TV_SCREEN is used.  Note that it
+       is acceptable to write a thumbnail less than the specified width or
+       height, the iPhone / iTouch will scale it to fit the screen.  This is
+       important for images that are taller than they wide. */
     {ITDB_THUMB_PHOTO_TV_SCREEN,  640, 480, 3008, THUMB_FORMAT_RGB555_LE},
     {-1,                           -1,  -1,   -1, -1}
 };

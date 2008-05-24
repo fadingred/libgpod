@@ -45,6 +45,7 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <math.h>
 #include <fcntl.h>
 
 #include <glib/gstdio.h>
@@ -556,7 +557,123 @@ ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gin
 	return filename;
 }
 
+/* If appropriate, rotate thumb->pixbuf by the value specified in
+ * thumb->rotation or thumb->pixbuf's EXIF orientation value. */
+static void
+ithumb_writer_handle_rotation (Itdb_Thumb *thumb) {
+  /* Make sure @rotation is valid (0, 90, 180, 270) */
+  thumb->rotation = thumb->rotation % 360;
+  thumb->rotation /= 90;
+  thumb->rotation *= 90;
 
+
+  /* If the caller did not specify a rotation, and there is an orientation header
+     present in the pixbuf (from EXIF), use that to choose a rotation.
+     NOTE: Do this before doing any transforms on the pixbuf, or you will lose
+     the EXIF metadata.
+     List of orientation values: http://sylvana.net/jpegcrop/exif_orientation.html */
+  if (thumb->rotation == 0) {
+    /* In GdkPixbuf 2.12 or above, this returns the EXIF orientation value. */
+    const char* exif_orientation = gdk_pixbuf_get_option(thumb->pixbuf, "orientation");
+    if (exif_orientation != NULL) {
+      switch (exif_orientation[0]) {
+	case '3':
+	  thumb->rotation = 180;
+          break;
+	case '6':
+	  thumb->rotation = 270;
+          break;
+	case '8':
+	  thumb->rotation = 90;
+          break;
+	/* '1' means no rotation.  The other four values are all various
+	   transpositions, which are rare in real photos so we don't
+	   implement them. */
+      }
+    }
+  }
+
+  /* Rotate if necessary */
+  if (thumb->rotation != 0)
+  {
+      GdkPixbuf *new_pixbuf = gdk_pixbuf_rotate_simple (thumb->pixbuf, thumb->rotation);
+      g_object_unref (thumb->pixbuf);
+      thumb->pixbuf = new_pixbuf;
+      /* Clean up */
+      thumb->rotation = 0;
+  }
+}
+
+/* On the iPhone, thumbnails are presented as squares in a grid.
+   In order to fit the grid, they have to be cropped as well as
+   scaled. */
+static GdkPixbuf *
+ithumb_writer_scale_and_crop (Itdb_Thumb *thumb,
+                              gint width, gint height,
+                              gboolean crop)
+{
+    gint input_width, input_height;
+    double width_scale, height_scale;
+    gdouble scale;
+    gint offset_x, offset_y;
+    gint border_width = 0;
+
+    GdkPixbuf *input_pixbuf, *output_pixbuf;
+
+    input_pixbuf = GDK_PIXBUF(thumb->pixbuf);
+    g_object_get (G_OBJECT (input_pixbuf), 
+		  "width", &input_width,
+		  "height", &input_height,
+		  NULL);
+
+    width_scale = (double) width / input_width;
+    height_scale = (double) height / input_height;
+
+    if (!crop)
+    {
+      /* If we're not cropping, we need to be able to fit both the whole width
+         and whole height, so we use the smaller of the two possible scale
+         factors. */
+      scale = MIN(width_scale, height_scale);
+      offset_x = offset_y = 0;
+    }
+    else 
+    {
+      double scaled_width, scaled_height;
+      /* If we are cropping, we use the max of the two possible scale factors,
+         so that the image is large enough to fill both dimensions. */
+      scale = MAX(width_scale, height_scale);
+
+      /* In order to crop the image, we shift it either left or up by
+	 a certain amount.  Note that the offset args to gdk_pixbuf_scale are
+	 expressed in terms of the *output* pixbuf, not the input, so we scal the
+	 offsets.  Here we figure out whether this is a vertical or horizontal
+	 offset. */
+      scaled_width = input_width * scale;
+      scaled_height = input_height * scale;
+      offset_x = round((width - scaled_width) / 2);
+      offset_y = round((height - scaled_height) / 2);
+
+      g_assert(round(scaled_width) == width ||
+               round(scaled_height) == height);
+    }
+
+    output_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
+			           width + border_width,
+                                   height + border_width);
+    gdk_pixbuf_fill(output_pixbuf, 0xffffffff);
+
+    gdk_pixbuf_scale (input_pixbuf,
+		      output_pixbuf,
+		      0, 0,			 /* dest x, dest y */
+		      width,                     /* dest width */
+		      height,                    /* dest height */
+		      offset_x, offset_y,        /* offset x, offset y */
+		      scale, scale,	         /* scale x, scale y */
+		      GDK_INTERP_BILINEAR);
+
+    return output_pixbuf;
+}
 
 static gboolean
 ithumb_writer_write_thumbnail (iThumbWriter *writer, 
@@ -570,34 +687,20 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     g_return_val_if_fail (writer->img_info, FALSE);
     g_return_val_if_fail (thumb, FALSE);
 
-    /* Make sure @rotation is valid (0, 90, 180, 270) */
-    thumb->rotation = thumb->rotation % 360;
-    thumb->rotation /= 90;
-    thumb->rotation *= 90;
-
-    /* If we rotate by 90 or 270 degrees interchange the width and
-     * height */
-
-    if ((thumb->rotation == 0) || (thumb->rotation == 180))
-    {
-	width = writer->img_info->width;
-	height = writer->img_info->height;
-    }
-    else
-    {
-	width = writer->img_info->height;
-	height = writer->img_info->width;
-    }
-
+    /* An thumb can start with one of:
+        1. a filename
+        2. raw image data read from a file
+        3. a GdkPixbuf struct
+       In case 1 and 2, we load the relevant data into a GdkPixbuf and proceed
+       with case 3.
+    */
     if (thumb->filename)
     {   /* read image from filename */
-	pixbuf = gdk_pixbuf_new_from_file_at_size (thumb->filename, 
-						   width, height,
-						   NULL);
-
+	thumb->pixbuf = gdk_pixbuf_new_from_file (thumb->filename, 
+						  NULL);
 	g_free (thumb->filename);
 	thumb->filename = NULL;
-    }
+    } 
     else if (thumb->image_data)
     {   /* image data is stored in image_data and image_data_len */
 	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
@@ -609,61 +712,55 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 				 thumb->image_data_len,
 				 NULL);
 	gdk_pixbuf_loader_close (loader, NULL);
-	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-	if (pixbuf)
-	    g_object_ref (pixbuf);
+	thumb->pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+	if (thumb->pixbuf)
+	    g_object_ref (thumb->pixbuf);
 	g_object_unref (loader);
 
 	g_free (thumb->image_data);
 	thumb->image_data = NULL;
 	thumb->image_data_len = 0;
     }
-    else if (thumb->pixbuf)
-    {
-        pixbuf = gdk_pixbuf_scale_simple (GDK_PIXBUF(thumb->pixbuf),
-                                          width, height,
-                                          GDK_INTERP_BILINEAR);
-        g_object_unref (thumb->pixbuf);
-        thumb->pixbuf = NULL;
-    }
 
-    if (pixbuf == NULL)
+    if (thumb->pixbuf == NULL)
     {
 	/* This is quite bad... if we just return FALSE the ArtworkDB
 	   gets messed up. */
-	pixbuf = gdk_pixbuf_from_pixdata (&questionmark_pixdata, FALSE, NULL);
+	thumb->pixbuf = gdk_pixbuf_from_pixdata (&questionmark_pixdata, FALSE, NULL);
 
-	if (pixbuf)
-	{
-	    GdkPixbuf *pixbuf2;
-	    pixbuf2 = gdk_pixbuf_scale_simple (pixbuf,
-					       writer->img_info->width,
-					       writer->img_info->height,
-					       GDK_INTERP_BILINEAR);
-	    g_object_unref (pixbuf);
-	    pixbuf = pixbuf2;
-	}
-	else
+	if (!thumb->pixbuf)
 	{
 	    /* Somethin went wrong. let's insert a red thumbnail */
-	    pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, FALSE, 8,
+	    thumb->pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, FALSE, 8,
 				     writer->img_info->width,
 				     writer->img_info->height);
-	    gdk_pixbuf_fill (pixbuf, 0xff000000);
+	    gdk_pixbuf_fill (thumb->pixbuf, 0xff000000);
 	}
 	/* avoid rotation */
 	thumb->rotation = 0;
     }
 
-    /* Rotate if necessary */
-    if (thumb->rotation != 0)
+    g_assert(thumb->pixbuf);
+
+    ithumb_writer_handle_rotation(thumb);
+
+    /* If we rotate by 90 or 270 degrees interchange the width and
+     * height */
+    if ((thumb->rotation == 0) || (thumb->rotation == 180))
     {
-	GdkPixbuf *new_pixbuf = gdk_pixbuf_rotate_simple (pixbuf, thumb->rotation);
-	g_object_unref (pixbuf);
-	pixbuf = new_pixbuf;
-	/* Clean up */
-	thumb->rotation = 0;
+	width = writer->img_info->width;
+	height = writer->img_info->height;
     }
+    else
+    {
+	width = writer->img_info->height;
+	height = writer->img_info->width;
+    }
+
+    pixbuf = ithumb_writer_scale_and_crop (thumb, width, height,
+      writer->img_info->crop);
+    g_object_unref (thumb->pixbuf);
+    thumb->pixbuf = NULL;
 
     /* !! cannot write directly to &thumb->width/height because
        g_object_get() returns a gint, but thumb->width/height are

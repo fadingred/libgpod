@@ -101,6 +101,9 @@ struct _Itdb_ArtworkFormat
 	gint16 correlation_id;
         ItdbThumbFormat format;
         gint32 padding;
+        /* If true, crop the artwork to completely fill the target size,
+          rather than leaving empty bars on the top or sides. */
+        gboolean crop;
 };
 
 G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_device_get_artwork_formats (Itdb_Device *device);

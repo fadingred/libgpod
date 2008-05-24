@@ -1,6 +1,15 @@
 2008-05-24  Christophe Fergeau <teuf at gnome.org>
 
 	Patch from Jacob Hoffman-Andrews <jsha at newview.org>
+	
+	* src/itdb_device.h: add 'crop' field to Itdb_ArtworkFormat
+	* src/itdb_device.c: fill this 'crop' field for the iphone
+	* src/ithumb-writer.c: use that new 'crop' field to crop the
+	thumbnails when the Itdb_ArtworkFormat requires it.
+
+2008-05-24  Christophe Fergeau <teuf at gnome.org>
+
+	Patch from Jacob Hoffman-Andrews <jsha at newview.org>
 
 	* tools/hal-callout.c: add missing #include <unistd.h>
 
