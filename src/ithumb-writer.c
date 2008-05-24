@@ -675,6 +675,155 @@ ithumb_writer_scale_and_crop (Itdb_Thumb *thumb,
     return output_pixbuf;
 }
 
+static void *pack_thumbnail (iThumbWriter *writer, Itdb_Thumb *thumb,
+                             GdkPixbuf *pixbuf)
+{
+    typedef void *(*PackerFunc)(GdkPixbuf *pixbuf,
+                                const Itdb_ArtworkFormat *img_info,
+                                gint horizontal_padding, gint vertical_padding,
+                                guint32 *thumb_size);
+    struct Packer {
+        ItdbThumbFormat format;
+        PackerFunc packer;
+    };
+    guint i;
+    const struct Packer packers[] = {
+        { THUMB_FORMAT_RGB565_LE_90,     (PackerFunc)pack_RGB_565 },
+        { THUMB_FORMAT_RGB565_BE_90,     (PackerFunc)pack_RGB_565 },
+        { THUMB_FORMAT_RGB565_LE,        (PackerFunc)pack_RGB_565 },
+        { THUMB_FORMAT_RGB565_BE,        (PackerFunc)pack_RGB_565 },
+        { THUMB_FORMAT_RGB555_LE_90,     (PackerFunc)pack_RGB_555 },
+        { THUMB_FORMAT_RGB555_BE_90,     (PackerFunc)pack_RGB_555 },
+        { THUMB_FORMAT_RGB555_LE,        (PackerFunc)pack_RGB_555 },
+        { THUMB_FORMAT_RGB555_BE,        (PackerFunc)pack_RGB_555 },
+        { THUMB_FORMAT_RGB888_LE_90,     (PackerFunc)pack_RGB_888 },
+        { THUMB_FORMAT_RGB888_BE_90,     (PackerFunc)pack_RGB_888 },
+        { THUMB_FORMAT_RGB888_LE,        (PackerFunc)pack_RGB_888 },
+        { THUMB_FORMAT_RGB888_BE,        (PackerFunc)pack_RGB_888 },
+        { THUMB_FORMAT_REC_RGB555_LE_90, (PackerFunc)pack_rec_RGB_555 },
+        { THUMB_FORMAT_REC_RGB555_BE_90, (PackerFunc)pack_rec_RGB_555 },
+        { THUMB_FORMAT_REC_RGB555_LE,    (PackerFunc)pack_rec_RGB_555 },
+        { THUMB_FORMAT_REC_RGB555_BE,    (PackerFunc)pack_rec_RGB_555 },
+        { THUMB_FORMAT_EXPERIMENTAL_LE,  NULL },
+        { THUMB_FORMAT_EXPERIMENTAL_BE,  NULL },
+        { THUMB_FORMAT_UYVY_BE,          (PackerFunc)pack_UYVY },
+        { THUMB_FORMAT_UYVY_LE,          (PackerFunc)pack_UYVY },
+        { THUMB_FORMAT_I420_BE,          (PackerFunc)pack_I420 },
+        { THUMB_FORMAT_I420_LE,          (PackerFunc)pack_I420 }
+    };
+
+    for (i = 0; i < G_N_ELEMENTS (packers); i++) {
+        if (packers[i].format == writer->img_info->format) {
+            break;
+        }
+    }
+
+    if ((i == G_N_ELEMENTS (packers)) || (packers[i].packer == NULL)) {
+        return NULL;
+    }
+    return packers[i].packer (pixbuf, writer->img_info,
+                              thumb->horizontal_padding,
+                              thumb->vertical_padding,
+                              &thumb->size);
+}
+static gboolean write_pixels (iThumbWriter *writer, Itdb_Thumb *thumb,
+                              void *pixels)
+{
+    if (pixels == NULL)
+    {
+	return FALSE;
+    }
+
+    if (fwrite (pixels, thumb->size, 1, writer->f) != 1) {
+	g_print ("Error writing to file: %s\n", strerror (errno));
+	return FALSE;
+    }
+    writer->cur_offset += thumb->size;
+
+    if (writer->img_info->padding != 0)
+    {
+	gint padding = writer->img_info->padding - thumb->size;
+	g_return_val_if_fail (padding >= 0, TRUE);
+	if (padding != 0)
+	{
+            /* FIXME: check if a simple fseek() will do the same */
+	    gchar *pad_bytes = g_malloc0 (padding);
+	    if (fwrite (pad_bytes, padding, 1, writer->f) != 1) {
+		g_free (pad_bytes);
+		g_print ("Error writing to file: %s\n", strerror (errno));
+		return FALSE;
+	    }
+	    g_free (pad_bytes);
+	    writer->cur_offset += padding;
+	}
+    }
+    return TRUE;
+}
+
+static char *get_ithmb_filename (iThumbWriter *writer, Itdb_Thumb *thumb)
+{
+    switch (thumb->type)
+    {
+    case ITDB_THUMB_PHOTO_LARGE:
+    case ITDB_THUMB_PHOTO_SMALL:
+    case ITDB_THUMB_PHOTO_FULL_SCREEN:
+    case ITDB_THUMB_PHOTO_TV_SCREEN:
+	return g_strdup_printf (":Thumbs:F%d_%d.ithmb", 
+	            		writer->img_info->correlation_id,
+                                writer->current_file_index);
+	break;
+    case ITDB_THUMB_COVER_LARGE:
+    case ITDB_THUMB_COVER_SMALL:
+    case ITDB_THUMB_COVER_XLARGE:
+    case ITDB_THUMB_COVER_MEDIUM:
+    case ITDB_THUMB_COVER_SMEDIUM:
+    case ITDB_THUMB_COVER_XSMALL:
+	return g_strdup_printf (":F%d_%d.ithmb", 
+	    		        writer->img_info->correlation_id,
+                                writer->current_file_index);
+	break;
+    }
+    g_return_val_if_reached (NULL);
+}
+
+static void set_thumb_padding (iThumbWriter *writer, Itdb_Thumb *thumb, 
+                               gint width, gint height)
+{
+    switch (writer->db_type)
+    {
+    case DB_TYPE_PHOTO:
+	thumb->horizontal_padding = (writer->img_info->width - width)/2;
+	thumb->vertical_padding = (writer->img_info->height - height)/2;
+	break;
+    case DB_TYPE_ITUNES:
+	/* IPOD_COVER_LARGE will be centered automatically using
+	   the info in mhni->width/height. Free space around
+	   IPOD_COVER_SMALL will be used to display track
+	   information -> no padding (tested on iPod
+	   Nano). mhni->hor_/ver_padding is working */
+	thumb->horizontal_padding = 0;
+	thumb->vertical_padding = 0;
+	break;
+    default:
+	g_return_if_reached ();
+    }
+}
+
+static GdkPixbuf *pixbuf_from_image_data (guchar *image_data, gsize len)
+{
+    GdkPixbuf *pixbuf;
+    GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+    g_return_val_if_fail (loader, FALSE);
+    gdk_pixbuf_loader_write (loader, image_data, len, NULL);
+    gdk_pixbuf_loader_close (loader, NULL);
+    pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+    if (pixbuf)
+        g_object_ref (pixbuf);
+    g_object_unref (loader);
+
+    return pixbuf;
+}
+
 static gboolean
 ithumb_writer_write_thumbnail (iThumbWriter *writer, 
 			       Itdb_Thumb *thumb)
@@ -682,6 +831,7 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     GdkPixbuf *pixbuf = NULL;
     void *pixels = NULL;
     gint width, height; /* must be gint -- see comment below */
+    gboolean result;
 
     g_return_val_if_fail (writer, FALSE);
     g_return_val_if_fail (writer->img_info, FALSE);
@@ -696,27 +846,14 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     */
     if (thumb->filename)
     {   /* read image from filename */
-	thumb->pixbuf = gdk_pixbuf_new_from_file (thumb->filename, 
-						  NULL);
+	thumb->pixbuf = gdk_pixbuf_new_from_file (thumb->filename, NULL);
 	g_free (thumb->filename);
 	thumb->filename = NULL;
     } 
     else if (thumb->image_data)
     {   /* image data is stored in image_data and image_data_len */
-	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
-	g_return_val_if_fail (loader, FALSE);
-	gdk_pixbuf_loader_set_size (loader,
-				    width, height);
-	gdk_pixbuf_loader_write (loader,
-				 thumb->image_data,
-				 thumb->image_data_len,
-				 NULL);
-	gdk_pixbuf_loader_close (loader, NULL);
-	thumb->pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-	if (thumb->pixbuf)
-	    g_object_ref (thumb->pixbuf);
-	g_object_unref (loader);
-
+        thumb->pixbuf = pixbuf_from_image_data (thumb->image_data, 
+                                                thumb->image_data_len);
 	g_free (thumb->image_data);
 	thumb->image_data = NULL;
 	thumb->image_data_len = 0;
@@ -758,7 +895,7 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     }
 
     pixbuf = ithumb_writer_scale_and_crop (thumb, width, height,
-      writer->img_info->crop);
+                                           writer->img_info->crop);
     g_object_unref (thumb->pixbuf);
     thumb->pixbuf = NULL;
 
@@ -770,155 +907,21 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
 		  "height", &height,
 		  NULL);
 
-    switch (thumb->type)
-    {
-    case ITDB_THUMB_PHOTO_LARGE:
-    case ITDB_THUMB_PHOTO_SMALL:
-    case ITDB_THUMB_PHOTO_FULL_SCREEN:
-    case ITDB_THUMB_PHOTO_TV_SCREEN:
-	thumb->filename = g_strdup_printf (":Thumbs:F%d_%d.ithmb", 
-					   writer->img_info->correlation_id,
-					   writer->current_file_index);
-	break;
-    case ITDB_THUMB_COVER_LARGE:
-    case ITDB_THUMB_COVER_SMALL:
-    case ITDB_THUMB_COVER_XLARGE:
-    case ITDB_THUMB_COVER_MEDIUM:
-    case ITDB_THUMB_COVER_SMEDIUM:
-    case ITDB_THUMB_COVER_XSMALL:
-	thumb->filename = g_strdup_printf (":F%d_%d.ithmb", 
-					   writer->img_info->correlation_id,
-					   writer->current_file_index);
-	break;
-    }
-
-    switch (writer->db_type)
-    {
-    case DB_TYPE_PHOTO:
-	thumb->horizontal_padding = (writer->img_info->width - width)/2;
-	thumb->vertical_padding = (writer->img_info->height - height)/2;
-	break;
-    case DB_TYPE_ITUNES:
-	/* IPOD_COVER_LARGE will be centered automatically using
-	   the info in mhni->width/height. Free space around
-	   IPOD_COVER_SMALL will be used to display track
-	   information -> no padding (tested on iPod
-	   Nano). mhni->hor_/ver_padding is working */
-	thumb->horizontal_padding = 0;
-	thumb->vertical_padding = 0;
-	break;
-    default:
-	g_return_val_if_reached (FALSE);
-    }
+    set_thumb_padding (writer, thumb, width, height);
 
     /* The thumbnail width/height is inclusive padding */
     thumb->width = thumb->horizontal_padding + width;
     thumb->height = thumb->vertical_padding + height;
     thumb->offset = writer->cur_offset;
 
-    switch (writer->img_info->format)
-    {
-    case THUMB_FORMAT_RGB565_LE_90:
-    case THUMB_FORMAT_RGB565_BE_90:
-	/* FIXME: actually the previous two might require
-	   different treatment (used on iPod Photo for the full
-	   screen photo thumbnail) */
-    case THUMB_FORMAT_RGB565_LE:
-    case THUMB_FORMAT_RGB565_BE:
-	pixels = pack_RGB_565 (pixbuf, writer->img_info,
-			       thumb->horizontal_padding,
-			       thumb->vertical_padding,
-			       &thumb->size);
-	break;
-    case THUMB_FORMAT_RGB555_LE_90:
-    case THUMB_FORMAT_RGB555_BE_90:
-	/* FIXME: actually the previous two might require
-	   different treatment (used on iPod Photo for the full
-	   screen photo thumbnail) */
-    case THUMB_FORMAT_RGB555_LE:
-    case THUMB_FORMAT_RGB555_BE:
-	pixels = pack_RGB_555 (pixbuf, writer->img_info,
-			       thumb->horizontal_padding,
-			       thumb->vertical_padding,
-			       &thumb->size);
-	break;
-    case THUMB_FORMAT_RGB888_LE_90:
-    case THUMB_FORMAT_RGB888_BE_90:
-	/* FIXME: actually the previous two might require
-	   different treatment (used on iPod Photo for the full
-	   screen photo thumbnail) */
-    case THUMB_FORMAT_RGB888_LE:
-    case THUMB_FORMAT_RGB888_BE:
-	pixels = pack_RGB_888 (pixbuf, writer->img_info,
-			       thumb->horizontal_padding,
-			       thumb->vertical_padding,
-			       &thumb->size);
-	break;
-    case THUMB_FORMAT_REC_RGB555_LE_90:
-    case THUMB_FORMAT_REC_RGB555_BE_90:
-	/* FIXME: actually the previous two might require
-	   different treatment (used on iPod Photo for the full
-	   screen photo thumbnail) */
-    case THUMB_FORMAT_REC_RGB555_LE:
-    case THUMB_FORMAT_REC_RGB555_BE:
-	pixels = pack_rec_RGB_555 (pixbuf, writer->img_info,
-				   thumb->horizontal_padding,
-				   thumb->vertical_padding,
-				   &thumb->size);
-	break;
-    case THUMB_FORMAT_EXPERIMENTAL_LE:
-    case THUMB_FORMAT_EXPERIMENTAL_BE:
-	break;
-    case THUMB_FORMAT_UYVY_BE:
-    case THUMB_FORMAT_UYVY_LE:
-	pixels = pack_UYVY (pixbuf, writer->img_info,
-			    thumb->horizontal_padding,
-			    thumb->vertical_padding,
-	                    &thumb->size);
-	break;
-    case THUMB_FORMAT_I420_BE:
-    case THUMB_FORMAT_I420_LE:
-	pixels = pack_I420 (pixbuf, writer->img_info,
-			    thumb->horizontal_padding,
-			    thumb->vertical_padding,
-	                    &thumb->size);
-	break;
-    }
-
-
+    pixels = pack_thumbnail (writer, thumb, pixbuf);
     g_object_unref (G_OBJECT (pixbuf));
 
-    if (pixels == NULL)
-    {
-	return FALSE;
-    }
-
-    if (fwrite (pixels, thumb->size, 1, writer->f) != 1) {
-	g_free (pixels);
-	g_print ("Error writing to file: %s\n", strerror (errno));
-	return FALSE;
-    }
+    thumb->filename = get_ithmb_filename (writer, thumb);
+    result = write_pixels (writer, thumb, pixels);
     g_free (pixels);
-    writer->cur_offset += thumb->size;
 
-    if (writer->img_info->padding != 0)
-    {
-	gint padding = writer->img_info->padding - thumb->size;
-	g_return_val_if_fail (padding >= 0, TRUE);
-	if (padding != 0)
-	{
-            /* FIXME: check if a simple fseek() will do the same */
-	    gchar *pad_bytes = g_malloc0 (padding);
-	    if (fwrite (pad_bytes, padding, 1, writer->f) != 1) {
-		g_free (pad_bytes);
-		g_print ("Error writing to file: %s\n", strerror (errno));
-		return FALSE;
-	    }
-	    g_free (pad_bytes);
-	    writer->cur_offset += padding;
-	}
-    }
-    return TRUE;
+    return result;
 }
 
 static gboolean

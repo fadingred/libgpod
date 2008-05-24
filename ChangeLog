@@ -1,5 +1,11 @@
 2008-05-24  Christophe Fergeau <teuf at gnome.org>
 
+	* src/ithumb-writer.c: factor some code out of
+	ithumb_writer_write_thumbnail into separate functions to make the
+	code more readable
+
+2008-05-24  Christophe Fergeau <teuf at gnome.org>
+
 	Patch from Jacob Hoffman-Andrews <jsha at newview.org>
 	
 	* src/itdb_device.h: add 'crop' field to Itdb_ArtworkFormat
