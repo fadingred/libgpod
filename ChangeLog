@@ -1,3 +1,9 @@
+2008-05-25  Christophe Fergeau <teuf at gnome.org>
+
+	Patch from Ian Stewart <ian.stewart at ozemail.com.au>
+
+	* src/itdb_itunesdb.c: add jump letter support (mhod53)
+
 2008-05-24  Christophe Fergeau <teuf at gnome.org>
 
 	* src/ithumb-writer.c: factor some code out of
