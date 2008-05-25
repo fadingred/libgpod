@@ -1,5 +1,13 @@
 2008-05-25  Christophe Fergeau <teuf at gnome.org>
 
+	* configure.ac: rework libxml detection
+	* src/Makefile.am: remove LIBXML_CFLAGS/LIBXML_LIBS since they are
+	no longer used
+	* src/itdb_plist.c: add stub functions when libxml isn't available
+	* src/itdb_sysinfo_extended_parser.c: include config.h
+
+2008-05-25  Christophe Fergeau <teuf at gnome.org>
+
 	* src/db-artwork-debug.c:
 	* src/db-artwork-writer.c:
 	* src/db-image-parser.c:

@@ -40,8 +40,8 @@ noinst_HEADERS = 		\
 	pixmaps.h		\
 	sha1.h
 
-INCLUDES=$(LIBGPOD_CFLAGS) $(LIBXML_CFLAGS)
-LIBS=$(LIBGPOD_LIBS) $(LIBXML_LIBS)
+INCLUDES=$(LIBGPOD_CFLAGS)
+LIBS=$(LIBGPOD_LIBS)
 
 uninstall-hook:
 	-rmdir --ignore-fail-on-non-empty $(DESTDIR)$(libgpodincludedir)

@@ -49,6 +49,9 @@
  * normal to get a few unhandled fields, I left out on purpose a few <dict> 
  * because I was too lazy to parse them ;)
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <glib-object.h>
 #include "itdb_sysinfo_extended_parser.h"
 #include "itdb_plist.h"

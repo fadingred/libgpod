@@ -45,6 +45,12 @@
  *      - <array> => G_TYPE_HASH_TABLE (GHashTable *)
  *      - <dict> => G_TYPE_HASH_TABLE (GHashTable *)
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_LIBXML
+
 #include <stdio.h>
 #include <string.h>
 #include <libxml/parser.h>
@@ -324,3 +330,18 @@ itdb_plist_parse_from_memory (const char *data, gsize len)
 
     return parsed_doc;
 }
+#else 
+#include <glib-object.h>
+#include "itdb_plist.h"
+
+GValue *itdb_plist_parse_from_file (G_GNUC_UNUSED const char *filename)
+{
+    return NULL;
+}
+
+GValue *itdb_plist_parse_from_memory (G_GNUC_UNUSED const char *data, 
+                                      G_GNUC_UNUSED gsize len)
+{
+    return NULL;
+}
+#endif
