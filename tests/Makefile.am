@@ -37,9 +37,12 @@ test_checksum_SOURCES = test-checksum.c
 
 test_firewire_id_SOURCES = test-fw-id.c
 
+test_sysinfo_extended_parsing_SOURCES = test-sysinfo-extended-parsing.c
+
 get_timezone_SOURCES = get-timezone.c
 
 noinst_PROGRAMS=test-itdb test-ls test-checksum test-firewire-id \
+		test-sysinfo-extended-parsing			 \
 	        $(TESTTHUMBS) $(TESTTAGLIB) $(TESTMISC)
 
 INCLUDES=$(LIBGPOD_CFLAGS) -I$(top_srcdir)/src -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\"

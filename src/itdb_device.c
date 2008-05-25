@@ -387,6 +387,8 @@ void itdb_device_free (Itdb_Device *device)
 	g_free (device->mountpoint);
 	if (device->sysinfo)
 	    g_hash_table_destroy (device->sysinfo);
+        if (device->sysinfo_extended)
+            itdb_sysinfo_properties_free (device->sysinfo_extended);
 	g_free (device);
     }
 }
@@ -428,6 +430,32 @@ G_GNUC_INTERNAL guint64 device_time_time_t_to_mac (Itdb_Device *device, time_t t
     else return 0;
 }
 
+static void itdb_device_read_sysinfo_extended (Itdb_Device *device)
+{
+    const gchar *p_sysinfo_ex[] = {"SysInfoExtended", NULL};
+    gchar *dev_path, *sysinfo_ex_path;
+
+    if (device->sysinfo_extended != NULL) {
+        itdb_sysinfo_properties_free (device->sysinfo_extended);
+        device->sysinfo_extended = NULL;
+    }
+
+    dev_path = itdb_get_device_dir (device->mountpoint);
+    if (!dev_path) return;
+
+    sysinfo_ex_path = itdb_resolve_path (dev_path, p_sysinfo_ex);
+    g_free (dev_path);
+    if (!sysinfo_ex_path) return;
+    device->sysinfo_extended = itdb_sysinfo_extended_parse (sysinfo_ex_path);
+    g_free (sysinfo_ex_path);
+
+    if ((device->sysinfo != NULL) && (device->sysinfo_extended != NULL)) {
+        const char *fwid;
+        fwid = itdb_sysinfo_properties_get_firewire_id (device->sysinfo_extended);
+        g_hash_table_insert (device->sysinfo, g_strdup ("FirewireGuid"),
+                             g_strdup (fwid));
+    }
+}
 
 /** 
  * itdb_device_read_sysinfo:
@@ -490,7 +518,7 @@ gboolean itdb_device_read_sysinfo (Itdb_Device *device)
     }
     g_free (dev_path);
 
-    itdb_device_read_sysinfo_xml (device, NULL);
+    itdb_device_read_sysinfo_extended (device);
 
     /* indicate that sysinfo is identical to what is on the iPod */
     device->sysinfo_changed = FALSE;

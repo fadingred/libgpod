@@ -128,6 +128,17 @@ AC_SUBST(TAGLIB_CFLAGS)
 AC_SUBST(TAGLIB_LIBS)
 AM_CONDITIONAL(HAVE_TAGLIB, test x"$have_taglib" = xyes)
 
+dnl **************************************************
+dnl * libxml is used to parse the plist files (aka SysInfoExtended)
+dnl **************************************************
+PKG_CHECK_MODULES(LIBXML, libxml-2.0, have_libxml=yes, have_libxml=no)
+if test x"$have_libxml" = xyes; then
+   AH_TEMPLATE([HAVE_LIBXML], [Whether libxml is installed, it's only used in a test program])
+   AC_DEFINE_UNQUOTED(HAVE_LIBXML, 1)
+fi
+AC_SUBST(LIBXML_CFLAGS)
+AC_SUBST(LIBXML_LIBS)
+AM_CONDITIONAL(HAVE_LIBXML, test x"$have_libxml" = xyes)
 
 dnl **************************************************
 dnl * GDKPIXBUF is optional

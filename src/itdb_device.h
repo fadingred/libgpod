@@ -40,6 +40,7 @@
 #endif
 
 #include "itdb.h"
+#include "itdb_sysinfo_extended_parser.h"
 
 #include <glib.h>
 
@@ -85,6 +86,8 @@ struct _Itdb_Device
 			   */
     GHashTable *sysinfo;  /* hash with value/key pairs of all entries
 			   * in Device/SysInfo */
+    SysInfoIpodProperties *sysinfo_extended; /* parsed content of 
+                                              * SysInfoExtended, can be NULL */
     gboolean sysinfo_changed; /* Has the sysinfo hash been changed by
 				 the user (itdb_set_sysinfo) */
     gint timezone_shift;  /* difference in seconds between the current
@@ -109,8 +112,6 @@ struct _Itdb_ArtworkFormat
 G_GNUC_INTERNAL const Itdb_ArtworkFormat *itdb_device_get_artwork_formats (Itdb_Device *device);
 G_GNUC_INTERNAL gint itdb_device_musicdirs_number (Itdb_Device *device);
 G_GNUC_INTERNAL void itdb_device_autodetect_endianess (Itdb_Device *device);
-G_GNUC_INTERNAL gboolean itdb_device_read_sysinfo_xml (Itdb_Device *device, 
-						       GError **error);
 G_GNUC_INTERNAL guint64 itdb_device_get_firewire_id (Itdb_Device *device);
 
 G_END_DECLS

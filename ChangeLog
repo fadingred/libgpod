@@ -1,5 +1,25 @@
 2008-05-25  Christophe Fergeau <teuf at gnome.org>
 
+	* configure.ac: check libxml presence
+	* src/Makefile.am: add new files, remove obsolete ones
+	* src/itdb_plist.h: 
+	* src/itdb_plist.c: plist parser, this parses a plist XML file to a
+	GHashTable of GValue *. This parser should be generic, ie it
+	doesn't know it's parsing SysInfoExtended, it only cares about it
+	being a plist file
+	* src/itdb_sysinfo_extended_parser.h:
+	* src/itdb_sysinfo_extended_parser.c: convert the parsed plist data
+	to data structures usable by libgpod
+	* src/itdb_device.h:
+	* src/itdb_device.c: parses SysInfoExtended in addition to SysInfo
+	* src/itdb_sysinfo.c: this hacky parser is obsoleted by the new
+	(much more complete) SysInfoExtended parser, so it's removed
+	* tests/Makefile.am:
+	* tests/test-sysinfo-extended-parsing.c: small test program for the
+	new parser
+
+2008-05-25  Christophe Fergeau <teuf at gnome.org>
+
 	Patch from Ian Stewart <ian.stewart at ozemail.com.au>
 
 	* src/itdb_itunesdb.c: add jump letter support (mhod53)

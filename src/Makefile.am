@@ -12,8 +12,9 @@ libgpod_la_SOURCES = 		\
 	itdb_itunesdb.c 	\
 	itdb_photoalbum.c 	\
 	itdb_playlist.c  	\
+	itdb_plist.c		\
 	itdb_sha1.c 		\
-	itdb_sysinfo.c 		\
+	itdb_sysinfo_extended_parser.c \
 	itdb_track.c     	\
 	ithumb-writer.c 	\
 	pixmaps.c 		\
@@ -32,13 +33,15 @@ noinst_HEADERS = 		\
 	db-parse-context.h  	\
 	itdb_device.h  		\
 	itdb_endianness.h 	\
+	itdb_plist.h		\
 	itdb_private.h   	\
 	itdb_sha1.h 		\
+	itdb_sysinfo_extended_parser.h \
 	pixmaps.h		\
 	sha1.h
 
-INCLUDES=$(LIBGPOD_CFLAGS)
-LIBS=$(LIBGPOD_LIBS)
+INCLUDES=$(LIBGPOD_CFLAGS) $(LIBXML_CFLAGS)
+LIBS=$(LIBGPOD_LIBS) $(LIBXML_LIBS)
 
 uninstall-hook:
 	-rmdir --ignore-fail-on-non-empty $(DESTDIR)$(libgpodincludedir)
