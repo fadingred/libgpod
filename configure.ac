@@ -138,17 +138,10 @@ AC_ARG_ENABLE(libxml, [AC_HELP_STRING([--disable-libxml],[SysInfoExtended won't 
 esac])
 AH_TEMPLATE([HAVE_LIBXML], [Whether libxml is installed, it's used to parse SysInfoExtended])
 if test x$enable_libxml != xno; then
-   PKG_CHECK_MODULES(LIBXML, libxml-2.0, have_libxml=yes, have_libxml=no)
-   if test x"$enable_libxml" = xyes -a x"$have_libxml" = xno; then
-      AC_MSG_ERROR([libxml support explicitly requested but libxml couldn't be found])
-   fi
-fi
-if test x"$have_libxml" = xyes; then
+   PKG_CHECK_MODULES(LIBXML, libxml-2.0)
    AC_DEFINE_UNQUOTED(HAVE_LIBXML, 1)
    LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $LIBXML_CFLAGS"
    LIBGPOD_LIBS="$LIBGPOD_LIBS $LIBXML_LIBS"
-else
-   have_libxml=no
 fi
 
 dnl **************************************************
@@ -306,7 +299,6 @@ Configuration for $PACKAGE $VERSION :
  Compiler .............: $CC $CFLAGS $LIBGPOD_CFLAGS
  Linker ...............: $CC $LDFLAGS $LIBS $LIBGPOD_LIBS
  Artwork support ......: $have_gdkpixbuf
- libxml support .......: $have_libxml
  Python bindings ......: $with_python
  PyGObject support ....: $have_pygobject
 
@@ -314,7 +306,7 @@ Configuration for $PACKAGE $VERSION :
  and then 'make install' for installation.
 "
 
-if test x"$have_libxml" = xno; then
+if test x"$enable_libxml" = xno; then
         echo "
 **WARNING** libxml support is disabled, libgpod won't be able to 
 parse SysInfoExtended. This means it can't take advantage of the 

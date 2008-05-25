@@ -1,5 +1,10 @@
 2008-05-25  Christophe Fergeau <teuf at gnome.org>
 
+	* configure.ac: libxml presence is mandatory unless
+	--disable-libxml is passed to configure
+
+2008-05-25  Christophe Fergeau <teuf at gnome.org>
+
 	* src/itdb_device.c: don't insert NULL firewire IDs in the SysInfo
 	hash table
 
