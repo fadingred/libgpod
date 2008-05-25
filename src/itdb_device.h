@@ -101,7 +101,7 @@ struct _Itdb_ArtworkFormat
 	ItdbThumbType type;
 	gint16 width;
 	gint16 height;
-	gint16 correlation_id;
+	gint16 format_id;
         ItdbThumbFormat format;
         gint32 padding;
         /* If true, crop the artwork to completely fill the target size,

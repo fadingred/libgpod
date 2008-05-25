@@ -486,7 +486,7 @@ pack_UYVY (GdkPixbuf *orig_pixbuf, const Itdb_ArtworkFormat *img_info,
 
 
 static char *
-ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gint index, DbType db_type ) 
+ipod_image_get_ithmb_filename (const char *mount_point, gint format_id, gint index, DbType db_type ) 
 {
 	gchar *artwork_dir = NULL, *filename, *buf;
 
@@ -541,7 +541,7 @@ ipod_image_get_ithmb_filename (const char *mount_point, gint correlation_id, gin
 	}
 	}
 
-	buf = g_strdup_printf ("F%d_%d.ithmb", correlation_id, index);
+	buf = g_strdup_printf ("F%d_%d.ithmb", format_id, index);
 
 	filename = itdb_get_path (artwork_dir, buf);
 
@@ -769,7 +769,7 @@ static char *get_ithmb_filename (iThumbWriter *writer, Itdb_Thumb *thumb)
     case ITDB_THUMB_PHOTO_FULL_SCREEN:
     case ITDB_THUMB_PHOTO_TV_SCREEN:
 	return g_strdup_printf (":Thumbs:F%d_%d.ithmb", 
-	            		writer->img_info->correlation_id,
+	            		writer->img_info->format_id,
                                 writer->current_file_index);
 	break;
     case ITDB_THUMB_COVER_LARGE:
@@ -779,7 +779,7 @@ static char *get_ithmb_filename (iThumbWriter *writer, Itdb_Thumb *thumb)
     case ITDB_THUMB_COVER_SMEDIUM:
     case ITDB_THUMB_COVER_XSMALL:
 	return g_strdup_printf (":F%d_%d.ithmb", 
-	    		        writer->img_info->correlation_id,
+	    		        writer->img_info->format_id,
                                 writer->current_file_index);
 	break;
     }
@@ -942,7 +942,7 @@ ithumb_writer_update (iThumbWriter *writer)
 
 	writer->filename =
 	    ipod_image_get_ithmb_filename (writer->mountpoint, 
-					   writer->img_info->correlation_id,
+					   writer->img_info->format_id,
 					   writer->current_file_index, 
 					   writer->db_type);
 	if (writer->filename == NULL)
@@ -1319,7 +1319,7 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
     for (i=0; i<50; ++i)
     {
 	filename = ipod_image_get_ithmb_filename (mountpoint,
-						  info->correlation_id,
+						  info->format_id,
 						  i,
 						  db->db_type);
 	if (g_file_test (filename, G_FILE_TEST_EXISTS))

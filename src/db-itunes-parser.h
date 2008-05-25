@@ -156,7 +156,7 @@ struct _MhipHeader {
 	gint32 header_len;
 	gint32 total_len;
 	gint32 unknown1;
-	gint32 correlation_id;
+	gint32 format_id;
 	gint32 unknown2;
 	gint32 track_id;
 	gint32 timestamp;
@@ -562,7 +562,7 @@ struct _MhniHeader {
 	gint32 header_len;
 	gint32 total_len;
 	gint32 num_children;
-	gint32 correlation_id;
+	gint32 format_id;
 	gint32 ithmb_offset;
 	gint32 image_size;
 	gint16 vertical_padding;
@@ -621,7 +621,7 @@ struct _MhifHeader {
 	gint32 header_len;
 	gint32 total_len;
 	gint32 unknown1;
-	gint32 correlation_id;
+	gint32 format_id;
 	gint32 image_size;
 	unsigned char padding[];
 };

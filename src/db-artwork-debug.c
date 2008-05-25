@@ -35,9 +35,9 @@ dump_mhif (MhifHeader *mhif)
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhif->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhif->total_len));
 	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhif->unknown1));
-	g_print ("\tCorrelation ID: %d (=> F%d_1.ithmb)\n", 
-		 GINT_FROM_LE (mhif->correlation_id),
-		 GINT_FROM_LE (mhif->correlation_id));
+	g_print ("\tFormat ID: %d (=> F%d_1.ithmb)\n", 
+		 GINT_FROM_LE (mhif->format_id),
+		 GINT_FROM_LE (mhif->format_id));
 	g_print ("\tImage size: %d bytes\n", GINT_FROM_LE (mhif->image_size));
 }
 
@@ -100,9 +100,9 @@ dump_mhni (MhniHeader *mhni)
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhni->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhni->total_len));
 	g_print ("\tNumber of children: %08x\n", GINT_FROM_LE (mhni->num_children));
-	g_print ("\tCorrelation ID: %d (=> F%d_1.ithmb)\n", 
-		 GINT_FROM_LE (mhni->correlation_id),
-		 GINT_FROM_LE (mhni->correlation_id));
+	g_print ("\tFormat ID: %d (=> F%d_1.ithmb)\n", 
+		 GINT_FROM_LE (mhni->format_id),
+		 GINT_FROM_LE (mhni->format_id));
 	g_print ("\tithmb offset: %u bytes\n", GINT_FROM_LE (mhni->ithmb_offset));
 	g_print ("\tImage size: %u bytes\n", GINT_FROM_LE (mhni->image_size));
 	g_print ("\tVertical padding: %d\n", GINT16_FROM_LE (mhni->vertical_padding));

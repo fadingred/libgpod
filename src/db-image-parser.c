@@ -36,7 +36,7 @@
 #include <glib/gi18n-lib.h>
 
 static int
-image_type_from_corr_id (Itdb_Device *device, gint16 corr_id)
+image_type_from_format_id (Itdb_Device *device, gint16 format_id)
 {
 	const Itdb_ArtworkFormat *formats;
 
@@ -51,7 +51,7 @@ image_type_from_corr_id (Itdb_Device *device, gint16 corr_id)
 	}
 	
 	while (formats->type != -1) {
-		if (formats->correlation_id == corr_id) {
+		if (formats->format_id == format_id) {
 			return formats->type;
 		}
 		formats++;
@@ -91,7 +91,7 @@ G_GNUC_INTERNAL Itdb_Thumb *
 ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_DB *db)
 {
 	Itdb_Thumb *img;
-	gint16 corr_id;
+	gint16 format_id;
 	Itdb_Device *device = NULL;
 
 	img = g_new0 (Itdb_Thumb, 1);
@@ -110,19 +110,19 @@ ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_DB *db)
 	device = db_get_device (db);
 	g_return_val_if_fail (device, NULL);
 
-	corr_id = get_gint32_db (db, mhni->correlation_id);
-	img->type = image_type_from_corr_id (device, corr_id);
+	format_id = get_gint32_db (db, mhni->format_id);
+	img->type = image_type_from_format_id (device, format_id);
 
 #if DEBUG_ARTWORK
-	printf ("corr_id: %d, of: %6d sz: %6d, x: %3d, y: %3d, xpad: %3d, ypad: %3d\n",
-		corr_id, img->offset, img->size, img->width, img->height, img->horizontal_padding, img->vertical_padding);
+	printf ("format_id: %d, of: %6d sz: %6d, x: %3d, y: %3d, xpad: %3d, ypad: %3d\n",
+		format_id, img->offset, img->size, img->width, img->height, img->horizontal_padding, img->vertical_padding);
 #endif
 
 	if (img->type == -1)
 	{
 	    g_warning (_("Unexpected image type in mhni: size: %ux%u (%d), offset: %d\n"), 
 		       img->width, img->height, 
-		       corr_id, img->offset);
+		       format_id, img->offset);
 	    g_free (img);
 	    return NULL;
 	}

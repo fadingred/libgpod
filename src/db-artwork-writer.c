@@ -357,7 +357,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 }
 
 static int
-write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
+write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int format_id, iPodBuffer *buffer)
 {
 	MhniHeader *mhni;
 	unsigned int total_bytes;
@@ -377,16 +377,11 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 					   buffer->byte_order);
 	mhni->total_len =      get_gint32 (total_bytes,
 					   buffer->byte_order);
-	mhni->correlation_id = get_gint32 (correlation_id,
-					   buffer->byte_order);
-	mhni->image_width =    get_gint16 (thumb->width,
-					   buffer->byte_order);
-	mhni->image_height =   get_gint16 (thumb->height,
-					   buffer->byte_order);
-	mhni->image_size =     get_gint32 (thumb->size,
-					   buffer->byte_order);
-	mhni->ithmb_offset =   get_gint32 (thumb->offset,
-					   buffer->byte_order);
+	mhni->format_id = get_gint32 (format_id, buffer->byte_order);
+	mhni->image_width =    get_gint16 (thumb->width, buffer->byte_order);
+	mhni->image_height =   get_gint16 (thumb->height, buffer->byte_order);
+	mhni->image_size =     get_gint32 (thumb->size, buffer->byte_order);
+	mhni->ithmb_offset =   get_gint32 (thumb->offset, buffer->byte_order);
 	mhni->vertical_padding = get_gint16 (thumb->vertical_padding,
 					     buffer->byte_order);
 	mhni->horizontal_padding = get_gint16 (thumb->horizontal_padding,
@@ -415,7 +410,7 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 }
 
 static int
-write_mhod (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buffer)
+write_mhod (Itdb_DB *db, Itdb_Thumb *thumb, int format_id, iPodBuffer *buffer)
 {
 	ArtworkDB_MhodHeader *mhod;
 	unsigned int total_bytes;
@@ -439,7 +434,7 @@ write_mhod (Itdb_DB *db, Itdb_Thumb *thumb, int correlation_id, iPodBuffer *buff
 	if (sub_buffer == NULL) {
 		return -1;
 	}
-	bytes_written = write_mhni (db, thumb, correlation_id, sub_buffer);
+	bytes_written = write_mhni (db, thumb, format_id, sub_buffer);
 	ipod_buffer_destroy (sub_buffer);
 	if (bytes_written == -1) {
 		return -1;
@@ -519,7 +514,7 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 		if (sub_buffer == NULL) {
 			return -1;
 		}
-		bytes_written = write_mhod (db, thumb, img_info->correlation_id,
+		bytes_written = write_mhod (db, thumb, img_info->format_id,
 					    sub_buffer);
 		ipod_buffer_destroy (sub_buffer);
 		if (bytes_written == -1) {
@@ -737,8 +732,8 @@ write_mhif (Itdb_DB *db, iPodBuffer *buffer,
 	}
 	mhif->total_len = mhif->header_len;
 
-	mhif->correlation_id = get_gint32 (img_info->correlation_id,
-					   buffer->byte_order);
+	mhif->format_id = get_gint32 (img_info->format_id,
+		               	      buffer->byte_order);
 	mhif->image_size = get_gint32 (img_info->height * img_info->width * 2,
 				       buffer->byte_order);
 

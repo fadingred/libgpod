@@ -1,5 +1,15 @@
 2008-05-25  Christophe Fergeau <teuf at gnome.org>
 
+	* src/db-artwork-debug.c:
+	* src/db-artwork-writer.c:
+	* src/db-image-parser.c:
+	* src/db-itunes-parser.h:
+	* src/itdb_device.h:
+	* src/ithumb-writer.c: rename correlation_id to format_id (this is
+	how that value is called in SysInfoExtended)
+
+2008-05-25  Christophe Fergeau <teuf at gnome.org>
+
 	* configure.ac: check libxml presence
 	* src/Makefile.am: add new files, remove obsolete ones
 	* src/itdb_plist.h: 
