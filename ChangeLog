@@ -1,5 +1,10 @@
 2008-05-25  Christophe Fergeau <teuf at gnome.org>
 
+	* src/itdb_device.c: don't insert NULL firewire IDs in the SysInfo
+	hash table
+
+2008-05-25  Christophe Fergeau <teuf at gnome.org>
+
 	* configure.ac: rework libxml detection
 	* src/Makefile.am: remove LIBXML_CFLAGS/LIBXML_LIBS since they are
 	no longer used

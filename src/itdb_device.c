@@ -452,8 +452,10 @@ static void itdb_device_read_sysinfo_extended (Itdb_Device *device)
     if ((device->sysinfo != NULL) && (device->sysinfo_extended != NULL)) {
         const char *fwid;
         fwid = itdb_sysinfo_properties_get_firewire_id (device->sysinfo_extended);
-        g_hash_table_insert (device->sysinfo, g_strdup ("FirewireGuid"),
-                             g_strdup (fwid));
+        if (fwid != NULL) {
+            g_hash_table_insert (device->sysinfo, g_strdup ("FirewireGuid"),
+                                 g_strdup (fwid));
+        }
     }
 }
 
