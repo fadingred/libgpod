@@ -1,5 +1,10 @@
 2008-05-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+        * src/db-artwork-parser.c (parse_mhii): removed artwork_fallback
+	  variable upon Christophe's suggestion and streamlined code.
+
+2008-05-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* src/itdb_track.c (itdb_track_set_thumbnails_internal): set
 	  artwork ID to 0 after removing thumbnails.
 

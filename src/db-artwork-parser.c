@@ -251,9 +251,7 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	off_t cur_offset;
 	Itdb_Artwork *artwork;
 	Itdb_PhotoDB *photodb;
-	Itdb_iTunesDB *itunesdb;
 	guint64 mactime;
-	Itdb_Artwork *artwork_fallback = NULL;
 	Itdb_Device *device = db_get_device (ctx->db);
 
 	mhii = db_parse_context_get_m_header (ctx, MhiiHeader, "mhii");
@@ -264,24 +262,7 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	db_parse_context_set_total_len (ctx, get_gint32 (mhii->total_len, ctx->byte_order));
 	dump_mhii (mhii);
 
-	switch (ctx->db->db_type)
-	{
-	case DB_TYPE_PHOTO:
-	    photodb = db_get_photodb (ctx->db);
-	    g_return_val_if_fail (photodb, -1);
-	    artwork = itdb_artwork_new ();
-	    photodb->photos = g_list_append (photodb->photos, artwork);
-	    break;
-	case DB_TYPE_ITUNES:
-	    itunesdb = db_get_itunesdb (ctx->db);
-	    g_return_val_if_fail (itunesdb, -1);
-	    artwork_fallback = itdb_artwork_new ();
-	    artwork = artwork_fallback;
-	    artwork->dbid = get_gint64 (mhii->song_id, ctx->byte_order);
-	    break;
-	default:
-	    g_return_val_if_reached (-1);
-	}
+	artwork = itdb_artwork_new ();
 
 	artwork->id = get_gint32 (mhii->image_id, ctx->byte_order);
 	artwork->unk028 = get_gint32 (mhii->unknown4, ctx->byte_order);
@@ -292,6 +273,7 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	mactime = get_gint32 (mhii->digitized_date, ctx->byte_order);
 	artwork->digitized_date = device_time_mac_to_time_t (device, mactime);
 	artwork->artwork_size = get_gint32 (mhii->orig_img_size, ctx->byte_order);
+	artwork->dbid = get_gint64 (mhii->song_id, ctx->byte_order);
 
 	cur_offset = ctx->header_len;
 	mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
@@ -306,14 +288,19 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	}
         g_free (mhod_ctx);
 
-	/* make a copy of all artwork in ctx->artwork */
-	if (ctx->artwork)
+	switch (ctx->db->db_type)
 	{
-	    if (artwork_fallback == NULL)
-	    {
-		artwork_fallback = itdb_artwork_duplicate (artwork);
-	    }
-	    *ctx->artwork = g_list_prepend (*ctx->artwork, artwork_fallback);
+	case DB_TYPE_PHOTO:
+	    photodb = db_get_photodb (ctx->db);
+	    g_return_val_if_fail (photodb, -1);
+	    photodb->photos = g_list_append (photodb->photos, artwork);
+	    break;
+	case DB_TYPE_ITUNES:
+	    g_return_val_if_fail (ctx->artwork!=NULL, -1);
+	    *ctx->artwork = g_list_prepend (*ctx->artwork, artwork);
+	    break;
+	default:
+	    g_return_val_if_reached (-1);
 	}
 
 	return 0;
