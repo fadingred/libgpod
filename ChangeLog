@@ -1,3 +1,39 @@
+2008-05-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_track.c (itdb_track_set_thumbnails_internal): set
+	  artwork ID to 0 after removing thumbnails.
+
+	* src/db-artwork-parser.c (parse_mhii): move out dbid association
+	  to a separate function.
+
+	  (mhfd_associate_itunesdb_artwork): handle dbid and mhii_link
+	  association of artwork to track
+
+	  (parse_mhfd): loop over the number of mhsd hunks instead of
+	  hardcoding it. Call mhfd_associate_itunesdb_artwork().
+
+	* src/itdb_itunesdb.c (get_mhit): read the mhii_link field.
+
+	* src/db-artwork-writer.c (write_mhli): handle unset artwork
+	  correctly.
+
+	  (itdb_track_filter_thumbnails): remove thumbnails correctly.
+
+	* src/db-parse-context.c (db_parse_context_get_sub_context): copy
+	  newly introduced artwork field.
+
+	* tests/test-covers.c: print mhii_link.
+
+	* src/itdb.h: (Itdb_Track) added mhii_link. (Itdb_Artwork): added
+	  dbid.
+
+	* src/itdb.h, src/db-artwork-parser.c, src/db-artwork-writer.c,
+	  src/itdb_device.c, src/ithumb-writer.c, src/itdb_artwork.c:
+	  added ITDB_THUMB_CHAPTER_SMALL/LARGE.
+
+	* src/itdb_device.c: ipod_classic_1_artwork_info: correct
+	  ITDB_THUMB_COVER_SMALL/LARGE entries.
+	
 2008-05-25  Christophe Fergeau <teuf at gnome.org>
 
 	* configure.ac: libxml presence is mandatory unless

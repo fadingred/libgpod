@@ -490,6 +490,8 @@ typedef enum {
     ITDB_THUMB_COVER_MEDIUM,      /* iPhone: cover view */
     ITDB_THUMB_COVER_SMEDIUM,     /* iPhone: ??         */
     ITDB_THUMB_COVER_XSMALL,      /* iPhone: ??         */
+    ITDB_THUMB_CHAPTER_SMALL,     /* classic -- not supported yet */
+    ITDB_THUMB_CHAPTER_LARGE,     /* classic -- not supported yet */
 } ItdbThumbType;
 
 
@@ -539,6 +541,8 @@ struct _Itdb_Artwork {
     GList *thumbnails;     /* list of Itdb_Thumbs */
     guint32 id;            /* Artwork id used by photoalbums, starts at
 			    * 0x40... libgpod will set this on sync. */
+    guint64 dbid;          /* dbid of associated track. used
+			      internally by libgpod */
     gint32  unk028;
     guint32 rating;        /* Rating from iPhoto * 20 (PhotoDB only) */
     gint32  unk036;
@@ -994,6 +998,9 @@ struct _Itdb_Track
 
   /* This is for Cover Art support */
   struct _Itdb_Artwork *artwork;
+
+    /* 200805 */
+  guint32 mhii_link;
 
   /* reserved for future use */
   gint32 reserved_int1;

@@ -26,6 +26,7 @@ These functions are for reading and setting information about the iPod.
 @musicdirs: 
 @byte_order: 
 @sysinfo: 
+@sysinfo_extended: 
 @sysinfo_changed: 
 @timezone_shift: 
 
@@ -247,7 +248,8 @@ These functions are for reading and setting information about the iPod.
 @type: 
 @width: 
 @height: 
-@correlation_id: 
+@format_id: 
 @format: 
 @padding: 
+@crop: 
 

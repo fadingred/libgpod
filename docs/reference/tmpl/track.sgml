@@ -129,6 +129,7 @@ information about an iPod track.
 @chapterdata_raw: 
 @chapterdata_raw_length: 
 @artwork: 
+@mhii_link: 
 @reserved_int1: 
 @reserved_int2: 
 @reserved_int3: 

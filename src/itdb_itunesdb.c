@@ -2353,6 +2353,11 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->gapless_track_flag = get16lint (cts, seek+256);
       track->gapless_album_flag = get16lint (cts, seek+258);
   }
+  /* 200805 */
+  if (header_len >= 0x184)
+  {
+      track->mhii_link = get32lint (cts, seek+352);
+  }
 
   track->transferred = TRUE;                   /* track is on iPod! */
 
@@ -3641,8 +3646,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put16lint (cts, track->gapless_album_flag);
   put32_n0 (cts, 23);
   put32lint (cts, track->id); /* Needed on fat nanos/ipod classic to get art
-			       * in the right sidepane
-			       */
+			       * in the right sidepane (mhii_link) */
   put32_n0 (cts, 8); /* padding */
 }
 

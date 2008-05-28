@@ -395,14 +395,13 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
                                                     gpointer *pixbuf,
 						    gint rotation,
 						    GError **error)
-{					     
-    /* FIXME: this looks like it would work, but the problem is that
-     * gtkpod calls this function mostly with tracks that are not yet
-     * part of an iTunesDB. This means only the SMALL and LARGE thumbs
-     * are being added.
+{
+    /* gtkpod calls this function mostly with tracks that are not yet
+     * part of an iTunesDB. This means it is not known which
+     * thumbnails are required. 
      *
-     * One solution would be to add all kinds of cover thumbs and weed
-     * out the ones not supported when the ArtworkDB is written.
+     * Our solution is to add all kinds of cover thumbs and weed out
+     * the ones not supported when the ArtworkDB is written.
      *
      * Suggestions welcome!
      */
@@ -428,6 +427,8 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
     }
 
     itdb_artwork_remove_thumbnails (track->artwork);
+    /* clear artwork id */
+    track->artwork->id = 0;
 
     for (thumbtype=thumbtypes; *thumbtype!=-1; ++thumbtype)
     {

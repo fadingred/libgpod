@@ -39,6 +39,7 @@ struct _DBParseContext {
 	off_t total_len;
 	guint byte_order;
 	Itdb_DB *db;
+        GList **artwork;
 };
 
 typedef struct _DBParseContext DBParseContext;

@@ -1,4 +1,4 @@
-/*  Time-stamp: <2007-11-04 09:46:51 jcs>
+/*  Time-stamp: <2008-05-25 23:15:17 jcs>
  *
  *  Copyright (C) 2005 Christophe Fergeau
  *
@@ -778,6 +778,8 @@ static char *get_ithmb_filename (iThumbWriter *writer, Itdb_Thumb *thumb)
     case ITDB_THUMB_COVER_MEDIUM:
     case ITDB_THUMB_COVER_SMEDIUM:
     case ITDB_THUMB_COVER_XSMALL:
+    case ITDB_THUMB_CHAPTER_LARGE:
+    case ITDB_THUMB_CHAPTER_SMALL:
 	return g_strdup_printf (":F%d_%d.ithmb", 
 	    		        writer->img_info->format_id,
                                 writer->current_file_index);
@@ -1225,7 +1227,7 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
 
    To avoid the need to read large amounts from the iPod and back, or
    have to large files exist on the iPod (reading from the original
-   thumbnail fail and writing to the new thumbnail file), the
+   thumbnail file and writing to the new thumbnail file), the
    modifications are done in place.
 
    It is assumed that all thumbnails have the same data size. If not,

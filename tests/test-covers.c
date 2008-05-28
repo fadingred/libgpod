@@ -80,10 +80,10 @@ save_thumbnails (Itdb_iTunesDB *db)
 		Itdb_Track *song;
 		
 		song = (Itdb_Track *)it->data;
-		g_print ("Track %d (%016"G_GINT64_MODIFIER"x) %s-%s-%s\n",
+		g_print ("Track %d (%016"G_GINT64_MODIFIER"x) %s-%s-%s (%08x)\n",
 			 count++, song->dbid,
 			 song->artist, song->album,
-			 song->title);
+			 song->title, song->mhii_link);
 		save_song_thumbnails (song);
 	}
 }

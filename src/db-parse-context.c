@@ -116,6 +116,7 @@ db_parse_context_get_sub_context (DBParseContext *ctx, off_t offset)
 				     ctx->total_len - offset, 
 				     ctx->byte_order);
 	sub_ctx->db = ctx->db;
+	sub_ctx->artwork = ctx->artwork;
 	return sub_ctx;
 }
 

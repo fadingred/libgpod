@@ -1006,6 +1006,10 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 		width = 88;  height = 88;  break;
 	    case ITDB_THUMB_COVER_XSMALL:
 		width = 56;  height = 56;  break;
+	    case ITDB_THUMB_CHAPTER_SMALL:
+		width = 100;  height = 100;  break;
+	    case ITDB_THUMB_CHAPTER_LARGE:
+		width = 200;  height = 200;  break;
 	    }
 	    if (width == 0)
 	    {

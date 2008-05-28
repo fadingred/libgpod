@@ -326,16 +326,16 @@ static const Itdb_ArtworkFormat ipod_touch_1_artwork_info[] = {
 
 static const Itdb_ArtworkFormat ipod_classic_1_artwork_info[] = {
     /* officially 55x55 -- verify! */
-    {ITDB_THUMB_COVER_XSMALL,      56,  56, 1061, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_COVER_SMALL,       56,  56, 1061, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_COVER_MEDIUM,     128, 128, 1055, THUMB_FORMAT_RGB565_LE},
-    {ITDB_THUMB_COVER_XLARGE,     320, 320, 1060, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_COVER_LARGE,      320, 320, 1060, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1067, THUMB_FORMAT_I420_LE},
     {ITDB_THUMB_PHOTO_FULL_SCREEN,320, 240, 1024, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_SMALL,       64,  64, 1066, THUMB_FORMAT_RGB565_LE},
 /*  These are the same as for the iPod video... -- labeled by the iPod as
     "chapter images" */
-    {ITDB_THUMB_COVER_SMALL,      100, 100, 1028, THUMB_FORMAT_RGB565_LE},
-    {ITDB_THUMB_COVER_LARGE,      200, 200, 1029, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_CHAPTER_SMALL,    100, 100, 1028, THUMB_FORMAT_RGB565_LE},
+    {ITDB_THUMB_CHAPTER_LARGE,    200, 200, 1029, THUMB_FORMAT_RGB565_LE},
     {-1,                           -1,  -1,   -1, -1}
 };
 

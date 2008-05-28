@@ -564,7 +564,7 @@ write_mhli (Itdb_DB *db, iPodBuffer *buffer )
 		iPodBuffer *sub_buffer;
 		if (buffer->db_type == DB_TYPE_ITUNES) {
 			song = (Itdb_Track*)it->data;
-			if (!song->artwork || (song->artwork->id == 0)) {
+			if (!song->artwork->thumbnails || (song->artwork->id == 0)) {
 				it = it->next;
 				continue;
 			}
@@ -753,6 +753,9 @@ itdb_thumb_type_is_valid_for_db (const ItdbThumbType thumb_type, DbType db_type)
         case ITDB_THUMB_COVER_SMEDIUM:
         case ITDB_THUMB_COVER_XSMALL:
 	    return (db_type == DB_TYPE_ITUNES);
+        case ITDB_THUMB_CHAPTER_SMALL:
+        case ITDB_THUMB_CHAPTER_LARGE:
+	    return FALSE; /* not supported yet */
         case ITDB_THUMB_PHOTO_SMALL:
         case ITDB_THUMB_PHOTO_LARGE:
         case ITDB_THUMB_PHOTO_FULL_SCREEN:
@@ -962,8 +965,7 @@ itdb_track_filter_thumbnails (Itdb_iTunesDB *itdb, Itdb_Track *track)
 
     formats = itdb_device_get_artwork_formats (itdb->device);
     if (formats == NULL) {
-        itdb_artwork_free (track->artwork);
-        track->artwork = NULL;
+        itdb_artwork_remove_thumbnails (track->artwork);
         return;
     }
 
@@ -983,11 +985,6 @@ itdb_track_filter_thumbnails (Itdb_iTunesDB *itdb, Itdb_Track *track)
         }
     }
 
-    if (supported_thumbs == NULL) {
-        itdb_artwork_free (track->artwork);
-        track->artwork = NULL;
-        return;
-    }
     g_list_free (track->artwork->thumbnails);
     track->artwork->thumbnails = supported_thumbs;
 }
