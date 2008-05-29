@@ -1860,8 +1860,8 @@ static glong find_mhsd (FContents *cts, guint32 type)
 
 
 
-gint pos_comp (gpointer a, gpointer b);
-gint pos_comp (gpointer a, gpointer b)
+static gint pos_comp (gpointer a, gpointer b);
+static gint pos_comp (gpointer a, gpointer b)
 {
     return (GPOINTER_TO_UINT(a) - GPOINTER_TO_UINT(b));
 }
@@ -4707,9 +4707,9 @@ static gboolean write_playlist_mhips (FExport *fexp,
 }
 
 
-void free_memberlist (gpointer data);
-void write_one_podcast_group (gpointer key, gpointer value, gpointer userdata);
-void free_memberlist (gpointer data)
+static void free_memberlist (gpointer data);
+static void write_one_podcast_group (gpointer key, gpointer value, gpointer userdata);
+static void free_memberlist (gpointer data)
 {
     GList **memberlist = data;
     if (memberlist)
@@ -4718,8 +4718,8 @@ void free_memberlist (gpointer data)
 	g_free (memberlist);
     }
 }
-void write_one_podcast_group (gpointer key, gpointer value,
-			      gpointer userdata)
+static void write_one_podcast_group (gpointer key, gpointer value,
+   			             gpointer userdata)
 {
     gchar *album = key;
     GList **memberlist = value;

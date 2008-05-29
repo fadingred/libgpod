@@ -1,3 +1,8 @@
+2008-05-29  Christophe Fergeau <teuf at gnome.org>
+
+	* src/itunesdb.c:
+	* src/ithumb-writer.c: add missing static to internal functions
+
 2008-05-28  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/db-artwork-parser.c (parse_mhii): removed artwork_fallback

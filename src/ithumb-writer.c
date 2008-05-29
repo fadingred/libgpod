@@ -1032,8 +1032,8 @@ ithumb_writer_new (const char *mount_point,
 	return writer;
 }
 
-gint offset_sort (gconstpointer a, gconstpointer b);
-gint offset_sort (gconstpointer a, gconstpointer b)
+static gint offset_sort (gconstpointer a, gconstpointer b);
+static gint offset_sort (gconstpointer a, gconstpointer b)
 {
     return (-(((Itdb_Thumb *)a)->offset - ((Itdb_Thumb *)b)->offset));
 }
