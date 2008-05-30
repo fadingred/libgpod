@@ -3775,6 +3775,7 @@ static gunichar2 jump_table_letter (gchar *p)
     gunichar chr = 0;
     gboolean found_alnum_chars = FALSE;
 
+    g_return_val_if_fail (p != NULL, '0');
     g_assert (g_utf8_validate (p, -1, NULL));
 
     while (*p != '\0') {
@@ -3911,12 +3912,12 @@ static GList *mhod52_make_collate_keys (GList *tracks)
 	else if (tr->composer)
 	{
 	    ct->composer = g_utf8_collate_key (tr->composer, -1);
-	    ct->letter_composer = jump_table_letter (tr->sort_composer);
+	    ct->letter_composer = jump_table_letter (tr->composer);
 	}
 	else
 	{
 	    ct->composer = g_strdup ("");
-	    ct->letter_composer = jump_table_letter (tr->composer);
+	    ct->letter_composer = '0';
 	}
 
 	ct->track_nr = tr->track_nr;

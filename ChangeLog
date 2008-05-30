@@ -1,5 +1,12 @@
 2008-05-30  Christophe Fergeau  <teuf@gnome.org>
 
+	Patch from Ian Stewart
+
+	* src/itdb_itunesdb.c: don't pass NULL sort_composer names down to
+	jump_table_letter, fixes a crash reported by Andy Busch
+
+2008-05-30  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/Makefile.am:
 	* src/db-artwork-parser.c:
 	* src/db-artwork-writer.c:
