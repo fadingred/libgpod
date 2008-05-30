@@ -358,7 +358,7 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 						      GError **error)
 {
 #ifdef HAVE_GDKPIXBUF
-    gboolean result;
+    gboolean result=FALSE;
     Itdb_Artwork *artwork;
     Itdb_PhotoAlbum *album;
 

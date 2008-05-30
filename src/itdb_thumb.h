@@ -96,7 +96,7 @@ G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_new_from_data (const guchar *data,
                                                       gsize len);
 G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_new_from_pixbuf (GdkPixbuf *pixbuf);
 G_GNUC_INTERNAL Itdb_Thumb_Ipod_Item *itdb_thumb_new_item_from_ipod (const Itdb_ArtworkFormat *format);
-G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_ipod_new ();
+G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_ipod_new (void);
 G_GNUC_INTERNAL void itdb_thumb_set_rotation (Itdb_Thumb *thumb, 
                                               guint rotation);
 G_GNUC_INTERNAL guint itdb_thumb_get_rotation (Itdb_Thumb *thumb);

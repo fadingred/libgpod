@@ -84,7 +84,7 @@ Itdb_Thumb_Ipod_Item *itdb_thumb_new_item_from_ipod (const Itdb_ArtworkFormat *f
     return thumb_ipod;
 }
 
-Itdb_Thumb *itdb_thumb_ipod_new (void)
+G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_ipod_new (void)
 {
     Itdb_Thumb *thumb;
  
@@ -359,7 +359,7 @@ const GList *itdb_thumb_ipod_get_thumbs (Itdb_Thumb_Ipod *thumbs)
 gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb, 
                                        gint width, gint height)
 {
-    GdkPixbuf *pixbuf;
+    GdkPixbuf *pixbuf=NULL;
     if (thumb->data_type == ITDB_THUMB_TYPE_FILE)
     {   
         Itdb_Thumb_File *thumb_file = (Itdb_Thumb_File *)thumb;
@@ -430,10 +430,11 @@ gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
 
 GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thumb)
 {
-        g_return_val_if_fail (thumb != NULL, NULL);
-        g_return_val_if_fail (thumb->parent.data_type == ITDB_THUMB_TYPE_IPOD, NULL);
         const GList *items;
         GList *pixbufs = NULL;
+
+        g_return_val_if_fail (thumb != NULL, NULL);
+        g_return_val_if_fail (thumb->parent.data_type == ITDB_THUMB_TYPE_IPOD, NULL);
 
         for (items = itdb_thumb_ipod_get_thumbs (thumb); 
              items != NULL; 

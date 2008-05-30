@@ -1,4 +1,4 @@
-/*  Time-stamp: <2008-05-25 23:15:17 jcs>
+/*  Time-stamp: <2008-05-30 21:49:11 jcs>
  *
  *  Copyright (C) 2005 Christophe Fergeau
  *
@@ -1291,9 +1291,11 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 	case DB_TYPE_ITUNES:
 		for (gl=db_get_itunesdb(db)->tracks; gl; gl=gl->next)
 		{
+		        Itdb_Thumb *thumb;
                         Itdb_Track *track = gl->data;
+
 			g_return_val_if_fail (track, FALSE);
-			Itdb_Thumb *thumb = track->artwork->thumbnail;
+			thumb = track->artwork->thumbnail;
                         if (!itdb_track_has_thumbnails (track)) {
                             continue;
                         }

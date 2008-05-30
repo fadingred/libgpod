@@ -1,3 +1,10 @@
+2008-05-30  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_thumb.c
+	  src/itdb_thumb.h
+	  src/ithumb-writer.c
+	  src/itdb_photoalbum.c: fixed a number of compile-time warnings.
+
 2008-05-30  Christophe Fergeau  <teuf@gnome.org>
 
 	Patch from Ian Stewart
