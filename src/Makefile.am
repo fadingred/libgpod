@@ -15,6 +15,7 @@ libgpod_la_SOURCES = 		\
 	itdb_plist.c		\
 	itdb_sha1.c 		\
 	itdb_sysinfo_extended_parser.c \
+	itdb_thumb.c		\
 	itdb_track.c     	\
 	ithumb-writer.c 	\
 	pixmaps.c 		\
@@ -37,6 +38,7 @@ noinst_HEADERS = 		\
 	itdb_private.h   	\
 	itdb_sha1.h 		\
 	itdb_sysinfo_extended_parser.h \
+	itdb_thumb.h		\
 	pixmaps.h		\
 	sha1.h
 

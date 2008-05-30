@@ -46,7 +46,6 @@
 
 G_BEGIN_DECLS
 
-typedef struct _Itdb_ArtworkFormat Itdb_ArtworkFormat;
 typedef enum _ItdbThumbFormat ItdbThumbFormat;
 
 enum _ItdbThumbFormat

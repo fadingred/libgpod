@@ -57,6 +57,7 @@ typedef gpointer (* ItdbUserDataDuplicateFunc) (gpointer userdata);
 typedef struct _Itdb_Device Itdb_Device;
 typedef struct _Itdb_IpodInfo Itdb_IpodInfo;
 typedef struct _Itdb_Artwork Itdb_Artwork;
+typedef struct _Itdb_ArtworkFormat Itdb_ArtworkFormat;
 typedef struct _Itdb_Thumb Itdb_Thumb;
 typedef struct _Itdb_SPLPref Itdb_SPLPref;
 typedef struct _Itdb_SPLRule Itdb_SPLRule;
@@ -494,51 +495,19 @@ typedef enum {
     ITDB_THUMB_CHAPTER_LARGE,     /* classic -- not supported yet */
 } ItdbThumbType;
 
-
-/* The Itdb_Thumb structure can represent two slightly different
-   thumbnails:
-
-  a) a thumbnail before it's transferred to the iPod.
-
-     offset and size are 0
-
-     width and height, if unequal 0, will indicate the size on the
-     iPod. width and height are set the first time a pixbuf is
-     requested for this thumbnail.
-
-     type is set according to the type this thumbnail represents
-
-     filename point to a 'real' image file OR image_data and
-     image_data_len are set.
- 
-  b) a thumbnail (big or small) stored on a database in the iPod.  In
-     these cases, id corresponds to the ID originally used in the
-     database, filename points to a .ithmb file on the iPod
- */
-struct _Itdb_Thumb {
-    ItdbThumbType type;
-    gchar   *filename;
-    guchar  *image_data;      /* holds the thumbnail data of
-				 non-transfered thumbnails when
-				 filename == NULL */
-    gsize   image_data_len;   /* length of data */
-    gpointer pixbuf;
-    gint    rotation;         /* angle (0, 90, 180, 270) to rotate the image */
-    guint32 offset;
-    guint32 size;
-    gint16  width;
-    gint16  height;
-    gint16  horizontal_padding;
-    gint16  vertical_padding;
-    /* reserved for future use */
-    gint32 reserved_int1;
-    gint32 reserved_int2;
-    gpointer reserved1;
-    gpointer reserved2;
+enum _ItdbThumbDataType {
+    ITDB_THUMB_TYPE_INVALID,
+    ITDB_THUMB_TYPE_FILE,
+    ITDB_THUMB_TYPE_MEMORY,
+    ITDB_THUMB_TYPE_PIXBUF,
+    ITDB_THUMB_TYPE_IPOD
 };
+typedef enum _ItdbThumbDataType ItdbThumbDataType;
+
+
 
 struct _Itdb_Artwork {
-    GList *thumbnails;     /* list of Itdb_Thumbs */
+    Itdb_Thumb *thumbnail;
     guint32 id;            /* Artwork id used by photoalbums, starts at
 			    * 0x40... libgpod will set this on sync. */
     guint64 dbid;          /* dbid of associated track. used
@@ -1190,8 +1159,9 @@ gboolean itdb_track_set_thumbnails_from_data (Itdb_Track *track,
 					      gsize image_data_len);
 gboolean itdb_track_set_thumbnails_from_pixbuf (Itdb_Track *track,
                                                 gpointer pixbuf);
-
+gboolean itdb_track_has_thumbnails (Itdb_Track *track);
 void itdb_track_remove_thumbnails (Itdb_Track *track);
+gpointer itdb_track_get_thumbnail (Itdb_Track *track, gint width, gint height);
 
 /* photoalbum functions -- see itdb_photoalbum.c for instructions on
  * how to use. */
@@ -1237,25 +1207,21 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_by_name(Itdb_PhotoDB *db,
 Itdb_Artwork *itdb_artwork_new (void);
 Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork);
 void itdb_artwork_free (Itdb_Artwork *artwork);
-Itdb_Thumb *itdb_artwork_get_thumb_by_type (Itdb_Artwork *artwork,
-					    ItdbThumbType type);
-gboolean itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
-				     ItdbThumbType type,
+gboolean itdb_artwork_set_thumbnail (Itdb_Artwork *artwork,
 				     const gchar *filename,
 				     gint rotation, GError **error);
-gboolean itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
-					       ItdbThumbType type,
+gboolean itdb_artwork_set_thumbnail_from_data (Itdb_Artwork *artwork,
 					       const guchar *image_data,
 					       gsize image_data_len,
 					       gint rotation, GError **error);
-gboolean itdb_artwork_add_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
-                                                 ItdbThumbType type,
+gboolean itdb_artwork_set_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
                                                  gpointer pixbuf,
                                                  gint rotation,
                                                  GError **error);
-void itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork,
-				    Itdb_Thumb *thumb);
 void itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork);
+gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork, 
+                                  gint width, gint height);
+
 /* itdb_thumb_... */
 /* the following function returns a pointer to a GdkPixbuf if
    gdk-pixbuf is installed -- a NULL pointer otherwise. */
@@ -1263,8 +1229,7 @@ gpointer itdb_thumb_get_gdk_pixbuf (Itdb_Device *device,
 				    Itdb_Thumb *thumb);
 Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb);
 void itdb_thumb_free (Itdb_Thumb *thumb);
-Itdb_Thumb *itdb_thumb_new (void);
-gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb);
+
 /* itdb_chapterdata_... */
 Itdb_Chapterdata *itdb_chapterdata_new (void);
 void itdb_chapterdata_free (Itdb_Chapterdata *chapterdata);

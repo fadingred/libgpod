@@ -30,6 +30,7 @@
 
 #include "itdb_private.h"
 #include "itdb_device.h"
+#include "itdb_thumb.h"
 #include <string.h>
 
 static gboolean is_video_ipod (Itdb_Device *device) 
@@ -376,7 +377,9 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
     tr_dup->chapterdata = itdb_chapterdata_duplicate (tr->chapterdata);
 
     /* Copy thumbnail data */
-    tr_dup->artwork = itdb_artwork_duplicate (tr->artwork);
+    if (tr->artwork != NULL) {
+        tr_dup->artwork = itdb_artwork_duplicate (tr->artwork);
+    }
 
     /* Copy userdata */
     if (tr->userdata && tr->userdata_duplicate)
@@ -395,66 +398,33 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
                                                     gpointer *pixbuf,
 						    gint rotation,
 						    GError **error)
-{
-    /* gtkpod calls this function mostly with tracks that are not yet
-     * part of an iTunesDB. This means it is not known which
-     * thumbnails are required. 
-     *
-     * Our solution is to add all kinds of cover thumbs and weed out
-     * the ones not supported when the ArtworkDB is written.
-     *
-     * Suggestions welcome!
-     */
-
+{					     
     gboolean result = FALSE;
-    ItdbThumbType thumbtypes[] =
-	{ ITDB_THUMB_COVER_SMALL,
-	  ITDB_THUMB_COVER_LARGE,
-	  ITDB_THUMB_COVER_XLARGE,
-	  ITDB_THUMB_COVER_MEDIUM,
-	  ITDB_THUMB_COVER_SMEDIUM,
-	  ITDB_THUMB_COVER_XSMALL,
-	  -1 };
-    ItdbThumbType *thumbtype;
-    const Itdb_ArtworkFormat *formats=NULL;
 
     g_return_val_if_fail (track, FALSE);
     g_return_val_if_fail (filename || image_data || pixbuf, FALSE);
-
-    if (track->itdb && track->itdb->device)
-    {
-	formats = itdb_device_get_artwork_formats (track->itdb->device);
-    }
 
     itdb_artwork_remove_thumbnails (track->artwork);
     /* clear artwork id */
     track->artwork->id = 0;
 
-    for (thumbtype=thumbtypes; *thumbtype!=-1; ++thumbtype)
+    if (filename)
     {
-	if (filename)
-	{
-	    result = itdb_artwork_add_thumbnail (track->artwork,
-						 *thumbtype,
-						 filename, rotation, error);
-	}
-	if (image_data)
-	{
-	    result = itdb_artwork_add_thumbnail_from_data (track->artwork,
-							   *thumbtype,
-							   image_data,
-							   image_data_len,
-							   rotation, error);
-	}
-	if (pixbuf)
-	{
-	    result = itdb_artwork_add_thumbnail_from_pixbuf (track->artwork,
-							     *thumbtype,
-							     pixbuf, rotation,
-							     error);
-        }
-	if (result == FALSE)
-	    break;  /* for (thumbtype=...) */
+        result = itdb_artwork_set_thumbnail (track->artwork, filename,
+                                             rotation, error);
+    }
+    if (image_data)
+    {
+        result = itdb_artwork_set_thumbnail_from_data (track->artwork,
+                                                       image_data,
+                                                       image_data_len,
+                                                       rotation, error);
+    }
+    if (pixbuf)
+    {
+        result = itdb_artwork_set_thumbnail_from_pixbuf (track->artwork,
+                                                         pixbuf, rotation,
+                                                         error);
     }
 
     if (result == TRUE)
@@ -480,7 +450,6 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
     return result;
 }
 
-
 /**
  * itdb_track_set_thumbnails:
  * @track: an #Itdb_Track
@@ -502,9 +471,6 @@ gboolean itdb_track_set_thumbnails (Itdb_Track *track,
     return itdb_track_set_thumbnails_internal (track, filename, NULL, 0, NULL,
 					       0, NULL);
 }
-
-
-
 
 /**
  * itdb_track_set_thumbnails_from_data:
@@ -570,7 +536,6 @@ void itdb_track_remove_thumbnails (Itdb_Track *track)
     track->has_artwork = 0x02;
 }
 
-
 /**
  * itdb_track_by_id:
  * @itdb: an #Itdb_iTunesDB
@@ -610,7 +575,6 @@ static gint track_id_compare (gconstpointer a, gconstpointer b)
 	return 1;
     return -1;
 }
-
 
 /**
  * itdb_track_id_tree_create:
@@ -671,4 +635,47 @@ Itdb_Track *itdb_track_id_tree_by_id (GTree *idtree, guint32 id)
     return (Itdb_Track *)g_tree_lookup (idtree, &id);
 }
 
+/**
+ * itdb_track_has_thumbnails:
+ * @track: an #Itdb_Track
+ *
+ * Return value: TRUE if @track has artwork available, FALSE otherwise
+ **/
+gboolean itdb_track_has_thumbnails (Itdb_Track *track) 
+{
+    g_return_val_if_fail (track != NULL, FALSE);
+    return ((track->artwork) && (track->artwork->thumbnail));
+}
+
+/**
+ * itdb_track_get_thumbnail!
+ * @track: an #Itdb_Track
+ * @width: width of the pixbuf to retrieve, -1 for the biggest possible size 
+ * (with no scaling)
+ * @height: height of the pixbuf to retrieve, -1 for the biggest possible size
+ * (with no scaling)
+ *
+ * Returns a #GdkPixbuf representing the cover associated with the current
+ * track, scaling it if appropriate. If either height or width is -1, then the 
+ * biggest unscaled thumbnail available will be returned
+ *
+ * Return value: a #GdkPixbuf that must be unreffed when no longer used, NULL
+ * if no artwork could be found or if libgpod is compiled without GdkPixbuf
+ * support
+ **/
+gpointer itdb_track_get_thumbnail (Itdb_Track *track, gint width, gint height)
+{
+    g_return_val_if_fail (track != NULL, NULL);
+    if (!itdb_track_has_thumbnails (track)) {
+        return NULL;
+    }
+    if (track->itdb != NULL) {
+        return itdb_thumb_to_pixbuf_at_size (track->itdb->device,
+                                             track->artwork->thumbnail,
+                                             width, height);
+    } else {
+        return itdb_thumb_to_pixbuf_at_size (NULL, track->artwork->thumbnail,
+                                             width, height);
+    }
+}
 

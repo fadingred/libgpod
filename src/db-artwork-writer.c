@@ -357,14 +357,15 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 }
 
 static int
-write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int format_id, iPodBuffer *buffer)
+write_mhni (Itdb_DB *db, Itdb_Thumb_Ipod_Item *item, iPodBuffer *buffer)
 {
 	MhniHeader *mhni;
 	unsigned int total_bytes;
 	int bytes_written;
 	iPodBuffer *sub_buffer;
+        const Itdb_ArtworkFormat *format;
 
-	if (thumb == NULL) {
+	if (item == NULL) {
 		return -1;
 	}
 
@@ -377,21 +378,22 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int format_id, iPodBuffer *buffer)
 					   buffer->byte_order);
 	mhni->total_len =      get_gint32 (total_bytes,
 					   buffer->byte_order);
-	mhni->format_id = get_gint32 (format_id, buffer->byte_order);
-	mhni->image_width =    get_gint16 (thumb->width, buffer->byte_order);
-	mhni->image_height =   get_gint16 (thumb->height, buffer->byte_order);
-	mhni->image_size =     get_gint32 (thumb->size, buffer->byte_order);
-	mhni->ithmb_offset =   get_gint32 (thumb->offset, buffer->byte_order);
-	mhni->vertical_padding = get_gint16 (thumb->vertical_padding,
+        format = item->format;
+	mhni->format_id = get_gint32 (format->format_id, buffer->byte_order);
+	mhni->image_width =    get_gint16 (item->width, buffer->byte_order);
+	mhni->image_height =   get_gint16 (item->height, buffer->byte_order);
+	mhni->image_size =     get_gint32 (item->size, buffer->byte_order);
+	mhni->ithmb_offset =   get_gint32 (item->offset, buffer->byte_order);
+	mhni->vertical_padding = get_gint16 (item->vertical_padding,
 					     buffer->byte_order);
-	mhni->horizontal_padding = get_gint16 (thumb->horizontal_padding,
+	mhni->horizontal_padding = get_gint16 (item->horizontal_padding,
 					       buffer->byte_order);
 
 	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
 	if (sub_buffer == NULL) {
 		return  -1;
 	}
-	bytes_written = write_mhod_type_3 (thumb->filename, sub_buffer);
+	bytes_written = write_mhod_type_3 (item->filename, sub_buffer);
 	ipod_buffer_destroy (sub_buffer);
 	if (bytes_written == -1) {
 		return -1;
@@ -410,7 +412,7 @@ write_mhni (Itdb_DB *db, Itdb_Thumb *thumb, int format_id, iPodBuffer *buffer)
 }
 
 static int
-write_mhod (Itdb_DB *db, Itdb_Thumb *thumb, int format_id, iPodBuffer *buffer)
+write_mhod (Itdb_DB *db, Itdb_Thumb_Ipod_Item *thumb, iPodBuffer *buffer)
 {
 	ArtworkDB_MhodHeader *mhod;
 	unsigned int total_bytes;
@@ -434,7 +436,7 @@ write_mhod (Itdb_DB *db, Itdb_Thumb *thumb, int format_id, iPodBuffer *buffer)
 	if (sub_buffer == NULL) {
 		return -1;
 	}
-	bytes_written = write_mhni (db, thumb, format_id, sub_buffer);
+	bytes_written = write_mhni (db, thumb, sub_buffer);
 	ipod_buffer_destroy (sub_buffer);
 	if (bytes_written == -1) {
 		return -1;
@@ -455,7 +457,7 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 	unsigned int total_bytes;
 	int bytes_written;
 	int num_children;
-	GList *it = NULL;
+	const GList *it = NULL;
 	Itdb_Track *song;
 	Itdb_Artwork *artwork;
 	guint64 mactime;
@@ -493,16 +495,20 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 
 	mhii->orig_img_size = get_gint32 (artwork->artwork_size, buffer->byte_order);
 	num_children = 0;
-	for (it=artwork->thumbnails; it!=NULL; it=it->next)
+        /* Before trying to write the artwork or photo database, the ithmb
+         * files have been written, which will have converted all thumbnails 
+         * attached to the tracks to ITDB_THUMB_TYPE_IPOD thumbnails.
+         */
+        g_assert (artwork->thumbnail->data_type == ITDB_THUMB_TYPE_IPOD);
+	for (it=itdb_thumb_ipod_get_thumbs ((Itdb_Thumb_Ipod *)artwork->thumbnail); 
+             it!=NULL; 
+             it=it->next)
 	{
 		iPodBuffer *sub_buffer;
-		Itdb_Thumb *thumb;
-		const Itdb_ArtworkFormat *img_info;
+		Itdb_Thumb_Ipod_Item *thumb;
 
-		thumb = (Itdb_Thumb *)it->data;
-		img_info = itdb_get_artwork_info_from_type (
-		    db_get_device(db), thumb->type);
-		if (img_info == NULL) {
+                thumb = (Itdb_Thumb_Ipod_Item *)it->data;
+                if (thumb->format == NULL) {
 		    /* skip this thumb */
 		    continue;
 		}
@@ -514,8 +520,7 @@ write_mhii (Itdb_DB *db, void *data, iPodBuffer *buffer)
 		if (sub_buffer == NULL) {
 			return -1;
 		}
-		bytes_written = write_mhod (db, thumb, img_info->format_id,
-					    sub_buffer);
+		bytes_written = write_mhod (db, thumb, sub_buffer);
 		ipod_buffer_destroy (sub_buffer);
 		if (bytes_written == -1) {
 			return -1;
@@ -564,7 +569,7 @@ write_mhli (Itdb_DB *db, iPodBuffer *buffer )
 		iPodBuffer *sub_buffer;
 		if (buffer->db_type == DB_TYPE_ITUNES) {
 			song = (Itdb_Track*)it->data;
-			if (!song->artwork->thumbnails || (song->artwork->id == 0)) {
+			if (!song->artwork->thumbnail || (song->artwork->id == 0)) {
 				it = it->next;
 				continue;
 			}
@@ -743,9 +748,10 @@ write_mhif (Itdb_DB *db, iPodBuffer *buffer,
 }
 
 G_GNUC_INTERNAL gboolean
-itdb_thumb_type_is_valid_for_db (const ItdbThumbType thumb_type, DbType db_type)
+itdb_thumb_type_is_valid_for_db (const Itdb_ArtworkFormat *format,
+                                 DbType db_type)
 {
-        switch (thumb_type) {
+        switch (format->type) {
         case ITDB_THUMB_COVER_SMALL:
         case ITDB_THUMB_COVER_LARGE:
         case ITDB_THUMB_COVER_XLARGE:
@@ -791,7 +797,7 @@ write_mhlf (Itdb_DB *db, iPodBuffer *buffer)
 
         while (formats->type != -1) {
 	        iPodBuffer *sub_buffer;
-                if (!itdb_thumb_type_is_valid_for_db (formats->type, buffer->db_type)) {
+                if (!itdb_thumb_type_is_valid_for_db (formats, buffer->db_type)) {
                         formats++;
                         continue;
                 }
@@ -932,74 +938,13 @@ ipod_artwork_db_set_ids (Itdb_iTunesDB *db)
 		if (max_id <= song->id) {
 		  max_id = song->id;
 		}
-		if (song->artwork->thumbnails != NULL) {
+		if (song->artwork->thumbnail != NULL) {
 			song->artwork->id = song->id;
 		}
 	}
 
 	return max_id;
 }
-
-
-static void
-itdb_track_filter_thumbnails (Itdb_iTunesDB *itdb, Itdb_Track *track)
-{
-    const Itdb_ArtworkFormat *formats;
-    const Itdb_ArtworkFormat *format;
-    GList *it;
-    GList *supported_thumbs;
-
-    if (track->artwork == NULL) {
-        return;
-    }
-
-    if (track->artwork->thumbnails == NULL) {
-        return;
-    }
-
-    if (itdb->device == NULL) {
-        itdb_artwork_free (track->artwork);
-        track->artwork = NULL;
-        return;
-    }
-
-    formats = itdb_device_get_artwork_formats (itdb->device);
-    if (formats == NULL) {
-        itdb_artwork_remove_thumbnails (track->artwork);
-        return;
-    }
-
-    supported_thumbs = NULL;
-    for (format = formats; format->type != -1; format++) {
-        for (it = track->artwork->thumbnails; it != NULL; it = it->next) {
-            Itdb_Thumb *thumb = (Itdb_Thumb *)it->data;
-
-            if (thumb->type == format->type) {
-                supported_thumbs = g_list_prepend (supported_thumbs, it->data);
-                /* Remove element from the original list, there will
-                 * be less work next time we iterate over the thumbnails
-                 */
-                track->artwork->thumbnails = g_list_remove_link (track->artwork->thumbnails, it);
-                break;
-            }
-        }
-    }
-
-    g_list_free (track->artwork->thumbnails);
-    track->artwork->thumbnails = supported_thumbs;
-}
-
-static void
-itdb_filter_thumbnails (Itdb_iTunesDB *itdb)
-{
-    GList *it;
-
-    for (it = itdb->tracks; it != NULL; it = it->next) {
-        itdb_track_filter_thumbnails (itdb, (Itdb_Track *)it->data);
-    }
-}
-
-
 
 int
 ipod_write_artwork_db (Itdb_iTunesDB *itdb)
@@ -1012,9 +957,6 @@ ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 
 	db.db_type = DB_TYPE_ITUNES;
 	db.db.itdb = itdb;
-
-
-        itdb_filter_thumbnails (itdb);
 
 	/* First, let's write the .ithmb files, this will create the
 	 * various thumbnails as well */

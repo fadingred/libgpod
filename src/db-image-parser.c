@@ -35,66 +35,51 @@
 #include "db-image-parser.h"
 #include <glib/gi18n-lib.h>
 
-static int
-image_type_from_format_id (Itdb_Device *device, gint16 format_id)
+static const Itdb_ArtworkFormat * 
+image_format_from_id (Itdb_Device *device, gint16 format_id)
 {
 	const Itdb_ArtworkFormat *formats;
 
 	if (device == NULL) {
-		return -1;
+		return NULL;
 	}
 
 	formats = itdb_device_get_artwork_formats (device);
 
 	if (formats == NULL) {
-		return -1;
+		return NULL;
 	}
 	
 	while (formats->type != -1) {
 		if (formats->format_id == format_id) {
-			return formats->type;
+			return formats;
 		}
 		formats++;
 	}
 
-	return -1;
+	return NULL;
 }
 
-
-G_GNUC_INTERNAL const Itdb_ArtworkFormat *
-itdb_get_artwork_info_from_type (Itdb_Device *device,
-				 ItdbThumbType image_type)
-{
-	const Itdb_ArtworkFormat *formats;
-	
-	if (device == NULL) {
-		return NULL;
-	}
-
-	formats = itdb_device_get_artwork_formats (device);
-	if (formats == NULL) {
-		return NULL;
-	}
-	
-	while ((formats->type != -1) && (formats->type != image_type)) {
-		formats++;
-	}
-
-	if (formats->type == -1) {
-		return NULL;
-	}
-
-	return formats;
-}
-
-G_GNUC_INTERNAL Itdb_Thumb *
+G_GNUC_INTERNAL Itdb_Thumb_Ipod_Item *
 ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_DB *db)
 {
-	Itdb_Thumb *img;
+	Itdb_Thumb_Ipod_Item *img;
+        const Itdb_ArtworkFormat *format;
 	gint16 format_id;
 	Itdb_Device *device = NULL;
 
-	img = g_new0 (Itdb_Thumb, 1);
+	device = db_get_device (db);
+	g_return_val_if_fail (device, NULL);
+
+	format_id = get_gint32_db (db, mhni->format_id);
+        format = image_format_from_id (device, format_id);
+        if (format == NULL) {
+            g_warning (_("Unexpected image type in mhni: %d, offset: %d\n"), 
+                       format_id, get_guint32_db (db, mhni->ithmb_offset));
+            return NULL;
+        }
+
+        img = itdb_thumb_new_item_from_ipod (format);
 	if (img == NULL) {
 		return NULL;
 	}
@@ -107,25 +92,10 @@ ipod_image_new_from_mhni (MhniHeader *mhni, Itdb_DB *db)
 	img->vertical_padding =
 	    get_gint16_db (db, mhni->vertical_padding);
 
-	device = db_get_device (db);
-	g_return_val_if_fail (device, NULL);
-
-	format_id = get_gint32_db (db, mhni->format_id);
-	img->type = image_type_from_format_id (device, format_id);
-
 #if DEBUG_ARTWORK
 	printf ("format_id: %d, of: %6d sz: %6d, x: %3d, y: %3d, xpad: %3d, ypad: %3d\n",
 		format_id, img->offset, img->size, img->width, img->height, img->horizontal_padding, img->vertical_padding);
 #endif
-
-	if (img->type == -1)
-	{
-	    g_warning (_("Unexpected image type in mhni: size: %ux%u (%d), offset: %d\n"), 
-		       img->width, img->height, 
-		       format_id, img->offset);
-	    g_free (img);
-	    return NULL;
-	}
 
 	return img;
 }

@@ -30,6 +30,7 @@
 
 #include "itdb_device.h"
 #include "itdb_private.h"
+#include "itdb_thumb.h"
 #include "db-image-parser.h"
 #include "itdb_endianness.h"
 #include <errno.h>
@@ -71,29 +72,6 @@ void itdb_artwork_free (Itdb_Artwork *artwork)
     g_free (artwork);
 }
 
-
-static GList *dup_thumbnails (GList *thumbnails)
-{
-    GList *it;
-    GList *result;
-    
-    result = NULL;
-    for (it = thumbnails; it != NULL; it = it->next)
-    {
-	Itdb_Thumb *new_thumb;
-	Itdb_Thumb *thumb;
-
-	thumb = (Itdb_Thumb *)it->data;
-	g_return_val_if_fail (thumb, NULL);
-
-	new_thumb = itdb_thumb_duplicate (thumb);
-	
-	result = g_list_prepend (result, new_thumb);
-    }
-
-    return g_list_reverse (result);
-}
-
 /**
  * itdb_artwork_duplicate:
  * @artwork: an #Itdb_Artwork
@@ -111,29 +89,12 @@ Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork)
 
     memcpy (dup, artwork, sizeof (Itdb_Artwork));
 
-    dup->thumbnails = dup_thumbnails (artwork->thumbnails);
+    if (artwork->thumbnail != NULL) {
+        dup->thumbnail = itdb_thumb_duplicate (artwork->thumbnail);
+    }
 
     return dup;
 }
-
-
-/**
- * itdb_artwork_remove_thumbnail:
- * @artwork: an #Itdb_Artwork
- * @thumb: an #Itdb_Thumb
- *
- * Removes @thumb from @artwork. The memory used by @thumb is freed.
- **/
-void
-itdb_artwork_remove_thumbnail (Itdb_Artwork *artwork, Itdb_Thumb *thumb)
-{
-    g_return_if_fail (artwork);
-    g_return_if_fail (thumb);
-
-    artwork->thumbnails = g_list_remove (artwork->thumbnails, thumb);
-    itdb_thumb_free (thumb);
-}
-
 
 /**
  * itdb_artwork_remove_thumbnails:
@@ -146,12 +107,10 @@ itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
 {
     g_return_if_fail (artwork);
 
-    while (artwork->thumbnails)
-    {
-	Itdb_Thumb *thumb = artwork->thumbnails->data;
-	g_return_if_fail (thumb);
-	itdb_artwork_remove_thumbnail (artwork, thumb);
+    if (artwork->thumbnail != NULL) {
+        itdb_thumb_free (artwork->thumbnail);
     }
+    artwork->thumbnail = NULL;
     artwork->artwork_size = 0;
     artwork->id = 0;
 }
@@ -160,7 +119,7 @@ itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
 
 
 /**
- * itdb_artwork_add_thumbnail
+ * itdb_artwork_set_thumbnail
  * @artwork: an #Itdb_Thumbnail
  * @type: thumbnail size
  * @filename: image file to use to create the thumbnail
@@ -180,8 +139,7 @@ itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
  * otherwise. @error is set appropriately.
  **/
 gboolean
-itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
-			    ItdbThumbType type,
+itdb_artwork_set_thumbnail (Itdb_Artwork *artwork,
 			    const gchar *filename,
 			    gint rotation,
 			    GError **error)
@@ -204,11 +162,12 @@ itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
     artwork->artwork_size  = statbuf.st_size;
     artwork->creation_date = statbuf.st_mtime;
 
-    thumb = itdb_thumb_new ();
-    thumb->filename = g_strdup (filename);
-    thumb->type = type;
-    thumb->rotation = rotation;
-    artwork->thumbnails = g_list_append (artwork->thumbnails, thumb);
+    thumb = itdb_thumb_new_from_file (filename);
+    itdb_thumb_set_rotation (thumb, rotation);
+    if (artwork->thumbnail != NULL) {
+        itdb_thumb_free (artwork->thumbnail);
+    }
+    artwork->thumbnail = thumb;
 
     return TRUE;
 #else
@@ -240,8 +199,7 @@ itdb_artwork_add_thumbnail (Itdb_Artwork *artwork,
  * otherwise. @error is set appropriately.
  **/
 gboolean
-itdb_artwork_add_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
-                                        ItdbThumbType type,
+itdb_artwork_set_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
                                         gpointer pixbuf,
                                         gint rotation,
                                         GError **error)
@@ -264,12 +222,12 @@ itdb_artwork_add_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
     artwork->artwork_size  = rowstride * height;
     artwork->creation_date = time.tv_sec;
 
-    thumb = itdb_thumb_new ();
-    g_object_ref (G_OBJECT (pixbuf));
-    thumb->pixbuf = pixbuf;
-    thumb->type = type;
-    thumb->rotation = rotation;
-    artwork->thumbnails = g_list_append (artwork->thumbnails, thumb);
+    thumb = itdb_thumb_new_from_pixbuf (pixbuf);
+    itdb_thumb_set_rotation (thumb, rotation);
+    if (artwork->thumbnail != NULL) {
+        itdb_thumb_free (artwork->thumbnail);
+    }
+    artwork->thumbnail = thumb;
 
     return TRUE;
 #else
@@ -302,8 +260,7 @@ itdb_artwork_add_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
  * otherwise. @error is set appropriately.
  **/
 gboolean
-itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
-				      ItdbThumbType type,
+itdb_artwork_set_thumbnail_from_data (Itdb_Artwork *artwork,
 				      const guchar *image_data,
 				      gsize image_data_len,
 				      gint rotation,
@@ -322,14 +279,12 @@ itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
     artwork->artwork_size  = image_data_len;
     artwork->creation_date = time.tv_sec;
 
-    thumb = itdb_thumb_new ();
-    thumb->image_data = g_malloc (image_data_len);
-    thumb->image_data_len = image_data_len;
-    memcpy (thumb->image_data,  image_data, image_data_len);
-
-    thumb->type = type;
-    thumb->rotation = rotation;
-    artwork->thumbnails = g_list_append (artwork->thumbnails, thumb);
+    thumb = itdb_thumb_new_from_data (image_data, image_data_len);
+    itdb_thumb_set_rotation (thumb, rotation);
+    if (artwork->thumbnail != NULL) {
+        itdb_thumb_free (artwork->thumbnail);
+    }
+    artwork->thumbnail = thumb;
 
     return TRUE;
 #else
@@ -338,93 +293,6 @@ itdb_artwork_add_thumbnail_from_data (Itdb_Artwork *artwork,
     return FALSE;
 #endif
 }
-
-
-/**
- * itdb_artwork_get_thumb_by_type:
- * @artwork: an #Itdb_Artwork
- * @type: type of the #Itdb_Thumb to retrieve
- *
- * Searches @artwork for an #Itdb_Thumb of type @type.
- * 
- * Returns: an #Itdb_Thumb of type @type, or NULL if such a thumbnail couldn't
- * be found
- **/
-Itdb_Thumb *itdb_artwork_get_thumb_by_type (Itdb_Artwork *artwork,
-					    ItdbThumbType type)
-{
-    GList *gl;
-
-    g_return_val_if_fail (artwork, NULL);
-
-    for (gl=artwork->thumbnails; gl; gl=gl->next)
-    {
-	Itdb_Thumb *thumb = gl->data;
-	g_return_val_if_fail (thumb, NULL);
-	if (thumb->type == type)  return thumb;
-    }
-    return NULL;
-}
-
-
-/**
- * itdb_thumb_get_filename:
- * @device: an #Itdb_Device
- * @thumb: an #Itdb_Thumb
- *
- * Get filename of thumbnail. If it's a thumbnail on the iPod, return
- * the full path to the ithmb file. Otherwise return the full path to
- * the original file.
- *
- * Return value: newly allocated string containing the absolute path to the 
- * thumbnail file. 
- **/
-gchar *itdb_thumb_get_filename (Itdb_Device *device, Itdb_Thumb *thumb)
-{
-    gchar *artwork_dir, *filename=NULL;
-
-    g_return_val_if_fail (device, NULL);
-    g_return_val_if_fail (thumb, NULL);
-
-    /* thumbnail not transferred to the iPod */
-    if (thumb->size == 0)
-	return g_strdup (thumb->filename);
-
-    if (strlen (thumb->filename) < 2)
-    {
-	g_print (_("Illegal filename: '%s'.\n"), thumb->filename);
-	return NULL;
-    }
-
-    if (!device->mountpoint)
-    {
-	g_print (_("Mountpoint not set.\n"));
-	return NULL;
-    }
-    artwork_dir = itdb_get_artwork_dir (device->mountpoint);
-    if (artwork_dir)
-    {
-	filename = itdb_get_path (artwork_dir, thumb->filename+1);
-	g_free (artwork_dir);
-    }
-    /* FIXME: Hack */
-    if( !filename ) {
-	artwork_dir = itdb_get_photos_thumb_dir (device->mountpoint);
-
-	if (artwork_dir)
-	{
-	    const gchar *name_on_disk = strchr( thumb->filename+1, ':');
-	    if (name_on_disk)
-	    {
-		filename = itdb_get_path (artwork_dir, name_on_disk + 1);
-	    }
-	    g_free (artwork_dir);
-	}
-
-    }
-    return filename;
-}
-
 
 #if HAVE_GDKPIXBUF
 static guchar *
@@ -772,7 +640,7 @@ unpack_UYVY (guchar *yuvdata, gint bytes_len, guint byte_order,
 }
 
 static guchar *
-get_pixel_data (Itdb_Device *device, Itdb_Thumb *thumb)
+get_pixel_data (Itdb_Device *device, Itdb_Thumb_Ipod_Item *thumb)
 {
 	gchar *filename = NULL;
 	guchar *result = NULL;
@@ -787,7 +655,7 @@ get_pixel_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	 */
 	result = g_malloc (thumb->size);
 
-	filename = itdb_thumb_get_filename (device, thumb);
+	filename = itdb_thumb_ipod_get_filename (device, thumb);
 
 	if (!filename)
 	{
@@ -832,7 +700,7 @@ get_pixel_data (Itdb_Device *device, Itdb_Thumb *thumb)
 }
 
 static guchar *
-itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
+itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb_Ipod_Item *item)
 {
 #if 0
     #include <unistd.h>
@@ -843,15 +711,16 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 #endif
 	void *pixels_raw;
 	guchar *pixels=NULL;
-	const Itdb_ArtworkFormat *img_info;
-
+            
 	g_return_val_if_fail (device, NULL);
-	g_return_val_if_fail (thumb, NULL);
-	g_return_val_if_fail (thumb->size != 0, NULL);
-	img_info = itdb_get_artwork_info_from_type (device, thumb->type);
-	g_return_val_if_fail (img_info, NULL);
+	g_return_val_if_fail (item, NULL);
+	g_return_val_if_fail (item->size != 0, NULL);
 	
-	pixels_raw = get_pixel_data (device, thumb);
+        if (item->format == NULL) {
+            return NULL;
+        }
+
+	pixels_raw = get_pixel_data (device, item);
 
 #if 0
     name = g_strdup_printf ("thumb_%03d.raw", i++);
@@ -864,7 +733,7 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 		return NULL;
 	}
 
-	switch (img_info->format)
+	switch (item->format->format)
 	{
 	case THUMB_FORMAT_RGB565_LE_90:
 	case THUMB_FORMAT_RGB565_BE_90:
@@ -873,8 +742,8 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	       screen photo thumbnail) */
 	case THUMB_FORMAT_RGB565_LE:
 	case THUMB_FORMAT_RGB565_BE:
-	    pixels = unpack_RGB_565 (pixels_raw, thumb->size,
-				     itdb_thumb_get_byteorder (img_info->format));
+	    pixels = unpack_RGB_565 (pixels_raw, item->size,
+				     itdb_thumb_get_byteorder (item->format->format));
 	    break;
 	case THUMB_FORMAT_RGB555_LE_90:
 	case THUMB_FORMAT_RGB555_BE_90:
@@ -883,8 +752,8 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	       screen photo thumbnail) */
 	case THUMB_FORMAT_RGB555_LE:
 	case THUMB_FORMAT_RGB555_BE:
-	    pixels = unpack_RGB_555 (pixels_raw, thumb->size,
-				     itdb_thumb_get_byteorder (img_info->format));
+	    pixels = unpack_RGB_555 (pixels_raw, item->size,
+				     itdb_thumb_get_byteorder (item->format->format));
 	    break;
 	case THUMB_FORMAT_RGB888_LE_90:
 	case THUMB_FORMAT_RGB888_BE_90:
@@ -892,8 +761,8 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	       different treatment */
 	case THUMB_FORMAT_RGB888_LE:
 	case THUMB_FORMAT_RGB888_BE:
-	    pixels = unpack_RGB_888 (pixels_raw, thumb->size,
-				     itdb_thumb_get_byteorder (img_info->format));
+	    pixels = unpack_RGB_888 (pixels_raw, item->size,
+				     itdb_thumb_get_byteorder (item->format->format));
 	    break;
 	case THUMB_FORMAT_REC_RGB555_LE_90:
 	case THUMB_FORMAT_REC_RGB555_BE_90:
@@ -902,29 +771,29 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	       screen photo thumbnail) */
 	case THUMB_FORMAT_REC_RGB555_LE:
 	case THUMB_FORMAT_REC_RGB555_BE:
-	    pixels = unpack_rec_RGB_555 (pixels_raw, thumb->size,
-					 itdb_thumb_get_byteorder (img_info->format),
-					 img_info->width, img_info->height);
+	    pixels = unpack_rec_RGB_555 (pixels_raw, item->size,
+					 itdb_thumb_get_byteorder (item->format->format),
+					 item->format->width, item->format->height);
 	    break;
 	case THUMB_FORMAT_EXPERIMENTAL_LE:
 	case THUMB_FORMAT_EXPERIMENTAL_BE:
 #if DEBUG_ARTWORK
-	    pixels = unpack_experimental (pixels_raw, thumb->size,
-					  itdb_thumb_get_byteorder (img_info->format),
-					  img_info->width, img_info->height);
+	    pixels = unpack_experimental (pixels_raw, item->size,
+					  itdb_thumb_get_byteorder (item->format->format),
+					  item->format->width, item->format->height);
 	    break;
 #endif
 	case THUMB_FORMAT_UYVY_LE:
 	case THUMB_FORMAT_UYVY_BE:
-	    pixels = unpack_UYVY (pixels_raw, thumb->size,
-				  itdb_thumb_get_byteorder (img_info->format),
-				  img_info->width, img_info->height);
+	    pixels = unpack_UYVY (pixels_raw, item->size,
+				  itdb_thumb_get_byteorder (item->format->format),
+				  item->format->width, item->format->height);
 	    break;
 	case THUMB_FORMAT_I420_LE:
 	case THUMB_FORMAT_I420_BE:
-	    pixels = unpack_I420 (pixels_raw, thumb->size,
-				  itdb_thumb_get_byteorder (img_info->format),
-				  img_info->width, img_info->height);
+	    pixels = unpack_I420 (pixels_raw, item->size,
+				  itdb_thumb_get_byteorder (item->format->format),
+				  item->format->width, item->format->height);
 	    break;
 	}
 	g_free (pixels_raw);
@@ -932,158 +801,29 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb *thumb)
 	return pixels;
 
 }
-#endif
 
-
-
-/**
- * itdb_thumb_get_gdk_pixbuf:
- * @device: an #Itdb_Device
- * @thumb: an #Itdb_Thumb
- * 
- * Converts @thumb to a #GdkPixbuf.
- * Since we want to have gdk-pixbuf dependency optional, a generic
- * gpointer is returned which you have to cast to a #GdkPixbuf using 
- * GDK_PIXBUF() yourself. 
- *
- * Return value: a #GdkPixbuf that must be unreffed with gdk_pixbuf_unref()
- * after use, or NULL if the creation of the gdk-pixbuf failed or if 
- * libgpod was compiled without gdk-pixbuf support.
- **/
-gpointer
-itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
+gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device, 
+                                         Itdb_Thumb_Ipod_Item *item) 
 {
-#if HAVE_GDKPIXBUF
-    GdkPixbuf *pixbuf=NULL;
-    guchar *pixels;
-    const Itdb_ArtworkFormat *img_info=NULL;
-
-    g_return_val_if_fail (thumb, NULL);
-
-    /* If we are dealing with an iPod (device != NULL), use default
-       image dimensions as used on the iPod in question.
-
-       If we are not dealing with an iPod, we can only return a pixmap
-       for thumbnails "not transferred to the iPod" (thumb->size ==
-       0).
-    */
-    if (device != NULL)
-    {
-	img_info = itdb_get_artwork_info_from_type (device, thumb->type);
-    }
-
-    if (thumb->size == 0)
-    {   /* thumbnail has not yet been transferred to the iPod */
-	gint width=0, height=0;
-
-	if (img_info != NULL)
-	{   /* use image dimensions from iPod */
-	    width = img_info->width;
-	    height = img_info->height;
-	}
-	else
-	{   /* use default dimensions */
-	    /* FIXME: better way to use the ipod_color dimensions? */
-	    switch (thumb->type)
-	    {
-	    case ITDB_THUMB_COVER_SMALL:
-		width =  56;  height =  56;  break;
-	    case ITDB_THUMB_COVER_LARGE:
-		width = 140;  height = 140;  break;
-	    case ITDB_THUMB_PHOTO_SMALL:
-		width =  42;  height =  30;  break;
-	    case ITDB_THUMB_PHOTO_LARGE:
-		width = 130;  height =  88;  break;
-	    case ITDB_THUMB_PHOTO_FULL_SCREEN:
-		width = 220;  height = 176;  break;
-	    case ITDB_THUMB_PHOTO_TV_SCREEN:
-		width = 720;  height = 480;  break;
-	    case ITDB_THUMB_COVER_XLARGE:
-		width = 320;  height = 320;  break;
-	    case ITDB_THUMB_COVER_MEDIUM:
-		width = 128;  height = 128;  break;
-	    case ITDB_THUMB_COVER_SMEDIUM:
-		width = 88;  height = 88;  break;
-	    case ITDB_THUMB_COVER_XSMALL:
-		width = 56;  height = 56;  break;
-	    case ITDB_THUMB_CHAPTER_SMALL:
-		width = 100;  height = 100;  break;
-	    case ITDB_THUMB_CHAPTER_LARGE:
-		width = 200;  height = 200;  break;
-	    }
-	    if (width == 0)
-	    {
-		width = 140;
-		height = 140;
-	    }
-	}
-
-	if (thumb->filename)
-	{   /* read data from filename */
-	    pixbuf = gdk_pixbuf_new_from_file_at_size (thumb->filename, 
-						       width, height,
-						       NULL);
-	}
-	else if (thumb->image_data)
-	{   /* use data stored in image_data */
-	    	GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
-		g_return_val_if_fail (loader, FALSE);
-		gdk_pixbuf_loader_set_size (loader,
-					    width, height);
-		gdk_pixbuf_loader_write (loader,
-					 thumb->image_data,
-					 thumb->image_data_len,
-					 NULL);
-		gdk_pixbuf_loader_close (loader, NULL);
-		pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-		if (pixbuf)
-		    g_object_ref (pixbuf);
-		g_object_unref (loader);
-	}
-	else if (thumb->pixbuf)
-	{   /* use pixbuf data */
-	    pixbuf = gdk_pixbuf_scale_simple (thumb->pixbuf,
-					      width, height,
-					      GDK_INTERP_BILINEAR);
-	}
-
-	if (!pixbuf)
-	{
-	    return NULL;
-	}
-
-	/* !! cannot write directly to &thumb->width/height because
-	   g_object_get() returns a gint, but thumb->width/height are
-	   gint16 !! */
-	g_object_get (G_OBJECT (pixbuf), 
-		      "width", &width,
-		      "height", &height,
-		      NULL);
-
-	thumb->width = width;
-	thumb->height = height;
-    }
-    else
-    {
 	/* pixbuf is already on the iPod -> read from there */
 	GdkPixbuf *pixbuf_full;
 	GdkPixbuf *pixbuf_sub;
-	gint pad_x = thumb->horizontal_padding;
-	gint pad_y = thumb->vertical_padding;
-	gint width = thumb->width;
-	gint height = thumb->height;
+        GdkPixbuf *pixbuf;
+	gint pad_x = item->horizontal_padding;
+	gint pad_y = item->vertical_padding;
+	gint width = item->width;
+	gint height = item->height;
+        const Itdb_ArtworkFormat *img_info = item->format;
+        guchar *pixels;
 
 /*	printf ("hp%d vp%d w%d h%d\n",
 	       pad_x, pad_y, width, height);*/
-
-	if (img_info == NULL)
-	{
-	    g_print (_("Unable to retrieve thumbnail (appears to be on iPod, but no image info available): type: %d, filename: '%s'\n"),
-		     thumb->type, thumb->filename);
-	    return NULL;
-	}
-
-	pixels = itdb_thumb_get_rgb_data (device, thumb);
+        if (item->format == NULL) {
+	    g_warning (_("Unable to retrieve thumbnail (appears to be on iPod, but no image info available): filename: '%s'\n"),
+		       item->filename);
+            return NULL;
+        }
+	pixels = itdb_thumb_get_rgb_data (device, item);
 	if (pixels == NULL)
 	{
 	    return NULL;
@@ -1097,6 +837,7 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 				      img_info->width*3,
 				      (GdkPixbufDestroyNotify)g_free,
 				      NULL);
+
 	/* !! do not g_free(pixels) here: it will be freed when doing a
 	 * gdk_pixbuf_unref() on the GdkPixbuf !! */
 
@@ -1133,113 +874,39 @@ itdb_thumb_get_gdk_pixbuf (Itdb_Device *device, Itdb_Thumb *thumb)
 	pixbuf = gdk_pixbuf_copy (pixbuf_sub);
 	gdk_pixbuf_unref (pixbuf_full);
 	gdk_pixbuf_unref (pixbuf_sub);
-    }
 
-    return pixbuf;
-#else
-    return NULL;
-#endif
+        return pixbuf;
 }
+#else
+gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Thumb_Ipod_Item *item) 
+{
+    return NULL;
+}
+#endif
 
 /**
- * itdb_thumb_new:
- * 
- * Creates a new #Itdb_Thumb
+ * itdb_artwork_get_thumbnail!
+ * @artwork: an #Itdb_Artwork
+ * @width: width of the pixbuf to retrieve, -1 for the biggest possible size 
+ * (with no scaling)
+ * @height: height of the pixbuf to retrieve, -1 for the biggest possible size
+ * (with no scaling)
  *
- * Return Value: newly allocated #Itdb_Thumb to be freed with itdb_thumb_free()
- * after use
+ * Returns a #GdkPixbuf representing the thumbnail stored in @artwork
+ * scaling it if appropriate. If either height or width is -1, then the 
+ * biggest unscaled thumbnail available will be returned
+ *
+ * Return value: a #GdkPixbuf that must be unreffed when no longer used, NULL
+ * if no artwork could be found or if libgpod is compiled without GdkPixbuf
+ * support
  **/
-Itdb_Thumb *itdb_thumb_new (void)
+gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork, 
+                                  gint width, gint height)
 {
-    Itdb_Thumb *thumb = g_new0 (Itdb_Thumb, 1);
-    return thumb;
-}
-
-/** 
- * itdb_thumb_free:
- * @thumb: an #Itdb_Thumb
- *
- * Frees the memory used by @thumb
- **/
-void itdb_thumb_free (Itdb_Thumb *thumb)
-{
-    g_return_if_fail (thumb);
-
-    g_free (thumb->image_data);
-#ifdef HAVE_GDKPIXBUF
-    if (thumb->pixbuf) {
-        g_object_unref (G_OBJECT (thumb->pixbuf));
+    g_return_val_if_fail (artwork != NULL, NULL);
+    if (artwork->thumbnail == NULL) {
+        return NULL;
     }
-#endif
-    g_free (thumb->filename);
-    g_free (thumb);
-}
-
-
-/** 
- * itdb_thumb_duplicate:
- * @thumb: an #Itdb_Thumb
- *
- * Duplicates the data contained in @thumb
- *
- * Return value: a newly allocated copy of @thumb to be freed with 
- * itdb_thumb_free() after use
- **/
-Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb)
-{
-    Itdb_Thumb *new_thumb;
-
-    g_return_val_if_fail (thumb, NULL);
-
-    new_thumb = itdb_thumb_new ();
-    memcpy (new_thumb, thumb, sizeof (Itdb_Thumb));
-    new_thumb->filename = g_strdup (thumb->filename);
- 
-    if (thumb->image_data)
-    {
-	/* image_data_len already copied with the memcpy above */
-	new_thumb->image_data = g_malloc (thumb->image_data_len);
-	memcpy (new_thumb->image_data, thumb->image_data,
-		new_thumb->image_data_len);
-    }
-#ifdef HAVE_GDKPIXBUF
-    if (thumb->pixbuf) {
-        g_object_ref (G_OBJECT (thumb->pixbuf));
-    }
-#endif
-    return new_thumb;
-}
-
-
-G_GNUC_INTERNAL gint
-itdb_thumb_get_byteorder (const ItdbThumbFormat format)
-{
-    switch (format)
-    {
-    case THUMB_FORMAT_UYVY_LE:
-    case THUMB_FORMAT_I420_LE:
-    case THUMB_FORMAT_RGB565_LE:
-    case THUMB_FORMAT_RGB565_LE_90:
-    case THUMB_FORMAT_RGB555_LE:
-    case THUMB_FORMAT_RGB555_LE_90:
-    case THUMB_FORMAT_RGB888_LE:
-    case THUMB_FORMAT_RGB888_LE_90:
-    case THUMB_FORMAT_REC_RGB555_LE:
-    case THUMB_FORMAT_REC_RGB555_LE_90:
-    case THUMB_FORMAT_EXPERIMENTAL_LE:
-	return G_LITTLE_ENDIAN;
-    case THUMB_FORMAT_UYVY_BE:
-    case THUMB_FORMAT_I420_BE:
-    case THUMB_FORMAT_RGB565_BE:
-    case THUMB_FORMAT_RGB565_BE_90:
-    case THUMB_FORMAT_RGB555_BE:
-    case THUMB_FORMAT_RGB555_BE_90:
-    case THUMB_FORMAT_RGB888_BE:
-    case THUMB_FORMAT_RGB888_BE_90:
-    case THUMB_FORMAT_REC_RGB555_BE:
-    case THUMB_FORMAT_REC_RGB555_BE_90:
-    case THUMB_FORMAT_EXPERIMENTAL_BE:
-	return G_BIG_ENDIAN;
-    }
-    g_return_val_if_reached (-1);
+    return itdb_thumb_to_pixbuf_at_size (device, artwork->thumbnail, 
+                                         width, height);
 }

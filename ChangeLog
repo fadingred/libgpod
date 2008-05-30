@@ -1,3 +1,26 @@
+2008-05-30  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/Makefile.am:
+	* src/db-artwork-parser.c:
+	* src/db-artwork-writer.c:
+	* src/db-image-parser.c:
+	* src/db-image-parser.h:
+	* src/itdb.h:
+	* src/itdb_artwork.c:
+	* src/itdb_device.h:
+	* src/itdb_photoalbum.c:
+	* src/itdb_track.c:
+	* src/ithumb-writer.c:
+	* tests/test-covers.c:
+	* tests/test-photos.c: rework Itdb_Thumb type. Now it's split into
+	different subtypes depending on what it represents (GdkPixbuf,
+	thumbnail read from the ipod, ...). Itdb_Artwork now contains only a
+	pointer to a single Itdb_Thumb (it used to contain a GList * of
+	Itdb_Thumb) since the only time when the list is useful is for thumbs
+	read from the ipod. Using a list for the other types of thumbnails
+	created some complications when trying to set art on an Itdb_Track that
+	wasn't attached to an Itdb_iTunesDB.
+
 2008-05-29  Christophe Fergeau <teuf at gnome.org>
 
 	* src/itunesdb.c:

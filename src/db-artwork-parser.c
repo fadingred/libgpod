@@ -163,7 +163,7 @@ parse_mhod_string (DBParseContext *ctx, GError *error)
 
 static int
 parse_mhod_3 (DBParseContext *ctx,
-	      Itdb_Thumb *thumb, GError *error)
+	      Itdb_Thumb_Ipod_Item *thumb, GError *error)
 {
 	struct ParsedMhodString *mhod;
 	mhod = parse_mhod_string (ctx, error);
@@ -182,11 +182,11 @@ parse_mhod_3 (DBParseContext *ctx,
 }
 
 static int
-parse_photo_mhni (DBParseContext *ctx, Itdb_Artwork *artwork, GError *error)
+parse_photo_mhni (DBParseContext *ctx, Itdb_Thumb_Ipod *thumbs, GError *error)
 {
 	MhniHeader *mhni;
 	DBParseContext *mhod_ctx; 
-	Itdb_Thumb *thumb;
+	Itdb_Thumb_Ipod_Item *thumb;
 
 	mhni = db_parse_context_get_m_header (ctx, MhniHeader, "mhni");
 	if (mhni == NULL) {
@@ -199,8 +199,8 @@ parse_photo_mhni (DBParseContext *ctx, Itdb_Artwork *artwork, GError *error)
 	if (thumb == NULL) {
 		return 0;
 	}
-
-	artwork->thumbnails = g_list_append (artwork->thumbnails, thumb);
+    
+        itdb_thumb_ipod_add (thumbs, thumb);
 
 	mhod_ctx = db_parse_context_get_sub_context (ctx, ctx->header_len);
 	if (mhod_ctx == NULL) {
@@ -213,7 +213,7 @@ parse_photo_mhni (DBParseContext *ctx, Itdb_Artwork *artwork, GError *error)
 }
 
 static int
-parse_photo_mhod (DBParseContext *ctx, Itdb_Artwork *artwork, GError *error)
+parse_photo_mhod (DBParseContext *ctx, Itdb_Thumb_Ipod *thumbs, GError *error)
 {
 	ArtworkDB_MhodHeader *mhod;
 	DBParseContext *mhni_ctx;
@@ -235,7 +235,7 @@ parse_photo_mhod (DBParseContext *ctx, Itdb_Artwork *artwork, GError *error)
 		if (mhni_ctx == NULL) {
 			return -1;
 		}
-		parse_photo_mhni (mhni_ctx, artwork, NULL);
+		parse_photo_mhni (mhni_ctx, thumbs, NULL);
 		g_free (mhni_ctx);
 	}
 
@@ -253,7 +253,8 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	Itdb_PhotoDB *photodb;
 	guint64 mactime;
 	Itdb_Device *device = db_get_device (ctx->db);
-
+        Itdb_Thumb_Ipod *thumbs;
+            
 	mhii = db_parse_context_get_m_header (ctx, MhiiHeader, "mhii");
 	if (mhii == NULL)
 	{
@@ -275,12 +276,14 @@ parse_mhii (DBParseContext *ctx, GError *error)
 	artwork->artwork_size = get_gint32 (mhii->orig_img_size, ctx->byte_order);
 	artwork->dbid = get_gint64 (mhii->song_id, ctx->byte_order);
 
+        thumbs = (Itdb_Thumb_Ipod *)itdb_thumb_ipod_new ();
+        artwork->thumbnail = (Itdb_Thumb *)thumbs;
 	cur_offset = ctx->header_len;
 	mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	num_children = get_gint32 (mhii->num_children, ctx->byte_order);
 	while ((num_children > 0) && (mhod_ctx != NULL))
 	{
-	    parse_photo_mhod (mhod_ctx, artwork, NULL);
+	    parse_photo_mhod (mhod_ctx, thumbs, NULL);
 	    num_children--;
 	    cur_offset += mhod_ctx->total_len;
 	    g_free (mhod_ctx);

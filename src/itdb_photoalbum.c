@@ -361,7 +361,6 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
     gboolean result;
     Itdb_Artwork *artwork;
     Itdb_PhotoAlbum *album;
-    const Itdb_ArtworkFormat *format;
 
     g_return_val_if_fail (db, NULL);
     g_return_val_if_fail (db->device, NULL);
@@ -418,40 +417,21 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 
     artwork = itdb_artwork_new ();
 
-    /* Add a thumbnail for every supported format */
-    format = itdb_device_get_artwork_formats (db->device);
-    g_return_val_if_fail (format, NULL);
-
-    for(result = TRUE; format->type != -1 && result == TRUE; format++)
+    if (filename)
     {
-	if (itdb_thumb_type_is_valid_for_db (format->type, DB_TYPE_PHOTO))
-	{
-	    if (filename)
-	    {
-		result = itdb_artwork_add_thumbnail (artwork,
-						     format->type,
-						     filename,
-						     rotation,
-						     error);
-	    }
-	    if (image_data)
-	    {
-		result = itdb_artwork_add_thumbnail_from_data (artwork,
-							       format->type,
-							       image_data,
-							       image_data_len,
-							       rotation,
-							       error);
-	    }
-	    if (pixbuf) 
-	    {
-		result = itdb_artwork_add_thumbnail_from_pixbuf (artwork,
-								 format->type, 
-								 pixbuf,
-								 rotation,
-								 error);
-	    }
-	}
+        result = itdb_artwork_set_thumbnail (artwork, filename,
+                                             rotation, error);
+    }
+    if (image_data)
+    {
+        result = itdb_artwork_set_thumbnail_from_data (artwork, image_data,
+                                                       image_data_len,
+                                                       rotation, error);
+    }
+    if (pixbuf) 
+    {
+        result = itdb_artwork_set_thumbnail_from_pixbuf (artwork, pixbuf,
+                                                         rotation, error);
     }
 
     if (result != TRUE)

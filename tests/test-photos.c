@@ -31,6 +31,8 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib/gi18n-lib.h>
 
+#include "itdb_thumb.h"
+
 static void usage (int argc, char **argv)
 {
 /*    gchar *name = argv[0];*/
@@ -60,40 +62,33 @@ static Itdb_Artwork *get_photo_by_id (Itdb_PhotoDB *db, guint32 id)
 }
 
 static void
-save_itdb_thumb (Itdb_PhotoDB *itdb, Itdb_Thumb *thumb,
-		 const gchar *filename)
-{
-	GdkPixbuf *pixbuf;
-	
-	pixbuf = itdb_thumb_get_gdk_pixbuf (itdb->device, thumb);
-
-	if (pixbuf != NULL) {
-		gdk_pixbuf_save (pixbuf, filename, "png", NULL, NULL);
-		gdk_pixbuf_unref (pixbuf);
-	}
-}
-
-static void
 dump_thumbs (Itdb_PhotoDB *db, Itdb_Artwork *artwork,
 	     const gchar *album_name, const gchar *dir)
 {
 	GList *it;
 	gint i = 0;
+        GList *thumbnails;
+        Itdb_Thumb_Ipod *thumb;
 
-	for (it = artwork->thumbnails; it != NULL; it = it->next, i++) {
-		Itdb_Thumb *thumb;
+        thumb = (Itdb_Thumb_Ipod *)artwork->thumbnail;
+        thumbnails = itdb_thumb_ipod_to_pixbufs (db->device, thumb);
+	for (it = thumbnails; it != NULL; it = it->next, i++) {
 		gchar *filename, *path;
+                GdkPixbuf *pixbuf;
 
-		thumb = (Itdb_Thumb *)it->data;
-		g_return_if_fail (thumb);
+                pixbuf = GDK_PIXBUF (it->data);
+
+		g_return_if_fail (pixbuf);
 
 		filename = g_strdup_printf ("%s-%d-%d.png",
 					    album_name, artwork->id, i );
 		path = g_build_filename (dir, filename, NULL);
 		g_free (filename);
-		save_itdb_thumb (db, thumb, path);
+		gdk_pixbuf_save (pixbuf, path, "png", NULL, NULL);
+		gdk_pixbuf_unref (pixbuf);
 		g_free (path);
 	}
+        g_list_free (thumbnails);
 }
 
 static void

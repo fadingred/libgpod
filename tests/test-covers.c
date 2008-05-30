@@ -30,43 +30,55 @@
 
 #include <locale.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-
+#include "itdb_thumb.h"
 
 static void
-save_itdb_thumb (Itdb_iTunesDB *itdb, Itdb_Thumb *thumb, const char *filename)
+save_itdb_thumb (Itdb_Track *track, GdkPixbuf *pixbuf, guint id)
 {
-	GdkPixbuf *pixbuf;
-	
-	pixbuf = itdb_thumb_get_gdk_pixbuf (itdb->device, thumb);
-	if (pixbuf != NULL) {
-		gdk_pixbuf_save (pixbuf, filename, "png", NULL, NULL);
-		gdk_pixbuf_unref (pixbuf);
-/*		g_print ("Saved %s\n", filename); */
-	}
+        char *filename;
+        gint width;
+        gint height;
+
+        g_object_get (G_OBJECT (pixbuf),
+                      "width", &width,
+                      "height", &height,
+                      NULL);
+        filename = g_strdup_printf ("%03d_%s-%s-%s-%xx%x-%016"G_GINT64_MODIFIER"x.png",
+                                    id,
+                                    track->artist, track->album, 
+                                    track->title, width, height,
+                                    track->dbid);
+        if (filename == NULL) {
+                return;
+        }
+        g_print ("  %s\n", filename);
+        gdk_pixbuf_save (pixbuf, filename, "png", NULL, NULL);
+        gdk_pixbuf_unref (pixbuf);
+        /*		g_print ("Saved %s\n", filename); */
+        g_free (filename);
 }
+
 static void
 save_song_thumbnails (Itdb_Track *song)
 {
-        static gint count = 0;
-	GList *it;
-	for (it = song->artwork->thumbnails; it != NULL; it = it->next) {
-		Itdb_Thumb *thumb;
-		gchar *filename;
+        static guint count = 0;
+        GList *it;
+        GList *thumbs;
+        Itdb_Thumb_Ipod *thumb = (Itdb_Thumb_Ipod*)song->artwork->thumbnail;
+        if (thumb == NULL) {
+            return;
+        }
+        thumbs = itdb_thumb_ipod_to_pixbufs (song->itdb->device, thumb);
+	for (it = thumbs; it != NULL; it = it->next) {
+                GdkPixbuf *pixbuf;
 
-		thumb = (Itdb_Thumb *)it->data;
-		g_return_if_fail (thumb);
+		pixbuf = GDK_PIXBUF (it->data);
+		g_return_if_fail (pixbuf);
 
-		filename = g_strdup_printf ("%03d_%s-%s-%s-%d-%016"G_GINT64_MODIFIER"x.png",
-					    count++,
-					    song->artist, song->album, 
-					    song->title, thumb->type, 
-					    song->dbid);
-		if (filename != NULL) {
-		        g_print ("  %s\n", filename);
-			save_itdb_thumb (song->itdb, thumb, filename);
-			g_free (filename);
-		}
+                save_itdb_thumb (song, pixbuf, count);
+                count++;
 	}
+        g_list_free (thumbs);
 }
 
 

@@ -559,32 +559,27 @@ ipod_image_get_ithmb_filename (const char *mount_point, gint format_id, gint ind
 
 /* If appropriate, rotate thumb->pixbuf by the value specified in
  * thumb->rotation or thumb->pixbuf's EXIF orientation value. */
-static void
-ithumb_writer_handle_rotation (Itdb_Thumb *thumb) {
-  /* Make sure @rotation is valid (0, 90, 180, 270) */
-  thumb->rotation = thumb->rotation % 360;
-  thumb->rotation /= 90;
-  thumb->rotation *= 90;
-
-
+static GdkPixbuf *
+ithumb_writer_handle_rotation (GdkPixbuf *pixbuf, guint *rotation)
+{
   /* If the caller did not specify a rotation, and there is an orientation header
      present in the pixbuf (from EXIF), use that to choose a rotation.
      NOTE: Do this before doing any transforms on the pixbuf, or you will lose
      the EXIF metadata.
      List of orientation values: http://sylvana.net/jpegcrop/exif_orientation.html */
-  if (thumb->rotation == 0) {
+  if (*rotation == 0) {
     /* In GdkPixbuf 2.12 or above, this returns the EXIF orientation value. */
-    const char* exif_orientation = gdk_pixbuf_get_option(thumb->pixbuf, "orientation");
+    const char* exif_orientation = gdk_pixbuf_get_option(pixbuf, "orientation");
     if (exif_orientation != NULL) {
       switch (exif_orientation[0]) {
 	case '3':
-	  thumb->rotation = 180;
+	  *rotation = 180;
           break;
 	case '6':
-	  thumb->rotation = 270;
+	  *rotation = 270;
           break;
 	case '8':
-	  thumb->rotation = 90;
+	  *rotation = 90;
           break;
 	/* '1' means no rotation.  The other four values are all various
 	   transpositions, which are rare in real photos so we don't
@@ -594,21 +589,18 @@ ithumb_writer_handle_rotation (Itdb_Thumb *thumb) {
   }
 
   /* Rotate if necessary */
-  if (thumb->rotation != 0)
+  if (*rotation != 0)
   {
-      GdkPixbuf *new_pixbuf = gdk_pixbuf_rotate_simple (thumb->pixbuf, thumb->rotation);
-      g_object_unref (thumb->pixbuf);
-      thumb->pixbuf = new_pixbuf;
-      /* Clean up */
-      thumb->rotation = 0;
+      return gdk_pixbuf_rotate_simple (pixbuf, *rotation);
   }
+  return g_object_ref (G_OBJECT (pixbuf));
 }
 
 /* On the iPhone, thumbnails are presented as squares in a grid.
    In order to fit the grid, they have to be cropped as well as
    scaled. */
 static GdkPixbuf *
-ithumb_writer_scale_and_crop (Itdb_Thumb *thumb,
+ithumb_writer_scale_and_crop (GdkPixbuf *input_pixbuf,
                               gint width, gint height,
                               gboolean crop)
 {
@@ -618,9 +610,8 @@ ithumb_writer_scale_and_crop (Itdb_Thumb *thumb,
     gint offset_x, offset_y;
     gint border_width = 0;
 
-    GdkPixbuf *input_pixbuf, *output_pixbuf;
+    GdkPixbuf *output_pixbuf;
 
-    input_pixbuf = GDK_PIXBUF(thumb->pixbuf);
     g_object_get (G_OBJECT (input_pixbuf), 
 		  "width", &input_width,
 		  "height", &input_height,
@@ -675,7 +666,38 @@ ithumb_writer_scale_and_crop (Itdb_Thumb *thumb,
     return output_pixbuf;
 }
 
-static void *pack_thumbnail (iThumbWriter *writer, Itdb_Thumb *thumb,
+static GdkPixbuf *
+ithumb_writer_handle_pixbuf_transform (iThumbWriter *writer, 
+                                       GdkPixbuf *pixbuf, guint rotation)
+{
+    GdkPixbuf *rotated_pixbuf;
+    GdkPixbuf *scaled_pixbuf;
+
+    guint width;
+    guint height;
+
+    rotated_pixbuf = ithumb_writer_handle_rotation (pixbuf, &rotation);
+
+    if ((rotation == 0) || (rotation == 180))
+    {
+	width = writer->img_info->width;
+	height = writer->img_info->height;
+    }
+    else
+    {
+	width = writer->img_info->height;
+	height = writer->img_info->width;
+    }
+
+    scaled_pixbuf = ithumb_writer_scale_and_crop (rotated_pixbuf, width, height,
+                                                  writer->img_info->crop);
+    g_object_unref (rotated_pixbuf);
+    rotated_pixbuf = NULL;
+
+    return scaled_pixbuf;
+}
+
+static void *pack_thumbnail (iThumbWriter *writer, Itdb_Thumb_Ipod_Item *thumb,
                              GdkPixbuf *pixbuf)
 {
     typedef void *(*PackerFunc)(GdkPixbuf *pixbuf,
@@ -726,7 +748,7 @@ static void *pack_thumbnail (iThumbWriter *writer, Itdb_Thumb *thumb,
                               thumb->vertical_padding,
                               &thumb->size);
 }
-static gboolean write_pixels (iThumbWriter *writer, Itdb_Thumb *thumb,
+static gboolean write_pixels (iThumbWriter *writer, Itdb_Thumb_Ipod_Item *thumb,
                               void *pixels)
 {
     if (pixels == NULL)
@@ -760,9 +782,10 @@ static gboolean write_pixels (iThumbWriter *writer, Itdb_Thumb *thumb,
     return TRUE;
 }
 
-static char *get_ithmb_filename (iThumbWriter *writer, Itdb_Thumb *thumb)
+static char *get_ithmb_filename (iThumbWriter *writer, 
+                                 const Itdb_ArtworkFormat *format)
 {
-    switch (thumb->type)
+    switch (format->type)
     {
     case ITDB_THUMB_PHOTO_LARGE:
     case ITDB_THUMB_PHOTO_SMALL:
@@ -788,7 +811,8 @@ static char *get_ithmb_filename (iThumbWriter *writer, Itdb_Thumb *thumb)
     g_return_val_if_reached (NULL);
 }
 
-static void set_thumb_padding (iThumbWriter *writer, Itdb_Thumb *thumb, 
+static void set_thumb_padding (iThumbWriter *writer, 
+                               Itdb_Thumb_Ipod_Item *thumb, 
                                gint width, gint height)
 {
     switch (writer->db_type)
@@ -826,18 +850,20 @@ static GdkPixbuf *pixbuf_from_image_data (guchar *image_data, gsize len)
     return pixbuf;
 }
 
-static gboolean
+static Itdb_Thumb_Ipod_Item *
 ithumb_writer_write_thumbnail (iThumbWriter *writer, 
 			       Itdb_Thumb *thumb)
 {
     GdkPixbuf *pixbuf = NULL;
     void *pixels = NULL;
     gint width, height; /* must be gint -- see comment below */
+    Itdb_Thumb_Ipod_Item *thumb_ipod;
+    GdkPixbuf *scaled_pixbuf;
     gboolean result;
 
-    g_return_val_if_fail (writer, FALSE);
-    g_return_val_if_fail (writer->img_info, FALSE);
-    g_return_val_if_fail (thumb, FALSE);
+    g_return_val_if_fail (writer, NULL);
+    g_return_val_if_fail (writer->img_info, NULL);
+    g_return_val_if_fail (thumb, NULL);
 
     /* An thumb can start with one of:
         1. a filename
@@ -846,84 +872,78 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
        In case 1 and 2, we load the relevant data into a GdkPixbuf and proceed
        with case 3.
     */
-    if (thumb->filename)
-    {   /* read image from filename */
-	thumb->pixbuf = gdk_pixbuf_new_from_file (thumb->filename, NULL);
-	g_free (thumb->filename);
-	thumb->filename = NULL;
+    if (thumb->data_type == ITDB_THUMB_TYPE_FILE)
+    {   
+        Itdb_Thumb_File *thumb_file = (Itdb_Thumb_File *)thumb;
+	pixbuf = gdk_pixbuf_new_from_file (thumb_file->filename, NULL);
     } 
-    else if (thumb->image_data)
-    {   /* image data is stored in image_data and image_data_len */
-        thumb->pixbuf = pixbuf_from_image_data (thumb->image_data, 
-                                                thumb->image_data_len);
-	g_free (thumb->image_data);
-	thumb->image_data = NULL;
-	thumb->image_data_len = 0;
+    else if (thumb->data_type == ITDB_THUMB_TYPE_MEMORY)
+    {  
+        Itdb_Thumb_Memory *thumb_mem = (Itdb_Thumb_Memory *)thumb;
+        pixbuf = pixbuf_from_image_data (thumb_mem->image_data, 
+                                         thumb_mem->image_data_len);
+    }
+    else if (thumb->data_type == ITDB_THUMB_TYPE_PIXBUF)
+    {
+        Itdb_Thumb_Pixbuf *thumb_pixbuf = (Itdb_Thumb_Pixbuf *)thumb;
+        pixbuf = g_object_ref (G_OBJECT (thumb_pixbuf->pixbuf));
     }
 
-    if (thumb->pixbuf == NULL)
+    if (pixbuf == NULL)
     {
 	/* This is quite bad... if we just return FALSE the ArtworkDB
 	   gets messed up. */
-	thumb->pixbuf = gdk_pixbuf_from_pixdata (&questionmark_pixdata, FALSE, NULL);
+	pixbuf = gdk_pixbuf_from_pixdata (&questionmark_pixdata, FALSE, NULL);
 
-	if (!thumb->pixbuf)
+	if (!pixbuf)
 	{
 	    /* Somethin went wrong. let's insert a red thumbnail */
-	    thumb->pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, FALSE, 8,
+	    pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, FALSE, 8,
 				     writer->img_info->width,
 				     writer->img_info->height);
-	    gdk_pixbuf_fill (thumb->pixbuf, 0xff000000);
+	    gdk_pixbuf_fill (pixbuf, 0xff000000);
 	}
 	/* avoid rotation */
-	thumb->rotation = 0;
+        itdb_thumb_set_rotation (thumb, 0);
     }
 
-    g_assert(thumb->pixbuf);
+    g_assert(pixbuf);
 
-    ithumb_writer_handle_rotation(thumb);
-
-    /* If we rotate by 90 or 270 degrees interchange the width and
-     * height */
-    if ((thumb->rotation == 0) || (thumb->rotation == 180))
-    {
-	width = writer->img_info->width;
-	height = writer->img_info->height;
-    }
-    else
-    {
-	width = writer->img_info->height;
-	height = writer->img_info->width;
-    }
-
-    pixbuf = ithumb_writer_scale_and_crop (thumb, width, height,
-                                           writer->img_info->crop);
-    g_object_unref (thumb->pixbuf);
-    thumb->pixbuf = NULL;
+    scaled_pixbuf = ithumb_writer_handle_pixbuf_transform (writer, pixbuf, itdb_thumb_get_rotation (thumb));
+    g_object_unref (pixbuf);
+    pixbuf = NULL;
 
     /* !! cannot write directly to &thumb->width/height because
        g_object_get() returns a gint, but thumb->width/height are
        gint16 !! */
-    g_object_get (G_OBJECT (pixbuf), 
+    g_object_get (G_OBJECT (scaled_pixbuf), 
 		  "width", &width,
 		  "height", &height,
 		  NULL);
 
-    set_thumb_padding (writer, thumb, width, height);
+    thumb_ipod = itdb_thumb_new_item_from_ipod (writer->img_info);
+    g_assert (thumb_ipod != NULL);
+
+    set_thumb_padding (writer, thumb_ipod, width, height);
 
     /* The thumbnail width/height is inclusive padding */
-    thumb->width = thumb->horizontal_padding + width;
-    thumb->height = thumb->vertical_padding + height;
-    thumb->offset = writer->cur_offset;
+    thumb_ipod->width = thumb_ipod->horizontal_padding + width;
+    thumb_ipod->height = thumb_ipod->vertical_padding + height;
+    thumb_ipod->offset = writer->cur_offset;
 
-    pixels = pack_thumbnail (writer, thumb, pixbuf);
-    g_object_unref (G_OBJECT (pixbuf));
+    pixels = pack_thumbnail (writer, thumb_ipod, scaled_pixbuf);
+    g_object_unref (G_OBJECT (scaled_pixbuf));
 
-    thumb->filename = get_ithmb_filename (writer, thumb);
-    result = write_pixels (writer, thumb, pixels);
+    thumb_ipod->filename = get_ithmb_filename (writer, writer->img_info);
+    result = write_pixels (writer, thumb_ipod, pixels);
     g_free (pixels);
 
-    return result;
+    if (result == FALSE) {
+        itdb_thumb_free ((Itdb_Thumb*)thumb_ipod);
+        return NULL;
+    }
+
+    return thumb_ipod;
 }
 
 static gboolean
@@ -968,22 +988,24 @@ ithumb_writer_update (iThumbWriter *writer)
 
 
 static void
-write_thumbnail (gpointer _writer, gpointer _artwork)
+write_thumbnail (iThumbWriter *writer, 
+                 Itdb_Artwork *artwork, 
+                 Itdb_Thumb_Ipod *thumb_ipod)
 {
-	iThumbWriter *writer = _writer;
-	Itdb_Artwork *artwork = _artwork;
- 	Itdb_Thumb *thumb;
+        g_assert (artwork->thumbnail->data_type != ITDB_THUMB_TYPE_IPOD);
 
-	thumb = itdb_artwork_get_thumb_by_type (artwork,
-						writer->img_info->type);
-
-	/* size == 0 indicates a thumbnail not yet written to the
-	   thumbnail file */
-	if (thumb && (thumb->size == 0))
+	if (artwork->thumbnail)
 	{
 	    /* check if new thumbnail file has to be started */
-	    if (ithumb_writer_update (writer))
-		ithumb_writer_write_thumbnail (writer, thumb);
+	    if (ithumb_writer_update (writer)) {
+                Itdb_Thumb_Ipod_Item *item;
+                item = ithumb_writer_write_thumbnail (writer, 
+                                                      artwork->thumbnail);
+                if (item != NULL) {
+                    itdb_thumb_ipod_add (thumb_ipod, item);
+                }
+
+            }
 	}
 }
 
@@ -1035,7 +1057,7 @@ ithumb_writer_new (const char *mount_point,
 static gint offset_sort (gconstpointer a, gconstpointer b);
 static gint offset_sort (gconstpointer a, gconstpointer b)
 {
-    return (-(((Itdb_Thumb *)a)->offset - ((Itdb_Thumb *)b)->offset));
+    return (-(((Itdb_Thumb_Ipod_Item *)a)->offset - ((Itdb_Thumb_Ipod_Item *)b)->offset));
 }
 
 static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
@@ -1070,7 +1092,7 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
     /* check if all thumbnails have the same size */
     for (gl=thumbs; gl; gl=gl->next)
     {
-	Itdb_Thumb *img = gl->data;
+	Itdb_Thumb_Ipod_Item *img = gl->data;
 
 	if (size == 0)
 	    size = img->size;
@@ -1122,7 +1144,7 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
     /* check each thumbnail slot */
     for (offset=0; gl && (offset<statbuf.st_size); offset+=size)
     {
-	Itdb_Thumb *thumb = gl->data;
+	Itdb_Thumb_Ipod_Item *thumb = gl->data;
 	g_return_val_if_fail (thumb, FALSE);
 
 	/* Try to find a thumbnail that uses this slot */
@@ -1142,7 +1164,7 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
 	    /* did not find a thumbnail with matching offset -> copy
 	       data from last slot (== first element) */
 	    GList *first_gl = g_list_first (thumbs);
-	    Itdb_Thumb *first_thumb = first_gl->data;
+	    Itdb_Thumb_Ipod_Item *first_thumb = first_gl->data;
 	    guint32 first_offset;
 
 	    g_return_val_if_fail (first_thumb, FALSE);
@@ -1269,46 +1291,53 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 	case DB_TYPE_ITUNES:
 		for (gl=db_get_itunesdb(db)->tracks; gl; gl=gl->next)
 		{
-			Itdb_Thumb *thumb;
-			Itdb_Track *track = gl->data;
+                        Itdb_Track *track = gl->data;
 			g_return_val_if_fail (track, FALSE);
-
-			thumb = itdb_artwork_get_thumb_by_type (track->artwork,
-					info->type);
-			if (thumb && thumb->filename && (thumb->size != 0))
-			{
-				filename = itdb_thumb_get_filename (
+			Itdb_Thumb *thumb = track->artwork->thumbnail;
+                        if (!itdb_track_has_thumbnails (track)) {
+                            continue;
+                        }
+                        if (thumb->data_type == ITDB_THUMB_TYPE_IPOD) {
+                            Itdb_Thumb_Ipod_Item *item;
+                            item = itdb_thumb_ipod_get_item_by_type (thumb,
+                                                                     info);
+                            if (item) {
+				filename = itdb_thumb_ipod_get_filename (
 				        db_get_device(db),
-				        thumb);
+				        item);
 				if (filename)
 				{
 					thumbs = g_hash_table_lookup (filenamehash, filename);
 					thumbs = g_list_append (thumbs, thumb);
 					g_hash_table_insert (filenamehash, filename, thumbs);
 				}
-			}
-		}
+                            }
+                        }
+                }
 		break;
     case DB_TYPE_PHOTO:
 	for (gl=db_get_photodb(db)->photos; gl; gl=gl->next)
 	{
-		Itdb_Thumb *thumb;
 		Itdb_Artwork *artwork = gl->data;
-
-		thumb = itdb_artwork_get_thumb_by_type (artwork,
-				info->type);
-		if (thumb && thumb->filename && (thumb->size != 0))
-		{
-			filename = itdb_thumb_get_filename (
-			        db_get_device (db),
-			        thumb);
+		Itdb_Thumb *thumb = artwork->thumbnail;
+                if (thumb == NULL) {
+                    continue;
+                }
+                if (thumb->data_type == ITDB_THUMB_TYPE_IPOD) {
+                    Itdb_Thumb_Ipod_Item *item;
+                    item = itdb_thumb_ipod_get_item_by_type (thumb, info);
+                    if (item) 
+                    {
+			filename = itdb_thumb_ipod_get_filename (
+			        db_get_device (db), item);
 			if (filename)
 			{
 				thumbs = g_hash_table_lookup (filenamehash, filename);
 				thumbs = g_list_append (thumbs, thumb);
 				g_hash_table_insert (filenamehash, filename, thumbs);
 			}
-		}
+                    } 
+                }
 	}
 	break;
     default:
@@ -1381,7 +1410,7 @@ itdb_write_ithumb_files (Itdb_DB *db)
 	while (format->type != -1) {
 		iThumbWriter *writer;
 
-		if (itdb_thumb_type_is_valid_for_db (format->type, db->db_type))
+		if (itdb_thumb_type_is_valid_for_db (format, db->db_type))
 		{
 		    ithmb_rearrange_existing_thumbnails (db, format );
 		    writer = ithumb_writer_new (mount_point, 
@@ -1401,21 +1430,48 @@ itdb_write_ithumb_files (Itdb_DB *db)
 	case DB_TYPE_ITUNES:
 		for (it = db_get_itunesdb(db)->tracks; it != NULL; it = it->next) {
 			Itdb_Track *track;
+                        Itdb_Thumb_Ipod *thumb_ipod;
+                        ItdbThumbDataType type;
 
 			track = it->data;
 			g_return_val_if_fail (track, -1);
-
-			g_list_foreach (writers, write_thumbnail, track->artwork);
+                        if (!itdb_track_has_thumbnails (track)) {
+                            continue;
+                        }
+                        type = track->artwork->thumbnail->data_type;
+                        if (type != ITDB_THUMB_TYPE_IPOD) {
+                            GList *it;
+                            thumb_ipod = (Itdb_Thumb_Ipod *)itdb_thumb_ipod_new ();
+                            for (it = writers; it != NULL; it = it->next) {
+                                write_thumbnail (it->data,
+                                                 track->artwork,
+                                                 thumb_ipod);
+                            }
+                            itdb_thumb_free (track->artwork->thumbnail);
+                            track->artwork->thumbnail = (Itdb_Thumb *)thumb_ipod;
+                        }
 		}
 		break;
 	case DB_TYPE_PHOTO:
 		for (it = db_get_photodb(db)->photos; it != NULL; it = it->next) {
 			Itdb_Artwork *photo;
+                        Itdb_Thumb_Ipod *thumb_ipod;
+                        ItdbThumbDataType type;
 
 			photo = it->data;
 			g_return_val_if_fail (photo, -1);
-
-			g_list_foreach (writers, write_thumbnail, photo);
+                        if (photo->thumbnail == NULL) {
+                            continue;
+                        }
+                        type = photo->thumbnail->data_type;
+                        if (type != ITDB_THUMB_TYPE_IPOD) {
+                            thumb_ipod = (Itdb_Thumb_Ipod *)itdb_thumb_ipod_new ();
+                            for (it = writers; it != NULL; it = it->next) {
+                                write_thumbnail (it->data, photo, thumb_ipod);
+                            }
+                            itdb_thumb_free (photo->thumbnail);
+                            photo->thumbnail = (Itdb_Thumb *)thumb_ipod;
+                        }
 		}
 		break;
 	default:

@@ -29,6 +29,7 @@
 #include "db-itunes-parser.h"
 #include "itdb_device.h"
 #include "itdb_private.h"
+#include "itdb_thumb.h"
 #include "itdb.h"
 
 #define DEBUG_ARTWORK 0
@@ -77,16 +78,12 @@
 #define BLUE_SHIFT_888 0
 #define BLUE_MASK_888 (((1 << BLUE_BITS_888)-1) << BLUE_SHIFT_888)
 
-G_GNUC_INTERNAL Itdb_Thumb *ipod_image_new_from_mhni (MhniHeader *mhni, 
-						      Itdb_DB *db);
+G_GNUC_INTERNAL Itdb_Thumb_Ipod_Item *ipod_image_new_from_mhni (MhniHeader *mhni, 
+			        			   Itdb_DB *db);
 
 G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_DB *db);
 
 G_GNUC_INTERNAL gboolean
-itdb_thumb_type_is_valid_for_db (const ItdbThumbType thumb_type, DbType db_type);
-
-G_GNUC_INTERNAL
-const Itdb_ArtworkFormat *itdb_get_artwork_info_from_type (
-    Itdb_Device *ipod, ItdbThumbType image_type);
+itdb_thumb_type_is_valid_for_db (const Itdb_ArtworkFormat *format, DbType db_type);
 
 #endif
