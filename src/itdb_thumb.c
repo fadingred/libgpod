@@ -152,9 +152,7 @@ itdb_thumb_ipod_item_duplicate (Itdb_Thumb_Ipod_Item *item)
     g_return_val_if_fail (item != NULL, NULL);
 
     new_item = itdb_thumb_new_item_from_ipod (item->format);
-    if (new_item == NULL) {
-        return NULL;
-    }
+
     new_item->filename = g_strdup (item->filename);
     new_item->offset = item->offset;
     new_item->size   = item->size;
@@ -198,17 +196,14 @@ Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb)
             Itdb_Thumb_Ipod *new_thumb;
             GList *it;
             new_thumb = (Itdb_Thumb_Ipod *)itdb_thumb_ipod_new ();
-            if (new_thumb == NULL) {
-                return NULL;
-            }
             for (it = thumb_ipod->thumbs; it != NULL; it = it->next) {
                 Itdb_Thumb_Ipod_Item *item;
                 item = itdb_thumb_ipod_item_duplicate (it->data);
                 if (item != NULL) {
                     itdb_thumb_ipod_add (new_thumb, item);
                 }
-                new_thumb->thumbs = g_list_reverse (new_thumb->thumbs);
             }
+	    new_thumb->thumbs = g_list_reverse (new_thumb->thumbs);
             return (Itdb_Thumb *)new_thumb;
         }
         case ITDB_THUMB_TYPE_INVALID:
@@ -360,6 +355,7 @@ gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
                                        gint width, gint height)
 {
     GdkPixbuf *pixbuf=NULL;
+
     if (thumb->data_type == ITDB_THUMB_TYPE_FILE)
     {   
         Itdb_Thumb_File *thumb_file = (Itdb_Thumb_File *)thumb;

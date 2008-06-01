@@ -1,3 +1,10 @@
+2008-06-01  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_thumb.c
+	  remove some unnecessary checks for NULL pointer
+	  (itdb_thumb_duplicate): move g_list_reverse() outside the loop
+	  modifying the list.
+	
 2008-05-30  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_thumb.c
