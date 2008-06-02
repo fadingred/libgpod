@@ -21,6 +21,10 @@ libgpod_la_SOURCES = 		\
 	pixmaps.c 		\
 	sha1.c
 
+if WITH_INTERNAL_GCHECKSUM
+libgpod_la_SOURCES += gchecksum.c gchecksum.h
+endif
+
 libgpod_la_LDFLAGS = -version-info $(LIBGPOD_SO_VERSION) -no-undefined
 
 libgpodincludebase = $(includedir)/gpod-1.0

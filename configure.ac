@@ -76,6 +76,25 @@ expanded_libdir=`(
     eval echo $libdir
 )`
 
+
+dnl **************************************************
+dnl we've copied gchecksum from glib 2.16. Only use the
+dnl copy if the version of glib on the system does not
+dnl provide it.
+dnl **************************************************
+
+AC_ARG_WITH(internal-gchecksum,
+            AC_HELP_STRING([--with-internal-gchecksum],
+                           [Build using internal copy of gchecksum]),,
+                           with_internal_gchecksum=no)
+
+if test "x$with_internal_gchecksum" = "xno"; then
+        PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.16.0, with_internal_gchecksum=no,
+                          with_internal_gchecksum=yes)
+fi
+
+AM_CONDITIONAL(WITH_INTERNAL_GCHECKSUM, test "x$with_internal_gchecksum" = "xyes")
+
 dnl **************************************************
 dnl * sgutils is necessary to get the xml device file from the ipod
 dnl **************************************************

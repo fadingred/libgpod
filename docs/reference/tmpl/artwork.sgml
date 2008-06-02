@@ -24,8 +24,9 @@ album/track artwork.  For working with photos, see the
 
 </para>
 
-@thumbnails: 
+@thumbnail: 
 @id: 
+@dbid: 
 @unk028: 
 @rating: 
 @unk036: 
@@ -46,22 +47,8 @@ album/track artwork.  For working with photos, see the
 
 </para>
 
-@type: 
-@filename: 
-@image_data: 
-@image_data_len: 
-@pixbuf: 
+@data_type: 
 @rotation: 
-@offset: 
-@size: 
-@width: 
-@height: 
-@horizontal_padding: 
-@vertical_padding: 
-@reserved_int1: 
-@reserved_int2: 
-@reserved1: 
-@reserved2: 
 
 <!-- ##### ENUM ItdbThumbType ##### -->
 <para>
@@ -106,71 +93,12 @@ album/track artwork.  For working with photos, see the
 @artwork: 
 
 
-<!-- ##### FUNCTION itdb_artwork_add_thumbnail ##### -->
-<para>
-
-</para>
-
-@artwork: 
-@type: 
-@filename: 
-@rotation: 
-@error: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_artwork_add_thumbnail_from_data ##### -->
-<para>
-
-</para>
-
-@artwork: 
-@type: 
-@image_data: 
-@image_data_len: 
-@rotation: 
-@error: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_artwork_add_thumbnail_from_pixbuf ##### -->
-<para>
-
-</para>
-
-@artwork: 
-@type: 
-@pixbuf: 
-@rotation: 
-@error: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_artwork_remove_thumbnail ##### -->
-<para>
-
-</para>
-
-@artwork: 
-@thumb: 
-
-
 <!-- ##### FUNCTION itdb_artwork_remove_thumbnails ##### -->
 <para>
 
 </para>
 
 @artwork: 
-
-
-<!-- ##### FUNCTION itdb_artwork_get_thumb_by_type ##### -->
-<para>
-
-</para>
-
-@artwork: 
-@type: 
-@Returns: 
 
 
 <!-- ##### FUNCTION itdb_thumb_get_gdk_pixbuf ##### -->
@@ -198,23 +126,5 @@ album/track artwork.  For working with photos, see the
 </para>
 
 @thumb: 
-
-
-<!-- ##### FUNCTION itdb_thumb_new ##### -->
-<para>
-
-</para>
-
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_thumb_get_filename ##### -->
-<para>
-
-</para>
-
-@device: 
-@thumb: 
-@Returns: 
 
 

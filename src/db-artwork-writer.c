@@ -569,7 +569,7 @@ write_mhli (Itdb_DB *db, iPodBuffer *buffer )
 		iPodBuffer *sub_buffer;
 		if (buffer->db_type == DB_TYPE_ITUNES) {
 			song = (Itdb_Track*)it->data;
-			if (!song->artwork->thumbnail || (song->artwork->id == 0)) {
+			if (!song->artwork->thumbnail || (song->artwork->dbid == 0)) {
 				it = it->next;
 				continue;
 			}
@@ -924,29 +924,242 @@ write_mhfd (Itdb_DB *db, iPodBuffer *buffer, int id_max)
 	return total_bytes;
 }
 
-static unsigned int
-ipod_artwork_db_set_ids (Itdb_iTunesDB *db)
+
+static gboolean
+ipod_supports_sparse_artwork (Itdb_Device *device)
 {
-	GList *it;
-	unsigned int max_id;
-
-	max_id = 0;
-	for (it = db->tracks; it != NULL; it = it->next) {
-		Itdb_Track *song;
-
-		song = (Itdb_Track *)it->data;
-		if (max_id <= song->id) {
-		  max_id = song->id;
-		}
-		if (song->artwork->thumbnail != NULL) {
-			song->artwork->id = song->id;
-		}
-	}
-
-	return max_id;
+    return TRUE;
 }
 
-int
+
+/* renumber the artwork IDs for all tracks containing artwork and with
+   an ID of != 0 */
+/* if the iPod does not support sparse artwork, renumber consecutively
+   and all artwork */
+/* returns the highest assigned ID or 0 if no IDs were used */
+static guint32
+ipod_artwork_db_set_ids (Itdb_iTunesDB *db)
+{
+    GList *gl;
+    const guint32 min_id = 0x64;
+    guint32 cur_id;
+
+    cur_id = min_id;
+
+    if (ipod_supports_sparse_artwork (db->device))
+    {
+	GHashTable *id_hash;
+
+	id_hash = g_hash_table_new (g_direct_hash, g_direct_equal);
+
+	for (gl = db->tracks; gl != NULL; gl = gl->next)
+	{
+	    Itdb_Track *song;
+	    Itdb_Artwork *artwork;
+
+	    song = gl->data;
+	    g_return_val_if_fail (song, -1);
+
+	    artwork = song->artwork;
+	    g_return_val_if_fail (artwork, -1);
+
+	    if (itdb_track_has_thumbnails (song) && (artwork->id != 0))
+	    {
+		gpointer orig_key;
+		gpointer orig_val;
+
+		if (g_hash_table_lookup_extended (id_hash, GINT_TO_POINTER (artwork->id),
+						  &orig_key, &orig_val))
+		{   /* ID was encountered before */
+		    artwork->id = GPOINTER_TO_INT (orig_val);
+		    artwork->dbid = 0;
+		}
+		else
+		{   /* first time we see this ID */
+		    g_hash_table_insert (id_hash, GINT_TO_POINTER (artwork->id),
+					 GINT_TO_POINTER (cur_id));
+		    artwork->id = cur_id++;
+		    artwork->dbid = song->dbid;
+		}
+		song->mhii_link = artwork->id;
+	    }
+	    else
+	    {
+		song->mhii_link = 0;
+	    }
+	}
+	g_hash_table_destroy (id_hash);
+    }
+    else 
+    {   /* iPod does not support sparse artwork -- just renumber */
+	for (gl = db->tracks; gl != NULL; gl = gl->next)
+	{
+	    Itdb_Track *song;
+
+	    song = gl->data;
+	    g_return_val_if_fail (song, -1);
+	    g_return_val_if_fail (song->artwork, -1);
+
+	    song->mhii_link = 0;
+
+	    if (itdb_track_has_thumbnails (song))
+	    {
+		song->artwork->id = cur_id++;
+		song->artwork->dbid = song->dbid;
+	    }
+	    song->mhii_link = song->artwork->id;
+	}
+    }	
+
+    if (cur_id == min_id)
+	return 0;
+    else
+	return cur_id-1;
+}
+
+
+
+/* for all tracks with new artwork (id == 0) do the following:
+   - try to identify if this artwork is identical to previous artwork
+     (within the same album)
+   - if no: assign new ID
+   - if yes: assign same ID
+
+   Returns the highest ID used.
+*/
+static guint32
+ipod_artwork_mark_new_doubles (Itdb_iTunesDB *itdb, guint max_id)
+{
+    GList *gl;
+    GHashTable *hash_file, *hash_memory, *hash_pixbuf;
+
+    hash_file =   g_hash_table_new_full (g_str_hash, g_str_equal,
+					 g_free, NULL);
+    hash_memory = g_hash_table_new_full (g_str_hash, g_str_equal,
+					 g_free, NULL);
+    hash_pixbuf = g_hash_table_new_full (g_str_hash, g_str_equal,
+					 g_free, NULL);
+
+    for (gl=itdb->tracks; gl; gl=gl->next)
+    {
+	Itdb_Artwork *artwork;
+	Itdb_Track *track;
+
+	track= gl->data;
+	g_return_val_if_fail (track, max_id);
+	artwork = track->artwork;
+	g_return_val_if_fail (artwork, max_id);
+
+	if ((artwork->id == 0) && itdb_track_has_thumbnails (track))
+	{
+	    const gchar *checkstring;
+	    GHashTable *hash=NULL;
+	    gpointer orig_val = NULL;
+	    Itdb_Thumb *thumb = artwork->thumbnail;
+	    GChecksum *checksum = g_checksum_new (G_CHECKSUM_SHA1);
+
+	    /* use the album name as part of the checksum */
+	    if (track->album && *track->album)
+	    {
+		g_checksum_update (checksum,
+				   (guchar *)track->album, strlen (track->album));
+	    }
+
+	    switch (thumb->data_type)
+	    {
+	    case ITDB_THUMB_TYPE_MEMORY:
+	    {
+		Itdb_Thumb_Memory *mthumb = (Itdb_Thumb_Memory *)thumb;
+		g_checksum_update (checksum,
+				   mthumb->image_data, mthumb->image_data_len);
+		hash = hash_memory;
+		break;
+	    }
+	    case ITDB_THUMB_TYPE_PIXBUF:
+	    {
+		Itdb_Thumb_Pixbuf *pthumb = (Itdb_Thumb_Pixbuf *)thumb;
+		g_return_val_if_fail (pthumb->pixbuf, max_id);
+		g_checksum_update (checksum,
+				   gdk_pixbuf_get_pixels (pthumb->pixbuf),
+				   gdk_pixbuf_get_height (pthumb->pixbuf) * gdk_pixbuf_get_rowstride (pthumb->pixbuf));
+		hash = hash_pixbuf;
+		break;
+	    }
+	    case ITDB_THUMB_TYPE_FILE:
+	    {
+		Itdb_Thumb_File *fthumb = (Itdb_Thumb_File *)thumb;
+		g_return_val_if_fail (fthumb->filename, max_id);
+		g_checksum_update (checksum,
+				   (guchar *)fthumb->filename,
+				   strlen (fthumb->filename));
+		hash = hash_file;
+		break;
+	    }
+	    case ITDB_THUMB_TYPE_INVALID:
+		/* programming error */
+		g_print ("encountered invalid thumb.\n");
+		g_return_val_if_reached (max_id);
+		break;
+	    case ITDB_THUMB_TYPE_IPOD:
+		/* thumbs on the iPod are definitely not expected to
+		   have an ID of 0 */
+		g_print ("encountered iPod thumb with ID = 0.\n");
+		g_return_val_if_reached (max_id);
+		break;
+	    }
+
+	    checkstring = g_checksum_get_string (checksum);
+	    if (g_hash_table_lookup_extended (hash, checkstring, NULL, &orig_val))
+	    {   /* same artwork was used before */
+		Itdb_Artwork *previous_artwork = orig_val;
+		artwork->id = previous_artwork->id;
+		artwork->dbid = 0;
+	    }
+	    else
+	    {   /* first occurence of this artwork */
+		artwork->id = ++max_id;
+		artwork->dbid = track->dbid;
+		g_hash_table_insert (hash, g_strdup (checkstring), artwork);
+	    }
+	    track->mhii_link = artwork->id;
+	    g_checksum_free (checksum);
+	}
+    }
+
+    g_hash_table_destroy (hash_memory);
+    g_hash_table_destroy (hash_file);
+    g_hash_table_destroy (hash_pixbuf);
+
+    return max_id;
+}
+
+
+/* returns the highest ID used */
+static guint32 itdb_prepare_thumbnails (Itdb_iTunesDB *itdb)
+{
+    gint max_id;
+
+    /* first renumber the old thumbnails to make sure we don't get too
+     * high */
+    max_id = ipod_artwork_db_set_ids (itdb);
+
+    if (ipod_supports_sparse_artwork (itdb->device))
+    {
+	/* go through all newly added artwork and pass out new IDs. the
+	   same ID will be assigned to identical artwork within one album */
+	max_id = ipod_artwork_mark_new_doubles (itdb, max_id);
+
+	/* set the IDs again to make sure they are in the right order */
+	max_id = ipod_artwork_db_set_ids (itdb);
+    }
+
+    return max_id;
+}
+
+
+
+
+G_GNUC_INTERNAL int
 ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 {
 	iPodBuffer *buf;
@@ -958,12 +1171,12 @@ ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 	db.db_type = DB_TYPE_ITUNES;
 	db.db.itdb = itdb;
 
+	id_max = itdb_prepare_thumbnails (itdb);
+
 	/* First, let's write the .ithmb files, this will create the
 	 * various thumbnails as well */
 
 	itdb_write_ithumb_files (&db);
-	/* Now we can update the ArtworkDB file */
-	id_max = ipod_artwork_db_set_ids (itdb);
 
 	filename = ipod_db_get_artwork_db_path (itdb_get_mountpoint (itdb));
 	if (filename == NULL) {
@@ -1037,7 +1250,7 @@ ipod_write_photo_db (Itdb_PhotoDB *photodb)
 	return 0;
 }
 #else
-int
+G_GNUC_INTERNAL int
 ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 {
     return -1;

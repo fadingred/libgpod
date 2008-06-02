@@ -1,5 +1,4 @@
-/*  Time-stamp: <2008-05-30 21:49:11 jcs>
- *
+/*
  *  Copyright (C) 2005 Christophe Fergeau
  *
  *  URL: http://www.gtkpod.org/libgpod.html
@@ -1295,10 +1294,17 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
                         Itdb_Track *track = gl->data;
 
 			g_return_val_if_fail (track, FALSE);
+			g_return_val_if_fail (track->artwork, FALSE);
 			thumb = track->artwork->thumbnail;
                         if (!itdb_track_has_thumbnails (track)) {
+			    /* skip: track has no thumbnails */
                             continue;
                         }
+			if (track->artwork->dbid == 0) {
+			    /* skip: sparse artwork, has already been
+			       written */
+			    continue;
+			}
                         if (thumb->data_type == ITDB_THUMB_TYPE_IPOD) {
                             Itdb_Thumb_Ipod_Item *item;
                             item = itdb_thumb_ipod_get_item_by_type (thumb,
@@ -1440,6 +1446,11 @@ itdb_write_ithumb_files (Itdb_DB *db)
                         if (!itdb_track_has_thumbnails (track)) {
                             continue;
                         }
+			if (track->artwork->dbid == 0) {
+			    /* Use sparse artwork -- already written
+			       elsewhere */
+			    continue;
+			}
                         type = track->artwork->thumbnail->data_type;
                         if (type != ITDB_THUMB_TYPE_IPOD) {
                             GList *it;

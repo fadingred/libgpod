@@ -315,7 +315,77 @@ iTunesDB
 </para>
 
 
+<!-- ##### FUNCTION itdb_artwork_add_thumbnail ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@type: 
+@filename: 
+@rotation: 
+@error: 
+@Returns: 
+
+<!-- ##### FUNCTION itdb_artwork_add_thumbnail_from_data ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@type: 
+@image_data: 
+@image_data_len: 
+@rotation: 
+@error: 
+@Returns: 
+
+<!-- ##### FUNCTION itdb_artwork_add_thumbnail_from_pixbuf ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@type: 
+@pixbuf: 
+@rotation: 
+@error: 
+@Returns: 
+
+<!-- ##### FUNCTION itdb_artwork_get_thumb_by_type ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@type: 
+@Returns: 
+
+<!-- ##### FUNCTION itdb_artwork_remove_thumbnail ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@thumb: 
+
 <!-- ##### FUNCTION itdb_file_error_quark ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION itdb_thumb_get_filename ##### -->
+<para>
+
+</para>
+
+@device: 
+@thumb: 
+@Returns: 
+
+<!-- ##### FUNCTION itdb_thumb_new ##### -->
 <para>
 
 </para>

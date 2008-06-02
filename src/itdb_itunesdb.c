@@ -3645,8 +3645,8 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put16lint (cts, track->gapless_track_flag);
   put16lint (cts, track->gapless_album_flag);
   put32_n0 (cts, 23);
-  put32lint (cts, track->id); /* Needed on fat nanos/ipod classic to get art
-			       * in the right sidepane (mhii_link) */
+  put32lint (cts, track->mhii_link); /* Needed on fat nanos/ipod classic to get art
+				      * in the right sidepane (mhii_link) */
   put32_n0 (cts, 8); /* padding */
 }
 

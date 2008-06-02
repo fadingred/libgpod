@@ -1,3 +1,24 @@
+2008-06-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/gchecksum.c
+	  src/gchecksum.h
+	  src/Makefile.am
+	  configure.ac: copied gchecksum from glib 2.16.3. It's used if we
+	  compile on a system that does not have glib 2.16 or
+	  higher. Testing is needed whether it's really pulled in in those
+	  cases -- I'm using 2.16.3 myself.
+
+	* src/itdb_itunesdb.c (mk_mhit): write mhii_link.
+
+	* src/db-artwork-writer.c: code to handle sparse artwork
+	  correctly. 
+	  
+	  (ipod_supports_sparse_artwork): currently hard-coded to
+	  TRUE. Will be changed in the future to reflect the information
+	  given in the SysInfoExtended. Change yourself if your iPod does
+	  not support Sparse Artwork (sharing of thumbnails between
+	  several tracks).
+
 2008-06-01  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_thumb.c
