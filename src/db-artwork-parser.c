@@ -563,6 +563,10 @@ mhfd_associate_itunesdb_artwork (DBParseContext *ctx)
 		gchar *strval = g_strdup_printf("%" G_GINT64_FORMAT, track->dbid);
 		g_print (_("Could not find artwork entry (mhii id: %u) for track (dbid: %s).\n"), track->mhii_link, strval);
 		g_free (strval);
+
+		/* couldn't find artwork -- make sure track data is in
+		   a consistent state. */
+		itdb_track_remove_thumbnails (track);
 	    }
 	}
     }

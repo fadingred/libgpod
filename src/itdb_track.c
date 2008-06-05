@@ -532,6 +532,7 @@ void itdb_track_remove_thumbnails (Itdb_Track *track)
     itdb_artwork_remove_thumbnails (track->artwork);
     track->artwork_size = 0;
     track->artwork_count = 0;
+    track->mhii_link = 0;
     /* indicate no artwork is present */
     track->has_artwork = 0x02;
 }

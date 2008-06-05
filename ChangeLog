@@ -1,5 +1,13 @@
 2008-06-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
+	* src/itdb_track.c (itdb_track_remove_thumbnails): set mhii_link
+	  to 0.
+
+	* src/db-artwork-parser.c (mhfd_associate_itunesdb_artwork):
+	  remove thumbnails if mhii_link is invalid.
+
+2008-06-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
 	* src/gchecksum.c
 	  src/gchecksum.h
 	  src/Makefile.am
