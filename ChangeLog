@@ -1,5 +1,16 @@
 2008-06-09  Christophe Fergeau  <christophe@anevia.com>
 
+	* src/db-artwork-writer.c:
+	* src/db-image-parser.h:
+	* src/itdb.h:
+	* src/itdb_device.c:
+	* src/itdb_device.h:
+	* src/ithumb-writer.c: get rid of ItdbThumbType, it's replaced by
+	pointers to the appropriate Itdb_ArtworkFormat for the thumbnail
+	type when it's needed
+
+2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+
 	* src/db-artwork-parser.c: remove duplicated artwork/photo support
 	testing functions
 	* src/db-artwork-parser.h: ditto

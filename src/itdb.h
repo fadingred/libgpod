@@ -478,21 +478,6 @@ struct _Itdb_Chapterdata
 #define ITDB_RATING_STEP 20
 
 /* Types of thumbnails in Itdb_Image */
-typedef enum { 
-    ITDB_THUMB_COVER_SMALL = 0,
-    ITDB_THUMB_COVER_LARGE,
-    ITDB_THUMB_PHOTO_SMALL,
-    ITDB_THUMB_PHOTO_LARGE,
-    ITDB_THUMB_PHOTO_FULL_SCREEN,
-    ITDB_THUMB_PHOTO_TV_SCREEN,
-    ITDB_THUMB_COVER_XLARGE,      /* iPhone: cover flow */
-    ITDB_THUMB_COVER_MEDIUM,      /* iPhone: cover view */
-    ITDB_THUMB_COVER_SMEDIUM,     /* iPhone: ??         */
-    ITDB_THUMB_COVER_XSMALL,      /* iPhone: ??         */
-    ITDB_THUMB_CHAPTER_SMALL,     /* classic -- not supported yet */
-    ITDB_THUMB_CHAPTER_LARGE,     /* classic -- not supported yet */
-} ItdbThumbType;
-
 enum _ItdbThumbDataType {
     ITDB_THUMB_TYPE_INVALID,
     ITDB_THUMB_TYPE_FILE,

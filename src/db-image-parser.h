@@ -82,8 +82,4 @@ G_GNUC_INTERNAL Itdb_Thumb_Ipod_Item *ipod_image_new_from_mhni (MhniHeader *mhni
 			        			   Itdb_DB *db);
 
 G_GNUC_INTERNAL int itdb_write_ithumb_files (Itdb_DB *db);
-
-G_GNUC_INTERNAL gboolean
-itdb_thumb_type_is_valid_for_db (const Itdb_ArtworkFormat *format, DbType db_type);
-
 #endif

@@ -482,7 +482,20 @@ pack_UYVY (GdkPixbuf *orig_pixbuf, const Itdb_ArtworkFormat *img_info,
     return yuvdata;
 }
 
-
+static char *get_ithmb_filename (iThumbWriter *writer)
+{
+    switch (writer->db_type) {
+        case DB_TYPE_ITUNES:
+            return g_strdup_printf (":F%d_%d.ithmb", 
+	        		    writer->img_info->format_id,
+                                    writer->current_file_index);
+        case DB_TYPE_PHOTO:
+            return g_strdup_printf (":Thumbs:F%d_%d.ithmb", 
+	            		    writer->img_info->format_id,
+                                    writer->current_file_index);
+    }
+    g_return_val_if_reached (NULL);
+}
 
 static char *
 ipod_image_get_ithmb_filename (const char *mount_point, gint format_id, gint index, DbType db_type ) 
@@ -781,35 +794,6 @@ static gboolean write_pixels (iThumbWriter *writer, Itdb_Thumb_Ipod_Item *thumb,
     return TRUE;
 }
 
-static char *get_ithmb_filename (iThumbWriter *writer, 
-                                 const Itdb_ArtworkFormat *format)
-{
-    switch (format->type)
-    {
-    case ITDB_THUMB_PHOTO_LARGE:
-    case ITDB_THUMB_PHOTO_SMALL:
-    case ITDB_THUMB_PHOTO_FULL_SCREEN:
-    case ITDB_THUMB_PHOTO_TV_SCREEN:
-	return g_strdup_printf (":Thumbs:F%d_%d.ithmb", 
-	            		writer->img_info->format_id,
-                                writer->current_file_index);
-	break;
-    case ITDB_THUMB_COVER_LARGE:
-    case ITDB_THUMB_COVER_SMALL:
-    case ITDB_THUMB_COVER_XLARGE:
-    case ITDB_THUMB_COVER_MEDIUM:
-    case ITDB_THUMB_COVER_SMEDIUM:
-    case ITDB_THUMB_COVER_XSMALL:
-    case ITDB_THUMB_CHAPTER_LARGE:
-    case ITDB_THUMB_CHAPTER_SMALL:
-	return g_strdup_printf (":F%d_%d.ithmb", 
-	    		        writer->img_info->format_id,
-                                writer->current_file_index);
-	break;
-    }
-    g_return_val_if_reached (NULL);
-}
-
 static void set_thumb_padding (iThumbWriter *writer, 
                                Itdb_Thumb_Ipod_Item *thumb, 
                                gint width, gint height)
@@ -821,11 +805,6 @@ static void set_thumb_padding (iThumbWriter *writer,
 	thumb->vertical_padding = (writer->img_info->height - height)/2;
 	break;
     case DB_TYPE_ITUNES:
-	/* IPOD_COVER_LARGE will be centered automatically using
-	   the info in mhni->width/height. Free space around
-	   IPOD_COVER_SMALL will be used to display track
-	   information -> no padding (tested on iPod
-	   Nano). mhni->hor_/ver_padding is working */
 	thumb->horizontal_padding = 0;
 	thumb->vertical_padding = 0;
 	break;
@@ -933,7 +912,7 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     pixels = pack_thumbnail (writer, thumb_ipod, scaled_pixbuf);
     g_object_unref (G_OBJECT (scaled_pixbuf));
 
-    thumb_ipod->filename = get_ithmb_filename (writer, writer->img_info);
+    thumb_ipod->filename = get_ithmb_filename (writer);
     result = write_pixels (writer, thumb_ipod, pixels);
     g_free (pixels);
 

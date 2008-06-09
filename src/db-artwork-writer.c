@@ -749,31 +749,6 @@ write_mhif (Itdb_DB *db, iPodBuffer *buffer,
 	return get_gint32 (mhif->header_len, buffer->byte_order);
 }
 
-G_GNUC_INTERNAL gboolean
-itdb_thumb_type_is_valid_for_db (const Itdb_ArtworkFormat *format,
-                                 DbType db_type)
-{
-        switch (format->type) {
-        case ITDB_THUMB_COVER_SMALL:
-        case ITDB_THUMB_COVER_LARGE:
-        case ITDB_THUMB_COVER_XLARGE:
-        case ITDB_THUMB_COVER_MEDIUM:
-        case ITDB_THUMB_COVER_SMEDIUM:
-        case ITDB_THUMB_COVER_XSMALL:
-	    return (db_type == DB_TYPE_ITUNES);
-        case ITDB_THUMB_CHAPTER_SMALL:
-        case ITDB_THUMB_CHAPTER_LARGE:
-	    return FALSE; /* not supported yet */
-        case ITDB_THUMB_PHOTO_SMALL:
-        case ITDB_THUMB_PHOTO_LARGE:
-        case ITDB_THUMB_PHOTO_FULL_SCREEN:
-        case ITDB_THUMB_PHOTO_TV_SCREEN:
-	    return (db_type == DB_TYPE_PHOTO);
-        }
-
-        g_return_val_if_reached (FALSE);
-}
-
 static int
 write_mhlf (Itdb_DB *db, iPodBuffer *buffer)
 {

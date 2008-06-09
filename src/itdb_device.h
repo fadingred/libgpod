@@ -52,8 +52,8 @@ enum _ItdbThumbFormat
 {
     THUMB_FORMAT_UYVY_LE,
     THUMB_FORMAT_UYVY_BE,
-	THUMB_FORMAT_I420_LE,
-	THUMB_FORMAT_I420_BE,
+    THUMB_FORMAT_I420_LE,
+    THUMB_FORMAT_I420_BE,
     THUMB_FORMAT_RGB565_LE,
     THUMB_FORMAT_RGB565_LE_90,
     THUMB_FORMAT_RGB565_BE,
@@ -73,7 +73,6 @@ enum _ItdbThumbFormat
     THUMB_FORMAT_EXPERIMENTAL_LE,
     THUMB_FORMAT_EXPERIMENTAL_BE,
 };
-
 
 struct _Itdb_Device
 {
@@ -97,7 +96,6 @@ struct _Itdb_Device
 
 struct _Itdb_ArtworkFormat
 {
-	ItdbThumbType type;
 	gint16 width;
 	gint16 height;
 	gint16 format_id;
