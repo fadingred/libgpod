@@ -1,3 +1,11 @@
+
+2008-06-09  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.h:
+	* src/itdb_sysinfo_extended_parser.c:
+	* src/ithumb-writer.c: use background color and alignement
+	information from SysInfoExtended if available
+
 2008-06-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-writer.c:
