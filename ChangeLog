@@ -1,5 +1,26 @@
 2008-06-09  Christophe Fergeau  <christophe@anevia.com>
 
+	* src/db-artwork-parser.c: remove duplicated artwork/photo support
+	testing functions
+	* src/db-artwork-parser.h: ditto
+	* src/itdb_itunesdb.c: s/ipod_supports_XXX/itdb_device_supports_XXX
+	* src/itdb_photoalbum.c: ditto
+	* src/itdb.h: use a const Itdb_Device argument for
+	itdb_device_supports_*, add  ITDB_IPOD_GENERATION_IPHONE_1 to
+	Itdb_IpodGeneration, get rid of ITDB_IPOD_GENERATION_FIFTH and 
+	ITDB_IPOD_GENERATION_SIXTH
+	* src/itdb_device.c: split functions to get artwork format from the
+	ipod in 2 separate functions: instead of
+	itdb_device_get_artwork_formats we now have
+	itdb_device_get_photo_formats and itdb_device_get_cover_art_formats
+	* src/itdb_device.h:
+	* src/db-image-parser.c: use the separate
+	get_cover_art_formats/get_photos_formats functions
+	* src/db-artwork-writer.c: ditto
+	* src/ithumb-writer.c: ditto
+
+2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+
 	* src/gchecksum.c: fix compilation (it's only compiled on system with
 	older glib versions)
 

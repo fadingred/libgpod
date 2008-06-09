@@ -1395,9 +1395,9 @@ itdb_write_ithumb_files (Itdb_DB *db)
 {
 #ifdef HAVE_GDKPIXBUF
 	GList *writers;
-	GList *it;
 	Itdb_Device *device;
-	const Itdb_ArtworkFormat *format;
+        GList *formats;
+        GList *it;
 	const gchar *mount_point;
 
 	g_return_val_if_fail (db, -1);
@@ -1410,26 +1410,27 @@ itdb_write_ithumb_files (Itdb_DB *db)
 	if (mount_point == NULL)
 	    return -1;
 	
-	format = itdb_device_get_artwork_formats (device);
-	if (format == NULL) {
-		return -1;
-	}
+        formats = NULL;
+        switch (db->db_type) {
+        case DB_TYPE_ITUNES:
+            formats = itdb_device_get_cover_art_formats(db_get_device(db));
+            break;
+	case DB_TYPE_PHOTO:
+            formats = itdb_device_get_photo_formats(db_get_device(db));
+            break;
+        }
 	writers = NULL;
-	while (format->type != -1) {
+	for (it = formats; it != NULL; it = it->next) {
 		iThumbWriter *writer;
+                const Itdb_ArtworkFormat *format;
 
-		if (itdb_thumb_type_is_valid_for_db (format, db->db_type))
-		{
-		    ithmb_rearrange_existing_thumbnails (db, format );
-		    writer = ithumb_writer_new (mount_point, 
-						format,
-						db->db_type, 
-						device->byte_order);
-		    if (writer != NULL) {
-			writers = g_list_prepend (writers, writer);
-		    }
+                format = (const Itdb_ArtworkFormat *)it->data;
+                ithmb_rearrange_existing_thumbnails (db, format);
+                writer = ithumb_writer_new (mount_point, format,
+                                            db->db_type, device->byte_order);
+                if (writer != NULL) {
+                        writers = g_list_prepend (writers, writer);
 		}
-		format++;
 	}
 	if (writers == NULL) {
 		return -1;

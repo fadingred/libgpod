@@ -672,89 +672,6 @@ ipod_db_get_artwork_db_path (const char *mount_point)
 	return filename;
 }
 
-G_GNUC_INTERNAL gboolean
-ipod_supports_cover_art (Itdb_Device *device)
-{
-	const Itdb_ArtworkFormat *formats;
-
-	if (device == NULL) {
-		return FALSE;
-	}
-
-	formats = itdb_device_get_artwork_formats (device);
-	if (formats == NULL) {
-		return FALSE;
-	}
-	
-	while (formats->type != -1)
-	{
-	    switch (formats->type)
-	    {
-	    case ITDB_THUMB_COVER_SMALL:
-	    case ITDB_THUMB_COVER_LARGE:
-		return TRUE;
-	    case ITDB_THUMB_PHOTO_SMALL:
-	    case ITDB_THUMB_PHOTO_LARGE:
-	    case ITDB_THUMB_PHOTO_FULL_SCREEN:
-	    case ITDB_THUMB_PHOTO_TV_SCREEN:
-		break;
-	    case ITDB_THUMB_COVER_XLARGE:
-	    case ITDB_THUMB_COVER_MEDIUM:
-	    case ITDB_THUMB_COVER_SMEDIUM:
-	    case ITDB_THUMB_COVER_XSMALL:
-		break;
-	    case ITDB_THUMB_CHAPTER_SMALL:
-	    case ITDB_THUMB_CHAPTER_LARGE:
-		break;
-	    }
-	    formats++;
-	}
-
-	return FALSE;
-}
-
-G_GNUC_INTERNAL gboolean
-ipod_supports_photos (Itdb_Device *device)
-{
-	const Itdb_ArtworkFormat *formats;
-
-	if (device == NULL) {
-		return FALSE;
-	}
-
-	formats = itdb_device_get_artwork_formats (device);
-	if (formats == NULL) {
-		return FALSE;
-	}
-	
-	while (formats->type != -1)
-	{
-	    switch (formats->type)
-	    {
-	    case ITDB_THUMB_COVER_SMALL:
-	    case ITDB_THUMB_COVER_LARGE:
-		break;
-	    case ITDB_THUMB_PHOTO_SMALL:
-	    case ITDB_THUMB_PHOTO_LARGE:
-	    case ITDB_THUMB_PHOTO_FULL_SCREEN:
-	    case ITDB_THUMB_PHOTO_TV_SCREEN:
-		return TRUE;
-	    case ITDB_THUMB_COVER_XLARGE:
-	    case ITDB_THUMB_COVER_MEDIUM:
-	    case ITDB_THUMB_COVER_SMEDIUM:
-	    case ITDB_THUMB_COVER_XSMALL:
-		break;
-	    case ITDB_THUMB_CHAPTER_SMALL:
-	    case ITDB_THUMB_CHAPTER_LARGE:
-		break;
-	    }
-	    formats++;
-	}
-
-	return FALSE;
-}
-
-
 int
 ipod_parse_artwork_db (Itdb_iTunesDB *itdb)
 {
@@ -767,7 +684,7 @@ ipod_parse_artwork_db (Itdb_iTunesDB *itdb)
 
 	g_return_val_if_fail (itdb, -1);
 
-	if (!ipod_supports_cover_art (itdb->device)) {
+	if (!itdb_device_supports_artwork (itdb->device)) {
 		return -1;
 	}
 	ctx = NULL;

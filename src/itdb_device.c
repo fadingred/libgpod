@@ -195,7 +195,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
        ModelNumStr: Mmobile1
     */
     {"mobile1", -1, ITDB_IPOD_MODEL_MOBILE_1, ITDB_IPOD_GENERATION_MOBILE,  6},
-    {"iPhone1", -1, ITDB_IPOD_MODEL_IPHONE_1, ITDB_IPOD_GENERATION_MOBILE, 14},
+    {"iPhone1", -1, ITDB_IPOD_MODEL_IPHONE_1, ITDB_IPOD_GENERATION_IPHONE_1, 14},
 
     {NULL, 0, 0, 0, 0}
 };
@@ -260,14 +260,20 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Video (2nd Gen.)"),
 	N_("Classic"),
 	N_("Touch"),
+        N_("iPhone"),
 	N_("Unused"),
 	N_("Unused"),
 	NULL
 };
 
-static const Itdb_ArtworkFormat ipod_photo_artwork_info[] = {
+
+static const Itdb_ArtworkFormat ipod_photo_cover_art_info[] = {
     {ITDB_THUMB_COVER_SMALL,       56,  56, 1017, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_COVER_LARGE,      140, 140, 1016, THUMB_FORMAT_RGB565_LE},
+    {-1,                           -1,  -1,   -1, -1}
+};
+
+static const Itdb_ArtworkFormat ipod_photo_photo_info[] = {
     {ITDB_THUMB_PHOTO_SMALL,       42,  30, 1009, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_LARGE,      130,  88, 1015, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_FULL_SCREEN,220, 176, 1013, THUMB_FORMAT_RGB565_BE_90},
@@ -275,17 +281,25 @@ static const Itdb_ArtworkFormat ipod_photo_artwork_info[] = {
     {-1,                           -1,  -1,   -1, -1}
 };
 
-static const Itdb_ArtworkFormat ipod_nano_artwork_info[] = {
+static const Itdb_ArtworkFormat ipod_nano_cover_art_info[] = {
     {ITDB_THUMB_COVER_SMALL,       42,  42, 1031, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_COVER_LARGE,      100, 100, 1027, THUMB_FORMAT_RGB565_LE},
+    {-1,                           -1,  -1,   -1, -1}
+};
+
+static const Itdb_ArtworkFormat ipod_nano_photo_info[] = {
     {ITDB_THUMB_PHOTO_LARGE,       42,  37, 1032, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_FULL_SCREEN,176, 132, 1023, THUMB_FORMAT_RGB565_BE},
     {-1,                           -1,  -1,   -1, -1}
 };
 
-static const Itdb_ArtworkFormat ipod_video_artwork_info[] = {
+static const Itdb_ArtworkFormat ipod_video_cover_art_info[] = {
     {ITDB_THUMB_COVER_SMALL,      100, 100, 1028, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_COVER_LARGE,      200, 200, 1029, THUMB_FORMAT_RGB565_LE},
+    {-1,                           -1,  -1,   -1, -1}
+};
+
+static const Itdb_ArtworkFormat ipod_video_photo_info[] = {
     {ITDB_THUMB_PHOTO_SMALL,       50,  41, 1036, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_LARGE,      130,  88, 1015, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_FULL_SCREEN,320, 240, 1024, THUMB_FORMAT_RGB565_LE},
@@ -293,20 +307,23 @@ static const Itdb_ArtworkFormat ipod_video_artwork_info[] = {
     {-1,                           -1,  -1,   -1, -1}
 };
 
-static const Itdb_ArtworkFormat ipod_mobile_1_artwork_info[] = {
+static const Itdb_ArtworkFormat ipod_mobile_1_cover_art_info[] = {
     {ITDB_THUMB_COVER_SMALL,       50,  50, 2002, THUMB_FORMAT_RGB565_BE},
     {ITDB_THUMB_COVER_LARGE,      150, 150, 2003, THUMB_FORMAT_RGB565_BE},
     {-1,                           -1,  -1,   -1, -1}
 };
 
-static const Itdb_ArtworkFormat ipod_touch_1_artwork_info[] = {
+static const Itdb_ArtworkFormat ipod_touch_1_cover_art_info[] = {
     {ITDB_THUMB_COVER_LARGE,      256, 256, 3001, THUMB_FORMAT_REC_RGB555_LE},
     {ITDB_THUMB_COVER_MEDIUM,     128, 128, 3002, THUMB_FORMAT_REC_RGB555_LE},
     {ITDB_THUMB_COVER_SMALL,       64,  64, 3003, THUMB_FORMAT_REC_RGB555_LE},
     {ITDB_THUMB_COVER_XLARGE,     320, 320, 3005, THUMB_FORMAT_RGB555_LE},
     {ITDB_THUMB_COVER_XSMALL,      56,  56, 3006, THUMB_FORMAT_RGB555_LE,  8192}, /*pad data to  8192 bytes */
     {ITDB_THUMB_COVER_SMEDIUM,     88,  88, 3007, THUMB_FORMAT_RGB555_LE, 16364}, /*pad data to 16384 bytes */
+    {-1,                           -1,  -1,   -1, -1}
+};
 
+static const Itdb_ArtworkFormat ipod_touch_1_photo_info[] = {
     /* In the album list, if a photo is being used to represent a whole album,
        PHOTO_SMALL is used.  We specify TRUE for the crop option so we fill
        the square completely. */
@@ -324,25 +341,56 @@ static const Itdb_ArtworkFormat ipod_touch_1_artwork_info[] = {
     {-1,                           -1,  -1,   -1, -1}
 };
 
-static const Itdb_ArtworkFormat ipod_classic_1_artwork_info[] = {
+static const Itdb_ArtworkFormat ipod_classic_1_cover_art_info[] = {
     /* officially 55x55 -- verify! */
     {ITDB_THUMB_COVER_SMALL,       56,  56, 1061, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_COVER_MEDIUM,     128, 128, 1055, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_COVER_LARGE,      320, 320, 1060, THUMB_FORMAT_RGB565_LE},
+    {-1,                           -1,  -1,   -1, -1}
+};
+
+static const Itdb_ArtworkFormat ipod_classic_1_photo_info[] = {
     {ITDB_THUMB_PHOTO_TV_SCREEN,  720, 480, 1067, THUMB_FORMAT_I420_LE},
     {ITDB_THUMB_PHOTO_FULL_SCREEN,320, 240, 1024, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_PHOTO_SMALL,       64,  64, 1066, THUMB_FORMAT_RGB565_LE},
-/*  These are the same as for the iPod video... -- labeled by the iPod as
-    "chapter images" */
+    {-1,                           -1,  -1,   -1, -1}
+};
+
+static const Itdb_ArtworkFormat ipod_classic_1_chapter_image_info[] = {
+    /*  These are the same as for the iPod video... -- labeled by the iPod as
+        "chapter images" */
     {ITDB_THUMB_CHAPTER_SMALL,    100, 100, 1028, THUMB_FORMAT_RGB565_LE},
     {ITDB_THUMB_CHAPTER_LARGE,    200, 200, 1029, THUMB_FORMAT_RGB565_LE},
     {-1,                           -1,  -1,   -1, -1}
 };
 
-/* these are identical... */
-#define ipod_nano3_artwork_info ipod_classic_1_artwork_info
-/* these might be identical... Please report if not*/
-#define ipod_iphone_1_artwork_info ipod_touch_1_artwork_info
+enum ArtworkType {
+    ARTWORK_TYPE_COVER_ART,
+    ARTWORK_TYPE_PHOTO,
+    ARTWORK_TYPE_CHAPTER_IMAGE
+};
+
+struct _ArtworkCapabilities {
+    Itdb_IpodGeneration generation;
+    const Itdb_ArtworkFormat *cover_art_formats;
+    const Itdb_ArtworkFormat *photo_formats;
+    const Itdb_ArtworkFormat *chapter_image_formats;
+};
+typedef struct _ArtworkCapabilities ArtworkCapabilities;
+
+static const ArtworkCapabilities ipod_artwork_capabilities[] = {
+    { ITDB_IPOD_GENERATION_PHOTO, ipod_photo_cover_art_info, ipod_photo_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_VIDEO_1, ipod_video_cover_art_info, ipod_video_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_VIDEO_2, ipod_video_cover_art_info, ipod_video_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_NANO_1, ipod_nano_cover_art_info, ipod_nano_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_NANO_2, ipod_nano_cover_art_info, ipod_nano_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_NANO_3, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
+    { ITDB_IPOD_GENERATION_CLASSIC_1, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
+    { ITDB_IPOD_GENERATION_TOUCH_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_IPHONE_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_MOBILE, ipod_mobile_1_cover_art_info, NULL, NULL },
+    { ITDB_IPOD_GENERATION_UNKNOWN, NULL, NULL, NULL }
+};
 
 static void itdb_device_set_timezone_info (Itdb_Device *device);
 
@@ -603,7 +651,7 @@ gboolean itdb_device_write_sysinfo (Itdb_Device *device, GError **error)
  * Return value: the information associated with @field, or NULL if @field
  * couldn't be found. g_free() after use
  **/
-gchar *itdb_device_get_sysinfo (Itdb_Device *device, const gchar *field)
+gchar *itdb_device_get_sysinfo (const Itdb_Device *device, const gchar *field)
 {
     g_return_val_if_fail (device, NULL);
     g_return_val_if_fail (device->sysinfo, NULL);
@@ -651,7 +699,7 @@ void itdb_device_set_sysinfo (Itdb_Device *device,
  * Return value: the #Itdb_IpodInfo entry for this iPod
  **/
 const Itdb_IpodInfo *
-itdb_device_get_ipod_info (Itdb_Device *device)
+itdb_device_get_ipod_info (const Itdb_Device *device)
 {
     gint i;
     gchar *model_num, *p;
@@ -682,63 +730,72 @@ itdb_device_get_ipod_info (Itdb_Device *device)
 
 
 /* Return supported artwork formats supported by this iPod */
-G_GNUC_INTERNAL const Itdb_ArtworkFormat *
-itdb_device_get_artwork_formats (Itdb_Device *device)
+static const Itdb_ArtworkFormat *
+itdb_device_get_artwork_formats (const Itdb_Device *device, 
+                                 enum ArtworkType type)
 {
     const Itdb_IpodInfo *info;
+    const ArtworkCapabilities *caps;
 
     g_return_val_if_fail (device, NULL);
 
     info = itdb_device_get_ipod_info (device);
 
     g_return_val_if_fail (info, NULL);
-
-    switch (info->ipod_generation)
-    {
-    case ITDB_IPOD_GENERATION_UNKNOWN:
-    case ITDB_IPOD_GENERATION_FIRST:
-    case ITDB_IPOD_GENERATION_SECOND:
-    case ITDB_IPOD_GENERATION_THIRD:
-    case ITDB_IPOD_GENERATION_FOURTH:
-	return NULL;
-    case ITDB_IPOD_GENERATION_PHOTO:
-	return ipod_photo_artwork_info;
-    case ITDB_IPOD_GENERATION_MOBILE:
-	switch (info->ipod_model)
-	{
-	case ITDB_IPOD_MODEL_MOBILE_1:
-	    return ipod_mobile_1_artwork_info;
-	case ITDB_IPOD_MODEL_IPHONE_1:
-	    return ipod_iphone_1_artwork_info;
-	default:
-	    g_return_val_if_reached (NULL);
-	}
-    case ITDB_IPOD_GENERATION_MINI_1:
-    case ITDB_IPOD_GENERATION_MINI_2:
-    case ITDB_IPOD_GENERATION_SHUFFLE_1:
-    case ITDB_IPOD_GENERATION_SHUFFLE_2:
-    case ITDB_IPOD_GENERATION_SHUFFLE_3:
-	return NULL;
-    case ITDB_IPOD_GENERATION_NANO_1:
-    case ITDB_IPOD_GENERATION_NANO_2:
-	return ipod_nano_artwork_info;
-    case ITDB_IPOD_GENERATION_NANO_3:
-	return ipod_nano3_artwork_info;
-    case ITDB_IPOD_GENERATION_VIDEO_1:
-    case ITDB_IPOD_GENERATION_VIDEO_2:
-	return ipod_video_artwork_info;
-    case ITDB_IPOD_GENERATION_CLASSIC_1:
-	return ipod_classic_1_artwork_info;
-    case ITDB_IPOD_GENERATION_TOUCH_1:
-	return ipod_touch_1_artwork_info;
-    case ITDB_IPOD_GENERATION_FIFTH:
-    case ITDB_IPOD_GENERATION_SIXTH:
-	return NULL;
+    caps = ipod_artwork_capabilities;
+    while (caps->generation != ITDB_IPOD_GENERATION_UNKNOWN) {
+        if (caps->generation == info->ipod_generation) {
+            break;
+        }
+        caps++;
     }
+    switch (type) {
+        case ARTWORK_TYPE_COVER_ART:
+            return caps->cover_art_formats;
+        case ARTWORK_TYPE_PHOTO:
+            return caps->photo_formats;
+        case ARTWORK_TYPE_CHAPTER_IMAGE:
+            return caps->chapter_image_formats;
+    }
+
     g_return_val_if_reached (NULL);
 }
 
+GList *itdb_device_get_photo_formats (const Itdb_Device *device)
+{
+    const Itdb_ArtworkFormat *formats;
+    const Itdb_ArtworkFormat *it;
+    GList *photo_formats = NULL;
 
+    formats = itdb_device_get_artwork_formats (device, ARTWORK_TYPE_PHOTO);
+    if (formats == NULL) {
+        return NULL;
+    }
+
+    for (it = formats; it->type != -1; it++) {
+        photo_formats = g_list_prepend (photo_formats, (gpointer)it);
+    }
+
+    return photo_formats;
+}
+
+GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
+{
+    const Itdb_ArtworkFormat *formats;
+    const Itdb_ArtworkFormat *it;
+    GList *cover_art_formats = NULL;
+
+    formats = itdb_device_get_artwork_formats (device, ARTWORK_TYPE_COVER_ART);
+    if (formats == NULL) {
+        return NULL;
+    }
+
+    for (it = formats; it->type != -1; it++) {
+        cover_art_formats = g_list_prepend (cover_art_formats, (gpointer)it);
+    }
+
+    return cover_art_formats;
+}
 
 /* Determine the number of F.. directories in iPod_Control/Music.*/
 G_GNUC_INTERNAL gint
@@ -974,13 +1031,58 @@ const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generatio
  *
  * Return value: true if @device can display artwork.
  */
-gboolean itdb_device_supports_artwork (Itdb_Device *device)
+gboolean itdb_device_supports_artwork (const Itdb_Device *device)
 {
     if (device == NULL) {
         return FALSE;
     }
 
-    return (itdb_device_get_artwork_formats (device) != NULL);
+    return (itdb_device_get_artwork_formats (device, ARTWORK_TYPE_COVER_ART) != NULL);
+}
+
+
+/**
+ * itdb_device_supports_video:
+ * @device: an #Itdb_Device
+ *
+ * Indicates whether @device can play videos or not.
+ *
+ * Return value: true if @device can play videos.
+ */
+
+gboolean itdb_device_supports_video (const Itdb_Device *device)
+{
+    const Itdb_IpodInfo *info;
+    if (device == NULL) {
+        return FALSE;
+    }
+
+    info = itdb_device_get_ipod_info (device);
+    switch (info->ipod_generation) {
+        case ITDB_IPOD_GENERATION_UNKNOWN:
+        case ITDB_IPOD_GENERATION_FIRST:
+        case ITDB_IPOD_GENERATION_SECOND:
+        case ITDB_IPOD_GENERATION_THIRD:
+        case ITDB_IPOD_GENERATION_FOURTH:
+        case ITDB_IPOD_GENERATION_PHOTO:
+        case ITDB_IPOD_GENERATION_MOBILE:
+        case ITDB_IPOD_GENERATION_MINI_1:
+        case ITDB_IPOD_GENERATION_MINI_2:
+        case ITDB_IPOD_GENERATION_SHUFFLE_1:
+        case ITDB_IPOD_GENERATION_SHUFFLE_2:
+        case ITDB_IPOD_GENERATION_SHUFFLE_3:
+        case ITDB_IPOD_GENERATION_NANO_1:
+        case ITDB_IPOD_GENERATION_NANO_2:
+            return FALSE;
+        case ITDB_IPOD_GENERATION_NANO_3:
+        case ITDB_IPOD_GENERATION_VIDEO_1:
+        case ITDB_IPOD_GENERATION_VIDEO_2:
+        case ITDB_IPOD_GENERATION_CLASSIC_1:
+        case ITDB_IPOD_GENERATION_TOUCH_1:
+        case ITDB_IPOD_GENERATION_IPHONE_1:
+            return TRUE;
+    }
+    g_return_val_if_reached (FALSE);
 }
 
 
@@ -993,26 +1095,20 @@ gboolean itdb_device_supports_artwork (Itdb_Device *device)
  * Return value: true if @device can display photos.
  */
 
-gboolean itdb_device_supports_photo (Itdb_Device *device)
+gboolean itdb_device_supports_photo (const Itdb_Device *device)
 {
     const Itdb_ArtworkFormat *formats;
-    const Itdb_ArtworkFormat *it;
 
     if (device == NULL) {
         return FALSE;
     }
 
-    formats = itdb_device_get_artwork_formats (device);
+    formats = itdb_device_get_artwork_formats (device, ARTWORK_TYPE_PHOTO);
     if (formats == NULL) {
 	return FALSE;
     }
 
-    it = formats;
-    while ((it->type != -1) && (it->type != ITDB_THUMB_PHOTO_FULL_SCREEN)) {
-	it++;
-    }
-    
-    return (it->type != -1);
+    return (formats->type != -1);
 }
 
 
@@ -1094,7 +1190,7 @@ static void itdb_device_set_timezone_info (Itdb_Device *device)
  *
  * Return value: the guint64 firewire id, or 0 if we don't know it
  **/
-guint64 itdb_device_get_firewire_id (Itdb_Device *device)
+guint64 itdb_device_get_firewire_id (const Itdb_Device *device)
 {
     gchar *fwid;
 
@@ -1123,6 +1219,7 @@ G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device)
     case ITDB_IPOD_GENERATION_CLASSIC_1: 
     case ITDB_IPOD_GENERATION_NANO_3:
     case ITDB_IPOD_GENERATION_TOUCH_1:
+    case ITDB_IPOD_GENERATION_IPHONE_1:
       return TRUE;
 
     case ITDB_IPOD_GENERATION_UNKNOWN:
@@ -1141,8 +1238,6 @@ G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device)
     case ITDB_IPOD_GENERATION_NANO_2:
     case ITDB_IPOD_GENERATION_VIDEO_1:
     case ITDB_IPOD_GENERATION_VIDEO_2:
-    case ITDB_IPOD_GENERATION_FIFTH:
-    case ITDB_IPOD_GENERATION_SIXTH:
             return FALSE;
     }
 

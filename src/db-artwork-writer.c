@@ -24,6 +24,7 @@
 
 #include <config.h>
 #include "itdb.h"
+#include "itdb_device.h"
 #include "itdb_private.h"
 #include "db-artwork-parser.h"
 
@@ -779,7 +780,8 @@ write_mhlf (Itdb_DB *db, iPodBuffer *buffer)
 	MhlfHeader *mhlf;
 	unsigned int total_bytes;
 	int bytes_written;
-        const Itdb_ArtworkFormat *formats; 
+        GList *formats; 
+        GList *it;
         unsigned int num_children;
 
 	mhlf = (MhlfHeader *)init_header (buffer, "mhlf", sizeof (MhlfHeader));
@@ -791,23 +793,31 @@ write_mhlf (Itdb_DB *db, iPodBuffer *buffer)
         num_children = 0;
         mhlf->num_files = get_gint32 (num_children, buffer->byte_order);
 
-        formats = itdb_device_get_artwork_formats (db_get_device(db));
+        formats = NULL;
+        switch (buffer->db_type) {
+        case DB_TYPE_ITUNES:
+            formats = itdb_device_get_cover_art_formats(db_get_device(db));
+            break;
+	case DB_TYPE_PHOTO:
+            formats = itdb_device_get_photo_formats(db_get_device(db));
+            break;
+        }
         if (formats == NULL) {
                 return total_bytes;
         }
 
-        while (formats->type != -1) {
+        for (it = formats; it != NULL; it = it->next) {
+                const Itdb_ArtworkFormat *format;
 	        iPodBuffer *sub_buffer;
-                if (!itdb_thumb_type_is_valid_for_db (formats, buffer->db_type)) {
-                        formats++;
-                        continue;
-                }
+                
+                format = (const Itdb_ArtworkFormat *)it->data;
         	sub_buffer = ipod_buffer_get_sub_buffer (buffer, total_bytes);
         	if (sub_buffer == NULL) {
+                        g_list_free (formats);
         		return -1;
         	}
 
-        	bytes_written = write_mhif (db, sub_buffer, formats);
+        	bytes_written = write_mhif (db, sub_buffer, format);
 	        			    
         	ipod_buffer_destroy (sub_buffer);
         	if (bytes_written == -1) {
@@ -821,9 +831,9 @@ write_mhlf (Itdb_DB *db, iPodBuffer *buffer)
                  * to get something somewhat consistent when there are errors
         	 */
         	mhlf->num_files = get_gint32 (num_children, buffer->byte_order);
-                formats++;
         }
 	dump_mhl ((MhlHeader *)mhlf, "mhlf");
+        g_list_free (formats);
 
 	return total_bytes;
 }

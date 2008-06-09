@@ -6881,7 +6881,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     /* Build Artwork directory only for devices requiring artwork
      * (assume that 'unknown models' are new and will support
      * artwork) */
-    if (ipod_supports_cover_art(device) ||
+    if (itdb_device_supports_artwork(device) ||
 	(info->ipod_model == ITDB_IPOD_MODEL_UNKNOWN))
     {
 	pbuf = g_build_filename (mp, podpath, "Artwork", NULL);
@@ -6895,7 +6895,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     }
 
     /* Build Photo directory only for devices requiring it */
-    if (ipod_supports_photos(device) ||
+    if (itdb_device_supports_photo(device) ||
 	(info->ipod_model == ITDB_IPOD_MODEL_UNKNOWN))
     {
 	pbuf = g_build_filename (mp, "Photos", "Thumbs", NULL);

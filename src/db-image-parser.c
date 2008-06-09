@@ -35,29 +35,43 @@
 #include "db-image-parser.h"
 #include <glib/gi18n-lib.h>
 
+static const Itdb_ArtworkFormat *
+find_format (GList *formats, gint16 format_id)
+{
+        GList *it;
+
+        for (it = formats; it != NULL; it = it->next) {
+                const Itdb_ArtworkFormat *format;
+                format = (const Itdb_ArtworkFormat *)it->data;
+                if (format->format_id == format_id) {
+                        return format;
+                }
+        }
+
+        return NULL;
+}
+
 static const Itdb_ArtworkFormat * 
 image_format_from_id (Itdb_Device *device, gint16 format_id)
 {
-	const Itdb_ArtworkFormat *formats;
+        GList *formats;
+        const Itdb_ArtworkFormat *format;
 
 	if (device == NULL) {
 		return NULL;
 	}
 
-	formats = itdb_device_get_artwork_formats (device);
+	formats = itdb_device_get_cover_art_formats (device);
+        format = find_format (formats, format_id);
+        g_list_free (formats);
+        if (format != NULL) {
+                return format;
+        }
 
-	if (formats == NULL) {
-		return NULL;
-	}
-	
-	while (formats->type != -1) {
-		if (formats->format_id == format_id) {
-			return formats;
-		}
-		formats++;
-	}
-
-	return NULL;
+	formats = itdb_device_get_photo_formats (device);
+        format = find_format (formats, format_id);
+        g_list_free (formats);
+	return format;
 }
 
 G_GNUC_INTERNAL Itdb_Thumb_Ipod_Item *

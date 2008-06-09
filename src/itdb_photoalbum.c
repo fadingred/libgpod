@@ -368,7 +368,7 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
     g_return_val_if_fail (!(image_data && (image_data_len == 0)), NULL);
     g_return_val_if_fail (!(pixbuf && (!GDK_IS_PIXBUF (pixbuf))), NULL);
 
-    if (!ipod_supports_photos (db->device))
+    if (!itdb_device_supports_photo (db->device))
     {
 	const Itdb_IpodInfo *ipodinfo = itdb_device_get_ipod_info (db->device);
 	const gchar *model, *generation;

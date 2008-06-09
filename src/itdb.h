@@ -97,9 +97,7 @@ typedef enum {
     ITDB_IPOD_GENERATION_VIDEO_2,
     ITDB_IPOD_GENERATION_CLASSIC_1,
     ITDB_IPOD_GENERATION_TOUCH_1,
-    /* The following 2 are no longer in use and should be removed */
-    ITDB_IPOD_GENERATION_FIFTH,
-    ITDB_IPOD_GENERATION_SIXTH,
+    ITDB_IPOD_GENERATION_IPHONE_1,
 } Itdb_IpodGeneration;
 
 typedef enum {
@@ -1084,13 +1082,14 @@ void itdb_device_free (Itdb_Device *device);
 void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp);
 gboolean itdb_device_read_sysinfo (Itdb_Device *device);
 gboolean itdb_device_write_sysinfo (Itdb_Device *device, GError **error);
-gchar *itdb_device_get_sysinfo (Itdb_Device *device, const gchar *field);
+gchar *itdb_device_get_sysinfo (const Itdb_Device *device, const gchar *field);
 void itdb_device_set_sysinfo (Itdb_Device *device,
 			      const gchar *field, const gchar *value);
-const Itdb_IpodInfo *itdb_device_get_ipod_info (Itdb_Device *device);
+const Itdb_IpodInfo *itdb_device_get_ipod_info (const Itdb_Device *device);
 const Itdb_IpodInfo *itdb_info_get_ipod_info_table (void);
-gboolean itdb_device_supports_artwork (Itdb_Device *device);
-gboolean itdb_device_supports_photo (Itdb_Device *device);
+gboolean itdb_device_supports_artwork (const Itdb_Device *device);
+gboolean itdb_device_supports_video (const Itdb_Device *device);
+gboolean itdb_device_supports_photo (const Itdb_Device *device);
 const gchar *itdb_info_get_ipod_model_name_string (Itdb_IpodModel model);
 const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generation);
 
