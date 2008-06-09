@@ -1,5 +1,10 @@
 2008-06-09  Christophe Fergeau  <christophe@anevia.com>
 
+	* src/gchecksum.c: fix compilation (it's only compiled on system with
+	older glib versions)
+
+2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+
 	* src/db-artwork-writer.c:
 	* src/itdb_artwork.c:
 	* src/itdb_thumb.c:

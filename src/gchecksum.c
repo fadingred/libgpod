@@ -25,9 +25,6 @@
 #include "glibconfig.h"
 #include "gchecksum.h"
 #include "glib.h"
-#include "glibintl.h"
-
-#include "galias.h"
 
 #define IS_VALID_TYPE(type)     ((type) >= G_CHECKSUM_MD5 && (type) <= G_CHECKSUM_SHA256)
 
@@ -1204,7 +1201,7 @@ g_checksum_update (GChecksum    *checksum,
   g_return_if_fail (data != NULL);
 
   if (length < 0)
-    length = strlen (data);
+    length = strlen ((gchar *)data);
 
   if (checksum->digest_str)
     {
@@ -1412,6 +1409,3 @@ g_compute_checksum_for_string (GChecksumType  checksum_type,
 
   return g_compute_checksum_for_data (checksum_type, (const guchar *) str, length);
 }
-
-#define __G_CHECKSUM_C__
-#include "galiasdef.c"
