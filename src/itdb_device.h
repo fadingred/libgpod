@@ -95,20 +95,20 @@ struct _Itdb_Device
 };
 
 struct _Itdb_ArtworkFormat {
-        gint16 format_id; 
-        gint16 width; 
-        gint16 height; 
-        ItdbThumbFormat format; 
+        gint16 format_id;
+        gint16 width;
+        gint16 height;
+        ItdbThumbFormat format;
         gint32 padding; /* not found in SysInfoExtended, added  
                          * for compatibility with hardcoded artwork formats */ 
-        gboolean crop; 
-        gint rotation; 
-        guint back_color; 
+        gboolean crop;
+        gint rotation;
+        guchar back_color[4];
  
-        gint display_width; 
-        gboolean interlaced; 
-        gboolean align_row_bytes; 
-        gint color_adjustment; 
+        gint display_width;
+        gboolean interlaced;
+        gboolean align_row_bytes;
+        gint color_adjustment;
         gdouble gamma;
         gint associated_format;
 };

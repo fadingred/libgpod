@@ -68,6 +68,26 @@ struct _iThumbWriter {
 typedef struct _iThumbWriter iThumbWriter;
 
 
+static guint16 get_RGB_565_pixel (const guchar *pixel, gint byte_order)
+{
+    gint r;
+    gint g;
+    gint b;
+
+    r = pixel[0];
+    g = pixel[1];
+    b = pixel[2];
+
+    r >>= (8 - RED_BITS_565);
+    g >>= (8 - GREEN_BITS_565);
+    b >>= (8 - BLUE_BITS_565);
+    r = (r << RED_SHIFT_565) & RED_MASK_565;
+    g = (g << GREEN_SHIFT_565) & GREEN_MASK_565;
+    b = (b << BLUE_SHIFT_565) & BLUE_MASK_565;
+
+    return get_gint16 (r | g | b, byte_order);
+}
+
 static guint16 *
 pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	      gint horizontal_padding, gint vertical_padding,
@@ -79,46 +99,98 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	gint channels;
 	gint width;
 	gint height;
-	gint w;
 	gint h;
 	gint byte_order;
+        gint dest_width;
 
 	g_object_get (G_OBJECT (pixbuf), 
 		      "rowstride", &row_stride, "n-channels", &channels,
 		      "height", &height, "width", &width,
 		      "pixels", &pixels, NULL);
 	g_return_val_if_fail ((width <= img_info->width) && (height <= img_info->height), NULL);
+
+        if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
+            /* each pixel is 2 bytes, to align rows on 4 bytes boundaries,
+             * width must be a multiple of 2 */
+            dest_width = img_info->width + 1;
+        } else {
+            dest_width = img_info->width;
+        }
 	/* dst_width and dst_height come from a width/height database 
 	 * hardcoded in libipoddevice code, so dst_width * dst_height * 2 can't
 	 * overflow, even on an iPod containing malicious data
 	 */
-	*thumb_size = img_info->width * img_info->height * 2;
+	*thumb_size = dest_width * img_info->height * 2;
 	result = g_malloc0 (*thumb_size);
 
 	byte_order = itdb_thumb_get_byteorder (img_info->format);
 
+        for (h = 0; h < vertical_padding; h++) {
+            gint w;
+            gint line = h * dest_width;
+
+            for (w = 0 ; w < dest_width; w++) {
+                result[line + w] = get_RGB_565_pixel (img_info->back_color, 
+                                                      byte_order);
+            }
+            line += (height+vertical_padding)*dest_width;
+            for (w = 0 ; w < dest_width; w++) {
+                result[line + w] = get_RGB_565_pixel (img_info->back_color, 
+                                                      byte_order);
+            }
+        }
+
 	for (h = 0; h < height; h++) {
-	        gint line = (h+vertical_padding)*img_info->width;
-		for (w = 0; w < width; w++) {
-			gint r;
-			gint g;
-			gint b;
+            gint line = (h+vertical_padding)*dest_width;
+            gint w;
+            for (w = 0; w < dest_width; w++) {
+                guint16 packed_pixel;
+                if (w < horizontal_padding) {
+                    packed_pixel = get_RGB_565_pixel (img_info->back_color,
+                                                      byte_order);
+                } else if (w >= horizontal_padding+width) {
+                    packed_pixel = get_RGB_565_pixel (img_info->back_color,
+                                                      byte_order);
+                } else {
+                    guchar *cur_pixel;
 
-			r = pixels[h*row_stride + w*channels];
-			g = pixels[h*row_stride + w*channels + 1]; 
-			b = pixels[h*row_stride + w*channels + 2]; 
-
-			r >>= (8 - RED_BITS_565);
-			g >>= (8 - GREEN_BITS_565);
-			b >>= (8 - BLUE_BITS_565);
-			r = (r << RED_SHIFT_565) & RED_MASK_565;
-			g = (g << GREEN_SHIFT_565) & GREEN_MASK_565;
-			b = (b << BLUE_SHIFT_565) & BLUE_MASK_565;
-			result[line + w + horizontal_padding] =
-			    get_gint16 (r | g | b, byte_order);
-		}
+                    cur_pixel = &pixels[h*row_stride + w*channels];
+                    packed_pixel = get_RGB_565_pixel (cur_pixel, byte_order);
+                }
+                result[line + w] = packed_pixel;
+            }
 	}
 	return result;
+}
+
+static guint16 get_RGB_555_pixel (const guchar *pixel, gint byte_order, 
+                                  gboolean has_alpha)
+{
+    gint r;
+    gint g;
+    gint b;
+    gint a;
+
+    r = pixel[0];
+    g = pixel[1];
+    b = pixel[2];
+    if (has_alpha) {
+        a = pixel[3];
+    } else {
+        /* I'm not sure if the highest bit really is the alpha channel. 
+         * For now I'm just setting this bit because that's what I have seen. */
+        a = 1;
+    }
+
+    r >>= (8 - RED_BITS_555);
+    g >>= (8 - GREEN_BITS_555);
+    b >>= (8 - BLUE_BITS_555);
+    r = (r << RED_SHIFT_555) & RED_MASK_555;
+    g = (g << GREEN_SHIFT_555) & GREEN_MASK_555;
+    b = (b << BLUE_SHIFT_555) & BLUE_MASK_555;
+    a = (a << ALPHA_SHIFT_555) & ALPHA_MASK_555;
+
+    return get_gint16 (a | r | g | b, byte_order);
 }
 
 static guint16 *
@@ -132,54 +204,100 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	gint channels;
 	gint width;
 	gint height;
-	gint w;
 	gint h;
 	gint byte_order;
+        gint dest_width;
 
 	g_object_get (G_OBJECT (pixbuf), 
 		      "rowstride", &row_stride, "n-channels", &channels,
 		      "height", &height, "width", &width,
 		      "pixels", &pixels, NULL);
 	g_return_val_if_fail ((width <= img_info->width) && (height <= img_info->height), NULL);
+
+        if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
+            /* each pixel is 2 bytes, to align rows on 4 bytes boundaries,
+             * width must be a multiple of 2 */
+            dest_width = img_info->width + 1;
+        } else {
+            dest_width = img_info->width;
+        }
+
 	/* dst_width and dst_height come from a width/height database 
 	 * hardcoded in libipoddevice code, so dst_width * dst_height * 2 can't
 	 * overflow, even on an iPod containing malicious data
 	 */
-
-	*thumb_size = img_info->width * img_info->height * 2;
+	*thumb_size = dest_width * img_info->height * 2;
 	result = g_malloc0 (*thumb_size);
 
 	byte_order = itdb_thumb_get_byteorder (img_info->format);
 
+        for (h = 0; h < vertical_padding; h++) {
+            gint w;
+            gint line = h * dest_width;
+
+            for (w = 0 ; w < dest_width; w++) {
+                result[line + w] = get_RGB_555_pixel (img_info->back_color, 
+                                                      byte_order, TRUE);
+            }
+            line += (height+vertical_padding)*dest_width;
+            for (w = 0 ; w < dest_width; w++) {
+                result[line + w] = get_RGB_555_pixel (img_info->back_color, 
+                                                      byte_order, TRUE);
+            }
+        }
+
 	for (h = 0; h < height; h++) {
-	        gint line = (h+vertical_padding)*img_info->width;
-		for (w = 0; w < width; w++) {
-			gint r;
-			gint g;
-			gint b;
-			gint a;
+            gint line = (h+vertical_padding)*dest_width;
+            gint w;
+            for (w = 0; w < dest_width; w++) {
+                guint16 packed_pixel;
+                if (w < horizontal_padding) {
+                    packed_pixel = get_RGB_555_pixel (img_info->back_color,
+                                                      byte_order, TRUE);
+                } else if (w >= horizontal_padding+width) {
+                    packed_pixel = get_RGB_555_pixel (img_info->back_color,
+                                                      byte_order, TRUE);
+                } else {
+                    guchar *cur_pixel;
 
-			r = pixels[h*row_stride + w*channels];
-			g = pixels[h*row_stride + w*channels + 1]; 
-			b = pixels[h*row_stride + w*channels + 2]; 
-
-			r >>= (8 - RED_BITS_555);
-			g >>= (8 - GREEN_BITS_555);
-			b >>= (8 - BLUE_BITS_555);
-			a = (1 << ALPHA_SHIFT_555) & ALPHA_MASK_555;
-			r = (r << RED_SHIFT_555) & RED_MASK_555;
-			g = (g << GREEN_SHIFT_555) & GREEN_MASK_555;
-			b = (b << BLUE_SHIFT_555) & BLUE_MASK_555;
-			result[line + w + horizontal_padding] =
-			    get_gint16 (a | r | g | b, byte_order);
-			/* I'm not sure if the highest bit really is
-			   the alpha channel. For now I'm just setting
-			   this bit because that's what I have seen. */
-		}
+                    cur_pixel = &pixels[h*row_stride + w*channels];
+                    packed_pixel = get_RGB_555_pixel (cur_pixel, byte_order,
+                                                      FALSE);
+                }
+                result[line + w] = packed_pixel;
+            }
 	}
 	return result;
 }
 
+static guint16 get_RGB_888_pixel (const guchar *pixel, gint byte_order,
+                                  gboolean has_alpha)
+{
+    gint r;
+    gint g;
+    gint b;
+    gint a;
+
+    r = pixel[0];
+    g = pixel[1];
+    b = pixel[2];
+    if (has_alpha) {
+        a = pixel[3];
+    } else {
+        /* I'm not sure if the highest bit really is the alpha channel. 
+         * For now I'm just setting this bit because that's what I have seen. */
+        a = 0xff; 
+    }
+    r >>= (8 - RED_BITS_888);
+    g >>= (8 - GREEN_BITS_888);
+    b >>= (8 - BLUE_BITS_888);
+    r = (r << RED_SHIFT_888) & RED_MASK_888;
+    g = (g << GREEN_SHIFT_888) & GREEN_MASK_888;
+    b = (b << BLUE_SHIFT_888) & BLUE_MASK_888;
+    a = (a << ALPHA_SHIFT_888) & ALPHA_MASK_888;
+
+    return get_gint32 (a | r | g | b, byte_order);
+}
 
 static guint16 *
 pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
@@ -192,7 +310,6 @@ pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	gint channels;
 	gint width;
 	gint height;
-	gint w;
 	gint h;
 	gint byte_order;
 
@@ -210,31 +327,41 @@ pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 
 	byte_order = itdb_thumb_get_byteorder (img_info->format);
 
+        for (h = 0; h < vertical_padding; h++) {
+            gint w;
+            gint line = h * img_info->width;
+
+            for (w = 0 ; w < img_info->width; w++) {
+                result[line + w] = get_RGB_888_pixel (img_info->back_color, 
+                                                      byte_order, TRUE);
+            }
+            line += (height+vertical_padding)*img_info->width;
+            for (w = 0 ; w < img_info->width; w++) {
+                result[line + w] = get_RGB_888_pixel (img_info->back_color, 
+                                                      byte_order, TRUE);
+            }
+        }
+
 	for (h = 0; h < height; h++) {
-	        gint line = (h+vertical_padding)*img_info->width;
-		for (w = 0; w < width; w++) {
-			guint32 r;
-			guint32 g;
-			guint32 b;
-			guint32 a;
+            gint line = (h+vertical_padding)*img_info->width;
+            gint w;
+            for (w = 0; w < img_info->width; w++) {
+                guint16 packed_pixel;
+                if (w < horizontal_padding) {
+                    packed_pixel = get_RGB_888_pixel (img_info->back_color,
+                                                      byte_order, TRUE);
+                } else if (w >= horizontal_padding+width) {
+                    packed_pixel = get_RGB_888_pixel (img_info->back_color,
+                                                      byte_order, TRUE);
+                } else {
+                    guchar *cur_pixel;
 
-			r = pixels[h*row_stride + w*channels];
-			g = pixels[h*row_stride + w*channels + 1]; 
-			b = pixels[h*row_stride + w*channels + 2]; 
-
-			r >>= (8 - RED_BITS_888);
-			g >>= (8 - GREEN_BITS_888);
-			b >>= (8 - BLUE_BITS_888);
-			a = (0xff << ALPHA_SHIFT_888) & ALPHA_MASK_888;
-			r = (r << RED_SHIFT_888) & RED_MASK_888;
-			g = (g << GREEN_SHIFT_888) & GREEN_MASK_888;
-			b = (b << BLUE_SHIFT_888) & BLUE_MASK_888;
-			result[line + w + horizontal_padding] =
-			    get_gint32 (a | r | g | b, byte_order);
-			/* I'm not sure if the highest bit really is
-			   the alpha channel. For now I'm just setting
-			   these bits because that's what I have seen. */
-		}
+                    cur_pixel = &pixels[h*row_stride + w*channels];
+                    packed_pixel = get_RGB_888_pixel (cur_pixel, byte_order,
+                                                      FALSE);
+                }
+                result[line + w] = packed_pixel;
+            }
 	}
 	return (guint16 *)result;
 }
@@ -291,9 +418,15 @@ pack_rec_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 
     if (pixels)
     {
+        gint row_stride;
+        if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
+            row_stride = img_info->width + 1;
+        } else {
+            row_stride = img_info->width;
+        }
 	deranged_pixels = derange_pixels (NULL, pixels,
 					  img_info->width, img_info->height,
-					  img_info->width);
+					  row_stride);
 	g_free (pixels);
     }
 

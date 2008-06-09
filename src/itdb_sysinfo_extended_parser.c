@@ -407,16 +407,22 @@ set_pixel_format (Itdb_ArtworkFormat *img_spec, GHashTable *dict)
 
 static void set_back_color (Itdb_ArtworkFormat *img_spec, GHashTable *dict)
 {
-        char *back_color;
-        
-        img_spec->back_color = 0;
-        back_color = get_string (dict, "BackColor");
-        if (back_color == NULL) {
-            return;
-        }
-        img_spec->back_color = strtoul (back_color, NULL, 16);
-        g_hash_table_remove (dict, "BackColor");
-        g_free (back_color);
+    char *back_color_str;
+    guint back_color;
+    gchar i;
+
+    memset (img_spec->back_color, 0, sizeof (img_spec->back_color));;
+    back_color_str = get_string (dict, "BackColor");
+    if (back_color_str == NULL) {
+        return;
+    }
+    back_color = strtoul (back_color_str, NULL, 16);
+    for (i = 3; i >= 0; i--) {
+        img_spec->back_color[(guchar)i] = back_color & 0xff;
+        back_color = back_color >> 8;
+    }
+    g_hash_table_remove (dict, "BackColor");
+    g_free (back_color_str);
 }
 
 static Itdb_ArtworkFormat *g_value_to_image_format (GValue *value)
@@ -550,7 +556,7 @@ itdb_sysinfo_properties_get_chapter_image_formats (const SysInfoIpodProperties *
 G_GNUC_INTERNAL gboolean
 itdb_sysinfo_properties_supports_sparse_artwork (const SysInfoIpodProperties *props)
 {
-    g_return_val_if_fail (props != NULL, NULL);
+    g_return_val_if_fail (props != NULL, FALSE);
 
     return props->supports_sparse_artwork;
 }
