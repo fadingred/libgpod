@@ -823,6 +823,50 @@ GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
     g_return_val_if_reached (NULL);
 }
 
+G_GNUC_INTERNAL gboolean 
+itdb_device_supports_sparse_artwork (const Itdb_Device *device)
+{
+    gboolean supports_sparse_artwork = FALSE;
+
+    g_return_val_if_fail (device != NULL, FALSE);
+
+    if (device->sysinfo_extended != NULL) {
+        supports_sparse_artwork = itdb_sysinfo_properties_supports_sparse_artwork (device->sysinfo_extended);
+    }
+
+    if (supports_sparse_artwork == FALSE) {
+        const Itdb_IpodInfo *info;
+        info = itdb_device_get_ipod_info (device);
+        switch (info->ipod_generation) {
+            case ITDB_IPOD_GENERATION_UNKNOWN:
+            case ITDB_IPOD_GENERATION_FIRST:
+            case ITDB_IPOD_GENERATION_SECOND:
+            case ITDB_IPOD_GENERATION_THIRD:
+            case ITDB_IPOD_GENERATION_FOURTH:
+            case ITDB_IPOD_GENERATION_PHOTO:
+            case ITDB_IPOD_GENERATION_MOBILE:
+            case ITDB_IPOD_GENERATION_MINI_1:
+            case ITDB_IPOD_GENERATION_MINI_2:
+            case ITDB_IPOD_GENERATION_SHUFFLE_1:
+            case ITDB_IPOD_GENERATION_SHUFFLE_2:
+            case ITDB_IPOD_GENERATION_SHUFFLE_3:
+                supports_sparse_artwork = FALSE;
+                break;
+            case ITDB_IPOD_GENERATION_NANO_1:
+            case ITDB_IPOD_GENERATION_NANO_2:
+            case ITDB_IPOD_GENERATION_NANO_3:
+            case ITDB_IPOD_GENERATION_VIDEO_1:
+            case ITDB_IPOD_GENERATION_VIDEO_2:
+            case ITDB_IPOD_GENERATION_CLASSIC_1:
+            case ITDB_IPOD_GENERATION_TOUCH_1:
+            case ITDB_IPOD_GENERATION_IPHONE_1:
+                supports_sparse_artwork = TRUE;
+                break;
+        }
+    }
+    return supports_sparse_artwork;
+}
+
 /* Determine the number of F.. directories in iPod_Control/Music.*/
 G_GNUC_INTERNAL gint
 itdb_musicdirs_number_by_mountpoint (const gchar *mountpoint)

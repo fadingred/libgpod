@@ -546,3 +546,11 @@ itdb_sysinfo_properties_get_chapter_image_formats (const SysInfoIpodProperties *
     g_return_val_if_fail (props != NULL, NULL);
     return props->chapter_image_formats;
 }
+
+G_GNUC_INTERNAL gboolean
+itdb_sysinfo_properties_supports_sparse_artwork (const SysInfoIpodProperties *props)
+{
+    g_return_val_if_fail (props != NULL, NULL);
+
+    return props->supports_sparse_artwork;
+}

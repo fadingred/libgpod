@@ -1,4 +1,15 @@
-2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+2008-06-09  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/db-artwork-writer.c:
+	* src/itdb_device.c:
+	* src/itdb_device.h:
+	* src/itdb_sysinfo_extended_parser.c:
+	* src/itdb_sysinfo_extended_parser.h: implements
+	itdb_device_supports_sparse_artwork (instead of the old stub always
+	returning TRUE). Use data from SysInfoExtended if it's available,
+	use hardcoded table from libgpod if not.
+
+2008-06-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c:
 	* src/itdb_device.h:
@@ -7,7 +18,7 @@
 	SysInfoImageFormat, use artwork formats from SysInfoExtended when
 	it's available instead of using the hardcoded tables from libgpod
 
-2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+2008-06-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-writer.c:
 	* src/db-image-parser.h:
@@ -18,7 +29,7 @@
 	pointers to the appropriate Itdb_ArtworkFormat for the thumbnail
 	type when it's needed
 
-2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+2008-06-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-parser.c: remove duplicated artwork/photo support
 	testing functions
@@ -39,12 +50,12 @@
 	* src/db-artwork-writer.c: ditto
 	* src/ithumb-writer.c: ditto
 
-2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+2008-06-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/gchecksum.c: fix compilation (it's only compiled on system with
 	older glib versions)
 
-2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+2008-06-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-writer.c:
 	* src/itdb_artwork.c:

@@ -50,6 +50,8 @@ G_GNUC_INTERNAL const GList *
 itdb_sysinfo_properties_get_photo_formats (const SysInfoIpodProperties *);
 G_GNUC_INTERNAL const GList *
 itdb_sysinfo_properties_get_chapter_image_formats (const SysInfoIpodProperties *);
+G_GNUC_INTERNAL gboolean
+itdb_sysinfo_properties_supports_sparse_artwork (const SysInfoIpodProperties *);
 
 G_END_DECLS
 

@@ -910,14 +910,6 @@ write_mhfd (Itdb_DB *db, iPodBuffer *buffer, int id_max)
 	return total_bytes;
 }
 
-
-static gboolean
-ipod_supports_sparse_artwork (Itdb_Device *device)
-{
-    return TRUE;
-}
-
-
 /* renumber the artwork IDs for all tracks containing artwork and with
    an ID of != 0 */
 /* if the iPod does not support sparse artwork, renumber consecutively
@@ -932,7 +924,7 @@ ipod_artwork_db_set_ids (Itdb_iTunesDB *db)
 
     cur_id = min_id;
 
-    if (ipod_supports_sparse_artwork (db->device))
+    if (itdb_device_supports_sparse_artwork (db->device))
     {
 	GHashTable *id_hash;
 
@@ -1129,7 +1121,7 @@ static guint32 itdb_prepare_thumbnails (Itdb_iTunesDB *itdb)
      * high */
     max_id = ipod_artwork_db_set_ids (itdb);
 
-    if (ipod_supports_sparse_artwork (itdb->device))
+    if (itdb_device_supports_sparse_artwork (itdb->device))
     {
 	/* go through all newly added artwork and pass out new IDs. the
 	   same ID will be assigned to identical artwork within one album */
