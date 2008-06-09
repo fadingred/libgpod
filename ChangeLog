@@ -1,3 +1,10 @@
+2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+
+	* src/db-artwork-writer.c:
+	* src/itdb_artwork.c:
+	* src/itdb_thumb.c:
+	* src/itdb_thumb.h: fix compilation when gdk-pixbuf isn't present
+
 2008-06-02  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_track.c (itdb_track_remove_thumbnails): set mhii_link

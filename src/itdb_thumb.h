@@ -23,7 +23,6 @@
 #ifndef __ITDB_THUMB_H__
 #define __ITDB_THUMB_H__
 
-#include <gdk-pixbuf/gdk-pixbuf.h>
 #include "itdb.h"
 #include "itdb_device.h"
 
@@ -69,7 +68,7 @@ typedef struct _Itdb_Thumb_Memory Itdb_Thumb_Memory;
 
 struct _Itdb_Thumb_Pixbuf {
     struct _Itdb_Thumb parent;
-    GdkPixbuf *pixbuf;
+    gpointer pixbuf;
 };
 typedef struct _Itdb_Thumb_Pixbuf Itdb_Thumb_Pixbuf;
 
@@ -94,7 +93,7 @@ typedef struct _Itdb_Thumb_Ipod_Item Itdb_Thumb_Ipod_Item;
 G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_new_from_file (const gchar *filename);
 G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_new_from_data (const guchar *data,
                                                       gsize len);
-G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_new_from_pixbuf (GdkPixbuf *pixbuf);
+G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_new_from_pixbuf (gpointer pixbuf);
 G_GNUC_INTERNAL Itdb_Thumb_Ipod_Item *itdb_thumb_new_item_from_ipod (const Itdb_ArtworkFormat *format);
 G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_ipod_new (void);
 G_GNUC_INTERNAL void itdb_thumb_set_rotation (Itdb_Thumb *thumb, 

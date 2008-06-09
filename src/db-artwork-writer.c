@@ -28,6 +28,7 @@
 #include "db-artwork-parser.h"
 
 #if HAVE_GDKPIXBUF
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "db-artwork-debug.h"
 #include "db-itunes-parser.h"

@@ -878,7 +878,8 @@ gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
         return pixbuf;
 }
 #else
-gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Thumb_Ipod_Item *item) 
+gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device, 
+                                         Itdb_Thumb_Ipod_Item *item)
 {
     return NULL;
 }

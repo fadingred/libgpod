@@ -31,6 +31,10 @@
 #include "itdb_private.h"
 #include "itdb_thumb.h"
 
+#ifdef HAVE_GDKPIXBUF
+#include <gdk-pixbuf/gdk-pixbuf.h>
+#endif
+
 Itdb_Thumb *itdb_thumb_new_from_file (const gchar *filename)
 {
     Itdb_Thumb_File *thumb_file;
@@ -60,7 +64,8 @@ Itdb_Thumb *itdb_thumb_new_from_data (const guchar *data, gsize len)
 }
 
 
-Itdb_Thumb *itdb_thumb_new_from_pixbuf (GdkPixbuf *pixbuf)
+#ifdef HAVE_GDKPIXBUF
+Itdb_Thumb *itdb_thumb_new_from_pixbuf (gpointer pixbuf)
 {
     Itdb_Thumb_Pixbuf *thumb_pixbuf;
     Itdb_Thumb *thumb;
@@ -72,7 +77,12 @@ Itdb_Thumb *itdb_thumb_new_from_pixbuf (GdkPixbuf *pixbuf)
    
     return thumb; 
 }
-
+#else
+Itdb_Thumb *itdb_thumb_new_from_pixbuf (gpointer pixbuf)
+{
+    return NULL;
+}
+#endif
 
 Itdb_Thumb_Ipod_Item *itdb_thumb_new_item_from_ipod (const Itdb_ArtworkFormat *format)
 {
@@ -128,6 +138,9 @@ void itdb_thumb_free (Itdb_Thumb *thumb)
             }
             break;
         }
+#else
+	case ITDB_THUMB_TYPE_PIXBUF:
+            g_assert_not_reached();
 #endif
         case ITDB_THUMB_TYPE_IPOD: {
             Itdb_Thumb_Ipod *thumb_ipod = (Itdb_Thumb_Ipod *)thumb;
@@ -190,6 +203,9 @@ Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb)
             Itdb_Thumb_Pixbuf *thumb_pixbuf = (Itdb_Thumb_Pixbuf *)thumb;
             return itdb_thumb_new_from_pixbuf (thumb_pixbuf->pixbuf);
         }
+#else
+        case ITDB_THUMB_TYPE_PIXBUF:
+	    return NULL;
 #endif
         case ITDB_THUMB_TYPE_IPOD: {
             Itdb_Thumb_Ipod *thumb_ipod = (Itdb_Thumb_Ipod *)thumb;
@@ -445,7 +461,7 @@ GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thumb)
         return pixbufs;
 }
 #else
-gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Thumb *thumb, 
+gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *dev, Itdb_Thumb *thumb, 
                                        gint width, gint height)
 {
     return NULL;
