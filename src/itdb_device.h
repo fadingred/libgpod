@@ -94,16 +94,23 @@ struct _Itdb_Device
 
 };
 
-struct _Itdb_ArtworkFormat
-{
-	gint16 width;
-	gint16 height;
-	gint16 format_id;
-        ItdbThumbFormat format;
-        gint32 padding;
-        /* If true, crop the artwork to completely fill the target size,
-          rather than leaving empty bars on the top or sides. */
-        gboolean crop;
+struct _Itdb_ArtworkFormat {
+        gint16 format_id; 
+        gint16 width; 
+        gint16 height; 
+        ItdbThumbFormat format; 
+        gint32 padding; /* not found in SysInfoExtended, added  
+                         * for compatibility with hardcoded artwork formats */ 
+        gboolean crop; 
+        gint rotation; 
+        guint back_color; 
+ 
+        gint display_width; 
+        gboolean interlaced; 
+        gboolean align_row_bytes; 
+        gint color_adjustment; 
+        gdouble gamma;
+        gint associated_format;
 };
 
 G_GNUC_INTERNAL GList *itdb_device_get_photo_formats (const Itdb_Device *device);

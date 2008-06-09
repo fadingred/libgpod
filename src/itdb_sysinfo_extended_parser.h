@@ -44,6 +44,13 @@ itdb_sysinfo_properties_get_serial_number (const SysInfoIpodProperties *props);
 const char *
 itdb_sysinfo_properties_get_firewire_id (const SysInfoIpodProperties *props);
 
+G_GNUC_INTERNAL const GList *
+itdb_sysinfo_properties_get_cover_art_formats (const SysInfoIpodProperties *);
+G_GNUC_INTERNAL const GList *
+itdb_sysinfo_properties_get_photo_formats (const SysInfoIpodProperties *);
+G_GNUC_INTERNAL const GList *
+itdb_sysinfo_properties_get_chapter_image_formats (const SysInfoIpodProperties *);
+
 G_END_DECLS
 
 #endif

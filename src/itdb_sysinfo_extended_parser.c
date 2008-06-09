@@ -31,13 +31,13 @@
  * (a GValue *) and to convert it to data structures usable by libgpod.
  * This is that code which interprets the generic parsed plist data as a
  * SysInfoExtended file. The SysInfoExtended data is used to fill a
- * SysInfoIpodProperties structure and several SysInfoImageFormat structs.
+ * SysInfoIpodProperties structure and several Itdb_ArtworkFormat structs.
  *
  * I tried to make the filling of the structures quite generic, if some
  * field isn't parsed (which is quite possible since I gathered the various
  * fields names using a few sample files), all is needed to add it is to
  * add a field to the appropriate structure (SysInfoIpodProperties or
- * SysInfoImageFormat) and to add that field to the appropriate
+ * Itdb_ArtworkFormat) and to add that field to the appropriate
  * _fields_mapping structure. Those _fields_mapping structures are then
  * used to convert from a GValue to the struct, but they are also used by
  * the _dump and _free functions, so there's no need to modify them when
@@ -53,8 +53,12 @@
 #include <config.h>
 #endif
 #include <glib-object.h>
-#include "itdb_sysinfo_extended_parser.h"
+#include <stdlib.h>
+#include <string.h>
+
+#include "itdb_device.h"
 #include "itdb_plist.h"
+#include "itdb_sysinfo_extended_parser.h"
 
 struct _SysInfoIpodProperties {
         char *build_id;
@@ -104,23 +108,6 @@ struct _SysInfoIpodProperties {
         gint games_platform_version;
         gint rental_clock_bias;
 };
-
-struct _SysInfoImageFormat {
-        gint format_id;
-        gint display_width;
-        gint render_width;
-        gint render_height;
-        char *pixel_format;
-        gboolean interlaced;
-        gboolean crop;
-        gboolean align_row_bytes;
-        gint rotation;
-        char *back_color;
-        gint color_adjustment;
-        gdouble gamma;
-        gint associated_format;
-};
-typedef struct _SysInfoImageFormat SysInfoImageFormat;
 
 static gint get_int (GHashTable *dict, const char *key)
 {
@@ -233,19 +220,23 @@ static const DictFieldMapping sysinfo_ipod_properties_fields_mapping[] = {
 };
 
 static const DictFieldMapping sysinfo_image_format_fields_mapping[] = {
-    { "FormatId",         G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoImageFormat, format_id) },
-    { "DisplayWidth",     G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoImageFormat, display_width) },
-    { "RenderWidth",      G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoImageFormat, render_width) },
-    { "RenderHeight",     G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoImageFormat, render_height) },
-    { "PixelFormat",      G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoImageFormat, pixel_format) },
-    { "Interlaced",       G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoImageFormat, interlaced) },
-    { "Crop",             G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoImageFormat, crop) },
-    { "AlignRowBytes",    G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoImageFormat, align_row_bytes) },
-    { "Rotation",         G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoImageFormat, rotation) },
-    { "BackColor",        G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoImageFormat, back_color) },
-    { "ColorAdjustment",  G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoImageFormat, color_adjustment) },
-    { "GammaAdjustment",  G_TYPE_DOUBLE,  G_STRUCT_OFFSET (SysInfoImageFormat, gamma) },
-    { "AssociatedFormat", G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoImageFormat, associated_format) },
+    { "FormatId",         G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, format_id) },
+    { "DisplayWidth",     G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, display_width) },
+    { "RenderWidth",      G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, width) },
+    { "RenderHeight",     G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, height) },
+/*  PixelFormat needs to be converted to ItdbThumbFormat, this is special-cased
+ *  in g_value_to_image_format */
+/*  { "PixelFormat",      G_TYPE_STRING,  G_STRUCT_OFFSET (Itdb_ArtworkFormat, format) },*/
+    { "Interlaced",       G_TYPE_BOOLEAN, G_STRUCT_OFFSET (Itdb_ArtworkFormat, interlaced) },
+    { "Crop",             G_TYPE_BOOLEAN, G_STRUCT_OFFSET (Itdb_ArtworkFormat, crop) },
+    { "AlignRowBytes",    G_TYPE_BOOLEAN, G_STRUCT_OFFSET (Itdb_ArtworkFormat, align_row_bytes) },
+    { "Rotation",         G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, rotation) },
+/* BackColor needs to be converted to a gint, this is special-cased
+ * in g_value_to_image_format */
+/*    { "BackColor",        G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, back_color) }, */
+    { "ColorAdjustment",  G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, color_adjustment) },
+    { "GammaAdjustment",  G_TYPE_DOUBLE,  G_STRUCT_OFFSET (Itdb_ArtworkFormat, gamma) },
+    { "AssociatedFormat", G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, associated_format) },
     { NULL,               G_TYPE_NONE,    0 }
 };
 
@@ -319,7 +310,7 @@ static void free_struct (const DictFieldMapping *mapping,
     g_free (struct_ptr);
 }
 
-static void free_image_format (SysInfoImageFormat *format)
+static void free_image_format (Itdb_ArtworkFormat *format)
 {
     free_struct (sysinfo_image_format_fields_mapping, format);
 }
@@ -374,7 +365,7 @@ static void dump_struct (const DictFieldMapping *mapping,
     }
 }
 
-static void dump_image_format (SysInfoImageFormat *format)
+static void dump_image_format (Itdb_ArtworkFormat *format)
 {
     dump_struct (sysinfo_image_format_fields_mapping, format);
 }
@@ -387,20 +378,67 @@ void itdb_sysinfo_properties_dump (SysInfoIpodProperties *props)
     g_list_foreach (props->chapter_image_formats, (GFunc)dump_image_format, NULL);
 }
 
-static SysInfoImageFormat *g_value_to_image_format (GValue *value)
+static gboolean 
+set_pixel_format (Itdb_ArtworkFormat *img_spec, GHashTable *dict)
+{
+    char *pixel_format;
+
+    pixel_format = get_string (dict, "PixelFormat");
+    if (pixel_format == NULL) {
+        return FALSE;
+    }
+
+    if (strcmp (pixel_format, "32767579" /* 2vuy */) == 0) {
+        img_spec->format = THUMB_FORMAT_UYVY_BE;
+    } else if (strcmp (pixel_format, "42353635" /* B565 */) == 0) {
+        img_spec->format = THUMB_FORMAT_RGB565_BE;
+    } else if (strcmp (pixel_format, "4C353635" /* L565 */) == 0) {
+        img_spec->format = THUMB_FORMAT_RGB565_LE;
+    } else if (strcmp (pixel_format, "79343230" /* y420 */) == 0) {
+        img_spec->format = THUMB_FORMAT_I420_LE;
+    } else {
+        g_free (pixel_format);
+        return FALSE;
+    }
+    g_hash_table_remove (dict, "PixelFormat");
+    g_free (pixel_format);
+    return TRUE;
+}
+
+static void set_back_color (Itdb_ArtworkFormat *img_spec, GHashTable *dict)
+{
+        char *back_color;
+        
+        img_spec->back_color = 0;
+        back_color = get_string (dict, "BackColor");
+        if (back_color == NULL) {
+            return;
+        }
+        img_spec->back_color = strtoul (back_color, NULL, 16);
+        g_hash_table_remove (dict, "BackColor");
+        g_free (back_color);
+}
+
+static Itdb_ArtworkFormat *g_value_to_image_format (GValue *value)
 {
     GHashTable *dict;
-    SysInfoImageFormat *img_spec;
+    Itdb_ArtworkFormat *img_spec;
 
     g_return_val_if_fail (G_VALUE_HOLDS (value, G_TYPE_HASH_TABLE), NULL);
     dict = g_value_get_boxed (value);
     g_return_val_if_fail (dict != NULL, NULL);
    
-    img_spec = g_new0 (SysInfoImageFormat, 1);
+    img_spec = g_new0 (Itdb_ArtworkFormat, 1);
     if (img_spec == NULL) {
         return NULL;             
     }
-    
+   
+    if (!set_pixel_format (img_spec, dict)) {
+        g_free (img_spec);
+        return NULL;
+    }   
+    set_back_color (img_spec, dict);
+
     dict_to_struct (dict, sysinfo_image_format_fields_mapping, img_spec);
 
     return img_spec;
@@ -409,7 +447,7 @@ static SysInfoImageFormat *g_value_to_image_format (GValue *value)
 static void process_one (gpointer key, gpointer value, gpointer user_data)
 {
     GList **img_formats = user_data;
-    SysInfoImageFormat *format;
+    Itdb_ArtworkFormat *format;
 
     format = g_value_to_image_format (value);
     if (format != NULL) {
@@ -486,4 +524,25 @@ itdb_sysinfo_properties_get_firewire_id (const SysInfoIpodProperties *props)
 {
     g_return_val_if_fail (props != NULL, NULL);
     return props->firewire_guid;
+}
+
+const GList *
+itdb_sysinfo_properties_get_cover_art_formats (const SysInfoIpodProperties *props)
+{
+    g_return_val_if_fail (props != NULL, NULL);
+    return props->artwork_formats;
+}
+
+const GList *
+itdb_sysinfo_properties_get_photo_formats (const SysInfoIpodProperties *props)
+{
+    g_return_val_if_fail (props != NULL, NULL);
+    return props->photo_formats;
+}
+
+const GList *
+itdb_sysinfo_properties_get_chapter_image_formats (const SysInfoIpodProperties *props)
+{
+    g_return_val_if_fail (props != NULL, NULL);
+    return props->chapter_image_formats;
 }

@@ -1,5 +1,14 @@
 2008-06-09  Christophe Fergeau  <christophe@anevia.com>
 
+	* src/itdb_device.c:
+	* src/itdb_device.h:
+	* src/itdb_sysinfo_extended_parser.c:
+	* src/itdb_sysinfo_extended_parser.h: merge Itdb_ArtworkFormat and
+	SysInfoImageFormat, use artwork formats from SysInfoExtended when
+	it's available instead of using the hardcoded tables from libgpod
+
+2008-06-09  Christophe Fergeau  <christophe@anevia.com>
+
 	* src/db-artwork-writer.c:
 	* src/db-image-parser.h:
 	* src/itdb.h:

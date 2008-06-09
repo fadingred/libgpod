@@ -268,100 +268,100 @@ static const gchar *ipod_generation_name_table [] = {
 
 
 static const Itdb_ArtworkFormat ipod_photo_cover_art_info[] = {
-    { 56,  56, 1017, THUMB_FORMAT_RGB565_LE},
-    {140, 140, 1016, THUMB_FORMAT_RGB565_LE},
-    { -1,  -1,   -1, -1}
+    {1017,  56,  56, THUMB_FORMAT_RGB565_LE},
+    {1016, 140, 140, THUMB_FORMAT_RGB565_LE},
+    { -1,   -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_photo_photo_info[] = {
-    { 42,  30, 1009, THUMB_FORMAT_RGB565_LE},
-    {130,  88, 1015, THUMB_FORMAT_RGB565_LE},
-    {220, 176, 1013, THUMB_FORMAT_RGB565_BE_90},
-    {720, 480, 1019, THUMB_FORMAT_UYVY_BE},
-    { -1,  -1,   -1, -1}
+    {1009,  42,  30, THUMB_FORMAT_RGB565_LE},
+    {1015, 130,  88, THUMB_FORMAT_RGB565_LE},
+    {1013, 220, 176, THUMB_FORMAT_RGB565_BE_90},
+    {1019, 720, 480, THUMB_FORMAT_UYVY_BE},
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_nano_cover_art_info[] = {
-    { 42,  42, 1031, THUMB_FORMAT_RGB565_LE},
-    {100, 100, 1027, THUMB_FORMAT_RGB565_LE},
-    { -1,  -1,   -1, -1}
+    {1031,  42,  42, THUMB_FORMAT_RGB565_LE},
+    {1027, 100, 100, THUMB_FORMAT_RGB565_LE},
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_nano_photo_info[] = {
-    { 42,  37, 1032, THUMB_FORMAT_RGB565_LE},
-    {176, 132, 1023, THUMB_FORMAT_RGB565_BE},
-    { -1,  -1,   -1, -1}
+    {1032,  42,  37, THUMB_FORMAT_RGB565_LE},
+    {1023, 176, 132, THUMB_FORMAT_RGB565_BE},
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_video_cover_art_info[] = {
-    {100, 100, 1028, THUMB_FORMAT_RGB565_LE},
-    {200, 200, 1029, THUMB_FORMAT_RGB565_LE},
-    { -1,  -1,   -1, -1}
+    {1028, 100, 100, THUMB_FORMAT_RGB565_LE},
+    {1029, 200, 200, THUMB_FORMAT_RGB565_LE},
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_video_photo_info[] = {
-    { 50,  41, 1036, THUMB_FORMAT_RGB565_LE},
-    {130,  88, 1015, THUMB_FORMAT_RGB565_LE},
-    {320, 240, 1024, THUMB_FORMAT_RGB565_LE},
-    {720, 480, 1019, THUMB_FORMAT_UYVY_BE},
-    { -1,  -1,   -1, -1}
+    {1036,  50,  41, THUMB_FORMAT_RGB565_LE},
+    {1015, 130,  88, THUMB_FORMAT_RGB565_LE},
+    {1024, 320, 240, THUMB_FORMAT_RGB565_LE},
+    {1019, 720, 480, THUMB_FORMAT_UYVY_BE},
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_mobile_1_cover_art_info[] = {
-    { 50,  50, 2002, THUMB_FORMAT_RGB565_BE},
-    {150, 150, 2003, THUMB_FORMAT_RGB565_BE},
-    { -1,  -1,   -1, -1}
+    {2002,  50,  50, THUMB_FORMAT_RGB565_BE},
+    {2003, 150, 150, THUMB_FORMAT_RGB565_BE},
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_touch_1_cover_art_info[] = {
-    {256, 256, 3001, THUMB_FORMAT_REC_RGB555_LE},
-    {128, 128, 3002, THUMB_FORMAT_REC_RGB555_LE},
-    { 64,  64, 3003, THUMB_FORMAT_REC_RGB555_LE},
-    {320, 320, 3005, THUMB_FORMAT_RGB555_LE},
-    { 56,  56, 3006, THUMB_FORMAT_RGB555_LE,  8192}, /*pad data to  8192 bytes */
-    { 88,  88, 3007, THUMB_FORMAT_RGB555_LE, 16364}, /*pad data to 16384 bytes */
-    { -1,  -1,   -1, -1}
+    {3001, 256, 256, THUMB_FORMAT_REC_RGB555_LE},
+    {3002, 128, 128, THUMB_FORMAT_REC_RGB555_LE},
+    {3003,  64,  64, THUMB_FORMAT_REC_RGB555_LE},
+    {3005, 320, 320, THUMB_FORMAT_RGB555_LE},
+    {3006,  56,  56, THUMB_FORMAT_RGB555_LE,  8192}, /*pad data to  8192 bytes */
+    {3007,  88,  88, THUMB_FORMAT_RGB555_LE, 16364}, /*pad data to 16384 bytes */
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_touch_1_photo_info[] = {
     /* In the album list, if a photo is being used to represent a whole album,
        PHOTO_SMALL is used.  We specify TRUE for the crop option so we fill
        the square completely. */
-    { 56,  55, 3004, THUMB_FORMAT_RGB555_LE, 8192, TRUE},
+    {3004,  56,  55, THUMB_FORMAT_RGB555_LE, 8192, TRUE},
     /* In thumbnail view, PHOTO_LARGE is used.  It's actually 79x79, with a 4px
        white border on the right and bottom.  We specify TRUE for the crop option
        so we fill the square completely. */
-    { 80,  79, 3011, THUMB_FORMAT_RGB555_LE, 0, TRUE},
-    {160, 120, 3009, THUMB_FORMAT_RGB555_LE},
+    {3011,  80,  79, THUMB_FORMAT_RGB555_LE, 0, TRUE},
+    {3009, 160, 120, THUMB_FORMAT_RGB555_LE},
     /* When viewing an individual photo, PHOTO_TV_SCREEN is used.  Note that it
        is acceptable to write a thumbnail less than the specified width or
        height, the iPhone / iTouch will scale it to fit the screen.  This is
        important for images that are taller than they wide. */
-    {640, 480, 3008, THUMB_FORMAT_RGB555_LE},
-    { -1,  -1,   -1, -1}
+    {3008, 640, 480, THUMB_FORMAT_RGB555_LE},
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_classic_1_cover_art_info[] = {
     /* officially 55x55 -- verify! */
-    { 56,  56, 1061, THUMB_FORMAT_RGB565_LE},
-    {128, 128, 1055, THUMB_FORMAT_RGB565_LE},
-    {320, 320, 1060, THUMB_FORMAT_RGB565_LE},
-    { -1,  -1,   -1, -1}
+    {1061,  56,  56, THUMB_FORMAT_RGB565_LE},
+    {1055, 128, 128, THUMB_FORMAT_RGB565_LE},
+    {1060, 320, 320, THUMB_FORMAT_RGB565_LE},
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_classic_1_photo_info[] = {
-    {720, 480, 1067, THUMB_FORMAT_I420_LE},
-    {320, 240, 1024, THUMB_FORMAT_RGB565_LE},
-    { 64,  64, 1066, THUMB_FORMAT_RGB565_LE},
-    { -1,  -1,   -1, -1}
+    {1067, 720, 480, THUMB_FORMAT_I420_LE},
+    {1024, 320, 240, THUMB_FORMAT_RGB565_LE},
+    {1066,  64,  64, THUMB_FORMAT_RGB565_LE},
+    {  -1,  -1,  -1, -1}
 };
 
 static const Itdb_ArtworkFormat ipod_classic_1_chapter_image_info[] = {
     /*  These are the same as for the iPod video... -- labeled by the iPod as
         "chapter images" */
-    {100, 100, 1028, THUMB_FORMAT_RGB565_LE},
-    {200, 200, 1029, THUMB_FORMAT_RGB565_LE},
-    { -1,  -1,   -1, -1}
+    {1028, 100, 100, THUMB_FORMAT_RGB565_LE},
+    {1029, 200, 200, THUMB_FORMAT_RGB565_LE},
+    {  -1,  -1,  -1, -1}
 };
 
 enum ArtworkType {
@@ -761,7 +761,8 @@ itdb_device_get_artwork_formats (const Itdb_Device *device,
     g_return_val_if_reached (NULL);
 }
 
-GList *itdb_device_get_photo_formats (const Itdb_Device *device)
+static GList *
+itdb_device_get_photo_formats_fallback (const Itdb_Device *device)
 {
     const Itdb_ArtworkFormat *formats;
     const Itdb_ArtworkFormat *it;
@@ -779,7 +780,20 @@ GList *itdb_device_get_photo_formats (const Itdb_Device *device)
     return photo_formats;
 }
 
-GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
+GList *itdb_device_get_photo_formats (const Itdb_Device *device)
+{
+    g_return_val_if_fail (device != NULL, NULL);
+
+    if (device->sysinfo_extended == NULL) {
+        return itdb_device_get_photo_formats_fallback (device);
+    } else {
+        return g_list_copy ((GList *)itdb_sysinfo_properties_get_photo_formats (device->sysinfo_extended));
+    }
+    g_return_val_if_reached (NULL);
+}
+
+static GList *
+itdb_device_get_cover_art_formats_fallback (const Itdb_Device *device)
 {
     const Itdb_ArtworkFormat *formats;
     const Itdb_ArtworkFormat *it;
@@ -795,6 +809,18 @@ GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
     }
 
     return cover_art_formats;
+}
+
+GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
+{
+    g_return_val_if_fail (device != NULL, NULL);
+
+    if (device->sysinfo_extended == NULL) {
+        return itdb_device_get_cover_art_formats_fallback (device);
+    } else {
+        return g_list_copy ((GList *)itdb_sysinfo_properties_get_cover_art_formats (device->sysinfo_extended));
+    }
+    g_return_val_if_reached (NULL);
 }
 
 /* Determine the number of F.. directories in iPod_Control/Music.*/
