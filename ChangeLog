@@ -1,5 +1,10 @@
 2008-06-14  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_device.c: fix some entries in the ipod_model_table by
+	using libipoddevice and podsleuth as a reference
+
+2008-06-14  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_track.c: remove bogus function to check if the ipod
 	supports video: it didn't take into account the new ipods released
 	after the 1st ipod video

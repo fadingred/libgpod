@@ -115,7 +115,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"9725", 1,  ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_SHUFFLE_1, 3},
     /* Shuffle / Sixth Generation */
     /* Square, connected to computer via cable */
-    {"A564", 1,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"A546", 1,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
     {"A947", 1,  ITDB_IPOD_MODEL_SHUFFLE_PINK,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
     {"A949", 1,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
     {"A951", 1,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
@@ -161,6 +161,8 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"A428",  4, ITDB_IPOD_MODEL_NANO_BLUE,   ITDB_IPOD_GENERATION_NANO_2,   6},
     {"A487",  4, ITDB_IPOD_MODEL_NANO_GREEN,  ITDB_IPOD_GENERATION_NANO_2,   6},
     {"A489",  4, ITDB_IPOD_MODEL_NANO_PINK,   ITDB_IPOD_GENERATION_NANO_2,   6},
+    {"A725",  4, ITDB_IPOD_MODEL_NANO_RED,    ITDB_IPOD_GENERATION_NANO_2,   6},
+    {"A726",  8, ITDB_IPOD_MODEL_NANO_RED,    ITDB_IPOD_GENERATION_NANO_2,   6}
     {"A497",  8, ITDB_IPOD_MODEL_NANO_BLACK,  ITDB_IPOD_GENERATION_NANO_2,  14},
 
     /* HP iPods, need contributions for this table */
@@ -172,7 +174,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     /* First generation with "cover flow" */
     {"B029",  80, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_1, 50},
     {"B147",  80, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_1, 50},
-    {"B145", 160, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_1, 50},
+    {"B155", 160, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_1, 50},
     {"B150", 160, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_1, 50},
 
     /* iPod nano video G1 (Third Nano Generation) */
@@ -189,13 +191,19 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"A623",   8, ITDB_IPOD_MODEL_TOUCH_BLACK,    ITDB_IPOD_GENERATION_TOUCH_1, 14},
     {"A627",  16, ITDB_IPOD_MODEL_TOUCH_BLACK,    ITDB_IPOD_GENERATION_TOUCH_1, 28},
 
+    /* iPhone G1 */
+    /* We used to not have a model number for the iPhone so we had that
+     * dummy "iPhone1" model number, we now keep it here for backward
+     * compatibility reasons
+     */
+    {"A501",  -1, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 14},
+    {"iPhone1", -1, ITDB_IPOD_MODEL_IPHONE_1, ITDB_IPOD_GENERATION_IPHONE_1, 14},
 
     /* No known model number -- create a Device/SysInfo file with
      * one entry, e.g.:
        ModelNumStr: Mmobile1
     */
     {"mobile1", -1, ITDB_IPOD_MODEL_MOBILE_1, ITDB_IPOD_GENERATION_MOBILE,  6},
-    {"iPhone1", -1, ITDB_IPOD_MODEL_IPHONE_1, ITDB_IPOD_GENERATION_IPHONE_1, 14},
 
     {NULL, 0, 0, 0, 0}
 };
