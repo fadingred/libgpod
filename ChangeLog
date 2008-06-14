@@ -1,3 +1,9 @@
+2008-06-14  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_track.c: remove bogus function to check if the ipod
+	supports video: it didn't take into account the new ipods released
+	after the 1st ipod video
+
 2008-06-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.h:

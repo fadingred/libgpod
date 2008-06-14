@@ -33,24 +33,6 @@
 #include "itdb_thumb.h"
 #include <string.h>
 
-static gboolean is_video_ipod (Itdb_Device *device) 
-{
-    const Itdb_IpodInfo *info;
-
-    g_return_val_if_fail (device, FALSE);
-
-    info = itdb_device_get_ipod_info (device);
-
-    if (!info) return FALSE;
-
-    if ((info->ipod_model == ITDB_IPOD_MODEL_VIDEO_WHITE) ||
-	(info->ipod_model == ITDB_IPOD_MODEL_VIDEO_BLACK))
-	return TRUE;
-    else
-	return FALSE;
-}
-
-
 /**
  * itdb_track_new:
  * 
@@ -161,7 +143,7 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	    tr->unk144 = 0x0000;  /* default value */
 	}
     }
-    if (is_video_ipod (tr->itdb->device))
+    if (itdb_device_supports_video (tr->itdb->device))
     {
 	/* The unk208 field seems to denote whether the file is a
 	   video or not.  It seems that it must be set to 0x00000002
