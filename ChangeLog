@@ -1,3 +1,7 @@
+2008-06-15  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: oops, forgot a ','
+
 2008-06-14  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: fix some entries in the ipod_model_table by
