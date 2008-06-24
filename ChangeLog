@@ -1,3 +1,11 @@
+2008-06-24  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: rework timezone handling: handle timezones as
+	stored on 5g ipods (hopefully) and fallback to using the computer
+	timezone if we can't figure out the ipod timezone
+	* tests/get-timezone.c: use functions from libgpod to get the
+	timezone instead of duplicating some itdb_device code
+
 2008-06-15  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: oops, forgot a ','

@@ -16,16 +16,12 @@
 #include <errno.h>
 #include <stdio.h>
 #include <itdb.h>
+#include <itdb_device.h>
 
 int main (int argc, char **argv)
 {
     char *mountpoint;
-    char *device_dir;
-    char *prefs_filename;
-    FILE *f;
-    int result;
-    gint32 timezone;
-    const int GMT_OFFSET = 0x19;
+    Itdb_Device *device;
 
     if (argc >= 2) {
         mountpoint = argv[1];
@@ -34,49 +30,10 @@ int main (int argc, char **argv)
         return -1;
     }
 
-    device_dir = itdb_get_device_dir (mountpoint);
-    if (device_dir == NULL) {
-        g_print ("No iPod mounted at %s\n", mountpoint);
-        return -1;
-    }
-    prefs_filename = itdb_get_path (device_dir, "Preferences");
-    g_free (device_dir);
+    device = itdb_device_new ();
+    itdb_device_set_mountpoint (device, mountpoint);
 
-    f = fopen (prefs_filename, "r");
-    if (f == NULL) {
-        g_print ("Couldn't open %s: %s\n", prefs_filename, g_strerror (errno));
-        g_free (prefs_filename);
-        return -1;
-    }
-
-    result = fseek (f, 0xB10, SEEK_SET);
-    if (result != 0) {
-        g_print ("Couldn't seek in %s: %s\n", prefs_filename,
-                 g_strerror (errno));
-        fclose (f);
-        g_free (prefs_filename);
-        return -1;
-    }
-
-    result = fread (&timezone, sizeof (timezone), 1, f);
-    if (result != 1) {
-        g_print ("Couldn't read from %s: %s\n", prefs_filename,
-                 g_strerror (errno));
-        fclose (f);
-        g_free (prefs_filename);
-    }
-
-    fclose (f);
-    g_free (prefs_filename);
-
-    timezone = GINT32_FROM_LE (timezone);
-    timezone -= GMT_OFFSET;
-
-    g_print ("Timezone: UTC%+d", timezone >> 1);
-    if (timezone & 1) {
-        g_print (" DST");
-    }
-    g_print ("\n");
+    g_print ("Timezone: UTC%+d\n", device->timezone_shift/3600);
 
     return 0;
 }
