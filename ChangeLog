@@ -1,3 +1,11 @@
+2008-06-28  Christophe Fergeau  <teuf@gnome.org>
+
+	patch by: Mike Heffner <mikeh@fesnel.com>
+
+	* src/Makefile.am:
+	* src/db-artwork-writer.c: fix compilation with older glib (without
+	GChecksum)
+
 2008-06-24  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: rework timezone handling: handle timezones as

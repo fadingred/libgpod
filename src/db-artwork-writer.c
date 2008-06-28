@@ -49,6 +49,10 @@
 #include <stdio.h>
 #include <sys/types.h>
 
+#ifdef WITH_INTERNAL_GCHECKSUM
+#include "gchecksum.h"
+#endif
+
 #define DEFAULT_GSTRING_SIZE 128*1024
 
 struct iPodSharedDataBuffer {
