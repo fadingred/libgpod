@@ -1106,7 +1106,7 @@ const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generatio
  * @device: an #Itdb_Device
  *
  * Indicates whether @device can display artwork or not. When dealing
- * with a non-art capable ipod, no artwork data will be written to the
+ * with a non-art capable iPod, no artwork data will be written to the
  * iPod so you can spare calls to the artwork handling methods.
  *
  * Return value: true if @device can display artwork.

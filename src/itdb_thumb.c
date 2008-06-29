@@ -439,7 +439,7 @@ gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
 	    gint h=height;
 
 	    if ((width == -1) || (height == -1))
-	    {   /* choose the largest availale thumbnail */
+	    {   /* choose the largest available thumbnail */
 		w = G_MAXINT;
 	    h = G_MAXINT;
 	    }

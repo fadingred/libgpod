@@ -1,3 +1,8 @@
+2008-06-29  Daniele Forsi <dforsi at users.sourceforge.net>
+
+        * src/itdb_itunesdb.c src/itdb_thumb.c src/itdb_device.c 
+	  src/itdb_photoalbum.c: fix typos in comments
+
 2008-06-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/ithumb-writer.c (itdb_write_ithumb_files): fix bug when

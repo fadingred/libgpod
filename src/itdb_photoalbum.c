@@ -122,7 +122,7 @@ static void error_no_photos_dir (const gchar *mp, GError **error)
  * Retrieve the Photo directory by
  * first calling itdb_get_control_dir() and then adding 'Photos'
  *
- * Return value: path to the Artwork directory or NULL of
+ * Return value: path to the Artwork directory or NULL if
  * non-existent. Must g_free() after use.
  */
 gchar *itdb_get_photos_dir (const gchar *mountpoint)
@@ -177,7 +177,7 @@ gchar *itdb_get_photodb_path (const gchar *mountpoint)
  * Retrieve the Photo Thumbnail directory by
  * first calling itdb_get_control_dir() and then adding 'Photos/Thumbs'
  *
- * Return value: path to the Artwork directory or NULL of
+ * Return value: path to the Artwork directory or NULL if
  * non-existent. Must g_free() after use.
  */
 gchar *itdb_get_photos_thumb_dir (const gchar *mountpoint)

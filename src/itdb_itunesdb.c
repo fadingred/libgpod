@@ -354,7 +354,7 @@ static void fcontents_free (FContents *cts)
  *
  * Resolve the path to a track on the iPod
  *
- * We start by assuming that the ipod mount point exists.  Then, for
+ * We start by assuming that the iPod mount point exists.  Then, for
  * each component c of track-&gt;ipod_path, we try to find an entry d in
  * good_path that is case-insensitively equal to c.  If we find d, we
  * append d to good_path and make the result the new good_path.
@@ -6345,7 +6345,7 @@ itdb_file_set_contents (const char *filename,
  * for standard iPods and 'iTunes/iTunes_Control' for mobile
  * applications.
  *
- * Return value: path to the control dir or NULL of non-existent. Must
+ * Return value: path to the control dir or NULL if non-existent. Must
  * g_free() after use.
  **/
 gchar *itdb_get_control_dir (const gchar *mountpoint)
@@ -6426,7 +6426,7 @@ gchar *itdb_get_path (const gchar *dir, const gchar *file)
  * Retrieve the iTunes directory (containing the iTunesDB) by first
  * calling itdb_get_control_dir() and then adding 'iTunes'
  *
- * Return value: path to the iTunes directory or NULL of non-existent.
+ * Return value: path to the iTunes directory or NULL if non-existent.
  * Must g_free() after use.
  **/
 gchar *itdb_get_itunes_dir (const gchar *mountpoint)
@@ -6443,7 +6443,7 @@ gchar *itdb_get_itunes_dir (const gchar *mountpoint)
  * Retrieve the Music directory (containing the Fnn dirs) by first
  * calling itdb_get_control_dir() and then adding 'Music'
  *
- * Return value: path to the Music directory or NULL of
+ * Return value: path to the Music directory or NULL if
  * non-existent. Must g_free() after use.
  **/
 gchar *itdb_get_music_dir (const gchar *mountpoint)
@@ -6460,7 +6460,7 @@ gchar *itdb_get_music_dir (const gchar *mountpoint)
  * Retrieve the Device directory (containing the SysInfo file) by
  * first calling itdb_get_control_dir() and then adding 'Device'
  *
- * Return value: path to the Device directory or NULL of
+ * Return value: path to the Device directory or NULL if
  * non-existent. Must g_free() after use.
  **/
 gchar *itdb_get_device_dir (const gchar *mountpoint)
@@ -6477,7 +6477,7 @@ gchar *itdb_get_device_dir (const gchar *mountpoint)
  * Retrieve the Artwork directory (containing the ArtworDB) by
  * first calling itdb_get_control_dir() and then adding 'Artwork'
  *
- * Return value: path to the Artwork directory or NULL of
+ * Return value: path to the Artwork directory or NULL if
  * non-existent. Must g_free() after use.
  **/
 gchar *itdb_get_artwork_dir (const gchar *mountpoint)
