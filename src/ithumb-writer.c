@@ -1566,10 +1566,10 @@ itdb_write_ithumb_files (Itdb_DB *db)
 			}
                         type = track->artwork->thumbnail->data_type;
                         if (type != ITDB_THUMB_TYPE_IPOD) {
-                            GList *it;
+                            GList *itw;
                             thumb_ipod = (Itdb_Thumb_Ipod *)itdb_thumb_ipod_new ();
-                            for (it = writers; it != NULL; it = it->next) {
-                                write_thumbnail (it->data,
+                            for (itw = writers; itw != NULL; itw = itw->next) {
+                                write_thumbnail (itw->data,
                                                  track->artwork,
                                                  thumb_ipod);
                             }
@@ -1591,9 +1591,10 @@ itdb_write_ithumb_files (Itdb_DB *db)
                         }
                         type = photo->thumbnail->data_type;
                         if (type != ITDB_THUMB_TYPE_IPOD) {
+			    GList *itw;
                             thumb_ipod = (Itdb_Thumb_Ipod *)itdb_thumb_ipod_new ();
-                            for (it = writers; it != NULL; it = it->next) {
-                                write_thumbnail (it->data, photo, thumb_ipod);
+                            for (itw = writers; itw != NULL; itw = itw->next) {
+                                write_thumbnail (itw->data, photo, thumb_ipod);
                             }
                             itdb_thumb_free (photo->thumbnail);
                             photo->thumbnail = (Itdb_Thumb *)thumb_ipod;

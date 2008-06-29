@@ -1,3 +1,9 @@
+2008-06-29  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/ithumb-writer.c (itdb_write_ithumb_files): fix bug when
+	  writing photos (loop variable "it" re-used inside loop).
+	  Rename loop variable to "itw" also in case of writing artwork.
+
 2008-06-28  Christophe Fergeau  <teuf@gnome.org>
 
 	patch by: Mike Heffner <mikeh@fesnel.com>
