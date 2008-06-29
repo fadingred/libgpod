@@ -888,10 +888,12 @@ gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
 /**
  * itdb_artwork_get_thumbnail!
  * @artwork: an #Itdb_Artwork
- * @width: width of the pixbuf to retrieve, -1 for the biggest possible size 
- * (with no scaling)
+ *
+ * @width: width of the pixbuf to retrieve, -1 for the biggest
+ * possible size and 0 for the smallest possible size (with no scaling)
+ *
  * @height: height of the pixbuf to retrieve, -1 for the biggest possible size
- * (with no scaling)
+ * and 0 for the smallest possible size (with no scaling)
  *
  * Returns a #GdkPixbuf representing the thumbnail stored in @artwork
  * scaling it if appropriate. If either height or width is -1, then the 

@@ -4,6 +4,28 @@
 	  writing photos (loop variable "it" re-used inside loop).
 	  Rename loop variable to "itw" also in case of writing artwork.
 
+	* src/itdb_thumb.c (itdb_thumb_to_pixbuf_at_size):
+
+	  If requesting a thumb from the iPod smaller than available, none
+	  would be returned. Fixed. Thumbs from the iPod would not be
+	  scaled even if requested. Fixed.
+
+	  If requesting a thumb from a file or existing pixbuf, scaling
+	  was done even if none was requested (width/height =
+	  0/-1). Fixed.
+
+	  Introduced selection of smallest available thumbnail
+	  (width/height = 0) besides largest available thumbnail
+	  (width/height = -1).
+
+	  TODO: consider aspect ratio of requested picture (currently it
+	  is very likely that some of the square thumbs are returned...)
+	
+	  src/itdb_artwork.c (itdb_artwork_get_thumbnail):
+	  Introduced selection of smallest available thumbnail
+	  (width/height = 0) besides largest available thumbnail
+	  (width/height = -1). (Only necessary documentation.)
+
 2008-06-28  Christophe Fergeau  <teuf@gnome.org>
 
 	patch by: Mike Heffner <mikeh@fesnel.com>

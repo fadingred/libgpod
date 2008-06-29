@@ -363,6 +363,12 @@ const GList *itdb_thumb_ipod_get_thumbs (Itdb_Thumb_Ipod *thumbs)
  * gpointer is returned which you have to cast to a #GdkPixbuf using 
  * GDK_PIXBUF() yourself. 
  *
+ * @width: width of the pixbuf to retrieve, -1 for the biggest
+ * possible size and 0 for the smallest possible size (with no scaling)
+ *
+ * @height: height of the pixbuf to retrieve, -1 for the biggest possible size
+ * and 0 for the smallest possible size (with no scaling)
+ *
  * Return value: a #GdkPixbuf that must be unreffed with gdk_pixbuf_unref()
  * after use, or NULL if the creation of the gdk-pixbuf failed or if 
  * libgpod was compiled without gdk-pixbuf support.
@@ -372,71 +378,129 @@ gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
 {
     GdkPixbuf *pixbuf=NULL;
 
-    if (thumb->data_type == ITDB_THUMB_TYPE_FILE)
-    {   
-        Itdb_Thumb_File *thumb_file = (Itdb_Thumb_File *)thumb;
-        pixbuf = gdk_pixbuf_new_from_file_at_size (thumb_file->filename, 
-                                                   width, height,
-                                                   NULL);
-    }
-    else if (thumb->data_type == ITDB_THUMB_TYPE_MEMORY)
-    {   
-        Itdb_Thumb_Memory *thumb_mem = (Itdb_Thumb_Memory *)thumb;
-        GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
-        g_return_val_if_fail (loader, FALSE);
-        if ((width != -1) && (height != -1)) {
-            gdk_pixbuf_loader_set_size (loader, width, height);
-        }
-        gdk_pixbuf_loader_write (loader,
-                                thumb_mem->image_data,
-                                thumb_mem->image_data_len,
-                                NULL);
-        gdk_pixbuf_loader_close (loader, NULL);
-        pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-        if (pixbuf)
-            g_object_ref (pixbuf);
-        g_object_unref (loader);
-    }
-    else if (thumb->data_type == ITDB_THUMB_TYPE_PIXBUF)
-    {   
-        Itdb_Thumb_Pixbuf *thumb_pixbuf = (Itdb_Thumb_Pixbuf*)thumb;
-        pixbuf = gdk_pixbuf_scale_simple (thumb_pixbuf->pixbuf,
-                                          width, height,
-                                          GDK_INTERP_BILINEAR);
-    }
-    else if (thumb->data_type == ITDB_THUMB_TYPE_IPOD)
+    switch (thumb->data_type)
     {
-        Itdb_Thumb_Ipod *thumb_ipod = (Itdb_Thumb_Ipod *)thumb;
-        const GList *thumb;
-        Itdb_Thumb_Ipod_Item *chosen;
+    case ITDB_THUMB_TYPE_FILE:
+        {
+	    Itdb_Thumb_File *thumb_file = (Itdb_Thumb_File *)thumb;
+	    if ((width != -1) && (height !=-1) && (width != 0) && (height != 0))
+	    {   /* scale */
+		pixbuf = gdk_pixbuf_new_from_file_at_size (thumb_file->filename, 
+							   width, height,
+							   NULL);
+	    }
+	    else
+	    {   /* don't scale */
+		pixbuf = gdk_pixbuf_new_from_file (thumb_file->filename, NULL);
+	    }
+	    break;
+	}
+    case ITDB_THUMB_TYPE_MEMORY:
+        {   
+	    Itdb_Thumb_Memory *thumb_mem = (Itdb_Thumb_Memory *)thumb;
+	    GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+	    g_return_val_if_fail (loader, FALSE);
+	    if ((width != -1) && (height !=-1) && (width != 0) && (height != 0))
+	    {
+		gdk_pixbuf_loader_set_size (loader, width, height);
+	    }
+	    gdk_pixbuf_loader_write (loader,
+				     thumb_mem->image_data,
+				     thumb_mem->image_data_len,
+				     NULL);
+	    gdk_pixbuf_loader_close (loader, NULL);
+	    pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+	    if (pixbuf)
+		g_object_ref (pixbuf);
+	    g_object_unref (loader);
+	    break;
+	}
+    case ITDB_THUMB_TYPE_PIXBUF:
+        {
+	    Itdb_Thumb_Pixbuf *thumb_pixbuf = (Itdb_Thumb_Pixbuf*)thumb;
+	    if ((width != -1) && (height !=-1) && (width != 0) && (height != 0))
+	    {
+		pixbuf = gdk_pixbuf_scale_simple (thumb_pixbuf->pixbuf,
+						  width, height,
+						  GDK_INTERP_BILINEAR);
+	    }
+	    else
+	    {
+		pixbuf = g_object_ref (thumb_pixbuf->pixbuf);
+	    }
+	    break;
+	}
+    case ITDB_THUMB_TYPE_IPOD:
+        {
+	    Itdb_Thumb_Ipod *thumb_ipod = (Itdb_Thumb_Ipod *)thumb;
+	    const GList *thumb;
+	    Itdb_Thumb_Ipod_Item *chosen;
+	    gint w=width;
+	    gint h=height;
 
-        if (device == NULL) {
-            /* device is needed to get the ipod mountpoint */
-            return NULL;
-        }
-        chosen = NULL;
-        for (thumb = itdb_thumb_ipod_get_thumbs (thumb_ipod);
-             thumb != NULL;
-             thumb = thumb->next) {
-            Itdb_Thumb_Ipod_Item *item = (Itdb_Thumb_Ipod_Item*)thumb->data;
-            if ((width >= item->width) && (height >= item->height)) {
-                if (chosen == NULL) { 
-                    chosen = item;
-                }
-                if ((item->width > chosen->width) 
-                        && (item->height > chosen->height)) {
-                    chosen = item;
-                }
-            }
-        }
-        if (chosen != NULL) {
-            GdkPixbuf *pixbuf;
-            pixbuf = itdb_thumb_ipod_item_to_pixbuf (device, chosen);
-            return pixbuf;
-        } else {
-            return NULL;
-        }
-    }
+	    if ((width == -1) || (height == -1))
+	    {   /* choose the largest availale thumbnail */
+		w = G_MAXINT;
+	    h = G_MAXINT;
+	    }
+
+	    if (device == NULL) {
+		/* device is needed to get the ipod mountpoint */
+		return NULL;
+	    }
+	    chosen = NULL;
+	    for (thumb = itdb_thumb_ipod_get_thumbs (thumb_ipod);
+		 thumb != NULL;
+		 thumb = thumb->next) {
+		Itdb_Thumb_Ipod_Item *item = (Itdb_Thumb_Ipod_Item*)thumb->data;
+		if (chosen == NULL)
+		{   /* make sure we select *something* */
+		    chosen = item;
+		}
+		if ((chosen->width > w) && (chosen->height > h))
+		{   /* try to find a thumb in size between the chosen and
+		       the current one */
+		    if ((item->width >= w) && (item->height >= h))
+		    {
+			if ((item->width < chosen->width) || (item->height < chosen->height))
+			{
+			    chosen = item;
+			}
+		    }
+		}
+		if ((chosen->width < w) || (chosen->height < h))
+		{   /* try to find something bigger */
+		    if ((item->width > chosen->width) || (item->height > chosen->height))
+		    {
+			chosen = item;
+		    }
+		}
+	    }
+	    if (chosen != NULL)
+	    {
+		GdkPixbuf *pix = itdb_thumb_ipod_item_to_pixbuf (device, chosen);
+		if ((width != -1) && (height !=-1) && (width != 0) && (height != 0))
+		{   /* scale */
+		    gdouble scalex = (gdouble)width/chosen->width;
+		    gdouble scaley = (gdouble)height/chosen->height;
+		    gdouble scale = MIN (scalex, scaley);
+		    pixbuf = gdk_pixbuf_scale_simple (pix,
+						      chosen->width*scale,
+						      chosen->height*scale,
+						      GDK_INTERP_BILINEAR);
+		    g_object_unref (pix);
+		}
+		else
+		{   /* don't scale */
+		    pixbuf = pix;
+		}
+	    }
+	    break;
+	}
+    case ITDB_THUMB_TYPE_INVALID:
+	g_return_val_if_reached (NULL);
+    } /* switch (...) */
+
     return pixbuf;
 }
 
