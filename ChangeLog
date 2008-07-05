@@ -1,5 +1,9 @@
 2008-07-05  Christophe Fergeau <teuf@gnome.org>
 
+	* src/db-artwork-parser.c: fix small memory leak
+
+2008-07-05  Christophe Fergeau <teuf@gnome.org>
+
 	* src/ithumb-writer.c: fix typo in thumbnail rearranging code, we
 	were wrongly appending Itdb_Thumb_Ipod instances to lists of
 	Itdb_Thumb_Ipod_Item

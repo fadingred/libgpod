@@ -378,6 +378,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
 		num_children--;
 		mhod_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
         }
+	g_free (mhod_ctx);
 
 	mhia_ctx = db_parse_context_get_sub_context (ctx, cur_offset);
 	num_children = get_gint32 (mhba->num_mhias, ctx->byte_order);
