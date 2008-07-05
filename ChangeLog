@@ -1,5 +1,11 @@
 2008-07-05  Christophe Fergeau <teuf@gnome.org>
 
+	* src/ithumb-writer.c: fix typo in thumbnail rearranging code, we
+	were wrongly appending Itdb_Thumb_Ipod instances to lists of
+	Itdb_Thumb_Ipod_Item
+
+2008-07-05  Christophe Fergeau <teuf@gnome.org>
+
 	* src/db-artwork-writer.c: properly set padding to 0 in mhods type 3
 
 2008-07-05  Christophe Fergeau <teuf@gnome.org>

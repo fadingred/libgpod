@@ -1428,7 +1428,7 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 				if (filename)
 				{
 					thumbs = g_hash_table_lookup (filenamehash, filename);
-					thumbs = g_list_append (thumbs, thumb);
+					thumbs = g_list_append (thumbs, item);
 					g_hash_table_insert (filenamehash, filename, thumbs);
 				}
                             }
@@ -1453,7 +1453,7 @@ ithmb_rearrange_existing_thumbnails (Itdb_DB *db,
 			if (filename)
 			{
 				thumbs = g_hash_table_lookup (filenamehash, filename);
-				thumbs = g_list_append (thumbs, thumb);
+				thumbs = g_list_append (thumbs, item);
 				g_hash_table_insert (filenamehash, filename, thumbs);
 			}
                     } 
