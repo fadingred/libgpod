@@ -1,5 +1,9 @@
 2008-07-05  Christophe Fergeau <teuf@gnome.org>
 
+	* src/db-artwork-writer.c: properly set padding to 0 in mhods type 3
+
+2008-07-05  Christophe Fergeau <teuf@gnome.org>
+
 	* src/ithumb-writer.c: don't leak the list of image formats we get
 	from the ItdbDevice
 

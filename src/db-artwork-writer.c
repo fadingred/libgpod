@@ -333,6 +333,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 		strp[i] = get_gint16 (utf16[i], buffer->byte_order);
 	    }
 	    g_free (utf16);
+	    memset (mhod->string + g2l*len, 0, padding);
 	    break;
 	case G_BIG_ENDIAN:
 	    mhod->encoding = 1; /* 8 bit field, no need to byteswap */
@@ -353,6 +354,7 @@ write_mhod_type_3 (gchar *string, iPodBuffer *buffer)
 		    return -1;
 	    }
 	    memcpy (mhod->string, string, len);
+	    memset (mhod->string + len, 0, padding);
 	    total_bytes += (len+padding);
 	}
 	mhod->total_len = get_gint32 (total_bytes, buffer->byte_order);
