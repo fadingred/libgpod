@@ -1544,6 +1544,7 @@ itdb_write_ithumb_files (Itdb_DB *db)
                         writers = g_list_prepend (writers, writer);
 		}
 	}
+	g_list_free (formats);
 	if (writers == NULL) {
 		return -1;
 	}

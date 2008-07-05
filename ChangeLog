@@ -1,3 +1,8 @@
+2008-07-05  Christophe Fergeau <teuf@gnome.org>
+
+	* src/ithumb-writer.c: don't leak the list of image formats we get
+	from the ItdbDevice
+
 2008-06-29  Daniele Forsi <dforsi at users.sourceforge.net>
 
         * src/itdb_itunesdb.c src/itdb_thumb.c src/itdb_device.c 
