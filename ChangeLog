@@ -1,3 +1,9 @@
+2008-07-06  Christophe Fergeau <teuf@gnome.org>
+
+	* src/ithumb-writer.c: fix bug in the function scaling and cropping
+	thumbnails, in the non-cropping case, the returned pixbuf size
+	didn't reflect the size of the scaled pixbuf
+
 2008-07-05  Christophe Fergeau <teuf@gnome.org>
 
 	* src/db-artwork-parser.c: fix small memory leak

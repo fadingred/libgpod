@@ -772,9 +772,10 @@ ithumb_writer_scale_and_crop (GdkPixbuf *input_pixbuf,
          factors. */
       scale = MIN(width_scale, height_scale);
       offset_x = offset_y = 0;
-    }
-    else 
-    {
+      return gdk_pixbuf_scale_simple (input_pixbuf, 
+				      input_width*scale, input_height*scale,
+				      GDK_INTERP_BILINEAR);
+    } else {
       double scaled_width, scaled_height;
       /* If we are cropping, we use the max of the two possible scale factors,
          so that the image is large enough to fill both dimensions. */
@@ -791,24 +792,24 @@ ithumb_writer_scale_and_crop (GdkPixbuf *input_pixbuf,
       offset_y = round((height - scaled_height) / 2);
 
       g_assert(round(scaled_width) == width ||
-               round(scaled_height) == height);
+	       round(scaled_height) == height);
+
+      output_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
+				     width + border_width,
+				     height + border_width);
+      gdk_pixbuf_fill(output_pixbuf, 0xffffffff);
+
+      gdk_pixbuf_scale (input_pixbuf,
+                        output_pixbuf,
+                        0, 0,			 /* dest x, dest y */
+                        width,                     /* dest width */
+                        height,                    /* dest height */
+                        offset_x, offset_y,        /* offset x, offset y */
+                        scale, scale,	         /* scale x, scale y */
+                        GDK_INTERP_BILINEAR);
+
+      return output_pixbuf;
     }
-
-    output_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
-			           width + border_width,
-                                   height + border_width);
-    gdk_pixbuf_fill(output_pixbuf, 0xffffffff);
-
-    gdk_pixbuf_scale (input_pixbuf,
-		      output_pixbuf,
-		      0, 0,			 /* dest x, dest y */
-		      width,                     /* dest width */
-		      height,                    /* dest height */
-		      offset_x, offset_y,        /* offset x, offset y */
-		      scale, scale,	         /* scale x, scale y */
-		      GDK_INTERP_BILINEAR);
-
-    return output_pixbuf;
 }
 
 static GdkPixbuf *
