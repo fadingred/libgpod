@@ -1,5 +1,10 @@
 2008-07-06  Christophe Fergeau <teuf@gnome.org>
 
+	* src/itdb_device.c: fix model number information grabbed from
+	podsleuth
+
+2008-07-06  Christophe Fergeau <teuf@gnome.org>
+
 	* src/itdb_device.c: add a mapping from serial numbers to model
 	numbers to make it easy to go from a serial number read from
 	SysInfoExtended to an Itdb_IpodInfo
