@@ -5437,7 +5437,17 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error)
     return result;
 }
 
-
+/* helper function */
+static gboolean haystack (gchar *filetype, gchar **desclist)
+{
+    gchar **dlp;
+    if (!filetype || !desclist) return FALSE;
+    for (dlp=desclist; *dlp; ++dlp)
+    {
+        if (strstr (filetype, *dlp)) return TRUE;
+    }
+    return FALSE;
+}
 /**
  * itdb_shuffle_write_file:
  * @itdb: the #Itdb_iTunesDB to write to disk
@@ -5452,18 +5462,6 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error)
 gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 				  const gchar *filename, GError **error)
 {
-    auto gboolean haystack (gchar *filetype, gchar **desclist);
-    gboolean haystack (gchar *filetype, gchar **desclist)
-    {
-	gchar **dlp;
-	if (!filetype || !desclist) return FALSE;
-	for (dlp=desclist; *dlp; ++dlp)
-	{
-	    if (strstr (filetype, *dlp)) return TRUE;
-	}
-	return FALSE;
-    }
-
     FExport *fexp;
     GList *gl;
     WContents *cts;

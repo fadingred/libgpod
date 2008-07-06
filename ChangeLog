@@ -1,5 +1,13 @@
 2008-07-06  Christophe Fergeau <teuf@gnome.org>
 
+	* src/itdb_itunesdb.c
+	* src/itdb_track.c: get rid of inner functions since it is a gcc
+	specific extension and MSVC8 doesn't like that
+
+2008-07-05  Christophe Fergeau <teuf@gnome.org>
+
+	Patch from: Songbird (http://getsongbird.com/)
+
 	* src/db-artwork-parser.c
 	* src/db-parse-context.c
 	* src/db-parse-context.h: get rid of unused argument to

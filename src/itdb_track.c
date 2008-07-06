@@ -52,21 +52,20 @@ Itdb_Track *itdb_track_new (void)
     return track;
 }
 
+static gboolean haystack (gchar *filetype, gchar **desclist)
+{
+    gchar **dlp;
+    if (!filetype || !desclist) return FALSE;
+    for (dlp=desclist; *dlp; ++dlp)
+    {
+	    if (strstr (filetype, *dlp)) return TRUE;
+    }
+    return FALSE;
+}
+
 /* Attempt to set some of the unknowns to reasonable defaults */
 static void itdb_track_set_defaults (Itdb_Track *tr)
 {
-    auto gboolean haystack (gchar *filetype, gchar **desclist);
-    gboolean haystack (gchar *filetype, gchar **desclist)
-    {
-	gchar **dlp;
-	if (!filetype || !desclist) return FALSE;
-	for (dlp=desclist; *dlp; ++dlp)
-	{
-	    if (strstr (filetype, *dlp)) return TRUE;
-	}
-	return FALSE;
-    }
-
     gchar *mp3_desc[] = {"MPEG", "MP3", "mpeg", "mp3", NULL};
     gchar *mp4_desc[] = {"AAC", "MP4", "aac", "mp4", NULL};
     gchar *audible_subdesc[] = {"Audible", "audible", "Book", "book", NULL};
