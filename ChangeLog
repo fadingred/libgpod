@@ -1,5 +1,12 @@
 2008-07-06  Christophe Fergeau <teuf@gnome.org>
 
+	* src/db-artwork-parser.c
+	* src/db-parse-context.c
+	* src/db-parse-context.h: get rid of unused argument to
+	db_parse_context_destroy (it was always set to TRUE)
+
+2008-07-06  Christophe Fergeau <teuf@gnome.org>
+
 	* src/ithumb-writer.c: fix bug in the function scaling and cropping
 	thumbnails, in the non-cropping case, the returned pixbuf size
 	didn't reflect the size of the scaled pixbuf
@@ -19,6 +26,8 @@
 	* src/db-artwork-writer.c: properly set padding to 0 in mhods type 3
 
 2008-07-05  Christophe Fergeau <teuf@gnome.org>
+
+	Patch from: Songbird (http://getsongbird.com/)
 
 	* src/ithumb-writer.c: don't leak the list of image formats we get
 	from the ItdbDevice

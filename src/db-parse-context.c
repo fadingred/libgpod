@@ -59,11 +59,11 @@ db_parse_context_new (const unsigned char *buffer, off_t len, guint byte_order)
 }
 
 void
-db_parse_context_destroy (DBParseContext *ctx, gboolean unmap) 
+db_parse_context_destroy (DBParseContext *ctx) 
 {
 	g_return_if_fail (ctx != NULL);
 
-	if (unmap) {
+	if (ctx->buffer != NULL) {
 		munmap ((void*)ctx->buffer, ctx->total_len);
 	}
 	g_free (ctx);

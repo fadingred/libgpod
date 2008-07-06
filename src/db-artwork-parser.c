@@ -706,12 +706,12 @@ ipod_parse_artwork_db (Itdb_iTunesDB *itdb)
 	}	
 
 	parse_mhfd (ctx, NULL);
-	db_parse_context_destroy (ctx, TRUE);
+	db_parse_context_destroy (ctx);
 	return 0;
 
  error:
 	if (ctx != NULL) {
-		db_parse_context_destroy (ctx, TRUE);
+		db_parse_context_destroy (ctx);
 	}
 	return -1;
 }
@@ -779,7 +779,7 @@ ipod_parse_photo_db (Itdb_PhotoDB *photodb)
 		return  -1;
 	}
 	parse_mhfd (ctx, NULL);
-	db_parse_context_destroy (ctx, TRUE);
+	db_parse_context_destroy (ctx);
 
 	/* Now we need to replace references to artwork_ids in the
 	 * photo albums with references to the actual artwork
