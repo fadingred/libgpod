@@ -1,6 +1,12 @@
 2008-07-06  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_device.c:
+	* src/itdb_device.h: add missing red ipod shuffles as well as 2GB
+	shuffles to the list of known ipod models
+
+2008-07-06  Christophe Fergeau <teuf@gnome.org>
+
+	* src/itdb_device.c:
 	* src/itdb_device.h: add itdb_device_get_storage_info method
 	* src/itdb_itunesdb.c: use that method instead of directly using
 	statvfs, makes it easier to port things over to MSVC8
