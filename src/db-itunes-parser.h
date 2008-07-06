@@ -28,9 +28,6 @@
 #define DB_PARSER_H
 
 #include <glib.h>
-/*#include "ipod-db-parser.h"*/
-
-#define ITUNESDB_MAX_SIZE 10 * 1024 * 1024
 
 struct _MHeader {
 	unsigned char header_id[4];

@@ -1,5 +1,14 @@
 2008-07-06  Christophe Fergeau <teuf@gnome.org>
 
+	* src/db-itunes-parser.h: remove unused constant
+	* src/db-parse-context.c:
+	* src/db-parse-context.h: use GMappedFile instead of directly using
+	mmap, it's needed for MSVC8 portability
+
+2008-07-05  Christophe Fergeau <teuf@gnome.org>
+
+	Patch from: Songbird (http://getsongbird.com/)
+
 	* src/itdb_itunesdb.c
 	* src/itdb_track.c: get rid of inner functions since it is a gcc
 	specific extension and MSVC8 doesn't like that
