@@ -408,6 +408,135 @@ static const ArtworkCapabilities ipod_artwork_capabilities[] = {
     { ITDB_IPOD_GENERATION_UNKNOWN, NULL, NULL, NULL }
 };
 
+struct _ItdbSerialToModel {
+    const char *serial;
+    const char *model_number;
+};
+typedef struct _ItdbSerialToModel ItdbSerialToModel;
+
+/* This table was extracted from ipod-model-table from podsleuth svn trunk
+ * on 2008-06-14 (which seems to match podsleuth 0.6.2)
+*/
+static const ItdbSerialToModel serial_to_model_mapping[] = {
+    { "LG6", "8541" },
+    { "NAM", "8541" },
+    { "ML1", "8709" },
+    { "MME", "8709" },
+    { "NGE", "8740" },
+    { "MMC", "8741" },
+    { "MMF", "8741" },
+    { "NRH", "8976" },
+    { "QQF", "9460" },
+    { "PQ5", "9244" },
+    { "PNT", "9244" },
+    { "NLY", "8948" },
+    { "PNU", "9245" },
+    { "PS9", "9282" },
+    { "Q8U", "9282" },
+    { "V9V", "9787" },
+    { "PQ7", "9268" },
+    { "TDU", "A079" },
+    { "TDS", "A079" },
+    { "SAZ", "9830" },
+    { "SAY", "9829" },
+    { "R5Q", "9585" },
+    { "R5R", "9586" },
+    { "PFW", "9160" },
+    { "QKL", "9436" },
+    { "QKQ", "9436" },
+    { "QKK", "9435" },
+    { "QKP", "9435" },
+    { "S41", "9800" },
+    { "S4C", "9800" },
+    { "S43", "9802" },
+    { "S45", "9804" },
+    { "S47", "9806" },
+    { "S42", "9801" },
+    { "S44", "9803" },
+    { "S48", "9807" },
+    { "RS9", "9724" },
+    { "QGV", "9724" },
+    { "TSX", "9724" },
+    { "PFV", "9724" },
+    { "R80", "9724" },
+    { "RSA", "9725" },
+    { "TSY", "9725" },
+    { "C60", "9725" },
+    { "VTE", "A546" },
+    { "VTF", "A546" },
+    { "YX6", "A546" },
+    { "XQ5", "A947" },
+    { "XQS", "A947" },
+    { "XQV", "A949" },
+    { "XQX", "A949" },
+    { "YX7", "A949" },
+    { "XQY", "A951" },
+    { "YX8", "A951" },
+    { "XR1", "A953" },
+    { "YXA", "X" },
+    { "YX9", "X" },
+    { "UNB", "A350" },
+    { "UPR", "A352" },
+    { "SZB", "A004" },
+    { "SZC", "A004" },
+    { "SZV", "A004" },
+    { "SZW", "A004" },
+    { "UNA", "A004" },
+    { "TJT", "A099" },
+    { "TJU", "A099" },
+    { "TK2", "A107" },
+    { "TK3", "A107" },
+    { "VQ5", "A477" },
+    { "VQ6", "A477" },
+    { "V8T", "A426" },
+    { "V8U", "A426" },
+    { "V8W", "A428" },
+    { "V8X", "A428" },
+    { "VQH", "A487" },
+    { "VQJ", "A487" },
+    { "VQK", "A489" },
+    { "VKL", "A489" },
+    { "WL2", "A725" },
+    { "WL3", "A725" },
+    { "X9A", "A726" },
+    { "X9B", "A726" },
+    { "VQT", "A497" },
+    { "VQU", "A497" },
+    { "Y0P", "A978" },
+    { "Y0R", "A980" },
+    { "YXR", "A249" },
+    { "YXV", "A257" },
+    { "YXT", "A253" },
+    { "YXX", "A261" },
+    { "SZ9", "A002" },
+    { "SZT", "A002" },
+    { "SZU", "A002" },
+    { "TXK", "A146" },
+    { "SZA", "A003" },
+    { "TXL", "A147" },
+    { "TXN", "A147" },
+    { "V9K", "A444" },
+    { "V9L", "A444" },
+    { "WU9", "A444" },
+    { "VQM", "A446" },
+    { "V9M", "A446" },
+    { "V9N", "A446" },
+    { "V9S", "A448" },
+    { "V9P", "A448" },
+    { "V9R", "A448" },
+    { "WUC", "A450" },
+    { "W9G", "A446" },
+    { "WEE", "A446" },
+    { "Y5N", "B029" },
+    { "YMV", "B147" },
+    { "YMU", "B155" },
+    { "YMX", "B150" },
+    { "VR0", "A501" },
+    { NULL ,  NULL  }
+};
+
+static const Itdb_IpodInfo *get_ipod_info_from_model_number (const char *model_number);
+static const Itdb_IpodInfo *get_ipod_info_from_serial (const char *serial);
 static void itdb_device_set_timezone_info (Itdb_Device *device);
 
 /* Reset or create the SysInfo hash table */
@@ -717,32 +846,32 @@ void itdb_device_set_sysinfo (Itdb_Device *device,
 const Itdb_IpodInfo *
 itdb_device_get_ipod_info (const Itdb_Device *device)
 {
-    gint i;
-    gchar *model_num, *p;
+    gchar *model_num;
+    const Itdb_IpodInfo *info;
+
+    if (device->sysinfo_extended != NULL) {
+        const char *serial;
+
+        serial = itdb_sysinfo_properties_get_serial_number (device->sysinfo_extended);
+        info = get_ipod_info_from_serial (serial);
+        if (info != NULL) {
+            return info;
+        }
+    }
 
     model_num = itdb_device_get_sysinfo (device, "ModelNumStr");
 
     if (!model_num)
 	return &ipod_info_table[0];
 
-    p = model_num;
-
-    if(isalpha(model_num[0])) 
-	p++;
-	
-    for(i=2; ipod_info_table[i].model_number != NULL; i++)
-    {
-	if(g_strncasecmp(p, ipod_info_table[i].model_number, 
-			 strlen (ipod_info_table[i].model_number)) == 0)
-	{
-	    g_free(model_num);
-	    return &ipod_info_table[i];
-	}
-    }	
+    info = get_ipod_info_from_model_number (model_num);
     g_free(model_num);
-    return &ipod_info_table[1];
+    if (info != NULL) {
+        return info;
+    } else {
+        return &ipod_info_table[1];
+    }
 }
-
 
 
 /* Return supported artwork formats supported by this iPod */
@@ -1473,3 +1602,84 @@ gboolean itdb_device_get_storage_info (Itdb_Device *device, guint64 *capacity, g
 #endif
 }
 
+struct IpodModelTable {
+    GHashTable *serial_hash;
+    GHashTable *model_number_hash;
+};
+
+static struct IpodModelTable *init_ipod_model_table (void)
+{
+    const Itdb_IpodInfo *it;
+    struct IpodModelTable *model_table;
+    const ItdbSerialToModel *serial_it;
+
+    model_table = g_new0 (struct IpodModelTable, 1);
+    model_table->serial_hash = g_hash_table_new (g_str_hash, g_str_equal);
+    model_table->model_number_hash = g_hash_table_new (g_str_hash, g_str_equal);
+
+    for (it = itdb_info_get_ipod_info_table (); 
+         it->model_number != NULL; 
+         it++) {
+        g_hash_table_insert (model_table->model_number_hash, 
+                             (gpointer)it->model_number, (gpointer)it);
+    }
+
+    for (serial_it = serial_to_model_mapping; 
+         serial_it->serial != NULL; 
+         serial_it++) {
+        gpointer model_info;
+        model_info = g_hash_table_lookup (model_table->model_number_hash,
+                                          serial_it->model_number);
+        if (model_info != NULL) {
+            g_hash_table_insert (model_table->serial_hash, 
+                                 (gpointer)serial_it->serial, model_info);
+        } else {
+            g_warning ("Inconsistent ipod model tables, model info is missing for %s (serial %s)", 
+                       serial_it->model_number, serial_it->serial);
+        }
+    }
+
+    return model_table;
+}
+
+static struct IpodModelTable *get_model_table (void)
+{
+    static GOnce my_once = G_ONCE_INIT;
+
+    g_once (&my_once, (GThreadFunc)init_ipod_model_table, NULL);
+
+    return my_once.retval;
+}
+
+static const Itdb_IpodInfo *
+get_ipod_info_from_model_number (const char *model_number)
+{
+    struct IpodModelTable *model_table;
+
+    g_return_val_if_fail (model_number != NULL, NULL);
+
+    model_table = get_model_table ();
+    if(isalpha(model_number[0])) {
+	model_number++;
+    }
+    return g_hash_table_lookup (model_table->model_number_hash, model_number);
+}
+
+static const Itdb_IpodInfo *
+get_ipod_info_from_serial (const char *serial)
+{
+    struct IpodModelTable *model_table;
+    glong len;
+
+    g_return_val_if_fail (serial != NULL, NULL);
+
+    len = strlen (serial);
+    if (len < 3) {
+        return NULL;
+    }
+    model_table = get_model_table ();
+    /* The 3 last letters of the ipod serial number can be used to identify 
+     * the model
+     */
+    return g_hash_table_lookup (model_table->serial_hash, serial+len-3);
+}

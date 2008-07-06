@@ -1,5 +1,11 @@
 2008-07-06  Christophe Fergeau <teuf@gnome.org>
 
+	* src/itdb_device.c: add a mapping from serial numbers to model
+	numbers to make it easy to go from a serial number read from
+	SysInfoExtended to an Itdb_IpodInfo
+
+2008-07-06  Christophe Fergeau <teuf@gnome.org>
+
 	* src/itdb_device.c:
 	* src/itdb_device.h: add missing red ipod shuffles as well as 2GB
 	shuffles to the list of known ipod models
