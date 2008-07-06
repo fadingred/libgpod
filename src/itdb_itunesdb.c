@@ -119,7 +119,6 @@
 #include <glib/gstdio.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/statvfs.h>
 #include <sys/types.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
@@ -6911,17 +6910,14 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     /* Build the directories that hold the music files */
     dirnum = info->musicdirs;
     if (dirnum == 0)
-    {   /* do a guess */
-	struct statvfs stat;
-	if (statvfs (mp, &stat) != 0)
-	{   /* why should this fail !? */
-	    dirnum = 20;
-	}
-	else
-	{
-	    gdouble size = ((gdouble)stat.f_blocks * stat.f_frsize) / 1073741824;
+    {
+	guint64 capacity, free_space;
+	if (itdb_device_get_storage_info(device, &capacity, &free_space)) {
+	    gdouble size = ((gdouble)capacity) / 1073741824;
 	    if (size < 20)  dirnum = 20;
 	    else            dirnum = 50;
+	} else {
+	    dirnum = 20;
 	}
     }
 

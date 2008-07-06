@@ -1,5 +1,14 @@
 2008-07-06  Christophe Fergeau <teuf@gnome.org>
 
+	* src/itdb_device.c:
+	* src/itdb_device.h: add itdb_device_get_storage_info method
+	* src/itdb_itunesdb.c: use that method instead of directly using
+	statvfs, makes it easier to port things over to MSVC8
+
+2008-07-05  Christophe Fergeau <teuf@gnome.org>
+
+	Patch from: Songbird (http://getsongbird.com/)
+
 	* src/db-itunes-parser.h: remove unused constant
 	* src/db-parse-context.c:
 	* src/db-parse-context.h: use GMappedFile instead of directly using
