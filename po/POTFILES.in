@@ -1,6 +1,5 @@
 # List of source files containing translatable strings (output of
-# ls src/*.c tests/*.c)
-
+# ls src/*.c tests/*.c tools/*.c)
 
 src/db-artwork-debug.c
 src/db-artwork-parser.c
@@ -12,6 +11,7 @@ src/itdb_device.c
 src/itdb_itunesdb.c
 src/itdb_photoalbum.c
 src/itdb_playlist.c
+src/itdb_thumb.c
 src/itdb_track.c
 src/ithumb-writer.c
 tests/itdb_main.c

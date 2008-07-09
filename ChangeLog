@@ -1,3 +1,7 @@
+2008-07-09  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* po/POTFILES.in: add src/itdb_thumb.c
+
 2008-07-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac: properly detect newer libsgutils (the so name was
