@@ -1,3 +1,10 @@
+2008-07-09  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.ac: properly detect newer libsgutils (the so name was
+	changed)
+	* tools/ipod-scsi-inquiry.c: add missing include
+	Based on a patch from Dan Horák (dan@danny.cz)
+
 2008-07-06  Christophe Fergeau <teuf@gnome.org>
 
 	* src/itdb_device.c: fix model number information grabbed from

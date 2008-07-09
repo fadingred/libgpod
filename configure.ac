@@ -98,9 +98,14 @@ AM_CONDITIONAL(WITH_INTERNAL_GCHECKSUM, test "x$with_internal_gchecksum" = "xyes
 dnl **************************************************
 dnl * sgutils is necessary to get the xml device file from the ipod
 dnl **************************************************
-AC_CHECK_LIB(sgutils, sg_ll_inquiry,
-             [SGUTILS_LIBS="-lsgutils"; have_sgutils=yes], 
-	     have_sgutils=no)
+AC_CHECK_LIB(sgutils2, sg_ll_inquiry,
+             [SGUTILS_LIBS="-lsgutils2"; have_sgutils=yes],
+             have_sgutils=no)
+if test "x$have_sgutils" != xyes; then
+    AC_CHECK_LIB(sgutils, sg_ll_inquiry,
+                 [SGUTILS_LIBS="-lsgutils"; have_sgutils=yes],
+                 have_sgutils=no)
+fi
 AC_SUBST(SGUTILS_LIBS)
 AM_CONDITIONAL(HAVE_SGUTILS, test x"$have_sgutils" = xyes)
 
