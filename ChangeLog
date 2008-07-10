@@ -1,3 +1,8 @@
+2008-07-10  Christophe Fergeau <teuf@gnome.org>
+
+	* src/db-artwork-writer.c: if we fail to write ithmb files for some
+	reason, don't go on trying to write the ArtworkDB/PhotoDB as well
+
 2008-07-09  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* po/POTFILES.in: add src/itdb_thumb.c

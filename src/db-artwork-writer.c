@@ -1151,6 +1151,7 @@ ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 	char *filename;
 	int id_max;
 	Itdb_DB db;
+	int status;
 
 	db.db_type = DB_TYPE_ITUNES;
 	db.db.itdb = itdb;
@@ -1160,7 +1161,10 @@ ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 	/* First, let's write the .ithmb files, this will create the
 	 * various thumbnails as well */
 
-	itdb_write_ithumb_files (&db);
+	status = itdb_write_ithumb_files (&db);
+	if (status != 0) {
+		return -1;
+	}
 
 	filename = ipod_db_get_artwork_db_path (itdb_get_mountpoint (itdb));
 	if (filename == NULL) {
@@ -1200,13 +1204,17 @@ ipod_write_photo_db (Itdb_PhotoDB *photodb)
 	char *filename;
 	int id_max;
 	Itdb_DB db;
+	int status;
 
 	db.db_type = DB_TYPE_PHOTO;
 	db.db.photodb = photodb;
 
 	filename = ipod_db_get_photos_db_path (db_get_mountpoint (&db));
 
-	itdb_write_ithumb_files (&db);
+	status = itdb_write_ithumb_files (&db);
+	if (status != 0) {
+		return -1;
+	}
 
 	if (filename == NULL) {
 		return -1;
