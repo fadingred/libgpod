@@ -188,7 +188,6 @@ itdb_artwork_add_thumbnail_from_pixbuf
 itdb_artwork_remove_thumbnail
 itdb_artwork_remove_thumbnails
 itdb_artwork_get_thumb_by_type
-itdb_thumb_get_gdk_pixbuf
 itdb_thumb_duplicate
 itdb_thumb_free
 itdb_thumb_new

@@ -1184,11 +1184,10 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 Itdb_PhotoAlbum *itdb_photodb_photoalbum_by_name(Itdb_PhotoDB *db,
 						 const gchar *albumname );
 
-/* itdb_artwork_... -- you probably won't need many of these (probably
- * with the exception of itdb_artwork_get_thumb_by_type() and
- * itdb_thumb_get_gdk_pixbuf() probably). Use the itdb_photodb_...()
- * functions when adding photos, and the itdb_track_...() functions
- * when adding coverart to audio. */
+/* itdb_artwork_... -- you probably won't need many of these (with
+ * the exception of itdb_artwork_get_pixbuf() probably). Use the
+ * itdb_photodb_...() functions when adding photos, and the
+ * itdb_track_...() functions when adding coverart to audio. */
 Itdb_Artwork *itdb_artwork_new (void);
 Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork);
 void itdb_artwork_free (Itdb_Artwork *artwork);
@@ -1204,14 +1203,12 @@ gboolean itdb_artwork_set_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
                                                  gint rotation,
                                                  GError **error);
 void itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork);
+/* the following function returns a pointer to a GdkPixbuf if
+   gdk-pixbuf is installed -- a NULL pointer otherwise. */
 gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork, 
                                   gint width, gint height);
 
 /* itdb_thumb_... */
-/* the following function returns a pointer to a GdkPixbuf if
-   gdk-pixbuf is installed -- a NULL pointer otherwise. */
-gpointer itdb_thumb_get_gdk_pixbuf (Itdb_Device *device,
-				    Itdb_Thumb *thumb);
 Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb);
 void itdb_thumb_free (Itdb_Thumb *thumb);
 

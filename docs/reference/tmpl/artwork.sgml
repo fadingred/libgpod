@@ -101,16 +101,6 @@ album/track artwork.  For working with photos, see the
 @artwork: 
 
 
-<!-- ##### FUNCTION itdb_thumb_get_gdk_pixbuf ##### -->
-<para>
-
-</para>
-
-@device: 
-@thumb: 
-@Returns: 
-
-
 <!-- ##### FUNCTION itdb_thumb_duplicate ##### -->
 <para>
 

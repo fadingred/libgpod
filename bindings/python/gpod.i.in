@@ -487,7 +487,7 @@ typedef int gint;
 
 #ifdef HAVE_GDKPIXBUF
 #ifdef HAVE_PYGOBJECT
-%typemap(out) gpointer itdb_thumb_get_gdk_pixbuf {
+%typemap(out) gpointer itdb_artwork_get_pixbuf {
   $result = pygobject_new((GObject *)$1);
   g_object_unref($1);
 }

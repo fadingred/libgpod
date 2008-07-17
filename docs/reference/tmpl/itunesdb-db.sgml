@@ -59,11 +59,9 @@ tracks are available. Please see
 <para>
 Each track can have a thumbnail associated with it. You can
 retrieve a GdkPixmap of the thumbnail using
-itdb_thumb_get_gdk_pixbuf() (tracks have thumbnails of the
-following types associated: @ITDB_THUMB_COVER_SMALL and
-@ITDB_THUMB_COVER_LARGE).  You can remove a thumbnail with
-itdb_track_remove_thumbnails().  And finally, you can set a
-new thumbnail using itdb_track_set_thumbnails().
+itdb_artwork_get_pixbuf().  You can remove a thumbnail with
+itdb_track_remove_thumbnails().  And finally, you can set a new
+thumbnail using itdb_track_set_thumbnails().
 </para>
 <para>
 Please note that iTunes additionally stores the artwork as tags

@@ -1023,10 +1023,10 @@ class Thumbnail:
         def get_pixbuf(self):
             # this deals with coverart and photo albums
             if hasattr(self.__ownerobject._database,"_itdb"):
-                return gpod.itdb_thumb_get_gdk_pixbuf(
+                return gpod.itdb_artwork_get_pixbuf(
                     self.__ownerobject._database._itdb.device,
                     self._thumbnail)
             else:
-                return gpod.itdb_thumb_get_gdk_pixbuf(
+                return gpod.itdb_artwork_get_pixbuf(
                     self.__ownerobject._database.device,
                     self._thumbnail)
