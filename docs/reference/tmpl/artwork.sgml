@@ -50,24 +50,6 @@ album/track artwork.  For working with photos, see the
 @data_type: 
 @rotation: 
 
-<!-- ##### ENUM ItdbThumbType ##### -->
-<para>
-
-</para>
-
-@ITDB_THUMB_COVER_SMALL: 
-@ITDB_THUMB_COVER_LARGE: 
-@ITDB_THUMB_PHOTO_SMALL: 
-@ITDB_THUMB_PHOTO_LARGE: 
-@ITDB_THUMB_PHOTO_FULL_SCREEN: 
-@ITDB_THUMB_PHOTO_TV_SCREEN: 
-@ITDB_THUMB_COVER_XLARGE: 
-@ITDB_THUMB_COVER_MEDIUM: 
-@ITDB_THUMB_COVER_SMEDIUM: 
-@ITDB_THUMB_COVER_XSMALL: 
-@ITDB_THUMB_CHAPTER_SMALL: 
-@ITDB_THUMB_CHAPTER_LARGE: 
-
 <!-- ##### FUNCTION itdb_artwork_new ##### -->
 <para>
 

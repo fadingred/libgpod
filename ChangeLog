@@ -1,3 +1,12 @@
+2008-0-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_device.c: assume the following generations do not
+	  support sparse artwork:
+            ITDB_IPOD_GENERATION_NANO_1:
+            ITDB_IPOD_GENERATION_NANO_2:
+            ITDB_IPOD_GENERATION_VIDEO_1:
+            ITDB_IPOD_GENERATION_VIDEO_2:
+
 2008-07-17  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* README

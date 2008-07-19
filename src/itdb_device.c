@@ -995,13 +995,13 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
             case ITDB_IPOD_GENERATION_SHUFFLE_1:
             case ITDB_IPOD_GENERATION_SHUFFLE_2:
             case ITDB_IPOD_GENERATION_SHUFFLE_3:
-                supports_sparse_artwork = FALSE;
-                break;
             case ITDB_IPOD_GENERATION_NANO_1:
             case ITDB_IPOD_GENERATION_NANO_2:
-            case ITDB_IPOD_GENERATION_NANO_3:
             case ITDB_IPOD_GENERATION_VIDEO_1:
             case ITDB_IPOD_GENERATION_VIDEO_2:
+                supports_sparse_artwork = FALSE;
+                break;
+            case ITDB_IPOD_GENERATION_NANO_3:
             case ITDB_IPOD_GENERATION_CLASSIC_1:
             case ITDB_IPOD_GENERATION_TOUCH_1:
             case ITDB_IPOD_GENERATION_IPHONE_1:
