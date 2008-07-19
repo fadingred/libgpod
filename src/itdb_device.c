@@ -1445,6 +1445,11 @@ static void itdb_device_set_timezone_info (Itdb_Device *device)
     device->timezone_shift = get_local_timezone ();
 
     prefs_path = get_preferences_path (device);
+
+    if (!prefs_path) {
+	return;
+    }
+
     status = g_stat (prefs_path, &stat_buf);
     if (status != 0) {
 	g_free (prefs_path);

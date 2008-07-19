@@ -1,4 +1,9 @@
-2008-0-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
+2008-07-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_device.c (itdb_device_set_timezone_info): avoid g_stat
+	  on NULL filename. Thanks to Andrea.
+
+2008-07-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_device.c: assume the following generations do not
 	  support sparse artwork:
