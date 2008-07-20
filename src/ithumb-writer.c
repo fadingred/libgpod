@@ -154,7 +154,8 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 } else {
                     guchar *cur_pixel;
 
-                    cur_pixel = &pixels[h*row_stride + w*channels];
+                    cur_pixel = &pixels[h*row_stride +
+					(w - horizontal_padding)*channels];
                     packed_pixel = get_RGB_565_pixel (cur_pixel, byte_order);
                 }
                 result[line + w] = packed_pixel;
@@ -260,7 +261,8 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 } else {
                     guchar *cur_pixel;
 
-                    cur_pixel = &pixels[h*row_stride + w*channels];
+                    cur_pixel = &pixels[h*row_stride +
+					(w-horizontal_padding)*channels];
                     packed_pixel = get_RGB_555_pixel (cur_pixel, byte_order,
                                                       FALSE);
                 }
@@ -356,7 +358,8 @@ pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 } else {
                     guchar *cur_pixel;
 
-                    cur_pixel = &pixels[h*row_stride + w*channels];
+                    cur_pixel = &pixels[h*row_stride +
+					(w-horizontal_padding)*channels];
                     packed_pixel = get_RGB_888_pixel (cur_pixel, byte_order,
                                                       FALSE);
                 }

@@ -357,6 +357,7 @@ static const Itdb_ArtworkFormat ipod_touch_1_photo_info[] = {
     {  -1,  -1,  -1, -1}
 };
 
+/* also used for 3G Nano */
 static const Itdb_ArtworkFormat ipod_classic_1_cover_art_info[] = {
     /* officially 55x55 -- verify! */
     {1061,  56,  56, THUMB_FORMAT_RGB565_LE},
@@ -365,6 +366,7 @@ static const Itdb_ArtworkFormat ipod_classic_1_cover_art_info[] = {
     {  -1,  -1,  -1, -1}
 };
 
+/* also used for 3G Nano */
 static const Itdb_ArtworkFormat ipod_classic_1_photo_info[] = {
     {1067, 720, 480, THUMB_FORMAT_I420_LE},
     {1024, 320, 240, THUMB_FORMAT_RGB565_LE},
@@ -372,6 +374,7 @@ static const Itdb_ArtworkFormat ipod_classic_1_photo_info[] = {
     {  -1,  -1,  -1, -1}
 };
 
+/* also used for 3G Nano */
 static const Itdb_ArtworkFormat ipod_classic_1_chapter_image_info[] = {
     /*  These are the same as for the iPod video... -- labeled by the iPod as
         "chapter images" */

@@ -1,3 +1,11 @@
+2008-07-20  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/ithumb-writer.c (pack_RGB_565), (pack_RGB_555)
+          (pack_RGB_888): handle horizontal padding correctly
+          (affected pictures in portrait format).
+
+	* src/itdb_device.c: added some comments.
+
 2008-07-18  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_device.c (itdb_device_set_timezone_info): avoid g_stat
