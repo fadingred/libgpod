@@ -31,6 +31,8 @@
 #include <time.h>
 #include <libintl.h>
 
+#include <glib-object.h>
+
 #include "itdb.h"
 #include "itdb_device.h"
 
@@ -45,6 +47,8 @@ main (int argc, char *argv[])
         return 1;
 
     }
+ 
+    g_type_init ();
 
     device = itdb_device_new ();
     if (device == NULL) {

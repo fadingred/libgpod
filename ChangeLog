@@ -1,3 +1,7 @@
+2008-07-26  Christophe Fergeau  <teuf@gnome.org>
+
+	* tests/test-fw-id.c: (main): add missing call to g_type_init
+
 2008-07-20  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/ithumb-writer.c (pack_RGB_565), (pack_RGB_555)
