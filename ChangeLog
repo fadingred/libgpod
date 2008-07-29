@@ -1,5 +1,10 @@
 2008-07-27  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_sysinfo_extended_parser.c:
+	* src/itdb_plist.c: add gtk-doc documentation
+
+2008-07-27  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_sysinfo_extended_parser.c: 
 	* src/itdb_sysinfo_extended_parser.h: add a GError argument to
 	SysInfoExtended parsing functions

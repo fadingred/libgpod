@@ -501,6 +501,18 @@ static SysInfoIpodProperties *g_value_to_ipod_properties (GValue *value)
     return props;
 }
 
+/**
+ * itdb_sysinfo_extended_parse:
+ * @filename: name of the SysInfoExtended file to parse
+ * @error: return location for a #GError
+ * Returns: a newly allocated #SysInfoIpodProperties which must be freed
+ * after use, or NULL if an error occurred during the parsing
+ *
+ * itdb_sysinfo_extended_parse() parses a SysInfoExtended file into a
+ * #SysInfoIpodProperties structure. This structure contains a lot of
+ * information about the iPod properties (artwork format supported, podcast 
+ * capabilities, ...) which can be queried using the appropriate accessors
+ **/
 SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename,
                                                     GError **error)
 {
@@ -520,6 +532,22 @@ SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename,
     return props;
 }
 
+/**
+ * itdb_sysinfo_properties_get_serial_number:
+ * @props: a #SysInfoIpodProperties structure
+ *
+ * Returns: the iPod serial number, NULL if the serial number wasn't set in
+ * @props. The returned string must not be modified nor freed.
+ *
+ * Gets the iPod serial number from @props if it was found while parsing
+ * @props. The serial number uniquely identify an ipod and it can be used
+ * to determine when it was produced and its model/color, see
+ * http://svn.gnome.org/viewvc/podsleuth/trunk/src/PodSleuth/PodSleuth/SerialNumber.cs?view=markup
+ * for more details about what the various parts of the serial number
+ * correspond to. Please avoid parsing this serial number by yourself and
+ * ask for additionnal API in libgpod if you find yourself needing to parse
+ * that serial number :)
+ **/
 const char *
 itdb_sysinfo_properties_get_serial_number (const SysInfoIpodProperties *props)
 {
@@ -527,6 +555,20 @@ itdb_sysinfo_properties_get_serial_number (const SysInfoIpodProperties *props)
     return props->serial_number;
 }
 
+/**
+ * itdb_sysinfo_properties_get_firewire_id:
+ * @props: a #SysInfoIpodProperties structure
+ *
+ * Returns: the iPod firewire ID, NULL if the serial number wasn't set in
+ * @props. The returned string must not be modified nor freed.
+ *
+ * Gets the iPod firewire ID from @props if it was found while parsing
+ * @props. Contrary to what its name implies, the firewire ID is also set
+ * on USB iPods and is especially important on iPod Classic and Nano Video
+ * since this ID (which is unique on each iPod) is needed to generate the
+ * checksum that is required to write a valid iPod database on these
+ * models.
+ **/
 const char *
 itdb_sysinfo_properties_get_firewire_id (const SysInfoIpodProperties *props)
 {
@@ -534,6 +576,15 @@ itdb_sysinfo_properties_get_firewire_id (const SysInfoIpodProperties *props)
     return props->firewire_guid;
 }
 
+/**
+ * itdb_sysinfo_properties_get_cover_art_formats:
+ * @props: a #SysInfoIpodProperties structure
+ *
+ * Returns: a #GList of #Itdb_ArtworkFormat describing the cover art formats 
+ * supported by the iPod described in @props. The returned list must not be 
+ * modified nor freed.
+ *
+ **/
 const GList *
 itdb_sysinfo_properties_get_cover_art_formats (const SysInfoIpodProperties *props)
 {
@@ -541,6 +592,15 @@ itdb_sysinfo_properties_get_cover_art_formats (const SysInfoIpodProperties *prop
     return props->artwork_formats;
 }
 
+/**
+ * itdb_sysinfo_properties_get_photo_formats:
+ * @props: a #SysInfoIpodProperties structure
+ *
+ * Returns: a #GList of #Itdb_ArtworkFormat describing the photo formats 
+ * supported by the iPod described in @props. The returned list must not be 
+ * modified nor freed.
+ *
+ **/
 const GList *
 itdb_sysinfo_properties_get_photo_formats (const SysInfoIpodProperties *props)
 {
@@ -548,6 +608,15 @@ itdb_sysinfo_properties_get_photo_formats (const SysInfoIpodProperties *props)
     return props->photo_formats;
 }
 
+/**
+ * itdb_sysinfo_properties_get_chapter_image_formats:
+ * @props: a #SysInfoIpodProperties structure
+ *
+ * Returns: a #GList of #Itdb_ArtworkFormat describing the chapter image 
+ * formats supported by the iPod described in @props. The returned list must 
+ * not be modified nor freed.
+ *
+ **/
 const GList *
 itdb_sysinfo_properties_get_chapter_image_formats (const SysInfoIpodProperties *props)
 {
@@ -555,6 +624,17 @@ itdb_sysinfo_properties_get_chapter_image_formats (const SysInfoIpodProperties *
     return props->chapter_image_formats;
 }
 
+/**
+ * itdb_sysinfo_properties_supports_sparse_artwork:
+ * @props: a #SysInfoIpodProperties structure
+ *
+ * Returns: TRUE if the iPod supports sparse artwork, FALSE if it does not
+ * or if @props doesn't contain any information about sparse artwork
+ *
+ * Sparse artwork is a way to share artwork between different iPod tracks
+ * which make things more efficient space-wise. This function can be used
+ * to check if the more space-efficient artwork storage can be used.
+ **/
 G_GNUC_INTERNAL gboolean
 itdb_sysinfo_properties_supports_sparse_artwork (const SysInfoIpodProperties *props)
 {
