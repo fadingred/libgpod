@@ -75,6 +75,31 @@ album/track artwork.  For working with photos, see the
 @artwork: 
 
 
+<!-- ##### FUNCTION itdb_artwork_set_thumbnail_from_data ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@image_data: 
+@image_data_len: 
+@rotation: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_artwork_set_thumbnail_from_pixbuf ##### -->
+<para>
+
+</para>
+
+@artwork: 
+@pixbuf: 
+@rotation: 
+@error: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_artwork_remove_thumbnails ##### -->
 <para>
 

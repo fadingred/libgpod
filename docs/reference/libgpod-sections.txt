@@ -178,20 +178,14 @@ Itdb_ArtworkFormat
 <TITLE>Artwork</TITLE>
 Itdb_Artwork
 Itdb_Thumb
-ItdbThumbType
 itdb_artwork_new
 itdb_artwork_duplicate
 itdb_artwork_free
-itdb_artwork_add_thumbnail
-itdb_artwork_add_thumbnail_from_data
-itdb_artwork_add_thumbnail_from_pixbuf
-itdb_artwork_remove_thumbnail
+itdb_artwork_set_thumbnail_from_data
+itdb_artwork_set_thumbnail_from_pixbuf
 itdb_artwork_remove_thumbnails
-itdb_artwork_get_thumb_by_type
 itdb_thumb_duplicate
 itdb_thumb_free
-itdb_thumb_new
-itdb_thumb_get_filename
 </SECTION>
 
 <SECTION>

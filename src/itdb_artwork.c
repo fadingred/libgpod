@@ -178,9 +178,8 @@ itdb_artwork_set_thumbnail (Itdb_Artwork *artwork,
 }
 
 /**
- * itdb_artwork_add_thumbnail_from_pixbuf
+ * itdb_artwork_set_thumbnail_from_pixbuf
  * @artwork: an #Itdb_Thumbnail
- * @type: thumbnail size
  * @pixbuf: #GdkPixbuf to use to create the thumbnail
  * @rotation: angle by which the image should be rotated
  * counterclockwise. Valid values are 0, 90, 180 and 270.
@@ -238,9 +237,8 @@ itdb_artwork_set_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
 }
 
 /**
- * itdb_artwork_add_thumbnail_from_data
+ * itdb_artwork_set_thumbnail_from_data
  * @artwork: an #Itdb_Thumbnail
- * @type: thumbnail size
  * @image_data: data used to create the thumbnail (the raw contents of
  *              an image file)
  * @image_data_len: length of above data block
