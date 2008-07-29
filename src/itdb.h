@@ -478,18 +478,6 @@ struct _Itdb_Chapterdata
 /* one star is how much (track->rating) */
 #define ITDB_RATING_STEP 20
 
-/* Types of thumbnails in Itdb_Image */
-enum _ItdbThumbDataType {
-    ITDB_THUMB_TYPE_INVALID,
-    ITDB_THUMB_TYPE_FILE,
-    ITDB_THUMB_TYPE_MEMORY,
-    ITDB_THUMB_TYPE_PIXBUF,
-    ITDB_THUMB_TYPE_IPOD
-};
-typedef enum _ItdbThumbDataType ItdbThumbDataType;
-
-
-
 struct _Itdb_Artwork {
     Itdb_Thumb *thumbnail;
     guint32 id;            /* Artwork id used by photoalbums, starts at
@@ -1210,6 +1198,9 @@ gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork,
 
 /* itdb_thumb_... */
 Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb);
+gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *dev, Itdb_Thumb *thumb,  
+                                       gint width, gint height); 
+GList *itdb_thumb_to_pixbufs (Itdb_Device *dev, Itdb_Thumb *thumb); 
 void itdb_thumb_free (Itdb_Thumb *thumb);
 
 /* itdb_chapterdata_... */

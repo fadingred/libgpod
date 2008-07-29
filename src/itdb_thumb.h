@@ -26,6 +26,16 @@
 #include "itdb.h"
 #include "itdb_device.h"
 
+/* Types of thumbnails in Itdb_Image */
+enum _ItdbThumbDataType {
+    ITDB_THUMB_TYPE_INVALID,
+    ITDB_THUMB_TYPE_FILE,
+    ITDB_THUMB_TYPE_MEMORY,
+    ITDB_THUMB_TYPE_PIXBUF,
+    ITDB_THUMB_TYPE_IPOD
+};
+typedef enum _ItdbThumbDataType ItdbThumbDataType;
+
 /* The Itdb_Thumb structure can represent two slightly different
    thumbnails:
 
@@ -105,10 +115,7 @@ G_GNUC_INTERNAL const GList *itdb_thumb_ipod_get_thumbs (Itdb_Thumb_Ipod *thumbs
 G_GNUC_INTERNAL char *itdb_thumb_ipod_get_filename (Itdb_Device *device, Itdb_Thumb_Ipod_Item *thumb);
 G_GNUC_INTERNAL Itdb_Thumb_Ipod_Item *itdb_thumb_ipod_get_item_by_type (Itdb_Thumb *thumbs,
                                                         const Itdb_ArtworkFormat *format);
-G_GNUC_INTERNAL 
-gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device, 
-                                         Itdb_Thumb_Ipod_Item *item); 
-gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *dev, Itdb_Thumb *thumb, 
-                                       gint width, gint height);
-GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thumb);
+G_GNUC_INTERNAL gpointer
+itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device, 
+                                Itdb_Thumb_Ipod_Item *item); 
 #endif

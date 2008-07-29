@@ -504,7 +504,7 @@ gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
     return pixbuf;
 }
 
-GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thumb)
+static GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thumb)
 {
         const GList *items;
         GList *pixbufs = NULL;
@@ -524,6 +524,28 @@ GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thumb)
 
         return pixbufs;
 }
+
+GList *itdb_thumb_to_pixbufs (Itdb_Device *dev, Itdb_Thumb *thumb)
+{
+    GList *pixbufs = NULL;
+    GdkPixbuf *pixbuf;
+
+    switch (thumb->data_type) {
+    case ITDB_THUMB_TYPE_IPOD:
+        pixbufs = itdb_thumb_ipod_to_pixbufs (dev, (Itdb_Thumb_Ipod *)thumb);
+        break;
+    case ITDB_THUMB_TYPE_FILE:
+    case ITDB_THUMB_TYPE_MEMORY:
+    case ITDB_THUMB_TYPE_PIXBUF:
+        pixbuf = itdb_thumb_to_pixbuf_at_size (dev, thumb, -1, -1);
+        pixbufs = g_list_append (pixbufs, pixbuf);
+        break;
+    case ITDB_THUMB_TYPE_INVALID:
+        g_assert_not_reached ();
+    }
+
+    return pixbufs;
+}
 #else
 gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *dev, Itdb_Thumb *thumb, 
                                        gint width, gint height)
@@ -531,7 +553,8 @@ gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *dev, Itdb_Thumb *thumb,
     return NULL;
 }
 
-GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thumb)
+
+GList *itdb_thumb_to_pixbufs (Itdb_Device *dev, Itdb_Thumb *thumb) 
 {
     return NULL;
 }

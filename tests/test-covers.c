@@ -64,11 +64,11 @@ save_song_thumbnails (Itdb_Track *song)
         static guint count = 0;
         GList *it;
         GList *thumbs;
-        Itdb_Thumb_Ipod *thumb = (Itdb_Thumb_Ipod*)song->artwork->thumbnail;
-        if (thumb == NULL) {
+        if (song->artwork->thumbnail == NULL) {
             return;
         }
-        thumbs = itdb_thumb_ipod_to_pixbufs (song->itdb->device, thumb);
+        thumbs = itdb_thumb_to_pixbufs (song->itdb->device,
+                                        song->artwork->thumbnail);
 	for (it = thumbs; it != NULL; it = it->next) {
                 GdkPixbuf *pixbuf;
 

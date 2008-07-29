@@ -68,10 +68,8 @@ dump_thumbs (Itdb_PhotoDB *db, Itdb_Artwork *artwork,
 	GList *it;
 	gint i = 0;
         GList *thumbnails;
-        Itdb_Thumb_Ipod *thumb;
 
-        thumb = (Itdb_Thumb_Ipod *)artwork->thumbnail;
-        thumbnails = itdb_thumb_ipod_to_pixbufs (db->device, thumb);
+        thumbnails = itdb_thumb_to_pixbufs (db->device, artwork->thumbnail);
 	for (it = thumbnails; it != NULL; it = it->next, i++) {
 		gchar *filename, *path;
                 GdkPixbuf *pixbuf;
