@@ -642,7 +642,7 @@ static void itdb_device_read_sysinfo_extended (Itdb_Device *device)
     sysinfo_ex_path = itdb_resolve_path (dev_path, p_sysinfo_ex);
     g_free (dev_path);
     if (!sysinfo_ex_path) return;
-    device->sysinfo_extended = itdb_sysinfo_extended_parse (sysinfo_ex_path);
+    device->sysinfo_extended = itdb_sysinfo_extended_parse (sysinfo_ex_path, NULL);
     g_free (sysinfo_ex_path);
 
     if ((device->sysinfo != NULL) && (device->sysinfo_extended != NULL)) {

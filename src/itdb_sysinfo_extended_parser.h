@@ -35,7 +35,8 @@ G_BEGIN_DECLS
 typedef struct _SysInfoIpodProperties SysInfoIpodProperties;
 
 void itdb_sysinfo_properties_dump (SysInfoIpodProperties *props);
-SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename);
+SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename,
+                                                    GError **error);
 void itdb_sysinfo_properties_free (SysInfoIpodProperties *props);
 
 const char *

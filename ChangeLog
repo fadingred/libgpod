@@ -1,5 +1,15 @@
 2008-07-27  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_sysinfo_extended_parser.c: 
+	* src/itdb_sysinfo_extended_parser.h: add a GError argument to
+	SysInfoExtended parsing functions
+	* src/itdb_device.c: pass NULL GError argument to call to
+	SysInfoExtended functions
+	* tests/test-sysinfo-extended.c: add a GError argument when calling
+	SysInfoExtended parsing functions
+
+2008-07-27  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_device.c: add itdb_device_error_quark()
 	* src/itdb_plist.h:
 	* src/itdb_plist.c: add error handling to XML parsing (using

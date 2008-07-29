@@ -460,6 +460,7 @@ static void process_one (gpointer key, gpointer value, gpointer user_data)
         *img_formats = g_list_prepend (*img_formats, format);
     }
 }
+
 static GList *parse_one_formats_list (GHashTable *sysinfo_dict, 
                                       const char *key)
 {
@@ -500,14 +501,15 @@ static SysInfoIpodProperties *g_value_to_ipod_properties (GValue *value)
     return props;
 }
 
-SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename)
+SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename,
+                                                    GError **error)
 {
     GValue *parsed_doc;
     SysInfoIpodProperties *props;
 
     g_return_val_if_fail (filename != NULL, NULL);
 
-    parsed_doc = itdb_plist_parse_from_file (filename, NULL);
+    parsed_doc = itdb_plist_parse_from_file (filename, error);
     if (parsed_doc == NULL) {
         return NULL;
     }
