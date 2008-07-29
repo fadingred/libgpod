@@ -34,15 +34,20 @@ G_BEGIN_DECLS
 
 typedef struct _SysInfoIpodProperties SysInfoIpodProperties;
 
-void itdb_sysinfo_properties_dump (SysInfoIpodProperties *props);
+G_GNUC_INTERNAL void
+itdb_sysinfo_properties_dump (SysInfoIpodProperties *props);
+
+G_GNUC_INTERNAL
 SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename,
                                                     GError **error);
+
+G_GNUC_INTERNAL
 void itdb_sysinfo_properties_free (SysInfoIpodProperties *props);
 
-const char *
+G_GNUC_INTERNAL const char *
 itdb_sysinfo_properties_get_serial_number (const SysInfoIpodProperties *props);
 
-const char *
+G_GNUC_INTERNAL const char *
 itdb_sysinfo_properties_get_firewire_id (const SysInfoIpodProperties *props);
 
 G_GNUC_INTERNAL const GList *

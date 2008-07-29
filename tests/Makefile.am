@@ -37,7 +37,12 @@ test_checksum_SOURCES = test-checksum.c
 
 test_firewire_id_SOURCES = test-fw-id.c
 
-test_sysinfo_extended_parsing_SOURCES = test-sysinfo-extended-parsing.c
+test_sysinfo_extended_parsing_SOURCES = \
+	test-sysinfo-extended-parsing.c \
+	$(top_srcdir)/src/itdb_plist.c  \
+	$(top_srcdir)/src/itdb_sysinfo_extended_parser.c
+
+test_sysinfo_extended_parsing_LDADD =
 
 get_timezone_SOURCES = get-timezone.c
 
