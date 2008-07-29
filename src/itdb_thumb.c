@@ -525,6 +525,23 @@ static GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thu
         return pixbufs;
 }
 
+/**
+ * itdb_thumb_to_pixbufs:
+ * @device: an #Itdb_Device
+ * @thumb: an #Itdb_Thumb
+ * 
+ * Return value: a #GList of #GdkPixbuf which are associated with @thumb, NULL
+ * if the pixbuf was invalid or if libgpod is compiled without gdk-pixbuf
+ * support. The #GdkPixbuf must be unreffed with gdk_pixbuf_unref() after use 
+ * and the #GList must be freed with g_list_free().
+ *
+ * Converts @thumb to a #GList of #GdkPixbuf. The returned #GList will
+ * generally contain only 1 element, the full-size pixbuf associated with
+ * @thumb, but when the artwork has been read from the ipod and hasn't been
+ * modified from the library, then the returned #GList will contain several
+ * #GdkPixbuf corresponding to the various thumbnail sizes that were
+ * written to the iPod database.
+ **/
 GList *itdb_thumb_to_pixbufs (Itdb_Device *dev, Itdb_Thumb *thumb)
 {
     GList *pixbufs = NULL;
