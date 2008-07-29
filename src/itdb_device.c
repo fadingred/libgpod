@@ -1691,3 +1691,12 @@ get_ipod_info_from_serial (const char *serial)
      */
     return g_hash_table_lookup (model_table->serial_hash, serial+len-3);
 }
+
+GQuark itdb_device_error_quark (void)
+{
+    static GQuark quark = 0;
+    if (!quark) {
+        quark = g_quark_from_static_string ("itdb-device-error-quark");
+    }
+    return quark;
+}

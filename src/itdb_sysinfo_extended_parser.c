@@ -507,7 +507,7 @@ SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename)
 
     g_return_val_if_fail (filename != NULL, NULL);
 
-    parsed_doc = itdb_plist_parse_from_file (filename);
+    parsed_doc = itdb_plist_parse_from_file (filename, NULL);
     if (parsed_doc == NULL) {
         return NULL;
     }

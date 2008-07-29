@@ -33,9 +33,21 @@
 
 G_BEGIN_DECLS
 
-G_GNUC_INTERNAL GValue *itdb_plist_parse_from_file (const char *filename);
+typedef enum {
+	ITDB_DEVICE_ERROR_XML_PARSING
+} ItdbDeviceError;
+
+/* Error domain */
+#define ITDB_DEVICE_ERROR itdb_device_error_quark ()
+GQuark     itdb_device_error_quark      (void);
+
+
+
+G_GNUC_INTERNAL GValue *itdb_plist_parse_from_file (const char *filename,
+						    GError **error);
 G_GNUC_INTERNAL GValue *itdb_plist_parse_from_memory (const char *data, 
-                                                      gsize len); 
+                                                      gsize len,
+						      GError **error); 
 
 G_END_DECLS
 

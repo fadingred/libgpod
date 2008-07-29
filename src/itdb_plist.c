@@ -66,7 +66,7 @@
 #define DEBUG(...)
 #endif
 
-static GValue *parse_node (xmlNode *a_node);
+static GValue *parse_node (xmlNode *a_node, GError **error);
 
 static void 
 value_free (GValue *val)
@@ -76,14 +76,21 @@ value_free (GValue *val)
 }
 
 static GValue * 
-parse_integer(xmlNode *a_node)
+parse_integer(xmlNode *a_node, GError **error)
 {
     char *str_val;
+    char *end_ptr;
     gint int_val;
     GValue *value;
 
     str_val = (char *)xmlNodeGetContent(a_node);
-    int_val = strtol (str_val, NULL, 0);
+    int_val = strtol (str_val, &end_ptr, 0);
+    if (*end_ptr != '\0') {
+        g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                     "invalid integer value: %s", str_val);
+        xmlFree (str_val);
+        return NULL;
+    }
     xmlFree (str_val);
 
     value = g_new0(GValue, 1);
@@ -94,7 +101,7 @@ parse_integer(xmlNode *a_node)
 }
 
 static GValue * 
-parse_string(xmlNode *a_node)
+parse_string(xmlNode *a_node, G_GNUC_UNUSED GError **error)
 {
     char *str_val;
     GValue *value;
@@ -111,14 +118,21 @@ parse_string(xmlNode *a_node)
 }
 
 static GValue *
-parse_real(xmlNode *a_node)
+parse_real(xmlNode *a_node, GError **error)
 {
     char *str_val;
+    char *end_ptr;
     gfloat double_val;
     GValue *value;
 
     str_val = (char *)xmlNodeGetContent(a_node);
-    double_val = g_ascii_strtod (str_val, NULL);
+    double_val = g_ascii_strtod (str_val, &end_ptr);
+    if (*end_ptr != '\0') {
+        g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                     "invalid real value: %s", str_val);
+        xmlFree (str_val);
+        return NULL;
+    }
     xmlFree (str_val);
 
     value = g_new0(GValue, 1);
@@ -129,7 +143,7 @@ parse_real(xmlNode *a_node)
 }
 
 static GValue *
-parse_boolean (xmlNode *a_node)
+parse_boolean (xmlNode *a_node, GError **error)
 {
     gboolean bool_val;
     GValue *value;
@@ -139,7 +153,8 @@ parse_boolean (xmlNode *a_node)
     } else if (strcmp ((char *)a_node->name, "false") == 0) {
         bool_val = FALSE;
     } else {
-        DEBUG ("unexpected boolean value\n");
+        g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                     "unexpected boolean value: %s", a_node->name);
         return NULL;
     }
 
@@ -151,7 +166,7 @@ parse_boolean (xmlNode *a_node)
 }
 
 static GValue *
-parse_data (xmlNode *a_node)
+parse_data (xmlNode *a_node, G_GNUC_UNUSED GError **error)
 {
     char *str_val;
     guchar *raw_data;
@@ -173,7 +188,7 @@ parse_data (xmlNode *a_node)
 }
 
 static xmlNode *
-parse_one_dict_entry (xmlNode *a_node, GHashTable *dict)
+parse_one_dict_entry (xmlNode *a_node, GHashTable *dict, GError **error)
 {
     xmlNode *cur_node = a_node;
     xmlChar *key_name;
@@ -186,6 +201,8 @@ parse_one_dict_entry (xmlNode *a_node, GHashTable *dict)
         cur_node = cur_node->next;
     }
     if (cur_node == NULL) {
+        g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                     "Dict entry contains no <key> node");
         return NULL;
     }
     key_name = xmlNodeGetContent(cur_node);
@@ -194,14 +211,19 @@ parse_one_dict_entry (xmlNode *a_node, GHashTable *dict)
         cur_node = cur_node->next;
     }
     if (cur_node == NULL) {
-        DEBUG ("<key> %s with no corresponding value node", key_name);
+        g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                     "<key> %s with no corresponding value node", key_name);
         xmlFree (key_name);
         return NULL;
     }
 
-    value = parse_node (cur_node);
+    value = parse_node (cur_node, error);
     if (value != NULL) {
         g_hash_table_insert (dict, g_strdup ((char *)key_name), value);
+    } else {
+        g_warning ("Couldn't parse value for %s: %s",
+                   key_name, (*error)->message);
+        g_clear_error (error);
     }
     xmlFree (key_name);
 
@@ -209,7 +231,7 @@ parse_one_dict_entry (xmlNode *a_node, GHashTable *dict)
 }
 
 static GValue * 
-parse_dict (xmlNode *a_node)
+parse_dict (xmlNode *a_node, GError **error)
 {
     xmlNode *cur_node = a_node->children;
     GValue *value;
@@ -219,9 +241,11 @@ parse_dict (xmlNode *a_node)
                                   g_free, (GDestroyNotify)value_free);
 
     while (cur_node != NULL) {
-        cur_node = parse_one_dict_entry (cur_node, dict);
+        cur_node = parse_one_dict_entry (cur_node, dict, error);
     }
-
+    if ((error != NULL) && (*error != NULL)) {
+        return NULL;
+    }
     value = g_new0 (GValue, 1);
     value = g_value_init (value, G_TYPE_HASH_TABLE);
     g_value_take_boxed (value, dict);
@@ -229,7 +253,7 @@ parse_dict (xmlNode *a_node)
     return value;
 }
 
-typedef GValue *(*ParseCallback) (xmlNode *);
+typedef GValue *(*ParseCallback) (xmlNode *, GError **);
 struct Parser {
     const char * const type_name;
     ParseCallback parser;
@@ -245,14 +269,14 @@ static struct Parser parsers[] = { {"integer", parse_integer},
                                    {"array",   parse_dict},
                                    {NULL,      NULL} };
 
-static GValue *parse_node (xmlNode *a_node)
+static GValue *parse_node (xmlNode *a_node, GError **error)
 {
     guint i = 0;
     g_return_val_if_fail (a_node != NULL, FALSE);
     while (parsers[i].type_name != NULL) {        
         if (xmlStrcmp (a_node->name, (xmlChar *)parsers[i].type_name) == 0) {
             if (parsers[i].parser != NULL) {
-                return parsers[i].parser (a_node);
+                return parsers[i].parser (a_node, error);
             }
         }
         i++;
@@ -262,15 +286,17 @@ static GValue *parse_node (xmlNode *a_node)
 }
 
 static GValue *
-itdb_plist_parse (xmlNode * a_node)
+itdb_plist_parse (xmlNode * a_node, GError **error)
 {
     xmlNode *cur_node;
     if (a_node == NULL) {
-        DEBUG ("empty file\n");
+        g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                     "Empty XML document");
         return NULL;
     }
     if (xmlStrcmp (a_node->name, (xmlChar *)"plist") != 0) {
-        DEBUG ("not a plist file\n");
+        g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                     "XML document does not seem to be a plist document");
         return NULL;
     }
     cur_node = a_node->xmlChildrenNode;
@@ -278,13 +304,15 @@ itdb_plist_parse (xmlNode * a_node)
         cur_node = cur_node->next;
     }
     if (cur_node != NULL) {
-        return parse_node (cur_node);
+        return parse_node (cur_node, error);
     }
+    g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                 "Empty XML document");
     return NULL;
 }
 
 GValue *
-itdb_plist_parse_from_file (const char *filename)
+itdb_plist_parse_from_file (const char *filename, GError **error)
 {
     xmlDoc *doc = NULL;
     xmlNode *root_element = NULL;
@@ -293,13 +321,14 @@ itdb_plist_parse_from_file (const char *filename)
     doc = xmlReadFile(filename, NULL, 0);
 
     if (doc == NULL) {
-        printf("error: could not parse file %s\n", filename);
+        g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                     "Error during XML parsing of file %s", filename);
         return NULL;
     }
 
     root_element = xmlDocGetRootElement(doc);
 
-    parsed_doc = itdb_plist_parse (root_element);
+    parsed_doc = itdb_plist_parse (root_element, error);
 
     xmlFreeDoc(doc);
     xmlCleanupParser();
@@ -308,7 +337,7 @@ itdb_plist_parse_from_file (const char *filename)
 }
 
 GValue *
-itdb_plist_parse_from_memory (const char *data, gsize len)
+itdb_plist_parse_from_memory (const char *data, gsize len, GError **error)
 {
     xmlDoc *doc = NULL;
     xmlNode *root_element = NULL;
@@ -317,13 +346,14 @@ itdb_plist_parse_from_memory (const char *data, gsize len)
     doc = xmlReadMemory(data, len, "noname.xml", NULL, 0);
 
     if (doc == NULL) {
-        printf("error: could not parse data from memory\n");
+        g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
+                     "Error during XML parsing of in-memory data");
         return NULL;
     }
 
     root_element = xmlDocGetRootElement(doc);
 
-    parsed_doc = itdb_plist_parse (root_element);
+    parsed_doc = itdb_plist_parse (root_element, error);
 
     xmlFreeDoc(doc);
     xmlCleanupParser();
@@ -334,13 +364,15 @@ itdb_plist_parse_from_memory (const char *data, gsize len)
 #include <glib-object.h>
 #include "itdb_plist.h"
 
-GValue *itdb_plist_parse_from_file (G_GNUC_UNUSED const char *filename)
+GValue *itdb_plist_parse_from_file (G_GNUC_UNUSED const char *filename,
+                                    G_GNUC_UNUSED GError **error)
 {
     return NULL;
 }
 
 GValue *itdb_plist_parse_from_memory (G_GNUC_UNUSED const char *data, 
-                                      G_GNUC_UNUSED gsize len)
+                                      G_GNUC_UNUSED gsize len,
+                                      G_GNUC_UNUSED GError **error)
 {
     return NULL;
 }

@@ -1,3 +1,12 @@
+2008-07-27  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: add itdb_device_error_quark()
+	* src/itdb_plist.h:
+	* src/itdb_plist.c: add error handling to XML parsing (using
+	GError)
+	* src/itdb_sysinfo_extended_parser.c: pass a NULL GError to call to
+	plist parsing function
+
 2008-07-26  Christophe Fergeau  <teuf@gnome.org>
 
 	* tests/test-fw-id.c: (main): add missing call to g_type_init
