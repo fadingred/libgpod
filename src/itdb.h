@@ -833,8 +833,9 @@ struct _Itdb_Track
 			 files are 0x0029, WAV files are 0x0. itdb
 			 will attempt to set this value when adding a
 			 track. */ 
-  guint16 unk146;     /* unknown, but appears to be 1 if played at
-			 least once in iTunes and 0 otherwise. */
+  guint16 explicit_flag;/* If this flag is set to 1, the track is shown as
+			   explicit content in iTunes. Otherwise set this flag
+			   to 0.*/
   guint32 unk148;     /* unknown - used for Apple Store DRM songs
 			 (always 0x01010100?), zero otherwise */
   guint32 unk152;     /* unknown */

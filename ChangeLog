@@ -1,3 +1,10 @@
+2008-07-30  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* docs/reference/tmpl/track.sgml
+	  src/itdb.h
+	  src/itdb_itunesdb.c: Rename unk146 to explicit_flag in
+	  Itdb_Track now that it's purpose is known
+
 2008-07-27  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_sysinfo_extended_parser.c:

@@ -2309,7 +2309,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->time_released = device_time_mac_to_time_t (fimp->itdb->device,
 						      track->time_released);
       track->unk144 = get16lint (cts, seek+144);
-      track->unk146 = get16lint (cts, seek+146);
+      track->explicit_flag = get16lint (cts, seek+146);
       track->unk148 = get32lint (cts, seek+148);
       track->unk152 = get32lint (cts, seek+152);
   }
@@ -3607,7 +3607,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   mac_time = device_time_time_t_to_mac (track->itdb->device, track->time_released);
   put32lint (cts, mac_time);
   put16lint (cts, track->unk144);
-  put16lint (cts, track->unk146);
+  put16lint (cts, track->explicit_flag);
   put32lint (cts, track->unk148);
   put32lint (cts, track->unk152);
   /* since iTunesDB version 0x0c */
