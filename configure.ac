@@ -253,7 +253,7 @@ dnl Turn on the additional warnings last, so -Werror doesn't affect other tests.
 AC_ARG_ENABLE(more-warnings,
 [  --enable-more-warnings  Maximum compiler warnings],
 set_more_warnings="$enableval",[
-if test -d "$srcdir/{arch}" || test -d "$srcdir/.svn"; then
+if test -a "$srcdir/autogen.sh"; then
 	set_more_warnings=yes
 else
 	set_more_warnings=no

@@ -1,5 +1,11 @@
 2008-07-31  Christophe Fergeau <teuf@gnome.org>
 
+	* configure.ac: instead of looking for .svn or {arch}, look for
+	autogen.sh to decide if we are compiling a version checked out from
+	svn or a release tarball.
+
+2008-07-31  Christophe Fergeau <teuf@gnome.org>
+
 	* src/itdb_device.h:
 	* src/itdb_plist.h: move itdb_device_error_quark from itdb_plist.h
 	to itdb_device.h 
