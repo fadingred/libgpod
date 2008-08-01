@@ -66,6 +66,10 @@
 #define DEBUG(...)
 #endif
 
+/* Error domain */
+#define ITDB_DEVICE_ERROR itdb_device_error_quark ()
+extern GQuark itdb_device_error_quark (void);
+
 static GValue *parse_node (xmlNode *a_node, GError **error);
 
 static void 

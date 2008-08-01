@@ -1,3 +1,9 @@
+2008-07-31  Christophe Fergeau <teuf@gnome.org>
+
+	* src/itdb_device.h:
+	* src/itdb_plist.h: move itdb_device_error_quark from itdb_plist.h
+	to itdb_device.h 
+
 2008-07-30  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* docs/reference/tmpl/track.sgml

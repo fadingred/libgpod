@@ -113,6 +113,10 @@ struct _Itdb_ArtworkFormat {
         gint associated_format;
 };
 
+/* Error domain */
+#define ITDB_DEVICE_ERROR itdb_device_error_quark ()
+GQuark     itdb_device_error_quark      (void);
+
 G_GNUC_INTERNAL GList *itdb_device_get_photo_formats (const Itdb_Device *device);
 G_GNUC_INTERNAL GList *itdb_device_get_cover_art_formats (const Itdb_Device *device);
 G_GNUC_INTERNAL gint itdb_device_musicdirs_number (Itdb_Device *device);
