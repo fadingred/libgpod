@@ -1,3 +1,8 @@
+2008-08-02  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* src/itdb_track.c: Fix typo in itdb_track_get_thumbnail() doc
+	  comment
+
 2008-07-31  Christophe Fergeau <teuf@gnome.org>
 
 	* configure.ac: s/test -a/test -e/ since this is what I really

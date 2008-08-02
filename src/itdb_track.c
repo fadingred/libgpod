@@ -630,7 +630,7 @@ gboolean itdb_track_has_thumbnails (Itdb_Track *track)
 }
 
 /**
- * itdb_track_get_thumbnail!
+ * itdb_track_get_thumbnail:
  * @track: an #Itdb_Track
  * @width: width of the pixbuf to retrieve, -1 for the biggest possible size 
  * (with no scaling)
