@@ -822,23 +822,11 @@ ithumb_writer_handle_pixbuf_transform (iThumbWriter *writer,
     GdkPixbuf *rotated_pixbuf;
     GdkPixbuf *scaled_pixbuf;
 
-    guint width;
-    guint height;
-
     rotated_pixbuf = ithumb_writer_handle_rotation (pixbuf, &rotation);
 
-    if ((rotation == 0) || (rotation == 180))
-    {
-	width = writer->img_info->width;
-	height = writer->img_info->height;
-    }
-    else
-    {
-	width = writer->img_info->height;
-	height = writer->img_info->width;
-    }
-
-    scaled_pixbuf = ithumb_writer_scale_and_crop (rotated_pixbuf, width, height,
+    scaled_pixbuf = ithumb_writer_scale_and_crop (rotated_pixbuf,
+						  writer->img_info->width,
+						  writer->img_info->height,
                                                   writer->img_info->crop);
     g_object_unref (rotated_pixbuf);
     rotated_pixbuf = NULL;

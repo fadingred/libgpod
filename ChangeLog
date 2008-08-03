@@ -1,3 +1,9 @@
+2008-08-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+        * src/ithumb-writer (ithumb_writer_handle_pixbuf_transform):
+	  handle rotation correctly: don't interchange width and height
+	  for the thumbnail on the iPod.
+
 2008-08-02  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* src/itdb_track.c: Fix typo in itdb_track_get_thumbnail() doc
