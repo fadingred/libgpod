@@ -48,7 +48,7 @@ display_recently_played (Itdb_iTunesDB *db)
 
         if (track->recent_playcount != 0) {
             char date[30];
-            time_t track_time = itdb_time_mac_to_host (track->time_played);
+            time_t track_time = track->time_played;
 
             g_print ("%s - %s - %s:\n",
                      track->artist, track->album, track->title);

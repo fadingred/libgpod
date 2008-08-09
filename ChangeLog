@@ -1,3 +1,8 @@
+2008-08-09  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* src/itdb_playlist.c
+	  tests/test-ls.c: Remove uses of deprecated itdb_time_* functions
+
 2008-08-03  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
         * src/ithumb-writer (ithumb_writer_handle_pixbuf_transform):

@@ -340,7 +340,6 @@ gboolean itdb_splr_eval (Itdb_SPLRule *splr, Itdb_Track *track)
     guint32 datecomp = 0;
     Itdb_Playlist *playcomp = NULL;
     time_t t;
-    guint64 mactime;
 
     g_return_val_if_fail (splr, FALSE);
     g_return_val_if_fail (track, FALSE);
@@ -567,13 +566,11 @@ gboolean itdb_splr_eval (Itdb_SPLRule *splr, Itdb_Track *track)
 	case ITDB_SPLACTION_IS_IN_THE_LAST:
 	    time (&t);
 	    t += (splr->fromdate * splr->fromunits);
-	    mactime = itdb_time_host_to_mac (t);
-	    return (datecomp > mactime);
+	    return (datecomp > t);
 	case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
 	    time (&t);
 	    t += (splr->fromdate * splr->fromunits);
-	    mactime = itdb_time_host_to_mac (t);
-	    return (datecomp <= mactime);
+	    return (datecomp <= t);
 	case ITDB_SPLACTION_IS_IN_THE_RANGE:
 	    return ((datecomp <= splr->fromvalue &&
 		     datecomp >= splr->tovalue) ||
@@ -1237,7 +1234,7 @@ Itdb_Playlist *itdb_playlist_new (const gchar *title, gboolean spl)
     pl->name = g_strdup (title);
     pl->sortorder = ITDB_PSO_MANUAL;
 
-    pl->timestamp = itdb_time_get_mac_time ();
+    pl->timestamp = time (NULL);
 
     pl->is_spl = spl;
     if (spl)
@@ -1319,7 +1316,7 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
 	pl->id = id;
     }
     if (pl->sortorder == 0)  pl->sortorder = ITDB_PSO_MANUAL;
-    if (pl->timestamp == 0)  pl->timestamp = itdb_time_get_mac_time ();
+    if (pl->timestamp == 0)  pl->timestamp = time (NULL);
 
     /* pos == -1 appends at the end of the list */
     itdb->playlists = g_list_insert (itdb->playlists, pl, pos);
