@@ -335,6 +335,7 @@ static void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *album)
 {
     if (album)
     {
+	album->photodb = NULL;
 	g_free (album->name);
 	g_list_free (album->members);
 
@@ -735,6 +736,7 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
 
 	album = g_new0 (Itdb_PhotoAlbum, 1);
 	album->album_type = 2; /* normal album, set to 1 for Photo Library */
+	album->photodb = db;
 	album->name = g_strdup(albumname);
 	db->photoalbums = g_list_insert (db->photoalbums, album, pos);
 

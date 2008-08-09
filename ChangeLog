@@ -1,3 +1,13 @@
+2008-08-09  Paul Richardson  <phantom_sf at users.sourceforge.net>
+
+	* Added eclipse project related files to svn:ignore
+	* src/db-artwork-parser.c
+	  src/itdb.h
+	  src/itdb_photoalbum.c:
+	  Added to Itdb_PhotoAlbum, a reference to its parent Photo DB.
+	  When albums are constructed upon loading of the Photo DB, the
+	  reference is added as part of initialisation.
+
 2008-08-09  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* src/itdb_playlist.c

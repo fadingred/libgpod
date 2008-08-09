@@ -549,6 +549,7 @@ struct _Itdb_iTunesDB
 
 struct _Itdb_PhotoAlbum
 {
+    Itdb_PhotoDB *photodb;       /* database to which this album belongs  */
     gchar *name;                 /* name of photoalbum in UTF8            */
     GList *members;              /* photos in album (Itdb_Artwork *)      */
     guint8 album_type;           /* 0x01 for master (Photo Library),

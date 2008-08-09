@@ -392,6 +392,7 @@ parse_mhba (DBParseContext *ctx, GError *error)
         g_free (mhia_ctx);
 	photodb = db_get_photodb (ctx->db);
 	g_return_val_if_fail (photodb, -1);
+	album->photodb = photodb;
 	photodb->photoalbums = g_list_append (photodb->photoalbums,
 					      album);
 	return 0;
