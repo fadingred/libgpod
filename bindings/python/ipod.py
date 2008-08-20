@@ -964,69 +964,18 @@ class Photo:
         else:
             raise KeyError('No such key: %s' % item)
 
-    def get_thumbnails(self):
-        return [Thumbnail(proxied_thumbnail=t,
-                          ownerobject=self) for t in gpod.sw_get_artwork_thumbnails(
-            self._photo)]
-
-    thumbnails = property(get_thumbnails)
-
-class Thumbnail:
-    """A thumbnail in an Photo."""
-
-    _proxied_attributes = [k for k in gpod._Itdb_Thumb.__dict__.keys()
-                            if not (k.startswith("_") or k.startswith("reserved"))]
-
-    def __init__(self, proxied_thumbnail=None, ownerobject=None):
-        """Create a thumbnail object."""
-
-        if not proxied_thumbnail:
-            raise NotImplemented("Can't create new Thumbnails from scratch, create Photos instead")
-
-        self._thumbnail = proxied_thumbnail
-        self.__ownerobject = ownerobject
-
-    def __str__(self):
-        return self.__repr__()
-
-    def __repr__(self):
-        return "<Thumbnail Filename:%s Size:%d Width:%d Height:%d>" % (
-            repr(self['filename']),
-            self['size'],
-            self['width'],
-            self['height'])
-
-    def keys(self):
-        return list(self._proxied_attributes)
-
-    def items(self):
-        return [self[k] for k in self._proxied_attributes]
-
-    def pairs(self):
-        return [(k, self[k]) for k in self._proxied_attributes]
-
-    def __getitem__(self, item):
-        if item in self._proxied_attributes:
-            return getattr(self._thumbnail, item)
-        else:
-            raise KeyError('No such key: %s' % item)
-
-    def __setitem__(self, item, value):
-        if type(value) == types.UnicodeType:
-            value = value.encode('UTF-8','replace')
-        if item in self._proxied_attributes:
-            return setattr(self._thumbnail, item, value)
-        else:
-            raise KeyError('No such key: %s' % item)
-
     if pixbuf_support:
-        def get_pixbuf(self):
-            # this deals with coverart and photo albums
-            if hasattr(self.__ownerobject._database,"_itdb"):
-                return gpod.itdb_artwork_get_pixbuf(
-                    self.__ownerobject._database._itdb.device,
-                    self._thumbnail)
-            else:
-                return gpod.itdb_artwork_get_pixbuf(
-                    self.__ownerobject._database.device,
-                    self._thumbnail)
+        def get_pixbuf(self, width=-1, height=-1):
+            """Get a pixbuf from a Photo.
+
+            width: the width of the pixbuf to retrieve, -1 for the biggest
+            possible size and 0 for the smallest possible size (with no scaling)
+
+            height: the height of the pixbuf to retrieve, -1 for the biggest
+            possible size and 0 for the smallest possible size (with no scaling)
+            """
+            device = self._database.device
+            if hasattr(self._database,"_itdb"):
+                device = self._database._itdb.device
+            return gpod.itdb_artwork_get_pixbuf(device, self._photo,
+                                                width, height)

@@ -82,7 +82,6 @@ PyObject* sw_get_photoalbums(Itdb_PhotoDB *db);
 PyObject* sw_get_photoalbum(GList *list, gint index);
 PyObject* sw_get_photos(Itdb_PhotoDB *db);
 PyObject* sw_get_photo(GList *list, gint index);
-PyObject* sw_get_artwork_thumbnails(Itdb_Artwork *artwork);
 PyObject* sw_get_photoalbum_members(Itdb_PhotoAlbum *album);
 PyObject* sw_ipod_device_to_dict(Itdb_Device *device);
 void sw__track_extra_destroy (PyObject *data);
@@ -207,18 +206,6 @@ SWIGTYPE_p__Itdb_PhotoAlbum, 0));
   }
   return list;
  }
-
- PyObject* sw_get_artwork_thumbnails(Itdb_Artwork *artwork) {
-  PyObject    *list;
-  gint        i;
-  GList       *l;
-  list = PyList_New(g_list_length(artwork->thumbnails));
-  for (l = artwork->thumbnails, i = 0; l; l = l->next, ++i) {
-    PyList_SET_ITEM(list, i, SWIG_NewPointerObj((void*)(l->data), SWIGTYPE_p__Itdb_Thumb, 0));
-  }
-  return list;
- }
-
 
 PyObject* sw_get_photoalbum(GList *list, gint index) {
   GList *position;
@@ -489,7 +476,9 @@ typedef int gint;
 #ifdef HAVE_PYGOBJECT
 %typemap(out) gpointer itdb_artwork_get_pixbuf {
   $result = pygobject_new((GObject *)$1);
-  g_object_unref($1);
+  if ($1) {
+      g_object_unref($1);
+  }
 }
 
 %typemap(in) gpointer pixbuf {
@@ -515,7 +504,6 @@ PyObject* sw_get_photoalbum(GList *list, gint index);
 PyObject* sw_get_photos(Itdb_PhotoDB *db);
 PyObject* sw_get_photo(GList *list, gint index);
 PyObject* sw_get_photoalbum_members(Itdb_PhotoAlbum *album);
-PyObject* sw_get_artwork_thumbnails(Itdb_Artwork *artwork);
 PyObject* sw_ipod_device_to_dict(Itdb_Device *device);
 
 %include "@top_srcdir@/src/itdb.h"

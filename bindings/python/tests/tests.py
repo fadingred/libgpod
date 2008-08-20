@@ -182,10 +182,5 @@ class TestPhotoDatabase(unittest.TestCase):
         for album in self.db.PhotoAlbums:
             [photo for photo in album]
 
-    def testEnumeratePhotosThumbs(self):
-        for album in self.db.PhotoAlbums:
-            for photo in album:
-                [thumb for thumb in photo.thumbnails]            
-                
 if __name__ == '__main__':
     unittest.main()
