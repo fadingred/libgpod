@@ -18,6 +18,9 @@
 	* bindings/python/tests/tests.py:
 	  Whitespace cleanup
 
+	* bindings/python/ipod.py:
+	  Set the mediatype field for Track objects
+
 2008-08-20  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/examples/save_photos.py

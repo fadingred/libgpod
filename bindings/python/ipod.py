@@ -297,12 +297,17 @@ class Track:
                                     k.startswith("reserved") or
                                     k == "chapterdata")]
 
-    def __init__(self, filename=None,
+    def __init__(self, filename=None, mediatype=gpod.ITDB_MEDIATYPE_AUDIO,
                  proxied_track=None, podcast=False, ownerdb=None):
         """Create a Track object.
 
         If from_file or filename is set, the file specified will be
         used to create the track.
+
+        The mediatype parameter sets the mediatype for the track.  It
+        defaults to audio, unless 'podcast' is True, in which case it
+        is set to podcast.  See gpod.ITDB_MEDIATYPE_* for other valid
+        mediatypes.
 
         If proxied_track is set, it is expected to be an Itdb_Track
         object.
@@ -357,6 +362,8 @@ class Track:
         else:
             self._track = gpod.itdb_track_new()
             self.set_podcast(podcast)
+        if not 'mediatype' in self:
+            self['mediatype'] = mediatype
 
     def _set_userdata_utf8(self, key, value):
         self['userdata']['%s_locale' % key] = value
@@ -440,6 +447,7 @@ class Track:
             self['skip_when_shuffling'] = 0x01
             self['remember_playback_position'] = 0x01
             self['flag4'] = 0x01 # Show Title/Album on the 'Now Playing' page
+            self['mediatype'] = gpod.ITDB_MEDIATYPE_PODCAST
         else:
             self['skip_when_shuffling'] = 0x00
             self['remember_playback_position'] = 0x00
