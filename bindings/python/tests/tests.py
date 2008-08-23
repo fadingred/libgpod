@@ -79,7 +79,12 @@ class TestiPodFunctions(unittest.TestCase):
         t['time_added'] = time.mktime(date.timetuple())
         self.assertEqual(date.year, t['time_added'].year)
         self.assertEqual(date.second, t['time_added'].second)
-            
+
+    def testTrackContainerMethods(self):
+        self.testAddTrack()
+        track = self.db[0]
+        self.failUnless('title' in track)
+
     def testVersion(self):
         self.assertEqual(type(gpod.version_info), 
                          types.TupleType)
@@ -181,6 +186,11 @@ class TestPhotoDatabase(unittest.TestCase):
     def testEnumeratePhotos(self):
         for album in self.db.PhotoAlbums:
             [photo for photo in album]
+
+    def testPhotoContainerMethods(self):
+        self.testAddPhoto()
+        photo = self.db[0]
+        self.failUnless('id' in photo)
 
 if __name__ == '__main__':
     unittest.main()

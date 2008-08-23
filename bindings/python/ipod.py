@@ -454,13 +454,38 @@ class Track:
             repr(self['title']),
             repr(self['album']))
 
+    def __iter__(self):
+        for k in self.keys():
+            yield k
+
+    def has_key(self, key):
+        try:
+            value = self[key]
+        except KeyError:
+            return False
+        return True
+
+    def __contains__(self, key):
+        return self.has_key(key)
+
+    def iteritems(self):
+        for k in self:
+            yield (k, self[k])
+
+    def iterkeys(self):
+        return self.__iter__()
+
+    def itervalues(self):
+        for _, v in self.iteritems():
+            yield v
+
     def keys(self):
         return list(self._proxied_attributes)
 
-    def items(self):
+    def values(self):
         return [self[k] for k in self._proxied_attributes]
 
-    def pairs(self):
+    def items(self):
         return [(k, self[k]) for k in self._proxied_attributes]
 
     def __getitem__(self, item):
@@ -937,13 +962,38 @@ class Photo:
             self['digitized_date'].strftime("%c"),
             repr(self['artwork_size']))
 
+    def __iter__(self):
+        for k in self.keys():
+            yield k
+
+    def has_key(self, key):
+        try:
+            value = self[key]
+        except KeyError:
+            return False
+        return True
+
+    def __contains__(self, key):
+        return self.has_key(key)
+
+    def iteritems(self):
+        for k in self:
+            yield (k, self[k])
+
+    def iterkeys(self):
+        return self.__iter__()
+
+    def itervalues(self):
+        for _, v in self.iteritems():
+            yield v
+
     def keys(self):
         return list(self._proxied_attributes)
 
-    def items(self):
+    def values(self):
         return [self[k] for k in self._proxied_attributes]
 
-    def pairs(self):
+    def items(self):
         return [(k, self[k]) for k in self._proxied_attributes]
 
     def __getitem__(self, item):

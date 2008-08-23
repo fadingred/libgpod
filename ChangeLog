@@ -5,6 +5,16 @@
 	  Add a quiet parameter to Database.remove() and use it in
 	  tests
 
+	* bindings/python/ipod.py:
+	  Be more consistent with other python container objects and
+	  classes
+
+	  This enables testing whether a key exists in an object (e.g.
+	  "'title' in track") as well as iterating over a Track or
+	  Photo object's keys, values, or items.  The items() and
+	  pairs() methods were renamed to values() and items(),
+	  respectively, in the Track and Photo classes.
+
 2008-08-20  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/examples/save_photos.py
