@@ -1,4 +1,11 @@
-2008-08-09  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+2008-08-23  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/ipod.py
+	  bindings/python/tests/tests.py:
+	  Add a quiet parameter to Database.remove() and use it in
+	  tests
+
+2008-08-20  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/examples/save_photos.py
 	  bindings/python/gpod.i.in

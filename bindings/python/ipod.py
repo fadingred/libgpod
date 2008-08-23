@@ -155,7 +155,7 @@ class Database:
         gpod.itdb_track_add(self._itdb, track._track, pos)
         track.__database = self # so the db doesn't get gc'd
 
-    def remove(self, item, harddisk=False, ipod=True):
+    def remove(self, item, harddisk=False, ipod=True, quiet=False):
         """Remove a playlist or track from a database.
 
         item is either a playlist or track object.
@@ -163,6 +163,8 @@ class Database:
         If harddisk is True the item will be removed from the the hard drive.
 
         If ipod is True the item will be removed from the iPod.
+
+        If quiet is True no message will be printed for removed tracks
 
         """
 
@@ -189,7 +191,8 @@ class Database:
                 filename = item.ipod_filename()
                 if filename and os.path.exists(filename):
                     os.unlink(filename)
-                    print "unlinked %s" % filename
+                    if not quiet:
+                        print "unlinked %s" % filename
             gpod.itdb_track_unlink(item._track)
         else:
             raise DatabaseException("Unable to remove a %s from database" % type(item))
