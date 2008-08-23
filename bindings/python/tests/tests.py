@@ -18,7 +18,7 @@ class TestiPodFunctions(unittest.TestCase):
         os.mkdir(music_dir)
         for i in range(0,20):
             os.mkdir(os.path.join(music_dir,"f%02d" % i))
-        self.db = gpod.Database(self.mp)        
+        self.db = gpod.Database(self.mp)
 
     def tearDown(self):
         shutil.rmtree(self.mp)
@@ -38,13 +38,13 @@ class TestiPodFunctions(unittest.TestCase):
         trackname = os.path.join(self.mp,
                                  'iPod_Control',
                                  'tiny.mp3')
-                                 
+
         pl = self.db.new_Playlist('my title')
         self.assertEqual(len(pl),0)
         t = self.db.new_Track(filename=trackname)
         pl.add(t)
         self.assertEqual(len(pl),1)
-                                 
+
     def testAddTrack(self):
         trackname = os.path.join(self.mp,
                                  'iPod_Control',
@@ -86,7 +86,7 @@ class TestiPodFunctions(unittest.TestCase):
         self.failUnless('title' in track)
 
     def testVersion(self):
-        self.assertEqual(type(gpod.version_info), 
+        self.assertEqual(type(gpod.version_info),
                          types.TupleType)
 
 class TestPhotoDatabase(unittest.TestCase):
@@ -139,7 +139,7 @@ class TestPhotoDatabase(unittest.TestCase):
 
     def testEnumeratePhotoAlbums(self):
         [photo for photo in self.db.PhotoAlbums]
-        
+
     def testAddPhoto(self):
         photoname = os.path.join(self.mp,
                                  'iPod_Control',
