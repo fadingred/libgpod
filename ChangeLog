@@ -1,3 +1,9 @@
+2008-09-11  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: add missing string description for the red ipod
+	shuffle that was added some time ago, without it gtkpod was badly
+	broken wrt ipod model selection :-/
+
 2008-08-23  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/ipod.py
