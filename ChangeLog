@@ -1,5 +1,9 @@
 2008-10-01  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_device.c: and add SN for the 8GB Red Nano
+
+2008-10-01  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_device.c: add SN for 16GB Red Nano
 
 2008-10-01  Christophe Fergeau  <teuf@gnome.org>
