@@ -1,5 +1,10 @@
 2008-10-01  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_device.c: a few more fixes in device model
+	numbers/serials
+
+2008-10-01  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_device.c: add missing name for the yellow ipod nano
 
 2008-10-01  Christophe Fergeau  <teuf@gnome.org>

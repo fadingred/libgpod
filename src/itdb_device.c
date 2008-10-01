@@ -127,7 +127,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
      * Sixth Generation*/
     {"B225", 1,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
     {"B233", 1,  ITDB_IPOD_MODEL_SHUFFLE_PURPLE, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B225", 1,  ITDB_IPOD_MODEL_SHUFFLE_RED,    ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"B231", 1,  ITDB_IPOD_MODEL_SHUFFLE_RED,    ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
     {"B227", 1,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
     {"B229", 1,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
     {"B518", 2,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
@@ -591,6 +591,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "VQM", "A446" },
     { "V9M", "A446" },
     { "V9N", "A446" },
+    { "WEE", "A446" },
     { "V9P", "A448" },
     { "V9Q", "A448" },
     { "V9R", "A450" },
@@ -598,8 +599,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "V95", "A450" },
     { "V96", "A450" },
     { "WUC", "A450" },
-    { "W9G", "A446" },
-    { "WEE", "A446" },
+    { "W9G", "A664" }, /* 30GB iPod Video U2 5.5g */
     { "Y5N", "B029" },
     { "YMV", "B147" },
     { "YMU", "B155" },
