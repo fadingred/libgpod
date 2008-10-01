@@ -1,3 +1,10 @@
+2008-10-01  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb.h: add enum entries for the new ipod classic and the new
+	nanos
+	* src/itdb_device.c: add entries for the new nanos and the new ipod
+	classic, add some serial numbers for older ipod models
+
 2008-09-11  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: add missing string description for the red ipod

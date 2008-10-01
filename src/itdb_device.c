@@ -185,6 +185,10 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"B155", 160, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_1, 50},
     {"B150", 160, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_1, 50},
 
+    /* iPod Classic G2 */
+    {"B562", 120, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_2, 50},
+    {"B565", 120, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_2, 50},
+
     /* iPod nano video G1 (Third Nano Generation) */
     /* First generation of video support for nano */
     {"A978",   4, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_3,  6},
@@ -193,6 +197,35 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"B249",   8, ITDB_IPOD_MODEL_NANO_BLUE,      ITDB_IPOD_GENERATION_NANO_3, 14},
     {"B253",   8, ITDB_IPOD_MODEL_NANO_GREEN,     ITDB_IPOD_GENERATION_NANO_3, 14},
     {"B257",   8, ITDB_IPOD_MODEL_NANO_RED,       ITDB_IPOD_GENERATION_NANO_3, 14},
+
+    /* iPod nano video G2 (Fourth Nano Generation) */
+    {"B480",   4, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B???",   4, ITDB_IPOD_MODEL_NANO_BLUE,      ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B654",   4, ITDB_IPOD_MODEL_NANO_PINK,      ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B657",   4, ITDB_IPOD_MODEL_NANO_PURPLE,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B660",   4, ITDB_IPOD_MODEL_NANO_ORANGE,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B663",   4, ITDB_IPOD_MODEL_NANO_GREEN,     ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B666",   4, ITDB_IPOD_MODEL_NANO_YELLOW,    ITDB_IPOD_GENERATION_NANO_4, 14},
+
+    {"B598",   8, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B732",   8, ITDB_IPOD_MODEL_NANO_BLUE,      ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B735",   8, ITDB_IPOD_MODEL_NANO_PINK,      ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B739",   8, ITDB_IPOD_MODEL_NANO_PURPLE,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B742",   8, ITDB_IPOD_MODEL_NANO_ORANGE,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B745",   8, ITDB_IPOD_MODEL_NANO_GREEN,     ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B748",   8, ITDB_IPOD_MODEL_NANO_YELLOW,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B751",   8, ITDB_IPOD_MODEL_NANO_RED,       ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B754",   8, ITDB_IPOD_MODEL_NANO_BLACK,     ITDB_IPOD_GENERATION_NANO_4, 14},
+
+    {"B903",  16, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B905",  16, ITDB_IPOD_MODEL_NANO_BLUE,      ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B907",  16, ITDB_IPOD_MODEL_NANO_PINK,      ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B909",  16, ITDB_IPOD_MODEL_NANO_PURPLE,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B911",  16, ITDB_IPOD_MODEL_NANO_ORANGE,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B913",  16, ITDB_IPOD_MODEL_NANO_GREEN,     ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B915",  16, ITDB_IPOD_MODEL_NANO_YELLOW,    ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B917",  16, ITDB_IPOD_MODEL_NANO_RED,       ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B918",  16, ITDB_IPOD_MODEL_NANO_BLACK,     ITDB_IPOD_GENERATION_NANO_4, 14},
 
     /* iPod touch G1 */
     /* With touch screen */
@@ -204,7 +237,8 @@ static const Itdb_IpodInfo ipod_info_table [] = {
      * dummy "iPhone1" model number, we now keep it here for backward
      * compatibility reasons
      */
-    {"A501",  -1, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 14},
+    {"A501",  4, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 14},
+    {"A712",  8, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 14},
     {"iPhone1", -1, ITDB_IPOD_MODEL_IPHONE_1, ITDB_IPOD_GENERATION_IPHONE_1, 14},
 
     /* No known model number -- create a Device/SysInfo file with
@@ -242,6 +276,8 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Nano (Green)"),
 	N_("Nano (Pink)"),
 	N_("Nano (Red)"),
+	N_("Nano (Purple)"),
+	N_("Nano (Orange)"),
 	N_("iPhone (1)"),
 	N_("Shuffle (Silver)"),
 	N_("Shuffle (Pink)"),
@@ -273,8 +309,10 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Nano (1st Gen.)"),
 	N_("Nano (2nd Gen.)"),
 	N_("Nano Video (3rd Gen.)"),
+	N_("Nano Video (4th Gen.)"),
 	N_("Video (1st Gen.)"),
 	N_("Video (2nd Gen.)"),
+	N_("Classic"),
 	N_("Classic"),
 	N_("Touch"),
         N_("iPhone"),
@@ -406,6 +444,7 @@ static const ArtworkCapabilities ipod_artwork_capabilities[] = {
     { ITDB_IPOD_GENERATION_NANO_2, ipod_nano_cover_art_info, ipod_nano_photo_info, NULL },
     { ITDB_IPOD_GENERATION_NANO_3, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_CLASSIC_1, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
+    { ITDB_IPOD_GENERATION_CLASSIC_2, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_TOUCH_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_IPHONE_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_MOBILE, ipod_mobile_1_cover_art_info, NULL, NULL },
@@ -424,37 +463,52 @@ typedef struct _ItdbSerialToModel ItdbSerialToModel;
 static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "LG6", "8541" },
     { "NAM", "8541" },
+    { "MJ2", "8541" },
     { "ML1", "8709" },
     { "MME", "8709" },
+    { "MMB", "8737" },
+    { "MMC", "8738" },
     { "NGE", "8740" },
-    { "MMC", "8741" },
+    { "NGH", "8740" },
     { "MMF", "8741" },
+    { "NLW", "8946" },
     { "NRH", "8976" },
     { "QQF", "9460" },
     { "PQ5", "9244" },
     { "PNT", "9244" },
     { "NLY", "8948" },
+    { "NM7", "8948" },
     { "PNU", "9245" },
     { "PS9", "9282" },
     { "Q8U", "9282" },
     { "V9V", "9787" },
+    { "S2X", "9787" },
     { "PQ7", "9268" },
     { "TDU", "A079" },
     { "TDS", "A079" },
+    { "TM2", "A127" },
     { "SAZ", "9830" },
+    { "SB1", "9830" },
     { "SAY", "9829" },
     { "R5Q", "9585" },
     { "R5R", "9586" },
+    { "R5T", "9586" },
     { "PFW", "9160" },
+    { "PRC", "9160" },
     { "QKL", "9436" },
     { "QKQ", "9436" },
     { "QKK", "9435" },
     { "QKP", "9435" },
+    { "QKJ", "9434" },
+    { "QKN", "9434" },
+    { "QKM", "9437" },
+    { "QKR", "9437" },
     { "S41", "9800" },
     { "S4C", "9800" },
     { "S43", "9802" },
     { "S45", "9804" },
     { "S47", "9806" },
+    { "S4J", "9806" },
     { "S42", "9801" },
     { "S44", "9803" },
     { "S48", "9807" },
@@ -479,13 +533,15 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "XR1", "A953" },
     { "YXA", "B233" },
     { "YX9", "B225" },
+    { "UNA", "A350" },
     { "UNB", "A350" },
     { "UPR", "A352" },
+    { "UPS", "A352" },
     { "SZB", "A004" },
-    { "SZC", "A004" },
     { "SZV", "A004" },
     { "SZW", "A004" },
-    { "UNA", "A004" },
+    { "SZC", "A005" },
+    { "SZT", "A005" },
     { "TJT", "A099" },
     { "TJU", "A099" },
     { "TK2", "A107" },
@@ -513,10 +569,19 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "YXT", "B253" },
     { "YXX", "B261" },
     { "SZ9", "A002" },
-    { "SZT", "A002" },
-    { "SZU", "A002" },
+    { "WEC", "A002" },
+    { "WED", "A002" },
+    { "WEG", "A002" },
+    { "WEH", "A002" },
+    { "WEL", "A002" },
     { "TXK", "A146" },
+    { "TXM", "A146" },
+    { "WEE", "A146" },
+    { "WEF", "A146" },
+    { "WEJ", "A146" },
+    { "WEK", "A146" },
     { "SZA", "A003" },
+    { "SZU", "A003" },
     { "TXL", "A147" },
     { "TXN", "A147" },
     { "V9K", "A444" },
@@ -525,9 +590,12 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "VQM", "A446" },
     { "V9M", "A446" },
     { "V9N", "A446" },
-    { "V9S", "A448" },
     { "V9P", "A448" },
-    { "V9R", "A448" },
+    { "V9Q", "A448" },
+    { "V9R", "A450" },
+    { "V9S", "A450" },
+    { "V95", "A450" },
+    { "V96", "A450" },
     { "WUC", "A450" },
     { "W9G", "A446" },
     { "WEE", "A446" },
@@ -536,6 +604,22 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "YMU", "B155" },
     { "YMX", "B150" },
     { "VR0", "A501" },
+    { "WH8", "A712" },
+    { "2C5", "B562" }, /* Silver Classic 120GB */
+    { "2C7", "B565" }, /* Black Classic 120GB */
+    { "37P", "B663" }, /* 4GB Green Nano 4g */
+    { "37Q", "B666" }, /* 4GB Yellow Nano 4g */
+    { "37H", "B654" }, /* 4GB Pink Nano 4g */
+    { "1P1", "B480" }, /* 4GB Silver Nano 4g */
+    { "37K", "B657" }, /* 4GB Purple Nano 4g */
+    { "37L", "B660" }, /* 4GB Orange Nano 4g */
+    { "3QS", "B732" }, /* 8GB Blue Nano 4g */
+    { "3QT", "B735" }, /* 8GB Pink Nano 4g */
+    { "3QW", "B742" }, /* 8GB Orange Nano 4g */
+    { "3QY", "B748" }, /* 8GB Yellow Nano 4g */
+    { "3QX", "B745" }, /* 8GB Green Nano 4g */
+    { "3QU", "B739" }, /* 8GB Purple Nano 4g */
+    { "3RO", "B754" }, /* 8GB Black Nano 4g */
     { NULL ,  NULL  }
 };
 
@@ -1006,7 +1090,9 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
                 supports_sparse_artwork = FALSE;
                 break;
             case ITDB_IPOD_GENERATION_NANO_3:
+            case ITDB_IPOD_GENERATION_NANO_4:
             case ITDB_IPOD_GENERATION_CLASSIC_1:
+            case ITDB_IPOD_GENERATION_CLASSIC_2:
             case ITDB_IPOD_GENERATION_TOUCH_1:
             case ITDB_IPOD_GENERATION_IPHONE_1:
                 supports_sparse_artwork = TRUE;
@@ -1294,9 +1380,11 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
         case ITDB_IPOD_GENERATION_NANO_2:
             return FALSE;
         case ITDB_IPOD_GENERATION_NANO_3:
+        case ITDB_IPOD_GENERATION_NANO_4:
         case ITDB_IPOD_GENERATION_VIDEO_1:
         case ITDB_IPOD_GENERATION_VIDEO_2:
         case ITDB_IPOD_GENERATION_CLASSIC_1:
+	case ITDB_IPOD_GENERATION_CLASSIC_2:
         case ITDB_IPOD_GENERATION_TOUCH_1:
         case ITDB_IPOD_GENERATION_IPHONE_1:
             return TRUE;
@@ -1531,7 +1619,9 @@ G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device)
     }
     switch (info->ipod_generation) {
     case ITDB_IPOD_GENERATION_CLASSIC_1: 
+    case ITDB_IPOD_GENERATION_CLASSIC_2:
     case ITDB_IPOD_GENERATION_NANO_3:
+    case ITDB_IPOD_GENERATION_NANO_4:
     case ITDB_IPOD_GENERATION_TOUCH_1:
     case ITDB_IPOD_GENERATION_IPHONE_1:
       return TRUE;
