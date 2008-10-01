@@ -276,6 +276,7 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Nano (Green)"),
 	N_("Nano (Pink)"),
 	N_("Nano (Red)"),
+	N_("Nano (Yellow)"),
 	N_("Nano (Purple)"),
 	N_("Nano (Orange)"),
 	N_("iPhone (1)"),
