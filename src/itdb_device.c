@@ -200,7 +200,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
 
     /* iPod nano video G2 (Fourth Nano Generation) */
     {"B480",   4, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_4, 14},
-    {"B???",   4, ITDB_IPOD_MODEL_NANO_BLUE,      ITDB_IPOD_GENERATION_NANO_4, 14},
+    {"B651",   4, ITDB_IPOD_MODEL_NANO_BLUE,      ITDB_IPOD_GENERATION_NANO_4, 14},
     {"B654",   4, ITDB_IPOD_MODEL_NANO_PINK,      ITDB_IPOD_GENERATION_NANO_4, 14},
     {"B657",   4, ITDB_IPOD_MODEL_NANO_PURPLE,    ITDB_IPOD_GENERATION_NANO_4, 14},
     {"B660",   4, ITDB_IPOD_MODEL_NANO_ORANGE,    ITDB_IPOD_GENERATION_NANO_4, 14},
@@ -615,6 +615,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "37K", "B657" }, /* 4GB Purple Nano 4g */
     { "37L", "B660" }, /* 4GB Orange Nano 4g */
     { "3QS", "B732" }, /* 8GB Blue Nano 4g */
+    { "2ME", "B598" }, /* 8GB Silver Nano 4g */
     { "3QT", "B735" }, /* 8GB Pink Nano 4g */
     { "3QW", "B742" }, /* 8GB Orange Nano 4g */
     { "3QY", "B748" }, /* 8GB Yellow Nano 4g */

@@ -1,3 +1,8 @@
+2008-10-05  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: add serial number for the 8GB Silver Nano 4g
+	and model number for the 4GB Blue Nano 4g
+
 2008-10-01  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: a few more fixes in device model
