@@ -1,5 +1,11 @@
 2008-10-07  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_sysinfoextended_parser.c: artwork is stored in <array>
+	nodes (which are parsed to a GValueArray), reflect that in the
+	SysInfoExtended parsing code.
+
+2008-10-07  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_plist.c: fix handling on blank nodes (ie nodes
 	containing only white spaces), fixes parsing of SysInfoExtended files
 	as well ;)

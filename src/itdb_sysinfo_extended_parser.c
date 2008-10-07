@@ -450,31 +450,29 @@ static Itdb_ArtworkFormat *g_value_to_image_format (GValue *value)
     return img_spec;
 }
 
-static void process_one (gpointer key, gpointer value, gpointer user_data)
-{
-    GList **img_formats = user_data;
-    Itdb_ArtworkFormat *format;
-
-    format = g_value_to_image_format (value);
-    if (format != NULL) {
-        *img_formats = g_list_prepend (*img_formats, format);
-    }
-}
-
 static GList *parse_one_formats_list (GHashTable *sysinfo_dict, 
                                       const char *key)
 {
     GValue *to_parse;
     GList *formats = NULL;
+    GValueArray *array;
+    gint i;
 
     to_parse = g_hash_table_lookup (sysinfo_dict, key);
     if (to_parse == NULL) {
         return NULL;
     }
-    if (!G_VALUE_HOLDS (to_parse, G_TYPE_HASH_TABLE)) {
+    if (!G_VALUE_HOLDS (to_parse, G_TYPE_VALUE_ARRAY)) {
         return NULL;
     }
-    g_hash_table_foreach (g_value_get_boxed (to_parse), process_one, &formats);
+    array = (GValueArray*)g_value_get_boxed (to_parse);
+    for (i = 0; i < array->n_values; i++) {
+        Itdb_ArtworkFormat *format;
+	format = g_value_to_image_format (g_value_array_get_nth (array, i));
+	if (format != NULL) {
+		formats = g_list_prepend (formats, format);
+	}
+    } 
     g_hash_table_remove (sysinfo_dict, key);
     return formats;
 }
