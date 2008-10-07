@@ -1342,11 +1342,13 @@ const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generatio
  */
 gboolean itdb_device_supports_artwork (const Itdb_Device *device)
 {
+    GList *formats;
     if (device == NULL) {
         return FALSE;
     }
-
-    return (itdb_device_get_artwork_formats (device, ARTWORK_TYPE_COVER_ART) != NULL);
+    formats = itdb_device_get_cover_art_formats (device);
+    g_list_free (formats);
+    return (formats != NULL);
 }
 
 

@@ -1,5 +1,10 @@
 2008-10-07  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_device.c: fix itdb_device_supports_artwork to properly
+	take into account data from SysInfoExtended if available
+
+2008-10-07  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_sysinfoextended_parser.c: artwork is stored in <array>
 	nodes (which are parsed to a GValueArray), reflect that in the
 	SysInfoExtended parsing code.
