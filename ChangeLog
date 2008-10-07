@@ -1,3 +1,9 @@
+2008-10-07  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_plist.c: add support for <array> tags to the plist
+	parser, this is needed to support SysInfoExtended files as found on
+	on the 4g nanos
+
 2008-10-05  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: add serial number for the 8GB Silver Nano 4g

@@ -32,8 +32,6 @@
  * 
  * This parser should handle most plist files, with those limitations :
  *      - no support for <date> tags
- *      - no support for <array> containing "unamed" elements (ie with no
- *      <key> tag)
  *
  * The plist file is parsed using libxml, and the parsed result is stored 
  * in GValue. The types are mapped in the following way:
@@ -42,7 +40,7 @@
  *      - <integer> => G_TYPE_INT (gint)
  *      - <true/>, <false/> => G_TYPE_BOOLEAN (gboolean)
  *      - <data> => G_TYPE_GSTRING (GString *)
- *      - <array> => G_TYPE_HASH_TABLE (GHashTable *)
+ *      - <array> => G_TYPE_VALUE_ARRAY (GValueArray *)
  *      - <dict> => G_TYPE_HASH_TABLE (GHashTable *)
  */
 #ifdef HAVE_CONFIG_H
@@ -248,6 +246,7 @@ parse_dict (xmlNode *a_node, GError **error)
         cur_node = parse_one_dict_entry (cur_node, dict, error);
     }
     if ((error != NULL) && (*error != NULL)) {
+        g_hash_table_destroy (dict);
         return NULL;
     }
     value = g_new0 (GValue, 1);
@@ -256,37 +255,90 @@ parse_dict (xmlNode *a_node, GError **error)
 
     return value;
 }
-
+	
 typedef GValue *(*ParseCallback) (xmlNode *, GError **);
+static ParseCallback get_parser_for_type (const xmlChar *type);
+
+static GValue * 
+parse_array (xmlNode *a_node, GError **error)
+{
+    xmlNode *cur_node = a_node->children;
+    GValue *value;
+    GValueArray *array;
+
+    array = g_value_array_new (4);
+
+    while (cur_node != NULL) {
+	if (get_parser_for_type (cur_node->name) != NULL) {
+   	    GValue *cur_value;
+	    cur_value = parse_node (cur_node, error);
+	    if (cur_value != NULL) {
+	        array = g_value_array_append (array, cur_value);
+		g_value_unset (cur_value);
+		g_free (cur_value);
+	    }
+	}
+	/* When an array contains an element enclosed in "unknown" tags (ie 
+	 * non-type ones), we silently skip them since early
+	 * SysInfoExtended files used to have <key> values enclosed within 
+	 * <array> tags.
+	 */
+	cur_node = cur_node->next;
+    }
+
+    if ((error != NULL) && (*error != NULL)) {
+	g_value_array_free (array);
+        return NULL;
+    }
+    value = g_new0 (GValue, 1);
+    value = g_value_init (value, G_TYPE_VALUE_ARRAY);
+    g_value_take_boxed (value, array);
+
+    return value;
+}
+
 struct Parser {
     const char * const type_name;
     ParseCallback parser;
 };
 
-static struct Parser parsers[] = { {"integer", parse_integer},
-                                   {"real",    parse_real},
-                                   {"string",  parse_string},
-                                   {"true",    parse_boolean},
-                                   {"false",   parse_boolean},
-                                   {"data",    parse_data},
-                                   {"dict",    parse_dict}, 
-                                   {"array",   parse_dict},
-                                   {NULL,      NULL} };
+static const struct Parser parsers[] = { {"integer", parse_integer},
+					 {"real",    parse_real},
+					 {"string",  parse_string},
+					 {"true",    parse_boolean},
+					 {"false",   parse_boolean},
+					 {"data",    parse_data},
+					 {"dict",    parse_dict}, 
+					 {"array",   parse_array},
+					 {NULL,      NULL} };
 
-static GValue *parse_node (xmlNode *a_node, GError **error)
+static ParseCallback get_parser_for_type (const xmlChar *type)
 {
     guint i = 0;
-    g_return_val_if_fail (a_node != NULL, FALSE);
+
     while (parsers[i].type_name != NULL) {        
-        if (xmlStrcmp (a_node->name, (xmlChar *)parsers[i].type_name) == 0) {
+        if (xmlStrcmp (type, (xmlChar *)parsers[i].type_name) == 0) {
             if (parsers[i].parser != NULL) {
-                return parsers[i].parser (a_node, error);
+                return parsers[i].parser;
             }
         }
         i++;
     }
-    DEBUG ("no parser for <%s>\n", a_node->name);
     return NULL;
+}
+
+static GValue *parse_node (xmlNode *a_node, GError **error)
+{
+    ParseCallback parser;
+
+    g_return_val_if_fail (a_node != NULL, NULL);
+    parser = get_parser_for_type (a_node->name);
+    if (parser != NULL) {
+	return parser (a_node, error);
+    } else {
+	DEBUG ("no parser for <%s>\n", a_node->name);
+	return NULL;
+    }
 }
 
 static GValue *
