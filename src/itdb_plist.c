@@ -197,7 +197,7 @@ parse_one_dict_entry (xmlNode *a_node, GHashTable *dict, GError **error)
     GValue *value;
 
     while ((cur_node != NULL) && (xmlStrcmp(cur_node->name, (xmlChar *)"key") != 0)) {
-        if (!xmlNodeIsText (cur_node)) {
+        if (!xmlIsBlankNode (cur_node)) {
             DEBUG ("skipping %s\n", cur_node->name);
         }
         cur_node = cur_node->next;
@@ -207,9 +207,9 @@ parse_one_dict_entry (xmlNode *a_node, GHashTable *dict, GError **error)
                      "Dict entry contains no <key> node");
         return NULL;
     }
-    key_name = xmlNodeGetContent(cur_node);
+    key_name = xmlNodeGetContent (cur_node);
     cur_node = cur_node->next;
-    while ((cur_node != NULL) && xmlNodeIsText(cur_node)) {
+    while ((cur_node != NULL) && xmlIsBlankNode (cur_node)) {
         cur_node = cur_node->next;
     }
     if (cur_node == NULL) {
@@ -243,7 +243,11 @@ parse_dict (xmlNode *a_node, GError **error)
                                   g_free, (GDestroyNotify)value_free);
 
     while (cur_node != NULL) {
-        cur_node = parse_one_dict_entry (cur_node, dict, error);
+	if (xmlIsBlankNode (cur_node)) {
+	    cur_node = cur_node->next;
+	} else {
+	    cur_node = parse_one_dict_entry (cur_node, dict, error);
+	}
     }
     if ((error != NULL) && (*error != NULL)) {
         g_hash_table_destroy (dict);
@@ -356,7 +360,7 @@ itdb_plist_parse (xmlNode * a_node, GError **error)
         return NULL;
     }
     cur_node = a_node->xmlChildrenNode;
-    while ((cur_node != NULL) && (xmlNodeIsText (cur_node))) {
+    while ((cur_node != NULL) && (xmlIsBlankNode (cur_node))) {
         cur_node = cur_node->next;
     }
     if (cur_node != NULL) {

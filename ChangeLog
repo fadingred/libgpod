@@ -1,5 +1,11 @@
 2008-10-07  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_plist.c: fix handling on blank nodes (ie nodes
+	containing only white spaces), fixes parsing of SysInfoExtended files
+	as well ;)
+
+2008-10-07  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_plist.c: add support for <array> tags to the plist
 	parser, this is needed to support SysInfoExtended files as found on
 	on the 4g nanos
