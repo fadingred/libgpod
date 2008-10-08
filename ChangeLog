@@ -1,5 +1,11 @@
 2008-10-07  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/db-artwork-debug.c: use %z modifier to print size_t values
+	and G_GINT64_MODIFIER to print 64 bit values, fix compilation
+	on 64 bit systems when artwork debugging is enabled
+
+2008-10-08  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_device.h: switch members in Itdb_ArtworkFormat from
 	guint16 to gint since the SysInfoExtended parser will assume 
 	they are gint value and will try to write to them through a 

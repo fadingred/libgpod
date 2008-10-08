@@ -31,7 +31,7 @@ G_GNUC_INTERNAL void
 dump_mhif (MhifHeader *mhif)
 {
 
-	g_print ("MHIF (%d):\n", sizeof (MhifHeader));
+	g_print ("MHIF (%zd):\n", sizeof (MhifHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhif->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhif->total_len));
 	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhif->unknown1));
@@ -44,7 +44,7 @@ dump_mhif (MhifHeader *mhif)
 G_GNUC_INTERNAL void
 dump_mhia (MhiaHeader *mhia)
 {
-	g_print ("MHIA (%d):\n", sizeof (MhiaHeader));
+	g_print ("MHIA (%zd):\n", sizeof (MhiaHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhia->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhia->total_len));
 	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhia->unknown1));
@@ -75,7 +75,7 @@ dump_mhod_string (ArtworkDB_MhodHeaderString *mhod)
 {
 	gchar *str;
 
-	g_print ("MHOD [artwork type string] (%d):\n", sizeof (ArtworkDB_MhodHeaderString));
+	g_print ("MHOD [artwork type string] (%zd):\n", sizeof (ArtworkDB_MhodHeaderString));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod->total_len));
 	g_print ("\tPadding: %04x\n", GINT_FROM_LE (mhod->padding_len));
@@ -96,7 +96,7 @@ dump_mhni (MhniHeader *mhni)
 	unsigned int width  = GINT16_FROM_LE (mhni->image_width);
 	unsigned int height = GINT16_FROM_LE (mhni->image_height);
 
-	g_print ("MHNI (%d):\n", sizeof (MhniHeader));
+	g_print ("MHNI (%zd):\n", sizeof (MhniHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhni->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhni->total_len));
 	g_print ("\tNumber of children: %08x\n", GINT_FROM_LE (mhni->num_children));
@@ -113,7 +113,7 @@ dump_mhni (MhniHeader *mhni)
 G_GNUC_INTERNAL void
 dump_mhod (ArtworkDB_MhodHeader *mhod) 
 {
-	g_print ("MHOD (%d):\n", sizeof (ArtworkDB_MhodHeader));
+	g_print ("MHOD (%zd):\n", sizeof (ArtworkDB_MhodHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhod->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhod->total_len));
 	g_print ("\tType: %08x\n", GINT_FROM_LE (mhod->type));
@@ -124,12 +124,12 @@ dump_mhod (ArtworkDB_MhodHeader *mhod)
 G_GNUC_INTERNAL void
 dump_mhii (MhiiHeader *mhii)
 {
-	g_print ("MHII (%d):\n", sizeof (MhiiHeader));
+	g_print ("MHII (%zd):\n", sizeof (MhiiHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhii->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhii->total_len));
 	g_print ("\tNumber of children: %d\n", GINT_FROM_LE (mhii->num_children));
 	g_print ("\tImage ID: %08x\n", GINT_FROM_LE (mhii->image_id));
-	g_print ("\tSong ID: %016llx\n", GINT64_FROM_LE (mhii->song_id));
+	g_print ("\tSong ID: %016"G_GINT64_MODIFIER"x\n", GINT64_FROM_LE (mhii->song_id));
 	g_print ("\tUnknown4: %08x\n", GINT_FROM_LE (mhii->unknown4));
 	g_print ("\tRating: %08x\n", GINT_FROM_LE (mhii->rating));
 	g_print ("\tUnknown6: %08x\n", GINT_FROM_LE (mhii->unknown6));
@@ -145,7 +145,7 @@ dump_mhl (MhlHeader *mhl, const char *id)
 
 	str = g_string_new (id);
 	g_string_ascii_up (str);
-	g_print ("%s (%d):\n", str->str, sizeof (MhlHeader));
+	g_print ("%s (%zd):\n", str->str, sizeof (MhlHeader));
 	g_print ("\tHeader size: %d\n", GINT_FROM_LE (mhl->header_len));
 	g_print ("\tNumber of items: %d\n", GINT_FROM_LE (mhl->num_children));
 	g_string_free (str, TRUE);
@@ -154,7 +154,7 @@ dump_mhl (MhlHeader *mhl, const char *id)
 G_GNUC_INTERNAL void
 dump_mhsd (ArtworkDB_MhsdHeader *mhsd)
 {
-	g_print ("MHSD (%d):\n", sizeof (ArtworkDB_MhsdHeader));
+	g_print ("MHSD (%zd):\n", sizeof (ArtworkDB_MhsdHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhsd->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhsd->total_len));
 	g_print ("\tIndex: %d ", GINT16_FROM_LE (mhsd->index));
@@ -178,7 +178,7 @@ dump_mhsd (ArtworkDB_MhsdHeader *mhsd)
 G_GNUC_INTERNAL void
 dump_mhfd (MhfdHeader *mhfd)
 {
-	g_print ("MHFD (%d):\n", sizeof (MhfdHeader));
+	g_print ("MHFD (%zd):\n", sizeof (MhfdHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhfd->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhfd->total_len));
 	g_print ("\tUnknown1: %08x\n", GINT_FROM_LE (mhfd->unknown1));
@@ -186,8 +186,8 @@ dump_mhfd (MhfdHeader *mhfd)
 	g_print ("\tNumber of children: %d\n", GINT_FROM_LE (mhfd->num_children));
 	g_print ("\tUnknown3: %08x\n", GINT_FROM_LE (mhfd->unknown3));
 	g_print ("\tNext id: %08x\n", GINT_FROM_LE (mhfd->next_id));
-	g_print ("\tUnknown5: %016llx\n", GINT64_FROM_LE (mhfd->unknown5));
-	g_print ("\tUnknown6: %016llx\n", GINT64_FROM_LE (mhfd->unknown6));
+	g_print ("\tUnknown5: %016"G_GINT64_MODIFIER"x\n", GINT64_FROM_LE (mhfd->unknown5));
+	g_print ("\tUnknown6: %016"G_GINT64_MODIFIER"x\n", GINT64_FROM_LE (mhfd->unknown6));
 	g_print ("\tunknown_flag1: %04x\n", GINT_FROM_LE (mhfd->unknown_flag1));
 	g_print ("\tUnknown8: %08x\n", GINT_FROM_LE (mhfd->unknown8));
 	g_print ("\tUnknown9: %08x\n", GINT_FROM_LE (mhfd->unknown9));
@@ -198,7 +198,7 @@ dump_mhfd (MhfdHeader *mhfd)
 G_GNUC_INTERNAL void
 dump_mhba (MhbaHeader *mhba)
 {
-	g_print ("MHBA (%d):\n", sizeof (MhbaHeader));
+	g_print ("MHBA (%zd):\n", sizeof (MhbaHeader));
 	g_print ("\tHeader length: %d\n", GINT_FROM_LE (mhba->header_len));
 	g_print ("\tTotal length: %d\n", GINT_FROM_LE (mhba->total_len));
 	g_print ("\tNumber of Data Objects: %d\n", GINT_FROM_LE (mhba->num_mhods));
