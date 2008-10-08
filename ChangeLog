@@ -1,5 +1,13 @@
 2008-10-07  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_device.h: switch members in Itdb_ArtworkFormat from
+	guint16 to gint since the SysInfoExtended parser will assume 
+	they are gint value and will try to write to them through a 
+	gint* pointer (ie it will overwrite whatever is around the 
+	guint16 value if we don't change it)
+
+2008-10-07  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_device.c: fix itdb_device_supports_artwork to properly
 	take into account data from SysInfoExtended if available
 

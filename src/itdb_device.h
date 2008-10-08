@@ -95,9 +95,9 @@ struct _Itdb_Device
 };
 
 struct _Itdb_ArtworkFormat {
-        gint16 format_id;
-        gint16 width;
-        gint16 height;
+        gint format_id;
+        gint width;
+        gint height;
         ItdbThumbFormat format;
         gint32 padding; /* not found in SysInfoExtended, added  
                          * for compatibility with hardcoded artwork formats */ 
