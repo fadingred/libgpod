@@ -1,3 +1,8 @@
+2008-10-13  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: add serial number for 16GB black ipod nano,
+	thanks to Doug Larrick for providing that SN :)
+
 2008-10-07  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/db-artwork-debug.c: use %z modifier to print size_t values
