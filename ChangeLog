@@ -1,3 +1,8 @@
+2008-10-21  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: add serial number for 16GB blue ipod nano,
+	thanks to Thomas Pani for providing that SN.
+
 2008-10-13  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: add serial number for 16GB black ipod nano,
