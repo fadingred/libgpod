@@ -1412,11 +1412,13 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
 
 gboolean itdb_device_supports_photo (const Itdb_Device *device)
 {
+    GList *formats;
     if (device == NULL) {
         return FALSE;
     }
-
-    return (itdb_device_get_artwork_formats (device, ARTWORK_TYPE_PHOTO) != NULL);
+    formats = itdb_device_get_photo_formats (device);
+    g_list_free (formats);
+    return (formats != NULL);
 }
 
 static char *

@@ -1,4 +1,10 @@
 2008-10-21  Christophe Fergeau  <teuf@gnome.org>
+	
+	* src/itdb_device.c: use information from SysInfoExtended to tell
+	if an ipod supports photos or not instead of only using the
+	hard-coded tables in libgpod
+
+2008-10-21  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: add serial number for 16GB blue ipod nano,
 	thanks to Thomas Pani for providing that SN.
