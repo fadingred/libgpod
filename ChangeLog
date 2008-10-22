@@ -1,4 +1,9 @@
 2008-10-21  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: SN YX6 corresponds to a Shuffle model B225
+	according to a report on #gtkpod
+
+2008-10-21  Christophe Fergeau  <teuf@gnome.org>
 	
 	* src/itdb_device.c: use information from SysInfoExtended to tell
 	if an ipod supports photos or not instead of only using the
