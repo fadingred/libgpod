@@ -1,3 +1,13 @@
+2008-11-14  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* docs/reference/tmpl/track.sgml
+	  src/itdb.h:
+	  Remove chapterdata_raw and chapterdata_raw_length from
+	  Itdb_Track
+
+	  These are no longer needed now that proper Chapter Data
+	  support is available (since svn revision 1936/1937).
+
 2008-10-21  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: SN YX6 corresponds to a Shuffle model B225

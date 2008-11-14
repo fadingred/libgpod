@@ -936,14 +936,6 @@ struct _Itdb_Track
   guint16 gapless_album_flag; /* if 1, this track does not use crossfading
 			         in iTunes (added in dbversion 0x13) */
 
-    /* Chapter data: defines where the chapter stops are in the track,
-       as well as what info should be displayed for each section of
-       the track. Until it can be parsed and interpreted, the
-       chapterdata will just be read as a block and written back on
-       sync. This will be changed at a later time */
-  void *chapterdata_raw;
-  guint32 chapterdata_raw_length;
-
   /* This is for Cover Art support */
   struct _Itdb_Artwork *artwork;
 
