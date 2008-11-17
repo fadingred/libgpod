@@ -116,10 +116,11 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
         } else {
             dest_width = img_info->width;
         }
-	/* dst_width and dst_height come from a width/height database 
-	 * hardcoded in libipoddevice code, so dst_width * dst_height * 2 can't
-	 * overflow, even on an iPod containing malicious data
-	 */
+
+	/* Make sure thumb size calculation won't overflow */
+	g_return_val_if_fail (dest_width != 0, NULL);
+	g_return_val_if_fail (dest_width < G_MAXUINT/2, NULL);
+	g_return_val_if_fail (img_info->height < G_MAXUINT/(2*dest_width), NULL);
 	*thumb_size = dest_width * img_info->height * 2;
 	result = g_malloc0 (*thumb_size);
 
@@ -223,10 +224,10 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
             dest_width = img_info->width;
         }
 
-	/* dst_width and dst_height come from a width/height database 
-	 * hardcoded in libipoddevice code, so dst_width * dst_height * 2 can't
-	 * overflow, even on an iPod containing malicious data
-	 */
+	/* Make sure thumb size calculation won't overflow */
+	g_return_val_if_fail (dest_width != 0, NULL);
+	g_return_val_if_fail (dest_width < G_MAXUINT/2, NULL);
+	g_return_val_if_fail (img_info->height < G_MAXUINT/(2*dest_width), NULL);
 	*thumb_size = dest_width * img_info->height * 2;
 	result = g_malloc0 (*thumb_size);
 
@@ -320,10 +321,11 @@ pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 		      "height", &height, "width", &width,
 		      "pixels", &pixels, NULL);
 	g_return_val_if_fail ((width <= img_info->width) && (height <= img_info->height), NULL);
-	/* dst_width and dst_height come from a width/height database 
-	 * hardcoded in libipoddevice code, so dst_width * dst_height * 2 can't
-	 * overflow, even on an iPod containing malicious data
-	 */
+
+	/* Make sure thumb size calculation won't overflow */
+	g_return_val_if_fail (img_info->width != 0, NULL);
+	g_return_val_if_fail (img_info->width < G_MAXUINT/4, NULL);
+	g_return_val_if_fail (img_info->height < G_MAXUINT/(4*img_info->width), NULL);
 	*thumb_size = img_info->width * img_info->height * 4;
 	result = g_malloc0 (*thumb_size);
 
@@ -377,7 +379,12 @@ static guint16 *derange_pixels (guint16 *pixels_s, guint16 *pixels_d,
 
     if (pixels_s == NULL)
     {
+	g_return_val_if_fail (width != 0, NULL);
+	g_return_val_if_fail (width < G_MAXUINT/sizeof (guint16), NULL);
+	g_return_val_if_fail (height < G_MAXUINT/(sizeof (guint16)*width), NULL);
+
 	pixels_s = g_malloc0 (sizeof (guint16)*width*height);
+
     }
 
     if (width == 1)
@@ -447,7 +454,7 @@ pack_I420 (GdkPixbuf *orig_pixbuf, const Itdb_ArtworkFormat *img_info,
     gint rowstride;
     gint h, z;
     guchar *pixels, *yuvdata;
-    gint yuvsize, halfyuv;
+    guint yuvsize, halfyuv;
     gint ustart, vstart;
 
     g_return_val_if_fail (img_info, NULL);
@@ -469,6 +476,11 @@ pack_I420 (GdkPixbuf *orig_pixbuf, const Itdb_ArtworkFormat *img_info,
     g_object_get (G_OBJECT (pixbuf), 
 		  "rowstride", &rowstride,
 		  "pixels", &pixels, NULL);
+
+    /* Make sure yuvsize calculation won't overflow */
+    g_return_val_if_fail (height != 0, NULL);
+    g_return_val_if_fail (height < G_MAXUINT/2, NULL);
+    g_return_val_if_fail (width < G_MAXUINT/(2*height), NULL);
 
     halfyuv = width*height;
 
@@ -529,7 +541,7 @@ pack_UYVY (GdkPixbuf *orig_pixbuf, const Itdb_ArtworkFormat *img_info,
     gint h = 0;
     gint r0, g0, b0, r1, g1, b1, r2, g2, b2, r3, g3, b3;
     gint rowstride;
-    gint yuvsize, halfyuv;
+    guint yuvsize, halfyuv;
     gint alphabit, rgbpx;
     gint exc;
 
@@ -553,6 +565,11 @@ pack_UYVY (GdkPixbuf *orig_pixbuf, const Itdb_ArtworkFormat *img_info,
     g_object_get (G_OBJECT (pixbuf), 
 		  "rowstride", &rowstride,
 		  "pixels", &pixels, NULL);
+
+    /* Make sure yuvsize calculation won't overflow */
+    g_return_val_if_fail (height != 0, NULL);
+    g_return_val_if_fail (height < G_MAXUINT/2, NULL);
+    g_return_val_if_fail (width < G_MAXUINT/(2*height), NULL);
 
     yuvsize = width*2*height;
 
@@ -885,6 +902,7 @@ static void *pack_thumbnail (iThumbWriter *writer, Itdb_Thumb_Ipod_Item *thumb,
                               thumb->vertical_padding,
                               &thumb->size);
 }
+
 static gboolean write_pixels (iThumbWriter *writer, Itdb_Thumb_Ipod_Item *thumb,
                               void *pixels)
 {
