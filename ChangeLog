@@ -1,5 +1,12 @@
 2008-11-17  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/ithumb-writer.c: rework the way we calculate that thumbnails
+	must be resized to when being transferred to the ipod. The old way
+	had rounding errors which led to display bugs on the nano4g (in the
+	album list)
+
+2008-11-17  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/ithumb-writer.c: stricter sanity check 
 
 2008-11-17  Christophe Fergeau  <teuf@gnome.org>

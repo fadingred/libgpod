@@ -791,13 +791,22 @@ ithumb_writer_scale_and_crop (GdkPixbuf *input_pixbuf,
 
     if (!crop)
     {
-      /* If we're not cropping, we need to be able to fit both the whole width
-         and whole height, so we use the smaller of the two possible scale
-         factors. */
-      scale = MIN(width_scale, height_scale);
-      offset_x = offset_y = 0;
-      return gdk_pixbuf_scale_simple (input_pixbuf, 
-				      input_width*scale, input_height*scale,
+      guint scaled_height;
+      guint scaled_width;
+
+      if (width_scale < height_scale) {
+	scaled_width = width;
+	scaled_height = MIN (ceil (input_height*width_scale), height);
+      } else if (width_scale > height_scale) {
+	scaled_width =MIN (ceil (input_width*height), width);
+	scaled_height = height;
+      } else {
+	scaled_width = width;
+	scaled_height = height;
+      }
+	
+      return gdk_pixbuf_scale_simple (input_pixbuf,
+				      scaled_width, scaled_height,
 				      GDK_INTERP_BILINEAR);
     } else {
       double scaled_width, scaled_height;
