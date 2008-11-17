@@ -1,5 +1,9 @@
 2008-11-17  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/ithumb-writer.c: stricter sanity check 
+
+2008-11-17  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/ithumb-writer.c: add checks for int overflows on malloc args
 
 2008-11-14  Todd Zullinger  <tmzullinger at users.sourceforge.net>

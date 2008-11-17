@@ -107,7 +107,8 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 		      "rowstride", &row_stride, "n-channels", &channels,
 		      "height", &height, "width", &width,
 		      "pixels", &pixels, NULL);
-	g_return_val_if_fail ((width <= img_info->width) && (height <= img_info->height), NULL);
+	g_return_val_if_fail (((width + horizontal_padding) <= img_info->width), NULL);
+	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
         if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
             /* each pixel is 2 bytes, to align rows on 4 bytes boundaries,
@@ -214,7 +215,8 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 		      "rowstride", &row_stride, "n-channels", &channels,
 		      "height", &height, "width", &width,
 		      "pixels", &pixels, NULL);
-	g_return_val_if_fail ((width <= img_info->width) && (height <= img_info->height), NULL);
+	g_return_val_if_fail (((width + horizontal_padding) <= img_info->width), NULL);
+	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
         if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
             /* each pixel is 2 bytes, to align rows on 4 bytes boundaries,
@@ -320,6 +322,8 @@ pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 		      "rowstride", &row_stride, "n-channels", &channels,
 		      "height", &height, "width", &width,
 		      "pixels", &pixels, NULL);
+	g_return_val_if_fail (((width + horizontal_padding) <= img_info->width), NULL);
+	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 	g_return_val_if_fail ((width <= img_info->width) && (height <= img_info->height), NULL);
 
 	/* Make sure thumb size calculation won't overflow */
