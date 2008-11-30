@@ -56,7 +56,7 @@ G_GNUC_INTERNAL void
 db_parse_context_set_total_len (DBParseContext *ctx, off_t len);
 
 G_GNUC_INTERNAL off_t 
-db_parse_context_get_remaining_length (DBParseContext *ctx) G_GNUC_INTERNAL;
+db_parse_context_get_remaining_length (DBParseContext *ctx);
 
 G_GNUC_INTERNAL DBParseContext *
 db_parse_context_get_sub_context (DBParseContext *ctx, off_t offset);

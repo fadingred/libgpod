@@ -1,3 +1,10 @@
+2008-11-30  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/db-parse-context.h: remove unneeded G_GNUC_INTERNAL at the
+	  end of a declaration as this can cause problems with some
+	  compilers (and doesn't seem to make sense in the first
+	  place). Thanks to Tim Mooney.
+
 2008-11-17  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/ithumb-writer.c: rework the way we calculate that thumbnails
