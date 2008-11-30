@@ -57,7 +57,6 @@ AC_PROG_MAKE_SET
 AC_PROG_INTLTOOL([0.21])
 
 PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.8.0 gobject-2.0)
-LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS -Wall"
 
 dnl **************************************************
 dnl * expand $libdir 
