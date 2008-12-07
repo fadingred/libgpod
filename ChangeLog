@@ -1,3 +1,9 @@
+2008-12-07  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* itdb_itunesdb.c (jump_table_letter): don't terminate when
+	  an invalid utf8 string is encountered (replaced g_assert() with
+	  g_return_val_if_fail()).
+
 2008-11-30  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* configure.ac: don't add "-Wall" to CFLAGS

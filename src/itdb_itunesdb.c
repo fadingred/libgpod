@@ -3775,7 +3775,7 @@ static gunichar2 jump_table_letter (gchar *p)
     gboolean found_alnum_chars = FALSE;
 
     g_return_val_if_fail (p != NULL, '0');
-    g_assert (g_utf8_validate (p, -1, NULL));
+    g_return_val_if_fail (g_utf8_validate (p, -1, NULL), '0');
 
     while (*p != '\0') {
         chr = g_utf8_get_char (p);
