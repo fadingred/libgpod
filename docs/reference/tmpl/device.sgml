@@ -94,6 +94,21 @@ These functions are for reading and setting information about the iPod.
 @Returns: 
 
 
+<!-- ##### STRUCT Itdb_IpodInfo ##### -->
+<para>
+
+</para>
+
+@model_number: 
+@capacity: 
+@ipod_model: 
+@ipod_generation: 
+@musicdirs: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
+
 <!-- ##### FUNCTION itdb_device_get_ipod_info ##### -->
 <para>
 
@@ -121,41 +136,20 @@ These functions are for reading and setting information about the iPod.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_device_supports_video ##### -->
+<para>
+
+</para>
+
+@device: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_info_get_ipod_info_table ##### -->
 <para>
 
 </para>
 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_info_get_ipod_generation_string ##### -->
-<para>
-
-</para>
-
-@generation: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_info_get_ipod_model_name_string ##### -->
-<para>
-
-</para>
-
-@model: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_init_ipod ##### -->
-<para>
-
-</para>
-
-@mountpoint: 
-@model_number: 
-@ipod_name: 
-@error: 
 @Returns: 
 
 
@@ -179,26 +173,22 @@ These functions are for reading and setting information about the iPod.
 @ITDB_IPOD_GENERATION_NANO_1: 
 @ITDB_IPOD_GENERATION_NANO_2: 
 @ITDB_IPOD_GENERATION_NANO_3: 
+@ITDB_IPOD_GENERATION_NANO_4: 
 @ITDB_IPOD_GENERATION_VIDEO_1: 
 @ITDB_IPOD_GENERATION_VIDEO_2: 
 @ITDB_IPOD_GENERATION_CLASSIC_1: 
+@ITDB_IPOD_GENERATION_CLASSIC_2: 
 @ITDB_IPOD_GENERATION_TOUCH_1: 
 @ITDB_IPOD_GENERATION_IPHONE_1: 
 
-<!-- ##### STRUCT Itdb_IpodInfo ##### -->
+<!-- ##### FUNCTION itdb_info_get_ipod_generation_string ##### -->
 <para>
 
 </para>
 
-@model_number: 
-@capacity: 
-@ipod_model: 
-@ipod_generation: 
-@musicdirs: 
-@reserved_int1: 
-@reserved_int2: 
-@reserved1: 
-@reserved2: 
+@generation: 
+@Returns: 
+
 
 <!-- ##### ENUM Itdb_IpodModel ##### -->
 <para>
@@ -228,6 +218,9 @@ These functions are for reading and setting information about the iPod.
 @ITDB_IPOD_MODEL_NANO_GREEN: 
 @ITDB_IPOD_MODEL_NANO_PINK: 
 @ITDB_IPOD_MODEL_NANO_RED: 
+@ITDB_IPOD_MODEL_NANO_YELLOW: 
+@ITDB_IPOD_MODEL_NANO_PURPLE: 
+@ITDB_IPOD_MODEL_NANO_ORANGE: 
 @ITDB_IPOD_MODEL_IPHONE_1: 
 @ITDB_IPOD_MODEL_SHUFFLE_SILVER: 
 @ITDB_IPOD_MODEL_SHUFFLE_PINK: 
@@ -239,6 +232,27 @@ These functions are for reading and setting information about the iPod.
 @ITDB_IPOD_MODEL_CLASSIC_SILVER: 
 @ITDB_IPOD_MODEL_CLASSIC_BLACK: 
 @ITDB_IPOD_MODEL_TOUCH_BLACK: 
+
+<!-- ##### FUNCTION itdb_info_get_ipod_model_name_string ##### -->
+<para>
+
+</para>
+
+@model: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_init_ipod ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@model_number: 
+@ipod_name: 
+@error: 
+@Returns: 
+
 
 <!-- ##### STRUCT Itdb_ArtworkFormat ##### -->
 <para>

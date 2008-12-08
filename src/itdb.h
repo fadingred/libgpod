@@ -50,7 +50,22 @@ G_BEGIN_DECLS
 #define G_GNUC_INTERNAL
 #endif 
 
+/**
+ * ItdbUserDataDestroyFunc:
+ * @userdata: A #gpointer to user data
+ *
+ * Function called to free userdata
+ */
 typedef void (* ItdbUserDataDestroyFunc) (gpointer userdata);
+
+/**
+ * ItdbUserDataDuplicateFunc:
+ * @userdata: A #gpointer to user data
+ *
+ * Function called to duplicate userdata
+ *
+ * Returns: A #gpointer
+ */
 typedef gpointer (* ItdbUserDataDuplicateFunc) (gpointer userdata);
 
 /* public structures */
@@ -77,6 +92,38 @@ typedef struct _Itdb_Chapterdata Itdb_Chapterdata;
  *
 \* ------------------------------------------------------------ */
 
+/**
+ * Itdb_IpodGeneration:
+ * @ITDB_IPOD_GENERATION_UNKNOWN:   Unknown iPod
+ * @ITDB_IPOD_GENERATION_FIRST:     First Generation iPod
+ * @ITDB_IPOD_GENERATION_SECOND:    Second Generation iPod
+ * @ITDB_IPOD_GENERATION_THIRD:     Third Generation iPod
+ * @ITDB_IPOD_GENERATION_FOURTH:    Fourth Generation iPod
+ * @ITDB_IPOD_GENERATION_PHOTO:     Photo iPod
+ * @ITDB_IPOD_GENERATION_MOBILE:    Mobile iPod
+ * @ITDB_IPOD_GENERATION_MINI_1:    First Generation iPod Mini
+ * @ITDB_IPOD_GENERATION_MINI_2:    Second Generation iPod Mini
+ * @ITDB_IPOD_GENERATION_SHUFFLE_1: First Generation iPod Shuffle
+ * @ITDB_IPOD_GENERATION_SHUFFLE_2: Second Generation iPod Shuffle
+ * @ITDB_IPOD_GENERATION_SHUFFLE_3: Third Generation iPod Shuffle
+ * @ITDB_IPOD_GENERATION_NANO_1:    First Generation iPod Nano
+ * @ITDB_IPOD_GENERATION_NANO_2:    Second Generation iPod Nano
+ * @ITDB_IPOD_GENERATION_NANO_3:    Third Generation iPod Nano
+ * @ITDB_IPOD_GENERATION_NANO_4:    Fourth Generation iPod Nano
+ * @ITDB_IPOD_GENERATION_VIDEO_1:   First Generation iPod Video (aka 5g)
+ * @ITDB_IPOD_GENERATION_VIDEO_2:   Second Generation iPod Video (aka 5.5g)
+ * @ITDB_IPOD_GENERATION_CLASSIC_1: First Generation iPod Classic
+ * @ITDB_IPOD_GENERATION_CLASSIC_2: Second Generation iPod Classic
+ * @ITDB_IPOD_GENERATION_TOUCH_1:   First Generation iPod Touch
+ * @ITDB_IPOD_GENERATION_IPHONE_1:  First Generation iPhone
+ *
+ * iPod generation information
+ *
+ * See http://support.apple.com/kb/HT1353 and http://en.wikipedia.org/wiki/IPod
+ * for more details.
+ *
+ * Since: 0.4.0
+ */
 typedef enum {
     ITDB_IPOD_GENERATION_UNKNOWN,
     ITDB_IPOD_GENERATION_FIRST,
@@ -102,6 +149,50 @@ typedef enum {
     ITDB_IPOD_GENERATION_IPHONE_1,
 } Itdb_IpodGeneration;
 
+/**
+ * Itdb_IpodModel:
+ * @ITDB_IPOD_MODEL_INVALID:        Invalid model
+ * @ITDB_IPOD_MODEL_UNKNOWN:        Unknown model
+ * @ITDB_IPOD_MODEL_COLOR:          Color iPod
+ * @ITDB_IPOD_MODEL_COLOR_U2:       Color iPod (U2)
+ * @ITDB_IPOD_MODEL_REGULAR:        Regular iPod
+ * @ITDB_IPOD_MODEL_REGULAR_U2:     Regular iPod (U2)
+ * @ITDB_IPOD_MODEL_MINI:           iPod Mini
+ * @ITDB_IPOD_MODEL_MINI_BLUE:      iPod Mini (Blue)
+ * @ITDB_IPOD_MODEL_MINI_PINK:      iPod Mini (Pink)
+ * @ITDB_IPOD_MODEL_MINI_GREEN:     iPod Mini (Green)
+ * @ITDB_IPOD_MODEL_MINI_GOLD:      iPod Mini (Gold)
+ * @ITDB_IPOD_MODEL_SHUFFLE:        iPod Shuffle
+ * @ITDB_IPOD_MODEL_NANO_WHITE:     iPod Nano (White)
+ * @ITDB_IPOD_MODEL_NANO_BLACK:     iPod Nano (Black)
+ * @ITDB_IPOD_MODEL_VIDEO_WHITE:    iPod Video (White)
+ * @ITDB_IPOD_MODEL_VIDEO_BLACK:    iPod Video (Black)
+ * @ITDB_IPOD_MODEL_MOBILE_1:       Mobile iPod
+ * @ITDB_IPOD_MODEL_VIDEO_U2:       iPod Video (U2)
+ * @ITDB_IPOD_MODEL_NANO_SILVER:    iPod Nano (Silver)
+ * @ITDB_IPOD_MODEL_NANO_BLUE:      iPod Nano (Blue)
+ * @ITDB_IPOD_MODEL_NANO_GREEN:     iPod Nano (Green)
+ * @ITDB_IPOD_MODEL_NANO_PINK:      iPod Nano (Pink)
+ * @ITDB_IPOD_MODEL_NANO_RED:       iPod Nano (Red)
+ * @ITDB_IPOD_MODEL_NANO_YELLOW:    iPod Nano (Yellow)
+ * @ITDB_IPOD_MODEL_NANO_PURPLE:    iPod Nano (Purple)
+ * @ITDB_IPOD_MODEL_NANO_ORANGE:    iPod Nano (Orange)
+ * @ITDB_IPOD_MODEL_IPHONE_1:       iPhone
+ * @ITDB_IPOD_MODEL_SHUFFLE_SILVER: iPod Shuffle (Silver)
+ * @ITDB_IPOD_MODEL_SHUFFLE_PINK:   iPod Shuffle (Pink)
+ * @ITDB_IPOD_MODEL_SHUFFLE_BLUE:   iPod Shuffle (Blue)
+ * @ITDB_IPOD_MODEL_SHUFFLE_GREEN:  iPod Shuffle (Green)
+ * @ITDB_IPOD_MODEL_SHUFFLE_ORANGE: iPod Shuffle (Orange)
+ * @ITDB_IPOD_MODEL_SHUFFLE_PURPLE: iPod Shuffle (Purple)
+ * @ITDB_IPOD_MODEL_SHUFFLE_RED:    iPod Shuffle (Red)
+ * @ITDB_IPOD_MODEL_CLASSIC_SILVER: iPod Classic (Silver)
+ * @ITDB_IPOD_MODEL_CLASSIC_BLACK:  iPod Classic (Black)
+ * @ITDB_IPOD_MODEL_TOUCH_BLACK:    iPod Touch (Black)
+ *
+ * iPod model information
+ *
+ * Since: 0.4.0
+ */
 typedef enum {
     ITDB_IPOD_MODEL_INVALID,
     ITDB_IPOD_MODEL_UNKNOWN,
@@ -142,19 +233,34 @@ typedef enum {
     ITDB_IPOD_MODEL_TOUCH_BLACK,
 } Itdb_IpodModel;
 
+/**
+ * Itdb_IpodInfo:
+ * @model_number:    The model number.  This is abbreviated.  If the first
+ *                   character is not numeric, it is ommited. e.g.
+ *                   "MA350 -> A350", "M9829 -> 9829"
+ * @capacity:        The iPod's capacity in gigabytes
+ * @ipod_model:      The iPod model
+ * @ipod_generation: The iPod generation
+ * @musicdirs:       The number of music (Fnn) dirs created by iTunes. The
+ *                   exact number seems to be version dependent. Therefore, the
+ *                   numbers here represent a mixture of reported values and
+ *                   common sense.  Note: this number does not necessarily
+ *                   represent the number of dirs present on a particular iPod.
+ *                   It is used when setting up a new iPod from scratch.
+ * @reserved_int1:   Reserved for future use
+ * @reserved_int2:   Reserved for future use
+ * @reserved1:       Reserved for future use
+ * @reserved2:       Reserved for future use
+ *
+ * Structure representing information about an iPod
+ *
+ * Since: 0.4.0
+ */
 struct _Itdb_IpodInfo {
-    /* model_number is abbreviated: if the first character is not
-       numeric, it is ommited. e.g. "MA350 -> A350", "M9829 -> 9829" */
     const gchar *model_number;
-    const double capacity;  /* in GB */
+    const double capacity;
     const Itdb_IpodModel ipod_model;
     const Itdb_IpodGeneration ipod_generation;
-    /* Number of music (Fnn) dirs created by iTunes. The exact number
-       seems to be version dependent. Therefore, the numbers here
-       represent a mixture of reported values and common sense. Note:
-       this number does not necessarily represent the number of dirs
-       present on a particular iPod. It is used when setting up a new
-       iPod from scratch. */
     const guint musicdirs;
     /* reserved for future use */
     const gint32 reserved_int1;
@@ -177,17 +283,51 @@ struct _Itdb_IpodInfo {
    copy. Further, all enums and #defines below, Itdb_SPLRule, Itdb_SPLRules, and
    Itdb_SPLPref may also be used under a FreeBSD license. */
 
+/**
+ * ITDB_SPL_STRING_MAXLEN:
+ *
+ * Maximum string length for smart playlists
+ *
+ * Since: 0.5.0
+ */
 #define ITDB_SPL_STRING_MAXLEN 255
+
+/**
+ * ITDB_SPL_DATE_IDENTIFIER:
+ *
+ * Identifier for smart playlist date fields
+ *
+ * Since: 0.5.0
+ */
 #define ITDB_SPL_DATE_IDENTIFIER (G_GINT64_CONSTANT (0x2dae2dae2dae2daeU))
 
 /* Definitions for smart playlists */
-typedef enum { /* types for match_operator */
-    ITDB_SPLMATCH_AND = 0, /* AND rule - all of the rules must be true in
-			 order for the combined rule to be applied */
-    ITDB_SPLMATCH_OR = 1   /* OR rule */
+
+/**
+ * ItdbSPLMatch:
+ * @ITDB_SPLMATCH_AND: Logical AND - all of the rules must be true in order for
+ *                     the combined rule to be applied
+ * @ITDB_SPLMATCH_OR:  Logical OR - any of the rules may be true
+ *
+ * Types for smart playlist rules match_operator
+ */
+typedef enum {
+    ITDB_SPLMATCH_AND = 0,
+    ITDB_SPLMATCH_OR = 1
 } ItdbSPLMatch;
 
-/* Limit Types.. like limit playlist to 100 minutes or to 100 songs */
+/**
+ * ItdbLimitType:
+ * @ITDB_LIMITTYPE_MINUTES: Limit in minutes
+ * @ITDB_LIMITTYPE_MB:      Limit in megabytes
+ * @ITDB_LIMITTYPE_SONGS:   Limit in number of songs
+ * @ITDB_LIMITTYPE_HOURS:   Limit in hours
+ * @ITDB_LIMITTYPE_GB:      Limit in gigabytes
+ *
+ * The type of unit to use when limiting a playlist
+ *
+ * Since: 0.5.0
+ */
 typedef enum {
     ITDB_LIMITTYPE_MINUTES = 0x01,
     ITDB_LIMITTYPE_MB      = 0x02,
@@ -196,19 +336,39 @@ typedef enum {
     ITDB_LIMITTYPE_GB      = 0x05
 } ItdbLimitType;
 
-/* Limit Sorts.. Like which songs to pick when using a limit type
-   Special note: the values for ITDB_LIMITSORT_LEAST_RECENTLY_ADDED,
-   ITDB_LIMITSORT_LEAST_OFTEN_PLAYED, ITDB_LIMITSORT_LEAST_RECENTLY_PLAYED, and
-   ITDB_LIMITSORT_LOWEST_RATING are really 0x10, 0x14, 0x15, 0x17, with the
-   'limitsort_opposite' flag set.  This is the same value as the
-   "positive" value (i.e. ITDB_LIMITSORT_LEAST_RECENTLY_ADDED), and is
-   really very terribly awfully weird, so we map the values to iPodDB
-   specific values with the high bit set.
-
-   On writing, we check the high bit and write the limitsort_opposite
-   from that. That way, we don't have to deal with programs using the
-   class needing to set the wrong limit and then make it into the
-   "opposite", which would be frickin' annoying. */
+/**
+ * ItdbLimitSort:
+ * @ITDB_LIMITSORT_RANDOM:                Sort randomly
+ * @ITDB_LIMITSORT_SONG_NAME:             Sort by track name
+ * @ITDB_LIMITSORT_ALBUM:                 Sort by album name
+ * @ITDB_LIMITSORT_ARTIST:                Sort by artist name
+ * @ITDB_LIMITSORT_GENRE:                 Sort by genre
+ * @ITDB_LIMITSORT_MOST_RECENTLY_ADDED:   Sort by most recently added
+ * @ITDB_LIMITSORT_LEAST_RECENTLY_ADDED:  Sort by least recently added
+ * @ITDB_LIMITSORT_MOST_OFTEN_PLAYED:     Sort by most often played
+ * @ITDB_LIMITSORT_LEAST_OFTEN_PLAYED:    Sort by least often played
+ * @ITDB_LIMITSORT_MOST_RECENTLY_PLAYED:  Sort by most recently played
+ * @ITDB_LIMITSORT_LEAST_RECENTLY_PLAYED: Sort by least recently played
+ * @ITDB_LIMITSORT_HIGHEST_RATING:        Sort by highest rating
+ * @ITDB_LIMITSORT_LOWEST_RATING:         Sort by lowest rating
+ *
+ * Which songs to pick when using a limit type
+ *
+ * Note: the values for #ITDB_LIMITSORT_LEAST_RECENTLY_ADDED,
+ * #ITDB_LIMITSORT_LEAST_OFTEN_PLAYED, #ITDB_LIMITSORT_LEAST_RECENTLY_PLAYED,
+ * and #ITDB_LIMITSORT_LOWEST_RATING are really 0x10, 0x14, 0x15, 0x17, with the
+ * 'limitsort_opposite' flag set.  This is the same value as the "positive"
+ * value (i.e. #ITDB_LIMITSORT_LEAST_RECENTLY_ADDED), and is really very
+ * terribly awfully weird, so we map the values to iPodDB specific values with
+ * the high bit set.
+ *
+ * On writing, we check the high bit and write the limitsort_opposite from that.
+ * That way, we don't have to deal with programs using the class needing to set
+ * the wrong limit and then make it into the "opposite", which would be frickin'
+ * annoying.
+ *
+ * Since: 0.5.0
+ */
 typedef enum {
     ITDB_LIMITSORT_RANDOM = 0x02,
     ITDB_LIMITSORT_SONG_NAME = 0x03,
@@ -225,28 +385,57 @@ typedef enum {
     ITDB_LIMITSORT_LOWEST_RATING = 0x80000017,        /* See note above */
 } ItdbLimitSort;
 
-/* Smartlist Actions - Used in the rules.
-Note by Otto (Samuel Wood):
- really this is a bitmapped field...
- high byte
- bit 0 = "string" values if set, "int" values if not set
- bit 1 = "not", or to negate the check.
- lower 2 bytes
- bit 0 = simple "IS" query
- bit 1 = contains
- bit 2 = begins with
- bit 3 = ends with
- bit 4 = greater than
- bit 5 = unknown, but probably greater than or equal to
- bit 6 = less than
- bit 7 = unknown, but probably less than or equal to
- bit 8 = a range selection
- bit 9 = "in the last"
+/**
+ * ItdbSPLAction:
+ * @ITDB_SPLACTION_IS_INT:              is integer ("Is Set" in iTunes)
+ * @ITDB_SPLACTION_IS_GREATER_THAN:     is greater than ("Is after" in iTunes)
+ * @ITDB_SPLACTION_IS_LESS_THAN:        is less than ("Is Before" in iTunes)
+ * @ITDB_SPLACTION_IS_IN_THE_RANGE:     is in the range
+ * @ITDB_SPLACTION_IS_IN_THE_LAST:      is in the last
+ * @ITDB_SPLACTION_BINARY_AND:          binary AND
+ * @ITDB_SPLACTION_IS_STRING:           is a string
+ * @ITDB_SPLACTION_CONTAINS:            contains
+ * @ITDB_SPLACTION_STARTS_WITH:         starts with
+ * @ITDB_SPLACTION_ENDS_WITH:           ends with
+ * @ITDB_SPLACTION_IS_NOT_INT:          is not an integer ("Is Not Set" in iTunes)
+ * @ITDB_SPLACTION_IS_NOT_GREATER_THAN: is not greater than (not in iTunes)
+ * @ITDB_SPLACTION_IS_NOT_LESS_THAN:    is not less than (not in iTunes)
+ * @ITDB_SPLACTION_IS_NOT_IN_THE_RANGE: is not in the range (not in iTunes)
+ * @ITDB_SPLACTION_IS_NOT_IN_THE_LAST:  is not in the last
+ * @ITDB_SPLACTION_IS_NOT:              is not
+ * @ITDB_SPLACTION_DOES_NOT_CONTAIN:    does not contain
+ * @ITDB_SPLACTION_DOES_NOT_START_WITH: does not start with (not in iTunes)
+ * @ITDB_SPLACTION_DOES_NOT_END_WITH:   does not end with (not in iTunes)
+ *
+ * Smartlist Actions used in smart playlist rules.
+ *
+ * Note by Otto (Samuel Wood):
+ * <informalexample>
+ *  <programlisting>
+ *  really this is a bitmapped field...
+ *  high byte
+ *  bit 0 = "string" values if set, "int" values if not set
+ *  bit 1 = "not", or to negate the check.
+ *  lower 2 bytes
+ *  bit 0 = simple "IS" query
+ *  bit 1 = contains
+ *  bit 2 = begins with
+ *  bit 3 = ends with
+ *  bit 4 = greater than
+ *  bit 5 = unknown, but probably greater than or equal to
+ *  bit 6 = less than
+ *  bit 7 = unknown, but probably less than or equal to
+ *  bit 8 = a range selection
+ *  bit 9 = "in the last"
+ *  </programlisting>
+ * </informalexample>
+ *
+ * Since: 0.5.0
 */
 typedef enum {
-    ITDB_SPLACTION_IS_INT = 0x00000001,          /* "Is Set" in iTunes */
-    ITDB_SPLACTION_IS_GREATER_THAN = 0x00000010, /* "Is After" in iTunes */
-    ITDB_SPLACTION_IS_LESS_THAN = 0x00000040,    /* "Is Before" in iTunes */
+    ITDB_SPLACTION_IS_INT = 0x00000001,
+    ITDB_SPLACTION_IS_GREATER_THAN = 0x00000010,
+    ITDB_SPLACTION_IS_LESS_THAN = 0x00000040,
     ITDB_SPLACTION_IS_IN_THE_RANGE = 0x00000100,
     ITDB_SPLACTION_IS_IN_THE_LAST = 0x00000200,
     ITDB_SPLACTION_BINARY_AND = 0x00000400,
@@ -256,25 +445,32 @@ typedef enum {
     ITDB_SPLACTION_STARTS_WITH = 0x01000004,
     ITDB_SPLACTION_ENDS_WITH = 0x01000008,
 
-    ITDB_SPLACTION_IS_NOT_INT = 0x02000001,     /* "Is Not Set" in iTunes */
-
-    /* Note: Not available in iTunes 4.5 (untested on iPod) */
+    ITDB_SPLACTION_IS_NOT_INT = 0x02000001,
     ITDB_SPLACTION_IS_NOT_GREATER_THAN = 0x02000010,
-    /* Note: Not available in iTunes 4.5 (untested on iPod) */
     ITDB_SPLACTION_IS_NOT_LESS_THAN = 0x02000040,
-    /* Note: Not available in iTunes 4.5 (seems to work on iPod) */
     ITDB_SPLACTION_IS_NOT_IN_THE_RANGE = 0x02000100,
-
     ITDB_SPLACTION_IS_NOT_IN_THE_LAST = 0x02000200,
+
     ITDB_SPLACTION_IS_NOT = 0x03000001,
     ITDB_SPLACTION_DOES_NOT_CONTAIN = 0x03000002,
-
-    /* Note: Not available in iTunes 4.5 (seems to work on iPod) */
     ITDB_SPLACTION_DOES_NOT_START_WITH = 0x03000004,
-    /* Note: Not available in iTunes 4.5 (seems to work on iPod) */
     ITDB_SPLACTION_DOES_NOT_END_WITH = 0x03000008,
 } ItdbSPLAction;
 
+/**
+ * ItdbSPLFieldType:
+ * @ITDB_SPLFT_STRING:      string
+ * @ITDB_SPLFT_INT:         integer
+ * @ITDB_SPLFT_BOOLEAN:     boolean
+ * @ITDB_SPLFT_DATE:        date
+ * @ITDB_SPLFT_PLAYLIST:    playlist
+ * @ITDB_SPLFT_UNKNOWN:     unknown
+ * @ITDB_SPLFT_BINARY_AND:  binary AND
+ *
+ * Smart Playlist Field Types
+ *
+ * Since: 0.5.0
+ */
 typedef enum
 {
     ITDB_SPLFT_STRING = 1,
@@ -286,6 +482,24 @@ typedef enum
     ITDB_SPLFT_BINARY_AND
 } ItdbSPLFieldType;
 
+/**
+ * ItdbSPLActionType:
+ * @ITDB_SPLAT_STRING:      string
+ * @ITDB_SPLAT_INT:         from integer
+ * @ITDB_SPLAT_DATE:        from date ...
+ * @ITDB_SPLAT_RANGE_INT:   an integer range ...
+ * @ITDB_SPLAT_RANGE_DATE:  a date range ...
+ * @ITDB_SPLAT_INTHELAST:   in the last ...
+ * @ITDB_SPLAT_PLAYLIST:    in playlist
+ * @ITDB_SPLAT_NONE:        none
+ * @ITDB_SPLAT_INVALID:     invalid
+ * @ITDB_SPLAT_UNKNOWN:     unknown
+ * @ITDB_SPLAT_BINARY_AND:  is / is not (binary AND)
+ *
+ * Smart Playlist Action Types
+ *
+ * Since: 0.5.0
+ */
 typedef enum
 {
     ITDB_SPLAT_STRING = 1,
@@ -302,14 +516,23 @@ typedef enum
 } ItdbSPLActionType;
 
 
-/* These are to pass to AddRule() when you need a unit for the two "in
-   the last" action types Or, in theory, you can use any time
-   range... iTunes might not like it, but the iPod shouldn't care. */
+/**
+ * ItdbSPLActionLast:
+ * @ITDB_SPLACTION_LAST_DAYS_VALUE:   Seconds in 24 hours
+ * @ITDB_SPLACTION_LAST_WEEKS_VALUE:  Seconds in 7 days
+ * @ITDB_SPLACTION_LAST_MONTHS_VALUE: Seconds in 1 month (approximately)
+ *
+ * These are to pass to AddRule() when you need a unit for the two "in the last"
+ * action types.  In theory, you can use any time range.  iTunes might not
+ * like it, but the iPod shouldn't care.
+ *
+ * Since: 0.5.0
+ */
 typedef enum {
     ITDB_SPLACTION_LAST_DAYS_VALUE = 86400,    /* nr of secs in 24 hours */
     ITDB_SPLACTION_LAST_WEEKS_VALUE = 604800,  /* nr of secs in 7 days   */
     ITDB_SPLACTION_LAST_MONTHS_VALUE = 2628000,/* nr of secs in 30.4167
-					     days ~= 1 month */
+						  days ~= 1 month */
 } ItdbSPLActionLast;
 
 #if 0
@@ -331,84 +554,161 @@ typedef enum {
 #define ITDB_SPLACTION_LAST_SIDEREAL_YEAR 	31558150	// a "sidereal year" is the time it takes the earth to reach the same point in space again, compared to the stars
 #endif
 
-/* Smartlist fields - Used for rules. */
+/**
+ * ItdbSPLField:
+ * @ITDB_SPLFIELD_SONG_NAME:        Song name (string)
+ * @ITDB_SPLFIELD_ALBUM:            Album (string)
+ * @ITDB_SPLFIELD_ARTIST:           Artist (string)
+ * @ITDB_SPLFIELD_BITRATE:          Bitrate (integer, e.g. from/to = 128)
+ * @ITDB_SPLFIELD_SAMPLE_RATE:      Sample rate (integer, e.g. from/to = 44100)
+ * @ITDB_SPLFIELD_YEAR:             Year (integer, e.g. from/to = 2004)
+ * @ITDB_SPLFIELD_GENRE:            Genre (string)
+ * @ITDB_SPLFIELD_KIND:             File type (string, e.g. MP3-File)
+ * @ITDB_SPLFIELD_DATE_MODIFIED:    Date modified (integer, e.g.
+ *                                  from/to = bcf93280 == is before 6/19/2004)
+ * @ITDB_SPLFIELD_TRACKNUMBER:      Track number (integer, e.g. from/to = 2)
+ * @ITDB_SPLFIELD_SIZE:             Size (integer, e.g.
+ *                                  from/to = 0x00600000 for 6MB)
+ * @ITDB_SPLFIELD_TIME:             Time (integer, e.g.
+ *                                  from/to = 83999 for 1:23/83 seconds)
+ * @ITDB_SPLFIELD_COMMENT:          Comment (string)
+ * @ITDB_SPLFIELD_DATE_ADDED:       Date added (integer, e.g.
+ *                                  from/to = bcfa83ff == is after 6/19/2004)
+ * @ITDB_SPLFIELD_COMPOSER:         Composer (string)
+ * @ITDB_SPLFIELD_PLAYCOUNT:        Playcount (integer, e.g. from/to = 1)
+ * @ITDB_SPLFIELD_LAST_PLAYED:      Date last played (integer, e.g.
+ *                                  from = bcfa83ff (6/19/2004)
+ *                                  to = 0xbcfbd57f (6/20/2004))
+ * @ITDB_SPLFIELD_DISC_NUMBER:      Disc number (integer, e.g. from/to = 1)
+ * @ITDB_SPLFIELD_RATING:           Rating (integer, e.g.
+ *                                  from/to = 60 (3 stars))
+ * @ITDB_SPLFIELD_COMPILATION:      Compilation (integer, e.g.
+ *                                  is set -> ITDB_SPLACTION_IS_INT/from=1,
+ *                                  not set -> ITDB_SPLACTION_IS_NOT_INT/from=1)
+ * @ITDB_SPLFIELD_BPM:              Beats per minute (integer, e.g.
+ *                                  from/to = 60)
+ * @ITDB_SPLFIELD_GROUPING:         Grouping (string)
+ * @ITDB_SPLFIELD_PLAYLIST:         FIXME Unknown...not parsed correctly...
+ *                                  from/to = 0xb6fbad5f for "Purchased Music".
+ *                                  Extra data after "to"...
+ * @ITDB_SPLFIELD_VIDEO_KIND:       Logical integer (works on mediatype)
+ * @ITDB_SPLFIELD_TVSHOW:           TV Show (string)
+ * @ITDB_SPLFIELD_SEASON_NR:        Season number (integer)
+ * @ITDB_SPLFIELD_SKIPCOUNT:        Skipcount (integer)
+ * @ITDB_SPLFIELD_LAST_SKIPPED:     Last skipped (integer)
+ * @ITDB_SPLFIELD_ALBUMARTIST:      Album artist (string)
+ *
+ * Smart Playlist Fields, used for Smart Playlist Rules (#Itdb_SPLRule).
+ *
+ * Since: 0.5.0
+ */
 typedef enum {
-    ITDB_SPLFIELD_SONG_NAME = 0x02,    /* String */
-    ITDB_SPLFIELD_ALBUM = 0x03,        /* String */
-    ITDB_SPLFIELD_ARTIST = 0x04,       /* String */
-    ITDB_SPLFIELD_BITRATE = 0x05,      /* Int (e.g. from/to = 128) */
-    ITDB_SPLFIELD_SAMPLE_RATE = 0x06,  /* Int  (e.g. from/to = 44100) */
-    ITDB_SPLFIELD_YEAR = 0x07,         /* Int  (e.g. from/to = 2004) */
-    ITDB_SPLFIELD_GENRE = 0x08,        /* String */
-    ITDB_SPLFIELD_KIND = 0x09,         /* String */
-    ITDB_SPLFIELD_DATE_MODIFIED = 0x0a,/* Int (e.g. from/to = bcf93280 ==
-				     is before 6/19/2004)*/
-    ITDB_SPLFIELD_TRACKNUMBER = 0x0b,  /* Int (e.g. from = 1, to = 2) */
-    ITDB_SPLFIELD_SIZE = 0x0c,         /* Int (e.g. from/to = 0x00600000
-				     for 6MB) */
-    ITDB_SPLFIELD_TIME = 0x0d,         /* Int (e.g. from/to = 83999 for
-				     1:23/83 seconds) */
-    ITDB_SPLFIELD_COMMENT = 0x0e,      /* String */
-    ITDB_SPLFIELD_DATE_ADDED = 0x10,   /* Int (e.g. from/to = bcfa83ff ==
-				     is after 6/19/2004) */
-    ITDB_SPLFIELD_COMPOSER = 0x12,     /* String */
-    ITDB_SPLFIELD_PLAYCOUNT = 0x16,    /* Int  (e.g. from/to = 1) */
-    ITDB_SPLFIELD_LAST_PLAYED = 0x17,  /* Int/ (e.g. from = bcfa83ff (6/19/2004)
-				     to = 0xbcfbd57f (6/20/2004)) */
-    ITDB_SPLFIELD_DISC_NUMBER = 0x18,  /* Int  (e.g. from/to = 1) */
-    ITDB_SPLFIELD_RATING = 0x19,       /* Int/Stars Rating (e.g. from/to =
-                                     60 (3 stars)) */
-    ITDB_SPLFIELD_COMPILATION = 0x1f,  /* Int (e.g. is set ->
-				     ITDB_SPLACTION_IS_INT/from=1,
-				     is not set ->
-				     ITDB_SPLACTION_IS_NOT_INT/from=1) */
-    ITDB_SPLFIELD_BPM = 0x23,          /* Int  (e.g. from/to = 60) */
-    ITDB_SPLFIELD_GROUPING = 0x27,     /* String */
-    ITDB_SPLFIELD_PLAYLIST = 0x28,     /* FIXME - Unknown...not parsed
-				     correctly...from/to = 0xb6fbad5f
-				     for "Purchased Music".  Extra
-				     data after "to"... */
-    ITDB_SPLFIELD_VIDEO_KIND = 0x3c,   /* Logic Int */
-    ITDB_SPLFIELD_TVSHOW = 0x3e,       /* String */
-    ITDB_SPLFIELD_SEASON_NR = 0x3f,    /* Int */
-    ITDB_SPLFIELD_SKIPCOUNT = 0x44,    /* Int */
-    ITDB_SPLFIELD_LAST_SKIPPED = 0x45, /* Int */
-    ITDB_SPLFIELD_ALBUMARTIST = 0x47   /* String */
+    ITDB_SPLFIELD_SONG_NAME = 0x02,
+    ITDB_SPLFIELD_ALBUM = 0x03,
+    ITDB_SPLFIELD_ARTIST = 0x04,
+    ITDB_SPLFIELD_BITRATE = 0x05,
+    ITDB_SPLFIELD_SAMPLE_RATE = 0x06,
+    ITDB_SPLFIELD_YEAR = 0x07,
+    ITDB_SPLFIELD_GENRE = 0x08,
+    ITDB_SPLFIELD_KIND = 0x09,
+    ITDB_SPLFIELD_DATE_MODIFIED = 0x0a,
+    ITDB_SPLFIELD_TRACKNUMBER = 0x0b,
+    ITDB_SPLFIELD_SIZE = 0x0c,
+    ITDB_SPLFIELD_TIME = 0x0d,
+    ITDB_SPLFIELD_COMMENT = 0x0e,
+    ITDB_SPLFIELD_DATE_ADDED = 0x10,
+    ITDB_SPLFIELD_COMPOSER = 0x12,
+    ITDB_SPLFIELD_PLAYCOUNT = 0x16,
+    ITDB_SPLFIELD_LAST_PLAYED = 0x17,
+    ITDB_SPLFIELD_DISC_NUMBER = 0x18,
+    ITDB_SPLFIELD_RATING = 0x19,
+    ITDB_SPLFIELD_COMPILATION = 0x1f,
+    ITDB_SPLFIELD_BPM = 0x23,
+    ITDB_SPLFIELD_GROUPING = 0x27,
+    ITDB_SPLFIELD_PLAYLIST = 0x28,
+    ITDB_SPLFIELD_VIDEO_KIND = 0x3c,
+    ITDB_SPLFIELD_TVSHOW = 0x3e,
+    ITDB_SPLFIELD_SEASON_NR = 0x3f,
+    ITDB_SPLFIELD_SKIPCOUNT = 0x44,
+    ITDB_SPLFIELD_LAST_SKIPPED = 0x45,
+    ITDB_SPLFIELD_ALBUMARTIST = 0x47
 } ItdbSPLField;
 
+/**
+ * Itdb_SPLPref:
+ * @liveupdate:         Live Updating
+ * @checkrules:         Match this number of rules.  If set to 0, ignore rules.
+ * @checklimits:        Limit to this number of @limittype.  If 0, no limits.
+ * @limittype:          an #ItdbLimitType
+ * @limitsort:          an #ItdbLimitSort
+ * @limitvalue:         The value typed next to "Limit type"
+ * @matchcheckedonly:   Match only checked songs
+ * @reserved_int1:      Reserved for future use
+ * @reserved_int2:      Reserved for future use
+ * @reserved1:          Reserved for future use
+ * @reserved2:          Reserved for future use
+ *
+ * Smart Playlist preferences are for various flags that are not strictly smart
+ * playlist "rules."
+ *
+ * Since: 0.5.0
+ */
 struct _Itdb_SPLPref
 {
-    guint8  liveupdate;        /* "live Updating" check box */
-    guint8  checkrules;        /* "Match X of the following
-				  conditions" check box */
-    guint8  checklimits;       /* "Limit To..." check box */
-    guint32 limittype;         /* See types defined above */
-    guint32 limitsort;         /* See types defined above */
-    guint32 limitvalue;        /* The value typed next to "Limit
-				  type" */
-    guint8  matchcheckedonly;  /* "Match only checked songs" check box */
-    /* reserved for future use */
+    guint8  liveupdate;
+    guint8  checkrules;
+    guint8  checklimits;
+    guint32 limittype;
+    guint32 limitsort;
+    guint32 limitvalue;
+    guint8  matchcheckedonly;
     gint32 reserved_int1;
     gint32 reserved_int2;
     gpointer reserved1;
     gpointer reserved2;
 };
 
+/**
+ * Itdb_SPLRule:
+ * @field:          an #ItdbSPLFieldType
+ * @action:         an #ItdbSPLActionType
+ * @string:         data in UTF8
+ * @fromvalue:      from value
+ * @fromdate:       from date
+ * @fromunits:      from units
+ * @tovalue:        to value
+ * @todate:         to date
+ * @tounits:        to units
+ * @unk052:         Unknown
+ * @unk056:         Unknown
+ * @unk060:         Unknown
+ * @unk064:         Unknown
+ * @unk068:         Unknown
+ * @reserved_int1:  Reserved for future use
+ * @reserved_int2:  Reserved for future use
+ * @reserved1:      Reserved for future use
+ * @reserved2:      Reserved for future use
+ *
+ * Smart Playlist Rule
+ *
+ * The from and to fields require some explanation.  If @field is a date type,
+ * then @value would be set to 0x2dae2dae2dae2dae, @date would be a number,
+ * (e.g. 2 or -2), and @units would be a time unit in seconds (e.g. one week
+ * would be 604800).  If @field is an integer comparison, like rating = 60 (i.e.
+ * 3 stars), then @value would be the value we care about (e.g. 60), @date would
+ * be 0, and @units would be 1.  Binary AND types are similar, @value is the
+ * important part, with @date = 0 and @units = 1.  Clear as mud, right?
+ *
+ * For more details see <ulink
+ * url="http://ipodlinux.org/ITunesDB.html&num;Smart_Playlist_Rule_Values">ipodlinux.org</ulink>.
+ *
+ * Since: 0.5.0
+ */
 struct _Itdb_SPLRule
 {
     guint32 field;
     guint32 action;
-    gchar *string;             /* data in UTF8  */
-    /* from and to are pretty stupid.. if it's a date type of field,
-       then
-         value = 0x2dae2dae2dae2dae,
-         date = some number, like 2 or -2
-         units = unit in seconds, like 604800 = a week
-       but if this is actually some kind of integer comparison, like
-       rating = 60 (3 stars)
-         value = the value we care about
-	 date = 0
-	 units = 1 */
+    gchar *string;
     guint64 fromvalue;
     gint64 fromdate;
     guint64 fromunits;
@@ -427,12 +727,25 @@ struct _Itdb_SPLRule
     gpointer reserved2;
 };
 
-
+/**
+ * Itdb_SPLRules:
+ * @unk004:         Unknown
+ * @match_operator: Whether all rules must match (#ITDB_SPLMATCH_AND) or any
+ *                  rules may match (#ITDB_SPLMATCH_OR)
+ * @rules:          list of #Itdb_SPLRule's
+ * @reserved_int1:  Reserved for future use
+ * @reserved_int2:  Reserved for future use
+ * @reserved1:      Reserved for future use
+ * @reserved2:      Reserved for future use
+ *
+ * Smart Playlist Rules
+ *
+ * Since: 0.5.0
+ */
 struct _Itdb_SPLRules
 {
     guint32 unk004;
-    guint32 match_operator;  /* "All" (logical AND): Itdb_SPLMATCH_AND,
-				"Any" (logical OR): Itdb_SPLMATCH_OR */
+    guint32 match_operator;
     GList *rules;
     /* reserved for future use */
     gint32 reserved_int1;
@@ -448,10 +761,24 @@ struct _Itdb_SPLRules
  *
 \* ------------------------------------------------------------ */
 
+/**
+ * Itdb_Chapter:
+ * @startpos:      The start position of the chapter in ms. The first chapter
+ *                 begins at 1.
+ * @chaptertitle:  The chapter title in UTF8
+ * @reserved_int1: Reserved for future use
+ * @reserved_int2: Reserved for future use
+ * @reserved1:     Reserved for future use
+ * @reserved2:     Reserved for future use
+ *
+ * Structure representing an iTunesDB Chapter
+ *
+ * Since: 0.7.0
+ */
 struct _Itdb_Chapter
 {
     guint32 startpos;
-    gchar *chaptertitle;          /* data in UTF8  */
+    gchar *chaptertitle;
     /* reserved for future use */
     gint32 reserved_int1;
     gint32 reserved_int2;
@@ -459,7 +786,21 @@ struct _Itdb_Chapter
     gpointer reserved2;
 };
 
-
+/**
+ * Itdb_Chapterdata:
+ * @chapters:      A list of chapters (#Itdb_Chapter)
+ * @unk024:        Unknown
+ * @unk028:        Unknown
+ * @unk032:        Unknown
+ * @reserved_int1: Reserved for future use
+ * @reserved_int2: Reserved for future use
+ * @reserved1:     Reserved for future use
+ * @reserved2:     Reserved for future use
+ *
+ * Structure representing iTunesDB Chapter data
+ *
+ * Since: 0.7.0
+ */
 struct _Itdb_Chapterdata
 {
     GList *chapters;
@@ -480,25 +821,52 @@ struct _Itdb_Chapterdata
  *
 \* ------------------------------------------------------------ */
 
-/* one star is how much (track->rating) */
+/**
+ * ITDB_RATING_STEP:
+ *
+ * The multiplier for each star in #track->rating
+ */
 #define ITDB_RATING_STEP 20
 
+/**
+ * Itdb_Artwork:
+ * @thumbnail:          An #Itdb_Thumb
+ * @id:                 Artwork id used by photoalbums.  This starts at 0x40 and
+ *                      is set automatically when the ArtworkDB or PhotoDB is
+ *                      written
+ * @dbid:               The dbid of associated track.  Used internally by
+ *                      libgpod.
+ * @unk028:             Unknown
+ * @rating:             Rating from iPhoto * 20 (PhotoDB only)
+ * @unk036:             Unknown
+ * @creation_date:      Date the image file was created (PhotoDB only)
+ * @digitized_date:     Date the image was taken (EXIF information, PhotoDB
+ *                      only)
+ * @artwork_size:       Size in bytes of the original source image (PhotoDB
+ *                      only -- don't touch in case of ArtworkDB!)
+ * @reserved_int1:      Reserved for future use
+ * @reserved_int2:      Reserved for future use
+ * @reserved1:          Reserved for future use
+ * @reserved2:          Reserved for future use
+ * @usertype:           For use by application
+ * @userdata:           For use by application
+ * @userdata_duplicate: A function to duplicate #userdata
+ * @userdata_destroy:   A function to free #userdata
+ *
+ * Structure representing artwork in an #Itdb_iTunesDB or #Itdb_PhotoDB
+ *
+ * Since: 0.3.0
+ */
 struct _Itdb_Artwork {
     Itdb_Thumb *thumbnail;
-    guint32 id;            /* Artwork id used by photoalbums, starts at
-			    * 0x40... libgpod will set this on sync. */
-    guint64 dbid;          /* dbid of associated track. used
-			      internally by libgpod */
+    guint32 id;
+    guint64 dbid;
     gint32  unk028;
-    guint32 rating;        /* Rating from iPhoto * 20 (PhotoDB only) */
+    guint32 rating;
     gint32  unk036;
-    time_t  creation_date;  /* Date the image file was created
-			      (creation date of image file (PhotoDB only) */
-    time_t  digitized_date;/* Date the image was taken (EXIF information,
-			      PhotoDB only) */
-    guint32 artwork_size;  /* Size in bytes of the original source
-			      image (PhotoDB only -- don't touch in
-			      case of ArtworkDB!) */
+    time_t  creation_date;
+    time_t  digitized_date;
+    guint32 artwork_size;
     /* reserved for future use */
     gint32 reserved_int1;
     gint32 reserved_int2;
@@ -512,12 +880,29 @@ struct _Itdb_Artwork {
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
-
+/**
+ * Itdb_PhotoDB:
+ * @photos:             A list of photos in the database (#Itdb_Artwork)
+ * @photoalbums:        A list of albums in the database (#Itdb_PhotoAlbum)
+ * @device:             iPod device info (#Itdb_Device)
+ * @reserved_int1:      Reserved for future use
+ * @reserved_int2:      Reserved for future use
+ * @reserved1:          Reserved for future use
+ * @reserved2:          Reserved for future use
+ * @usertype:           For use by application
+ * @userdata:           For use by application
+ * @userdata_duplicate: A function to duplicate #userdata
+ * @userdata_destroy:   A function to free #userdata
+ *
+ * Structure representing an iTunes Photo database
+ *
+ * Since: 0.4.0
+ */
 struct _Itdb_PhotoDB
 {
-    GList *photos;      /* (Itdb_Artwork *)     */
-    GList *photoalbums; /* (Itdb_PhotoAlbum *)  */
-    Itdb_Device *device;/* iPod device info     */
+    GList *photos;
+    GList *photoalbums;
+    Itdb_Device *device;
     /* reserved for future use */
     gint32 reserved_int1;
     gint32 reserved_int2;
@@ -531,12 +916,31 @@ struct _Itdb_PhotoDB
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
+/**
+ * Itdb_iTunesDB:
+ * @tracks:             A list of tracks in the database (#Itdb_Track)
+ * @playlists:          A list of playlists in the database (#Itdb_Playlist)
+ * @filename:           The filename of the iTunesDB
+ * @device:             iPod device info (#Itdb_Device)
+ * @version:            The version number of the iTunesDB
+ * @id:                 A 64 bit id value for the iTunesDB
+ * @reserved_int1:      Reserved for future use
+ * @reserved_int2:      Reserved for future use
+ * @reserved1:          Reserved for future use
+ * @reserved2:          Reserved for future use
+ * @usertype:           For use by application
+ * @userdata:           For use by application
+ * @userdata_duplicate: A function to duplicate #userdata
+ * @userdata_destroy:   A function to free #userdata
+ *
+ * Structure representing an iTunes database
+ */
 struct _Itdb_iTunesDB
 {
     GList *tracks;
     GList *playlists;
-    gchar *filename;    /* filename of iTunesDB */
-    Itdb_Device *device;/* iPod device info     */
+    gchar *filename;
+    Itdb_Device *device;
     guint32 version;
     guint64 id;
     /* reserved for future use */
@@ -552,32 +956,62 @@ struct _Itdb_iTunesDB
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
+/**
+ * Itdb_PhotoAlbum:
+ * @photodb:              A pointer to the #Itdb_PhotoDB (for convenience)
+ * @name:                 The name of photoalbum in UTF8
+ * @members:              A list of photos in album (#Itdb_Artwork)
+ * @album_type:           The album type.  0x01 for master (Photo Library),
+ *                        0x02 for a normal album.  (4 and 5 have also been
+ *                        seen.)
+ * @playmusic:            Play music during slideshow
+ * @repeat:               Repeat the slideshow
+ * @random:               Show slides in random order
+ * @show_titles:          Show slide captions
+ * @transition_direction: Transition direction.  0=none, 1=left-to-right,
+ *                        2=right-to-left, 3=top-to-bottom, 4=bottom-to-top
+ * @slide_duration:       Slide duration in seconds
+ * @transition_duration:  Transition duration, in milliseconds
+ * @song_id:              The @dbid2 of a track to play during slideshow
+ * @unk024:               Unknown, seems to be always 0
+ * @unk028:               Unknown, seems to be always 0
+ * @unk044:               Unknown, seems to always be 0
+ * @unk048:               Unknown, seems to always be 0
+ * @album_id:             The id of the album.  This is set automatically when
+ *                        the PhotoDB is written.
+ * @prev_album_id:        The id of the previous playlist.  This is set
+ *                        automatically when the PhotoDB is written.
+ * @reserved_int1:        Reserved for future use
+ * @reserved_int2:        Reserved for future use
+ * @reserved1:            Reserved for future use
+ * @reserved2:            Reserved for future use
+ * @usertype:             For use by application
+ * @userdata:             For use by application
+ * @userdata_duplicate:   A function to duplicate #userdata
+ * @userdata_destroy:     A function to free #userdata
+ *
+ * Structure representing an iTunes Photo Album
+ *
+ * Since: 0.4.0
+ */
 struct _Itdb_PhotoAlbum
 {
-    Itdb_PhotoDB *photodb;       /* database to which this album belongs  */
-    gchar *name;                 /* name of photoalbum in UTF8            */
-    GList *members;              /* photos in album (Itdb_Artwork *)      */
-    guint8 album_type;           /* 0x01 for master (Photo Library),
-				    0x02 otherwise (sometimes 4 and 5)    */
-    guint8 playmusic;            /* play music during slideshow (from
-				    iPhoto setting)                       */
-    guint8 repeat;               /* repeat the slideshow (from iPhoto
-				    setting)                              */
-    guint8 random;               /* show the slides in random order
-			            (from iPhoto setting)                 */
-    guint8 show_titles;          /* show slide captions (from iPhoto
-				    setting)                              */
-    guint8 transition_direction; /* 0=none, 1=left-to-right,
-				    2=right-to-left, 3=top-to-bottom,
-				    4=bottom-to-top (from iPhoto setting) */
-    gint32 slide_duration;       /* in seconds (from iPhoto setting)      */
-    gint32 transition_duration;  /* in milliseconds (from iPhoto setting) */
-    gint64 song_id;              /* dbid2 of track in iTunesDB to play
-				    during slideshow (from iPhoto setting)*/
-    gint32 unk024;               /* unknown, seems to be always 0         */
-    gint16 unk028;               /* unknown, seems to be always 0         */
-    gint32 unk044;               /* unknown, seems to always be 0         */
-    gint32 unk048;               /* unknown, seems to always be 0         */
+    Itdb_PhotoDB *photodb;
+    gchar *name;
+    GList *members;
+    guint8 album_type;
+    guint8 playmusic;
+    guint8 repeat;
+    guint8 random;
+    guint8 show_titles;
+    guint8 transition_direction;
+    gint32 slide_duration;
+    gint32 transition_duration;
+    gint64 song_id;
+    gint32 unk024;
+    gint16 unk028;
+    gint32 unk044;
+    gint32 unk048;
     /* set automatically at time of writing the PhotoDB */
     gint32  album_id;
     gint32  prev_album_id;
@@ -594,25 +1028,61 @@ struct _Itdb_PhotoAlbum
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
+/**
+ * Itdb_Playlist:
+ * @itdb:               A pointer to the #Itdb_iTunesDB (for convenience)
+ * @name:               The name of the playlist in UTF8
+ * @type:               The playlist type (normal or master)
+ * @flag1:              Unknown, usually set to 0
+ * @flag2:              Unknown, always set to 0
+ * @flag3:              Unknown, always set to 0
+ * @num:                The number of tracks in the playlist
+ * @members:            A list of tracks in the playlist (#Itdb_Track)
+ * @is_spl:             True if the playlist is a smart playlist, otherwise
+ *                      false
+ * @timestamp:          When the playlist was created
+ * @id:                 The playlist ID
+ * @sortorder:          The playlist sort order (#ItdbPlaylistSortOrder)
+ * @podcastflag:        This is set to 0 on normal playlists and to 1 for the
+ *                      Podcast playlist. If set to 1, the playlist will not be
+ *                      shown under 'Playlists' on the iPod, but as 'Podcasts'
+ *                      under the Music menu. The actual title of the Playlist
+ *                      does not matter. If more than one playlist is set to 1,
+ *                      they don't show up at all.
+ * @splpref:            Smart playlist preferences (#Itdb_SPLPref)
+ * @splrules:           Smart playlist rules (#Itdb_SPLRules)
+ * @reserved100:        Reserved for MHOD100 implementation
+ * @reserved101:        Reserved for MHOD100 implementation
+ * @reserved_int1:      Reserved for future use
+ * @reserved_int2:      Reserved for future use
+ * @reserved1:          Reserved for future use
+ * @reserved2:          Reserved for future use
+ * @usertype:           For use by application
+ * @userdata:           For use by application
+ * @userdata_duplicate: A function to duplicate #userdata
+ * @userdata_destroy:   A function to free #userdata
+ *
+ * Structure representing an iTunes Playlist
+ */
 struct _Itdb_Playlist
 {
-    Itdb_iTunesDB *itdb;  /* pointer to iTunesDB (for convenience) */
-    gchar *name;          /* name of playlist in UTF8              */
-    guint8 type;          /* ITDB_PL_TYPE_NORM/_MPL                */
-    guint8 flag1;         /* unknown, usually set to 0             */
-    guint8 flag2;         /* unknown, always set to 0              */
-    guint8 flag3;         /* unknown, always set to 0              */
-    gint  num;            /* number of tracks in playlist          */
-    GList *members;       /* tracks in playlist (Track *)          */
-    gboolean is_spl;      /* smart playlist?                       */
-    time_t timestamp;     /* timestamp of playlist creation        */
-    guint64 id;           /* playlist ID                           */
-    guint32 sortorder;    /* How to sort playlist -- see below     */
-    guint32 podcastflag;  /* ITDB_PL_FLAG_NORM/_PODCAST            */
-    Itdb_SPLPref splpref;      /* smart playlist prefs                  */
-    Itdb_SPLRules splrules;    /* rules for smart playlists             */
-    gpointer reserved100; /* reserved for MHOD100 implementation   */
-    gpointer reserved101; /* reserved for MHOD100 implementation   */
+    Itdb_iTunesDB *itdb;
+    gchar *name;
+    guint8 type;
+    guint8 flag1;
+    guint8 flag2;
+    guint8 flag3;
+    gint  num;
+    GList *members;
+    gboolean is_spl;
+    time_t timestamp;
+    guint64 id;
+    guint32 sortorder;
+    guint32 podcastflag;
+    Itdb_SPLPref splpref;
+    Itdb_SPLRules splrules;
+    gpointer reserved100;
+    gpointer reserved101;
     /* reserved for future use */
     gint32 reserved_int1;
     gint32 reserved_int2;
@@ -627,39 +1097,39 @@ struct _Itdb_Playlist
 };
 
 
-/*
-Playlist Sort Order
-
-1 - playlist order (manual sort order)
-2 - ???
-3 - songtitle
-4 - album
-5 - artist
-6 - bitrate
-7 - genre
-8 - kind
-9 - date modified
-10 - track nr
-11 - size
-12 - time
-13 - year
-14 - sample rate
-15 - comment
-16 - date added
-17 - equalizer
-18 - composer
-19 - ???
-20 - play count
-21 - last played
-22 - disc nr
-23 - my rating
-24 - release date (I guess, it's the value for the "Podcasts" list)
-25 - BPM
-26 - grouping
-27 - category
-28 - description
-*/
-
+/**
+ * ItdbPlaylistSortOrder:
+ * @ITDB_PSO_MANUAL:        Sort by playlist order (manual sort)
+ * @ITDB_PSO_TITLE:         Sort by track title
+ * @ITDB_PSO_ALBUM:         Sort by album
+ * @ITDB_PSO_ARTIST:        Sort by artist
+ * @ITDB_PSO_BIRATE:        Sort by bitrate
+ * @ITDB_PSO_GENRE:         Sort by genre
+ * @ITDB_PSO_FILETYPE:      Sort by filetype
+ * @ITDB_PSO_TIME_MODIFIED: Sort by date modified
+ * @ITDB_PSO_TRACK_NR:      Sort by track number
+ * @ITDB_PSO_SIZE:          Sort by track size
+ * @ITDB_PSO_TIME:          Sort by track time
+ * @ITDB_PSO_YEAR:          Sort by year
+ * @ITDB_PSO_SAMPLERATE:    Sort by samplerate
+ * @ITDB_PSO_COMMENT:       Sort by comments
+ * @ITDB_PSO_TIME_ADDED:    Sort by date added
+ * @ITDB_PSO_EQUALIZER:     Sort by equilizer
+ * @ITDB_PSO_COMPOSER:      Sort by composer
+ * @ITDB_PSO_PLAYCOUNT:     Sort by playcount
+ * @ITDB_PSO_TIME_PLAYED:   Sort by date last played
+ * @ITDB_PSO_CD_NR:         Sort by disc number
+ * @ITDB_PSO_RATING:        Sort by rating
+ * @ITDB_PSO_RELEASE_DATE:  Sort by release date
+ * @ITDB_PSO_BPM:           Sort by beats per minute
+ * @ITDB_PSO_GROUPING:      Sort by grouping
+ * @ITDB_PSO_CATEGORY:      Sort by category
+ * @ITDB_PSO_DESCRIPTION:   Sort by description
+ *
+ * Playlist Sort Order
+ *
+ * Since: 0.1.3
+ */
 typedef enum
 {
     ITDB_PSO_MANUAL = 1,
@@ -693,7 +1163,23 @@ typedef enum
 } ItdbPlaylistSortOrder;
 
 
-/* Mediatype definitions */
+/**
+ * Itdb_Mediatype:
+ * @ITDB_MEDIATYPE_AUDIO:      Audio files
+ * @ITDB_MEDIATYPE_MOVIE:      Movies
+ * @ITDB_MEDIATYPE_PODCAST:    Podcasts
+ * @ITDB_MEDIATYPE_AUDIOBOOK:  Audio books
+ * @ITDB_MEDIATYPE_MUSICVIDEO: Music videos
+ * @ITDB_MEDIATYPE_TVSHOW:     TV Shows
+ *
+ * Mediatype definitions
+ *
+ * The mediatype is used to determine what menu a track appears under.  For
+ * example, setting the mediatype to #ITDB_MEDIATYPE_PODCAST makes the track
+ * appear on the Podcast menu.
+ *
+ * Since: 0.5.0
+ */
 typedef enum
 {
     ITDB_MEDIATYPE_AUDIO      = 0x0001,
@@ -704,35 +1190,331 @@ typedef enum
     ITDB_MEDIATYPE_TVSHOW     = 0x0040,
 } Itdb_Mediatype;
 
-/* some of the descriptive comments below are copied verbatim from
-   http://ipodlinux.org/ITunesDB. 
-   http://ipodlinux.org/ITunesDB is the best source for information
-   about the iTunesDB and related files. */
+/**
+ * Itdb_Track:
+ * @itdb:                       A pointer to the #Itdb_iTunesDB (for convenience)
+ * @title:                      The title of the track in UTF8
+ * @ipod_path:                  The file path on the iPod.  Directories are
+ *                              separated with ":" instead of "/".  The path is
+ *                              relative to the iPod mountpoint.
+ * @album:                      The album name in UTF8
+ * @artist:                     The artist name in UTF8
+ * @genre:                      The genre in UTF8
+ * @filetype:                   A UTF8 string describing the file type.  E.g.
+ *                              "MP3-File".
+ * @comment:                    A comment in UTF8
+ * @category:                   The category ("Technology", "Music", etc.)
+ *                              where the podcast was located.  (Added in
+ *                              dbversion 0x0d)
+ * @composer:                   The composer name in UTF8
+ * @grouping:                   ??? (UTF8)
+ * @description:                Description text (such as podcast show notes).
+ *                              (Added in dbversion 0x0d)
+ * @podcasturl:                 Podcast Enclosure URL in UTF-8 or ASCII.
+ *                              (Added in dbversion 0x0d)
+ * @podcastrss:                 Podcast RSS URL in UTF-8 or ASCII.
+ *                              (Added in dbversion 0x0d)
+ * @chapterdata:                This is an m4a-style entry that is used to
+ *                              display subsongs within a mhit.  (Added in
+ *                              dbversion 0x0d)
+ * @subtitle:                   Subtitle (usually the same as Description).
+ *                              (Added in dbversion 0x0d)
+ * @tvshow:                     Name of the TV show (only used for TV Shows).
+ *                              (Added in dbversion 0x0d?) (Since libgpod-0.4.2)
+ * @tvepisode:                  The episode number (only used for TV Shows).
+ *                              (Added in dbversion 0x0d?) (Since libgpod-0.4.2)
+ * @tvnetwork:                  The TV network (only used for TV Shows).
+ *                              (Added in dbversion 0x0d?) (Since libgpod-0.4.2)
+ * @albumartist:                The album artist (Added in dbversion 0x13?)
+ *                              (Since libgpod-0.4.2)
+ * @keywords:                   List of keywords pertaining to the track.
+ *                              (Added in dbversion 0x13?) (Since libgpod-0.4.2)
+ * @sort_artist:                The artist name used for sorting.  Artists with
+ *                              names like "The Artist" would have "Artist,
+ *                              The" here.  If you do not set this field,
+ *                              libgpod will pre-sort the lists displayed by
+ *                              the iPod according to "Artist, The", without
+ *                              setting this field.
+ *                              (Added in dbversion 0x13?) (Since libgpod-0.5.0)
+ * @sort_title:                 The track title used for sorting.  See
+ *                              @sort_artist. (Since libgpod-0.5.0)
+ * @sort_album:                 The album name used for sorting.  See
+ *                              @sort_artist. (Since libgpod-0.5.0)
+ * @sort_albumartist:           The album artist used for sorting.  See
+ *                              @sort_artist. (Since libgpod-0.5.0)
+ * @sort_composer:              The composer used for sorting.  See
+ *                              @sort_artist. (Since libgpod-0.5.0)
+ * @sort_tvshow:                The name of the TV show used for sorting.  See
+ *                              @sort_artist. (Since libgpod-0.5.0)
+ * @id:                         Unique ID of track
+ * @size:                       The size of the file in bytes
+ * @tracklen:                   The length of the track in ms
+ * @cd_nr:                      The CD number the track comes from.
+ * @cds:                        The total number of CDs.
+ * @track_nr:                   The track number.
+ * @tracks:                     The total number of tracks.
+ * @bitrate:                    The bitrate at which the file is encoded.
+ * @samplerate:                 The samplerate of the track (e.g. CD = 44100)
+ * @samplerate_low:             In the iTunesDB the samplerate is
+ *                              multiplied by 0x10000 -- these are the
+ *                              lower 16 bit, which are usually 0
+ * @year:                       The year the track was released
+ * @volume:                     Volume adjustment field.  This is a value from
+ *                              -255 to 255 that will be applied to the track
+ *                              on playback.
+ * @soundcheck:                 The SoundCheck value to apply to the song, when
+ *                              SoundCheck is switched on in the iPod settings.
+ *                              The value for this field can be determined by
+ *                              the equation: X = 1000 * 10 ^ (-.1 * Y) where Y
+ *                              is the adjustment value in dB and X is the
+ *                              value that goes into the SoundCheck field. The
+ *                              value 0 is special, the equation is not used
+ *                              and it is treated as "no Soundcheck" (basically
+ *                              the same as the value 1000). This equation
+ *                              works perfectly well with ReplayGain derived
+ *                              data instead of the iTunes SoundCheck derived
+ *                              information.
+ * @time_added:                 The time the track was added.
+ * @time_modified:              The time the track was last modified
+ * @time_played:                The time the track was last played
+ * @bookmark_time:              The time, in milliseconds, that the track will
+ *                              start playing at. This is used for AudioBook
+ *                              filetypes (.aa and .m4b).  Note that there is
+ *                              also a bookmark value in the play counts file
+ *                              that will be set by the iPod and can be used
+ *                              instead of this value.
+ * @rating:                     The track rating (stars * #ITDB_RATING_STEP)
+ * @playcount:                  The number of times the track has been played
+ * @playcount2:                 This also stores the play count of the
+ *                              track.  It is unclear if this ever differs
+ *                              from the above value. During sync, this is set
+ *                              to the same value as @playcount.
+ * @recent_playcount:           The number of times the track was played since
+ *                              the last sync.
+ * @transferred:                Whether the file been transferred to iPod.
+ * @BPM:                        BPM (beats per minute) of the track
+ * @app_rating:                 The last rating set by an application (e.g.
+ *                              iTunes).  If the rating on the iPod and the
+ *                              @rating field above differ, the original
+ *                              rating is copied here and the new rating is
+ *                              stored in @rating.
+ * @type1:                      CBR MP3s and AAC are 0x00, VBR MP3s are 0x01
+ * @type2:                      MP3s are 0x01, AAC are 0x00
+ * @compilation:                Flag to mark the track as a compilation.  True
+ *                              if set to 0x1, false if set to 0x0.
+ * @starttime:                  The time, in milliseconds, at which the song
+ *                              will start playing.
+ * @stoptime:                   The time, in milliseconds, at which the song
+ *                              will stop playing.
+ * @checked:                    Flag for whether the track is checked.  True if
+ *                              set to 0x0, false if set to 0x1
+ * @dbid:                       Unique database ID that identifies this song
+ *                              across the databases on the iPod. For example,
+ *                              this id joins an iTunesDB mhit with an
+ *                              ArtworkDB mhii.
+ * @drm_userid:                 Apple Store/Audible User ID (for DRM'ed files
+ *                              only, set to 0 otherwise).
+ * @visible:                    If this value is 1, the song is visible on the
+ *                              iPod. All other values cause the file to be
+ *                              hidden.
+ * @filetype_marker:            This appears to always be 0 on hard drive based
+ *                              iPods, but for the iTunesDB that is written to
+ *                              an iPod Shuffle, iTunes 4.7.1 writes out the
+ *                              file's type as an ANSI string(!). For example,
+ *                              a MP3 file has a filetype of 0x4d503320 ->
+ *                              0x4d = 'M', 0x50 = 'P', 0x33 = '3', 0x20 =
+ *                              &lt;space&gt;.  This is set to the filename
+ *                              extension by libgpod when copying the track to
+ *                              the iPod.
+ * @artwork_count:              The number of album artwork items associated
+ *                              with this song.  libgpod updates this value
+ *                              when syncing.
+ * @artwork_size:               The total size of artwork (in bytes) attached
+ *                              to this song, when it is converted to JPEG
+ *                              format. Observed in dbversion 0x0b and with
+ *                              an iPod Photo. libgpod updates this value when
+ *                              syncing.
+ * @samplerate2:                The sample rate of the song expressed as an
+ *                              IEEE 32 bit floating point number.  It is
+ *                              uncertain why this is here.  libgpod will set
+ *                              this when adding a track.
+ * @unk126:                     Unknown, but always seems to be 0xffff for
+ *                              MP3/AAC songs, 0x0 for uncompressed songs
+ *                              (like WAVE format), 0x1 for Audible.  libgpod
+ *                              will try to set this when adding a new track.
+ * @unk132:                     Unknown
+ * @time_released:              The date/time the track was added to the iTunes
+ *                              music store?  For podcasts this is the release
+ *                              date that is displayed next to the title in the
+ *                              Podcast playlist.
+ * @unk144:                     Unknown, but MP3 songs appear to be always
+ *                              0x000c, AAC songs are always 0x0033, Audible
+ *                              files are 0x0029, WAV files are 0x0.  libgpod
+ *                              will attempt to set this value when adding a
+ *                              track.
+ * @explicit_flag:              Flag to mark a track as "explicit" in iTunes.
+ *                              True if to 0x1, false if set to 0x0.
+ * @unk148:                     Unknown - used for Apple Store DRM songs
+ *                              (always 0x01010100?), zero otherwise
+ * @unk152:                     Unknown
+ * @skipcount:                  The number of times the track has been skipped.
+ *                              (Added in dbversion 0x0c)
+ * @recent_skipcount:           The number of times the track was skipped since
+ *                              the last sync.
+ * @last_skipped:               The time the track was last skipped.  (Added in
+ *                              dbversion 0x0c)
+ * @has_artwork:                Whether the track has artwork.
+ *                              True if set to 0x01, false if set to 0x02.
+ * @skip_when_shuffling:        Flag to skip the track when shuffling.  True if
+ *                              set to 0x01, false if set to 0x00. Audiobooks
+ *                              (.aa and .m4b) always seem to be skipped when
+ *                              shuffling, regardless of this flag.
+ * @remember_playback_position: Flag to remember playback position.
+ *                              True when set to 0x01, false when set to 0x00.
+ *                              Audiobooks (.aa and .m4b) always seem to
+ *                              remember the playback position, regardless of
+ *                              this flag.
+ * @flag4:                      Used for podcasts, 0x00 otherwise.  If set to
+ *                              0x01 the "Now Playing" page will show
+ *                              Title/Album, when set to 0x00 it will also show
+ *                              the Artist.  When set to 0x02 a sub-page
+ *                              (middle button) with further information about
+ *                              the track will be shown.
+ * @dbid2:                      The purpose of the field is unclear.  If not
+ *                              set, libgpod will set this to the same value as
+ *                              @dbid when adding a track.  (With iTunes, since
+ *                              dbversion 0x12, this field value differs from
+ *                              @dbid.)
+ * @lyrics_flag:                Whether the track has lyrics (e.g. it has a
+ *                              USLT ID3 tag in an MP3 or a @lyr atom in an
+ *                              MP4).  True if set to 0x01, false if set to
+ *                              0x00.
+ * @movie_flag:                 Whether the track is a movie.  True if set to
+ *                              0x01, false if set to 0x00.
+ * @mark_unplayed:              A value of 0x02 marks a podcast as unplayed on
+ *                              the iPod, with a bullet.  Once played it is set
+ *                              to 0x01. Non-podcasts have this set to 0x01.
+ *                              (Added in dbversion 0x0c)
+ * @unk179:                     Unknown, always 0x00 so far.  (Added in
+ *                              dbversion 0x0c)
+ * @unk180:                     Unknown.  (Added in dbversion 0x0c)
+ * @pregap:                     The number of samples of silence before the
+ *                              track starts (for gapless playback).
+ * @samplecount:                The number of samples in the track (for gapless
+ *                              playback).
+ * @unk196:                     Unknown.  (Added in dbversion 0x0c)
+ * @postgap:                    The number of samples of silence at the end of
+ *                              the track (for gapless playback).
+ * @unk204:                     Unknown.  Appears to be 0x1 for files encoded
+ *                              using the MP3 encoder, 0x0 otherwise.  (Added
+ *                              in dbversion 0x0c, first values observed in
+ *                              0x0d.)
+ * @mediatype:                  The type of file.  It must be set to 0x00000001
+ *                              for audio files, and set to 0x00000002 for
+ *                              video files.  If set to 0x00, the files show up
+ *                              in both, the audio menus ("Songs", "Artists",
+ *                              etc.) and the video menus ("Movies", "Music
+ *                              Videos", etc.).  It appears to be set to 0x20
+ *                              for music videos, and if set to 0x60 the file
+ *                              shows up in "TV Shows" rather than "Movies".
+ *                              <para>
+ *                              The following list summarizes all observed types:
+ *                              </para>
+ *                              <itemizedlist>
+ *                              <listitem>0x00 00 00 00 - Audio/Video</listitem>
+ *                              <listitem>0x00 00 00 01 - Audio</listitem>
+ *                              <listitem>0x00 00 00 02 - Video</listitem>
+ *                              <listitem>0x00 00 00 04 - Podcast</listitem>
+ *                              <listitem>0x00 00 00 06 - Video Podcast</listitem>
+ *                              <listitem>0x00 00 00 08 - Audiobook</listitem>
+ *                              <listitem>0x00 00 00 20 - Music Video</listitem>
+ *                              <listitem>0x00 00 00 40 - TV Show (shows up ONLY
+ *                              in TV Shows)</listitem>
+ *                              <listitem>0x00 00 00 60 - TV Show (shows up in
+ *                              the Music lists as well)</listitem>
+ *                              </itemizedlist>
+ * @season_nr:                  The season number of the track (only used for
+ *                              TV Shows).
+ * @episode_nr:                 The episode number of the track (only used for
+ *                              TV Shows).  Although this is not displayed on
+ *                              the iPod, the episodes are sorted by episode
+ *                              number.
+ * @unk220:                     Unknown.  This has something to do with
+ *                              protected files.  It is set to 0x0 for
+ *                              non-protected files.
+ * @unk224:                     Unknown.  (Added in dbversion 0x0c)
+ * @unk228:                     Unknown.  (Added in dbversion 0x0c)
+ * @unk232:                     Unknown.  (Added in dbversion 0x0c)
+ * @unk236:                     Unknown.  (Added in dbversion 0x0c)
+ * @unk240:                     Unknown.  (Added in dbversion 0x0c)
+ * @unk244:                     Unknown.  (Added in dbversion 0x13)
+ * @gapless_data:               The size in bytes from first Synch Frame
+ *                              (which is usually the XING frame that
+ *                              includes the LAME tag) until the 8th before
+ *                              the last frame. The gapless playback does not
+ *                              work for MP3 files if this is set to zero. For
+ *                              AAC tracks, this may be zero.  (Added in
+ *                              dbversion 0x13)
+ * @unk252:                     Unknown.  (Added in dbversion 0x0c)
+ * @gapless_track_flag:         If set to 1, this track has gapless playback
+ *                              data.  (Added in dbversion 0x13)
+ * @gapless_album_flag:         If set to 1, this track does not use
+ *                              crossfading in iTunes.  (Added in dbversion
+ *                              0x13)
+ * @artwork:                    An #Itdb_Artwork for cover art
+ * @mhii_link:                  This is set to the id of the corresponding
+ *                              ArtworkDB mhii, used for sparse artwork
+ *                              support.  (Since libgpod-0.7.0)
+ * @reserved_int1:              Reserved for future use
+ * @reserved_int2:              Reserved for future use
+ * @reserved_int3:              Reserved for future use
+ * @reserved_int4:              Reserved for future use
+ * @reserved_int5:              Reserved for future use
+ * @reserved_int6:              Reserved for future use
+ * @reserved1:                  Reserved for future use
+ * @reserved2:                  Reserved for future use
+ * @reserved3:                  Reserved for future use
+ * @reserved4:                  Reserved for future use
+ * @reserved5:                  Reserved for future use
+ * @reserved6:                  Reserved for future use
+ * @usertype:                   For use by application
+ * @userdata:                   For use by application
+ * @userdata_duplicate:         A function to duplicate #userdata
+ * @userdata_destroy:           A function to free #userdata
+ *
+ * Structure representing a track in an iTunesDB
+ *
+ * <note><para>When adding string fields don't forget to add them in
+ * itdb_track_duplicate() as well.</para></note>
+ *
+ * Many of the parameter descriptions are copied verbatim from
+ * http://ipodlinux.org/ITunesDB, which is the best source for information about
+ * the iTunesDB and related files.
+ */
 struct _Itdb_Track
 {
-  Itdb_iTunesDB *itdb;       /* pointer to iTunesDB (for convenience)   */
-  gchar   *title;            /* title (utf8)                            */
-  gchar   *ipod_path;        /* name of file on iPod: uses ":" instead
-				of "/" and is relative to mountpoint    */
-  gchar   *album;            /* album (utf8)                            */
-  gchar   *artist;           /* artist (utf8)                           */
-  gchar   *genre;            /* genre (utf8)                            */
-  gchar   *filetype;         /* eg. "MP3-File"...(utf8)                 */
-  gchar   *comment;          /* comment (utf8)                          */
-  gchar   *category;         /* Category for podcast                    */
-  gchar   *composer;         /* Composer (utf8)                         */
-  gchar   *grouping;         /* ? (utf8)                                */
-  gchar   *description;      /* see note for MHOD_ID in itdb_itunesdb.c */
-  gchar   *podcasturl;       /* see note for MHOD_ID in itdb_itunesdb.c */
-  gchar   *podcastrss;       /* see note for MHOD_ID in itdb_itunesdb.c */
-  Itdb_Chapterdata *chapterdata; /* see note for MHOD_ID in itdb_itunesdb.c */
-  gchar   *subtitle;         /* see note for MHOD_ID in itdb_itunesdb.c */
-/* the following 6 are new in libgpod 0.4.2... */
-  gchar   *tvshow;           /* see note for MHOD_ID in itdb_itunesdb.c */
-  gchar   *tvepisode;        /* see note for MHOD_ID in itdb_itunesdb.c */
-  gchar   *tvnetwork;        /* see note for MHOD_ID in itdb_itunesdb.c */
-  gchar   *albumartist;      /* see note for MHOD_ID in itdb_itunesdb.c */
-  gchar   *keywords;         /* see note for MHOD_ID in itdb_itunesdb.c */
+  Itdb_iTunesDB *itdb;
+  gchar   *title;
+  gchar   *ipod_path;
+  gchar   *album;
+  gchar   *artist;
+  gchar   *genre;
+  gchar   *filetype;
+  gchar   *comment;
+  gchar   *category;
+  gchar   *composer;
+  gchar   *grouping;
+  gchar   *description;
+  gchar   *podcasturl;
+  gchar   *podcastrss;
+  Itdb_Chapterdata *chapterdata;
+  gchar   *subtitle;
+/* the following 5 are new in libgpod 0.4.2... */
+  gchar   *tvshow;
+  gchar   *tvepisode;
+  gchar   *tvnetwork;
+  gchar   *albumartist;
+  gchar   *keywords;
 /* the following 6 are new in libgpod 0.5.0... */
   /* You can set these strings to override the standard
      sortorder. When set they take precedence over the default
@@ -747,199 +1529,90 @@ struct _Itdb_Track
      the lists displayed by the iPod according to "Artist, The",
      without setting the field.
   */
-  gchar   *sort_artist;      /* artist (for sorting)                    */
-  gchar   *sort_title;       /* title (for sorting)                     */
-  gchar   *sort_album;       /* album (for sorting)                     */
-  gchar   *sort_albumartist; /* album artist (for sorting)              */
-  gchar   *sort_composer;    /* composer (for sorting)                  */
-  gchar   *sort_tvshow;      /* tv show (for sorting)                   */
-/* new fields in libgpod 0.5.0 up to here */
-  guint32 id;                /* unique ID of track                      */
-  gint32  size;              /* size of file in bytes                   */
-  gint32  tracklen;          /* Length of track in ms                   */
-  gint32  cd_nr;             /* CD number                               */
-  gint32  cds;               /* number of CDs                           */
-  gint32  track_nr;          /* track number                            */
-  gint32  tracks;            /* number of tracks                        */
-  gint32  bitrate;           /* bitrate                                 */
-  guint16 samplerate;        /* samplerate (CD: 44100)                  */
-  guint16 samplerate_low;    /* in the iTunesDB the samplerate is
-                                multiplied by 0x10000 -- these are the
-				lower 16 bit, which are usually 0       */
-  gint32  year;              /* year                                    */
-  gint32  volume;            /* volume adjustment                       */
-  guint32 soundcheck;        /* volume adjustment "soundcheck"          */
-  time_t  time_added;        /* time when added                         */
-  time_t  time_modified;     /* time of last modification               */
-  time_t  time_played;       /* time of last play                       */
-  guint32 bookmark_time;     /* bookmark set for (AudioBook) in ms      */
-  guint32 rating;            /* star rating (stars * RATING_STEP (20))  */
-  guint32 playcount;         /* number of times track was played        */
-  guint32 playcount2;        /* Also stores the play count of the
-				song.  Don't know if it ever differs
-				from the above value. During sync itdb
-				sets playcount2 to the same value as
-				playcount.                              */
-  guint32 recent_playcount;  /* times track was played since last sync  */
-  gboolean transferred;      /* has file been transferred to iPod?      */
-  gint16  BPM;               /* BPM (beats per minute) of this track    */
-  guint8  app_rating;        /* star rating set by appl. (not
-			      * iPod). If the rating set on the iPod
-			        and the rating field above differ, the
-				original rating is copied here and the
-				new rating is stored above. */
-  guint8  type1;             /* CBR MP3s and AAC are 0x00, VBR MP3s are
-			        0x01                                    */
-  guint8  type2;             /* MP3s are 0x01, AAC are 0x00             */
+  gchar   *sort_artist;
+  gchar   *sort_title;
+  gchar   *sort_album;
+  gchar   *sort_albumartist;
+  gchar   *sort_composer;
+  gchar   *sort_tvshow;
+/* end of new fields in libgpod 0.5.0 */
+  guint32 id;
+  gint32  size;
+  gint32  tracklen;
+  gint32  cd_nr;
+  gint32  cds;
+  gint32  track_nr;
+  gint32  tracks;
+  gint32  bitrate;
+  guint16 samplerate;
+  guint16 samplerate_low;
+  gint32  year;
+  gint32  volume;
+  guint32 soundcheck;
+  time_t  time_added;
+  time_t  time_modified;
+  time_t  time_played;
+  guint32 bookmark_time;
+  guint32 rating;
+  guint32 playcount;
+  guint32 playcount2;
+  guint32 recent_playcount;
+  gboolean transferred;
+  gint16  BPM;
+  guint8  app_rating;
+  guint8  type1;
+  guint8  type2;
   guint8  compilation;
   guint32 starttime;
   guint32 stoptime;
-  guint8  checked;           /* 0x0: checkmark on track is set 0x1: not set */
-  guint64 dbid;              /* unique database ID                      */
-  guint32 drm_userid;        /* Apple Store/Audible User ID (for DRM'ed
-				files only, set to 0 otherwise).        */
-  guint32 visible;           /*  If this value is 1, the song is visible
-				 on the iPod. All other values cause
-				 the file to be hidden.                 */
-  guint32 filetype_marker;   /* This appears to always be 0 on hard
-                                drive based iPods, but for the
-                                iTunesDB that is written to an iPod
-                                Shuffle, iTunes 4.7.1 writes out the
-                                file's type as an ANSI string(!). For
-                                example, a MP3 file has a filetype of
-                                0x4d503320 -> 0x4d = 'M', 0x50 = 'P',
-                                0x33 = '3', 0x20 = <space>. (set to
-				the filename extension by itdb when
-				copying track to iPod)                  */
-  guint16 artwork_count;     /* The number of album artwork items
-				associated with this song. libgpod
-				updates this value when syncing */
-  guint32 artwork_size;      /* The total size of artwork (in bytes)
-				attached to this song, when it is
-				converted to JPEG format. Observed in
-				iPodDB version 0x0b and with an iPod
-				Photo. libgpod updates this value when
-				syncing                                 */
-  float samplerate2;         /* The sample rate of the song expressed
-				as an IEEE 32 bit floating point
-				number.  It's uncertain why this is
-				here.  itdb will set this when adding
-				a track                                 */
-
-  guint16 unk126;     /* unknown, but always seems to be 0xffff for
-			 MP3/AAC songs, 0x0 for uncompressed songs
-			 (like WAVE format), 0x1 for Audible. itdb
-			 will try to set this when adding a new track */
-  guint32 unk132;     /* unknown */
-  time_t  time_released;/* date/time added to music store? 
-			   For podcasts: release date as displayed next to the 
-			   title in the Podcast playlist */
-  guint16 unk144;     /* unknown, but MP3 songs appear to be always
-			 0x000c, AAC songs are always 0x0033, Audible
-			 files are 0x0029, WAV files are 0x0. itdb
-			 will attempt to set this value when adding a
-			 track. */ 
-  guint16 explicit_flag;/* If this flag is set to 1, the track is shown as
-			   explicit content in iTunes. Otherwise set this flag
-			   to 0.*/
-  guint32 unk148;     /* unknown - used for Apple Store DRM songs
-			 (always 0x01010100?), zero otherwise */
-  guint32 unk152;     /* unknown */
-  guint32 skipcount;  /* Number of times the track has been skipped.
-			 Formerly unk156 (added in dbversion 0x0c) */
-  guint32 recent_skipcount; /* number of times track was skipped since
-			       last sync */
-  guint32 last_skipped;/* Date/time last skipped. Formerly unk160
-			 (added in dbversion 0x0c) */
-  guint8 has_artwork; /* 0x01: artwork is present. 0x02: no artwork is
-			 present for this track (used by the iPod to
-			 decide whether to display Artwork or not) */
-  guint8 skip_when_shuffling;/* "Skip when shuffling" when set to
-			 0x01, set to 0x00 otherwise. .m4b and .aa
-			 files always seem to be skipped when
-			 shuffling, however */
-  guint8 remember_playback_position;/* "Remember playback position"
-			 when set to 0x01, set to 0x00 otherwise. .m4b
-			 and .aa files always seem to remember the
-			 playback position, however. */
-  guint8 flag4;       /* Used for podcasts, 0x00 otherwise.  If set to
-			 0x01 the "Now Playing" page will show
-			 Title/Album, when set to 0x00 it will also
-			 show the Artist. When set to 0x02 a sub-page
-			 (middle button) with further information
-			 about the track will be shown. */
-  guint64 dbid2;      /* not clear. if not set, itdb will set this to
-			 the same value as dbid when adding a
-			 track. (With iTunes, since V0x12, this field
-			 value differs from the dbid one.) */
-  guint8 lyrics_flag; /* set to 0x01 if lyrics are present in MP3 tag
-			 ("ULST"), 0x00 otherwise */
-  guint8 movie_flag;  /* set to 0x01 if it's a movie file, 0x00
-		         otherwise */
-  guint8 mark_unplayed; /* A value of 0x02 marks a podcast as unplayed
-			   on the iPod (bullet) once played it is set to
-			   0x01. Non-podcasts have this set to 0x01. */
-  guint8 unk179;      /* unknown (always 0x00 so far) */
+  guint8  checked;
+  guint64 dbid;
+  guint32 drm_userid;
+  guint32 visible;
+  guint32 filetype_marker;
+  guint16 artwork_count;
+  guint32 artwork_size;
+  float samplerate2;
+  guint16 unk126;
+  guint32 unk132;
+  time_t  time_released;
+  guint16 unk144;
+  guint16 explicit_flag;
+  guint32 unk148;
+  guint32 unk152;
+  guint32 skipcount;
+  guint32 recent_skipcount;
+  guint32 last_skipped;
+  guint8 has_artwork;
+  guint8 skip_when_shuffling;
+  guint8 remember_playback_position;
+  guint8 flag4;
+  guint64 dbid2;
+  guint8 lyrics_flag;
+  guint8 movie_flag;
+  guint8 mark_unplayed;
+  guint8 unk179;
   guint32 unk180;
-  guint32 pregap;     /* Number of samples of silence before the songs
-			 starts (for gapless playback). */
-  guint64 samplecount;/* Number of samples in the song. First observed
-			 in dbversion 0x0d, and only for AAC and WAV
-			 files (for gapless playback). */
+  guint32 pregap;
+  guint64 samplecount;
   guint32 unk196;
-  guint32 postgap;    /* Number of samples of silence at the end of
-			 the song (for gapless playback). */
-  guint32 unk204;     /* unknown - added in dbversion 0x0c, first
-			 values observed in 0x0d. Observed to be 0x0
-			 or 0x1. */
-  guint32 mediatype;  /* It seems that this field denotes the type of
-		         the file on (e.g.) the 5g video iPod. It must
-			 be set to 0x00000001 for audio files, and set
-			 to 0x00000002 for video files. If set to
-			 0x00, the files show up in both, the audio
-			 menus ("Songs", "Artists", etc.) and the
-			 video menus ("Movies", "Music Videos",
-			 etc.). It appears to be set to 0x20 for music
-			 videos, and if set to 0x60 the file shows up
-			 in "TV Shows" rather than "Movies". 
-
-			 The following list summarizes all observed types:
-
-			 * 0x00 00 00 00 - Audio/Video
-			 * 0x00 00 00 01 - Audio
-			 * 0x00 00 00 02 - Video
-			 * 0x00 00 00 04 - Podcast
-			 * 0x00 00 00 06 - Video Podcast
-			 * 0x00 00 00 08 - Audiobook
-			 * 0x00 00 00 20 - Music Video
-			 * 0x00 00 00 40 - TV Show (shows up ONLY in TV Shows
-			 * 0x00 00 00 60 - TV Show (shows up in the
-			                            Music lists as well) */
-  guint32 season_nr;  /* the season number of the track, for TV shows only. */
-  guint32 episode_nr; /* the episode number of the track, for TV shows
-			 only - although not displayed on the iPod,
-			 the episodes are sorted by episode number. */
-  guint32 unk220;     /* Has something to do with protected files -
-			 set to 0x0 for non-protected files. */
+  guint32 postgap;
+  guint32 unk204;
+  guint32 mediatype;
+  guint32 season_nr;
+  guint32 episode_nr;
+  guint32 unk220;
   guint32 unk224;
   guint32 unk228, unk232, unk236, unk240, unk244;
-  guint32 gapless_data;/* some magic number needed for gapless playback
-			  (added in dbversion 0x13) It has been observed
-			  that gapless playback does not work if this is
-			  set to zero. This number is related to the the
-			  filesize in bytes, but it is a couple of bytes
-			  less than the filesize. Maybe ID3 tags
-			  etc... taken off? */
+  guint32 gapless_data;
   guint32 unk252;
-  guint16 gapless_track_flag; /* if 1, this track has gapless playback data
-			         (added in dbversion 0x13) */
-  guint16 gapless_album_flag; /* if 1, this track does not use crossfading
-			         in iTunes (added in dbversion 0x13) */
+  guint16 gapless_track_flag;
+  guint16 gapless_album_flag;
 
   /* This is for Cover Art support */
   struct _Itdb_Artwork *artwork;
 
-    /* 200805 */
+  /* This is for sparse artwork support, new in libgpod-0.7.0 */
   guint32 mhii_link;
 
   /* reserved for future use */
@@ -977,13 +1650,24 @@ struct _Itdb_Track
  * Error codes
  *
 \* ------------------------------------------------------------ */
+
+/**
+ * ItdbFileError:
+ * @ITDB_FILE_ERROR_SEEK:         file corrupt: illegal seek occured
+ * @ITDB_FILE_ERROR_CORRUPT:      file corrupt
+ * @ITDB_FILE_ERROR_NOTFOUND:     file not found
+ * @ITDB_FILE_ERROR_RENAME:       file could not be renamed
+ * @ITDB_FILE_ERROR_ITDB_CORRUPT: iTunesDB in memory corrupt
+ *
+ * Error codes for iTunesDB file
+ */
 typedef enum
 {
-    ITDB_FILE_ERROR_SEEK,        /* file corrupt: illegal seek occured */
-    ITDB_FILE_ERROR_CORRUPT,     /* file corrupt                       */
-    ITDB_FILE_ERROR_NOTFOUND,    /* file not found                     */
-    ITDB_FILE_ERROR_RENAME,      /* file could not be renamed          */
-    ITDB_FILE_ERROR_ITDB_CORRUPT /* iTunesDB in memory corrupt         */
+    ITDB_FILE_ERROR_SEEK,
+    ITDB_FILE_ERROR_CORRUPT,
+    ITDB_FILE_ERROR_NOTFOUND,
+    ITDB_FILE_ERROR_RENAME,
+    ITDB_FILE_ERROR_ITDB_CORRUPT
 } ItdbFileError;
 
 
@@ -1197,9 +1881,9 @@ gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork,
 
 /* itdb_thumb_... */
 Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb);
-gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *dev, Itdb_Thumb *thumb,  
-                                       gint width, gint height); 
-GList *itdb_thumb_to_pixbufs (Itdb_Device *dev, Itdb_Thumb *thumb); 
+gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
+                                       gint width, gint height);
+GList *itdb_thumb_to_pixbufs (Itdb_Device *device, Itdb_Thumb *thumb);
 void itdb_thumb_free (Itdb_Thumb *thumb);
 
 /* itdb_chapterdata_... */

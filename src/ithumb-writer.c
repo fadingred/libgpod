@@ -1391,7 +1391,7 @@ static gboolean ithumb_rearrange_thumbnail_file (gpointer _key,
 
    If a thumbnail has been removed, a slot in the file is opened. This
    slot is filled by copying data from the end of the file and
-   adjusting the corresponding Itdb_Image offset pointer. When all
+   adjusting the corresponding Itdb_Thumb offset pointer. When all
    slots are filled, the file is truncated to the new length.
 */
 static gboolean

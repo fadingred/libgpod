@@ -74,33 +74,68 @@ enum _ItdbThumbFormat
     THUMB_FORMAT_EXPERIMENTAL_BE,
 };
 
+/**
+ * Itdb_Device:
+ * @mountpoint:         The mountpoint of the iPod
+ * @musicdirs:          The number of /iPod_Control/Music/F.. dirs
+ * @byte_order:         G_LITTLE_ENDIAN "regular" endianness G_BIG_ENDIAN
+ *                      "reversed" endianness (e.g. mobile phone iTunesDBs)
+ * @sysinfo:            A hash with key/value pairs of all entries in
+ *                      Device/SysInfo
+ * @sysinfo_extended:   The parsed content of SysInfoExtended, which can be NULL
+ * @sysinfo_changed:    True if the sysinfo hash been changed by the user, false
+ *                      otherwise.  (see itdb_set_sysinfo())
+ * @timezone_shift:     The difference in seconds between the current timezone
+ *                      and UTC
+ *
+ * Structure representing an iPod device
+ *
+ * Since: 0.4.0
+ */
 struct _Itdb_Device
 {
-    gchar *mountpoint;    /* mountpoint of the iPod */
-    gint   musicdirs;     /* number of /iPod_Control/Music/F.. dirs */
-    guint  byte_order;    /* G_LITTLE_ENDIAN "regular" endianness 
-			   * G_BIG_ENDIAN "reversed" endianness (e.g. mobile
-			   * phone iTunesDBs)
-			   */
-    GHashTable *sysinfo;  /* hash with value/key pairs of all entries
-			   * in Device/SysInfo */
-    SysInfoIpodProperties *sysinfo_extended; /* parsed content of 
-                                              * SysInfoExtended, can be NULL */
-    gboolean sysinfo_changed; /* Has the sysinfo hash been changed by
-				 the user (itdb_set_sysinfo) */
-    gint timezone_shift;  /* difference in seconds between the current
-                           * timezone and UTC
-                           */
-
+    gchar *mountpoint;
+    gint   musicdirs;
+    guint  byte_order;
+    GHashTable *sysinfo;
+    SysInfoIpodProperties *sysinfo_extended;
+    gboolean sysinfo_changed;
+    gint timezone_shift;
 };
 
+/**
+ * Itdb_ArtworkFormat:
+ * @format_id:          Unique ID for the format (generally a 4 digit int)
+ * @width:              Width of the thumbnail
+ * @height:             Height of the thumbnail
+ * @format:             Pixel format of the thumbnail (RGB, YUV, ...)
+ * @padding:            Number of bytes of padding to add after the thumbnail
+ *                      (not found in SysInfoExtended -- added for
+ *                      compatibility with hardcoded artwork formats)
+ * @crop:               Indicates if the thumbnail is to be cropped
+ * @rotation:           Degrees to rotate the thumbnail
+ * @back_color:         Background color for the thumbnail
+ * @display_width:      Width at which the thumbnail will be displayed
+ *                      (not currently used)
+ * @interlaced:         If TRUE, the thumbnails are interlaced
+ *                      (not currently used)
+ * @align_row_bytes:    If TRUE, each pixel row must be aligned a 2-byte boundary
+ * @color_adjustment:   Color adjustment for the thumbnails
+ *                      (not currently used)
+ * @gamma:              Gamma value for the thumbails
+ *                      (not currently used)
+ * @associated_format:  Unknown (not currently used)
+ *
+ * Structure representing the characteristics of the thumbnails to
+ * write to a given .ithmb file. The format of the structure is based
+ * on the way artwork formats are written to SysInfoExtended.
+ */
 struct _Itdb_ArtworkFormat {
         gint format_id;
         gint width;
         gint height;
         ItdbThumbFormat format;
-        gint32 padding; /* not found in SysInfoExtended, added
-                         * for compatibility with hardcoded artwork formats */
+        gint32 padding;
         gboolean crop;
         gint rotation;
         guchar back_color[4];

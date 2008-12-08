@@ -115,7 +115,9 @@ static void itdb_thumb_ipod_item_free (Itdb_Thumb_Ipod_Item *item)
  * @thumb: an #Itdb_Thumb
  *
  * Frees the memory used by @thumb
- **/
+ *
+ * Since: 0.3.0
+ */
 void itdb_thumb_free (Itdb_Thumb *thumb)
 {
     g_return_if_fail (thumb);
@@ -183,9 +185,11 @@ itdb_thumb_ipod_item_duplicate (Itdb_Thumb_Ipod_Item *item)
  *
  * Duplicates the data contained in @thumb
  *
- * Return value: a newly allocated copy of @thumb to be freed with
+ * Returns: a newly allocated copy of @thumb to be freed with
  * itdb_thumb_free() after use
- **/
+ *
+ * Since: 0.3.0
+ */
 Itdb_Thumb *itdb_thumb_duplicate (Itdb_Thumb *thumb)
 {
     switch (thumb->data_type) {
@@ -298,17 +302,17 @@ Itdb_Thumb_Ipod_Item *itdb_thumb_ipod_get_item_by_type (Itdb_Thumb *thumbs,
 }
 
 /**
- * itdb_thumb_get_filename:
+ * itdb_thumb_ipod_get_filename:
  * @device: an #Itdb_Device
- * @thumb: an #Itdb_Thumb
+ * @thumb:  an #Itdb_Thumb_Ipod_Item
  *
  * Get filename of thumbnail. If it's a thumbnail on the iPod, return
  * the full path to the ithmb file. Otherwise return the full path to
  * the original file.
  *
- * Return value: newly allocated string containing the absolute path to the
+ * Returns: newly allocated string containing the absolute path to the
  * thumbnail file.
- **/
+ */
 gchar *itdb_thumb_ipod_get_filename (Itdb_Device *device, Itdb_Thumb_Ipod_Item *item)
 {
     gchar *artwork_dir;
@@ -356,23 +360,26 @@ const GList *itdb_thumb_ipod_get_thumbs (Itdb_Thumb_Ipod *thumbs)
 /**
  * itdb_thumb_to_pixbuf_at_size:
  * @device: an #Itdb_Device
- * @thumb: an #Itdb_Thumb
- * 
+ * @thumb:  an #Itdb_Thumb
+ * @width:  width of the pixbuf to retrieve, -1 for the biggest
+ *          possible size and 0 for the smallest possible size (with no scaling)
+ * @height: height of the pixbuf to retrieve, -1 for the biggest possible size
+ *          and 0 for the smallest possible size (with no scaling)
+ *
  * Converts @thumb to a #GdkPixbuf.
+ *
+ * <note>
  * Since we want to have gdk-pixbuf dependency optional, a generic
  * gpointer is returned which you have to cast to a #GdkPixbuf using
  * GDK_PIXBUF() yourself.
+ * </note>
  *
- * @width: width of the pixbuf to retrieve, -1 for the biggest
- * possible size and 0 for the smallest possible size (with no scaling)
- *
- * @height: height of the pixbuf to retrieve, -1 for the biggest possible size
- * and 0 for the smallest possible size (with no scaling)
- *
- * Return value: a #GdkPixbuf that must be unreffed with gdk_pixbuf_unref()
+ * Returns: a #GdkPixbuf that must be unreffed with gdk_pixbuf_unref()
  * after use, or NULL if the creation of the gdk-pixbuf failed or if
  * libgpod was compiled without gdk-pixbuf support.
- **/
+ *
+ * Since: 0.7.0
+ */
 gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
                                        gint width, gint height)
 {
@@ -504,7 +511,8 @@ gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
     return pixbuf;
 }
 
-static GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thumb)
+static GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *device,
+                                          Itdb_Thumb_Ipod *thumb)
 {
         const GList *items;
         GList *pixbufs = NULL;
@@ -516,7 +524,7 @@ static GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thu
              items != NULL;
              items = items->next) {
             GdkPixbuf *pixbuf;
-            pixbuf = itdb_thumb_ipod_item_to_pixbuf (dev, items->data);
+            pixbuf = itdb_thumb_ipod_item_to_pixbuf (device, items->data);
             if (pixbuf != NULL) {
                 pixbufs = g_list_prepend (pixbufs, pixbuf);
             }
@@ -528,12 +536,7 @@ static GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thu
 /**
  * itdb_thumb_to_pixbufs:
  * @device: an #Itdb_Device
- * @thumb: an #Itdb_Thumb
- * 
- * Return value: a #GList of #GdkPixbuf which are associated with @thumb, NULL
- * if the pixbuf was invalid or if libgpod is compiled without gdk-pixbuf
- * support. The #GdkPixbuf must be unreffed with gdk_pixbuf_unref() after use 
- * and the #GList must be freed with g_list_free().
+ * @thumb:  an #Itdb_Thumb
  *
  * Converts @thumb to a #GList of #GdkPixbuf. The returned #GList will
  * generally contain only 1 element, the full-size pixbuf associated with
@@ -541,20 +544,27 @@ static GList *itdb_thumb_ipod_to_pixbufs (Itdb_Device *dev, Itdb_Thumb_Ipod *thu
  * modified from the library, then the returned #GList will contain several
  * #GdkPixbuf corresponding to the various thumbnail sizes that were
  * written to the iPod database.
- **/
-GList *itdb_thumb_to_pixbufs (Itdb_Device *dev, Itdb_Thumb *thumb)
+ *
+ * Returns: a #GList of #GdkPixbuf which are associated with @thumb, NULL
+ * if the pixbuf was invalid or if libgpod is compiled without gdk-pixbuf
+ * support. The #GdkPixbuf must be unreffed with gdk_pixbuf_unref() after use
+ * and the #GList must be freed with g_list_free().
+ *
+ * Since: 0.7.0
+ */
+GList *itdb_thumb_to_pixbufs (Itdb_Device *device, Itdb_Thumb *thumb)
 {
     GList *pixbufs = NULL;
     GdkPixbuf *pixbuf;
 
     switch (thumb->data_type) {
     case ITDB_THUMB_TYPE_IPOD:
-        pixbufs = itdb_thumb_ipod_to_pixbufs (dev, (Itdb_Thumb_Ipod *)thumb);
+        pixbufs = itdb_thumb_ipod_to_pixbufs (device, (Itdb_Thumb_Ipod *)thumb);
         break;
     case ITDB_THUMB_TYPE_FILE:
     case ITDB_THUMB_TYPE_MEMORY:
     case ITDB_THUMB_TYPE_PIXBUF:
-        pixbuf = itdb_thumb_to_pixbuf_at_size (dev, thumb, -1, -1);
+        pixbuf = itdb_thumb_to_pixbuf_at_size (device, thumb, -1, -1);
         pixbufs = g_list_append (pixbufs, pixbuf);
         break;
     case ITDB_THUMB_TYPE_INVALID:
@@ -564,14 +574,14 @@ GList *itdb_thumb_to_pixbufs (Itdb_Device *dev, Itdb_Thumb *thumb)
     return pixbufs;
 }
 #else
-gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *dev, Itdb_Thumb *thumb, 
+gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
                                        gint width, gint height)
 {
     return NULL;
 }
 
 
-GList *itdb_thumb_to_pixbufs (Itdb_Device *dev, Itdb_Thumb *thumb) 
+GList *itdb_thumb_to_pixbufs (Itdb_Device *device, Itdb_Thumb *thumb)
 {
     return NULL;
 }

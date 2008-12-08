@@ -27,14 +27,13 @@
 #include "itdb_device.h"
 
 /* Types of thumbnails in Itdb_Image */
-enum _ItdbThumbDataType {
+typedef enum {
     ITDB_THUMB_TYPE_INVALID,
     ITDB_THUMB_TYPE_FILE,
     ITDB_THUMB_TYPE_MEMORY,
     ITDB_THUMB_TYPE_PIXBUF,
     ITDB_THUMB_TYPE_IPOD
-};
-typedef enum _ItdbThumbDataType ItdbThumbDataType;
+} ItdbThumbDataType;
 
 /* The Itdb_Thumb structure can represent two slightly different
    thumbnails:
@@ -51,10 +50,21 @@ typedef enum _ItdbThumbDataType ItdbThumbDataType;
 
      filename point to a 'real' image file OR image_data and
      image_data_len are set.
- 
+
   b) a thumbnail (big or small) stored on a database in the iPod.  In
      these cases, id corresponds to the ID originally used in the
      database, filename points to a .ithmb file on the iPod
+ */
+
+/**
+ * Itdb_Thumb:
+ * @data_type: The type of data (file, memory, pixbuf, ipod, etc.)
+ * @rotation:  Angle by which the image is rotated counterclockwise
+ *
+ * This is an opaque structure representing a thumbnail to be
+ * transferred to the ipod or read from the ipod.
+ *
+ * Since: 0.3.0
  */
 struct _Itdb_Thumb {
     ItdbThumbDataType data_type;

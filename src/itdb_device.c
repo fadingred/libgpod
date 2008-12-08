@@ -649,9 +649,11 @@ static void itdb_device_reset_sysinfo (Itdb_Device *device)
  * 
  * Creates a new #Itdb_Device structure
  *
- * Return value: a newly allocated #Itdb_Device which must be freed with
+ * Returns: a newly allocated #Itdb_Device which must be freed with
  * itdb_device_free() when no longer needed
- **/
+ *
+ * Since: 0.4.0
+ */
 Itdb_Device *itdb_device_new ()
 {
     Itdb_Device *dev;
@@ -666,7 +668,9 @@ Itdb_Device *itdb_device_new ()
  * @device: an #Itdb_Device
  *
  * Frees memory used by @device
- **/
+ *
+ * Since: 0.4.0
+ */
 void itdb_device_free (Itdb_Device *device)
 {
     if (device)
@@ -684,11 +688,13 @@ void itdb_device_free (Itdb_Device *device)
 /**
  * itdb_device_set_mountpoint:
  * @device: an #Itdb_Device
- * @mp: the new mount point
+ * @mp:     the new mount point
  *
  * Sets the mountpoint of @device to @mp and update the cached device 
  * information (in particular, re-read the SysInfo file)
- **/
+ *
+ * Since: 0.4.0
+ */
 void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp)
 {
     g_return_if_fail (device);
@@ -753,8 +759,10 @@ static void itdb_device_read_sysinfo_extended (Itdb_Device *device)
  * Reads the SysInfo file and stores information in device->sysinfo for
  * later use.
  *
- * Return value: TRUE if file could be read, FALSE otherwise 
- **/
+ * Returns: TRUE if file could be read, FALSE otherwise 
+ *
+ * Since: 0.4.0
+ */
 gboolean itdb_device_read_sysinfo (Itdb_Device *device)
 {
     const gchar *p_sysinfo[] = {"SysInfo", NULL};
@@ -827,13 +835,15 @@ static void write_sysinfo_entry (const gchar *key,
 /** 
  * itdb_device_write_sysinfo:
  * @device: an #Itdb_Device
- * @error: return location for a #GError or NULL
+ * @error:  return location for a #GError or NULL
  *
  * Fills the SysInfo file with information in device->sysinfo. Note:
  * no directories are created if not already existent.
  *
- * Return value: TRUE if file could be read, FALSE otherwise 
- **/
+ * Returns: TRUE if file could be read, FALSE otherwise 
+ *
+ * Since: 0.4.0
+ */
 gboolean itdb_device_write_sysinfo (Itdb_Device *device, GError **error)
 {
     gchar *devicedir;
@@ -883,13 +893,15 @@ gboolean itdb_device_write_sysinfo (Itdb_Device *device, GError **error)
 /**
  * itdb_device_get_sysinfo:
  * @device: an #Itdb_Device
- * @field: field to retrive information from
+ * @field:  field to retrive information from
  *
  * Retrieve specified field from the SysInfo file.
  *
- * Return value: the information associated with @field, or NULL if @field
+ * Returns: the information associated with @field, or NULL if @field
  * couldn't be found. g_free() after use
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_device_get_sysinfo (const Itdb_Device *device, const gchar *field)
 {
     g_return_val_if_fail (device, NULL);
@@ -902,13 +914,14 @@ gchar *itdb_device_get_sysinfo (const Itdb_Device *device, const gchar *field)
 /**
  * itdb_device_set_sysinfo:
  * @device: an #Itdb_Device
- * @field: field to set
- * @value: value to set (or NULL to remove the field).
+ * @field:  field to set
+ * @value:  value to set (or NULL to remove the field).
  *
  * Set specified field. It can later be written to the iPod using
  * itdb_device_write_sysinfo()
  *
- **/
+ * Since: 0.4.0
+ */
 void itdb_device_set_sysinfo (Itdb_Device *device,
 			      const gchar *field, const gchar *value)
 {
@@ -935,8 +948,10 @@ void itdb_device_set_sysinfo (Itdb_Device *device,
  *
  * Retrieve the #Itdb_IpodInfo entry for this iPod
  *
- * Return value: the #Itdb_IpodInfo entry for this iPod
- **/
+ * Returns: the #Itdb_IpodInfo entry for this iPod
+ *
+ * Since: 0.4.0
+ */
 const Itdb_IpodInfo *
 itdb_device_get_ipod_info (const Itdb_Device *device)
 {
@@ -1154,16 +1169,14 @@ itdb_device_musicdirs_number (Itdb_Device *device)
     return device->musicdirs;
 }
 
-/**
+/*
  * endianess_check_path:
+ * @path:   the file to look at.
+ * @hdr:    the header string (4 bytes) in case of LITTLE_ENDIAN
  *
  * Check if endianess can be determined by looking at header of @path.
  *
- * @path:   the file to look at.
- * @hdr: the header string (4 bytes) in case of LITTLE_ENDIAN
- *
- * Return value:
- * G_LITTLE_ENDIAN, G_BIG_ENDIAN or 0 if endianess could not be
+ * Returns: G_LITTLE_ENDIAN, G_BIG_ENDIAN or 0 if endianess could not be
  * determined.
  */
 static guint endianess_check_path (const gchar *path, const gchar *hdr)
@@ -1273,8 +1286,10 @@ itdb_device_autodetect_endianess (Itdb_Device *device)
  * Return a pointer to the start of valid iPod model descriptions,
  * which is an array of #Itdb_IpodInfo entries.
  *
- * Return value: a pointer to the array of #Itdb_IpodInfo entries.
- **/
+ * Returns: a pointer to the array of #Itdb_IpodInfo entries.
+ *
+ * Since: 0.4.0
+ */
 const Itdb_IpodInfo *itdb_info_get_ipod_info_table (void)
 {
     return &ipod_info_table[2];
@@ -1287,9 +1302,11 @@ const Itdb_IpodInfo *itdb_info_get_ipod_info_table (void)
  *
  * Return the iPod's generic model name, like "Color", "Nano"...
  *
- * Return value: a pointer to the model name. This is a static string
+ * Returns: a pointer to the model name. This is a static string
  * and must not be g_free()d.
- **/
+ *
+ * Since: 0.4.0
+ */
 const gchar *itdb_info_get_ipod_model_name_string (Itdb_IpodModel model)
 {
     gint i=0;
@@ -1312,9 +1329,11 @@ const gchar *itdb_info_get_ipod_model_name_string (Itdb_IpodModel model)
  * Return the iPod's generic generation name, like "First Generation",
  * "Mobile Phone"...
  *
- * Return value: a pointer to the generation name. This is a static
+ * Returns: a pointer to the generation name. This is a static
  * string and must not be g_free()d.
- **/
+ *
+ * Since: 0.4.0
+ */
 const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generation)
 {
     gint i=0;
@@ -1339,7 +1358,9 @@ const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generatio
  * with a non-art capable iPod, no artwork data will be written to the
  * iPod so you can spare calls to the artwork handling methods.
  *
- * Return value: true if @device can display artwork.
+ * Returns: true if @device can display artwork.
+ *
+ * Since: 0.5.0
  */
 gboolean itdb_device_supports_artwork (const Itdb_Device *device)
 {
@@ -1359,7 +1380,9 @@ gboolean itdb_device_supports_artwork (const Itdb_Device *device)
  *
  * Indicates whether @device can play videos or not.
  *
- * Return value: true if @device can play videos.
+ * Returns: true if @device can play videos.
+ *
+ * Since: 0.7.0
  */
 gboolean itdb_device_supports_video (const Itdb_Device *device)
 {
@@ -1405,7 +1428,9 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
  *
  * Indicates whether @device can display photos or not.
  *
- * Return value: true if @device can display photos.
+ * Returns: true if @device can display photos.
+ *
+ * Since: 0.5.0
  */
 gboolean itdb_device_supports_photo (const Itdb_Device *device)
 {
@@ -1597,8 +1622,10 @@ static void itdb_device_set_timezone_info (Itdb_Device *device)
  * iTunesDB checksum which is expected by newer iPod models
  * (iPod classic/fat nanos)
  *
- * Return value: the guint64 firewire id, or 0 if we don't know it
- **/
+ * Returns: the guint64 firewire id, or 0 if we don't know it
+ *
+ * Since: 0.6.0
+ */
 guint64 itdb_device_get_firewire_id (const Itdb_Device *device)
 {
     gchar *fwid;
@@ -1664,14 +1691,14 @@ G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device)
 /**
  * itdb_device_get_storage_info:
  *
- * @device: an #Itdb_Device
+ * @device:   an #Itdb_Device
  * @capacity: returned capacity in bytes
- * @free: returned free space in bytes
+ * @free:     returned free space in bytes
  *
  * Return the storage info for this iPod
  *
- * Return value: TRUE if storage info could be obtained, FALSE otherwise
- **/
+ * Returns: TRUE if storage info could be obtained, FALSE otherwise
+ */
 gboolean itdb_device_get_storage_info (Itdb_Device *device, guint64 *capacity, guint64 *free)
 {
 #ifdef WIN32

@@ -41,9 +41,11 @@
  *
  * Creates a new #Itdb_Chapterdata
  *
- * Return value: a new #Itdb_Chapterdata to be freed with itdb_chapterdata_free() when
- * no longer needed
- **/
+ * Returns: a new #Itdb_Chapterdata to be freed with
+ *               itdb_chapterdata_free() when no longer needed
+ *
+ * Since: 0.7.0
+ */
 Itdb_Chapterdata *itdb_chapterdata_new (void)
 {
     Itdb_Chapterdata *chapterdata = g_new0 (Itdb_Chapterdata, 1);
@@ -55,7 +57,9 @@ Itdb_Chapterdata *itdb_chapterdata_new (void)
  * @chapterdata: an #Itdb_Chapterdata
  *
  * Frees memory used by @chapterdata
- **/
+ *
+ * Since: 0.7.0
+ */
 void itdb_chapterdata_free (Itdb_Chapterdata *chapterdata)
 {
     g_return_if_fail (chapterdata);
@@ -92,8 +96,10 @@ static GList *dup_chapters (GList *chapters)
  *
  * Duplicates @chapterdata
  *
- * Return value: a new copy of @chapterdata
- **/
+ * Returns: a new copy of @chapterdata
+ *
+ * Since: 0.7.0
+ */
 Itdb_Chapterdata *itdb_chapterdata_duplicate (Itdb_Chapterdata *chapterdata)
 {
     Itdb_Chapterdata *dup;
@@ -116,10 +122,12 @@ Itdb_Chapterdata *itdb_chapterdata_duplicate (Itdb_Chapterdata *chapterdata)
 /**
  * itdb_chapterdata_remove_chapter:
  * @chapterdata: an #Itdb_Chapterdata
- * @chapeer: an #Itdb_Chapter
+ * @chapter:     an #Itdb_Chapter
  *
  * Removes @chapter from @chapterdata. The memory used by @chapter is freed.
- **/
+ *
+ * Since: 0.7.0
+ */
 void
 itdb_chapterdata_remove_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *chapter)
 {
@@ -135,7 +143,9 @@ itdb_chapterdata_remove_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *ch
  * @chapterdata: an #Itdb_Chapterdata
  *
  * Removes all chapters from @chapterdata
- **/
+ *
+ * Since: 0.7.0
+ */
 void
 itdb_chapterdata_remove_chapters (Itdb_Chapterdata *chapterdata)
 {
@@ -154,9 +164,11 @@ itdb_chapterdata_remove_chapters (Itdb_Chapterdata *chapterdata)
  *
  * Creates a new #Itdb_Chapter
  *
- * Return Value: newly allocated #Itdb_Chapter to be freed with itdb_chapter_free()
+ * Returns: newly allocated #Itdb_Chapter to be freed with itdb_chapter_free()
  * after use
- **/
+ *
+ * Since: 0.7.0
+ */
 Itdb_Chapter *itdb_chapter_new (void)
 {
     Itdb_Chapter *chapter = g_new0 (Itdb_Chapter, 1);
@@ -168,7 +180,9 @@ Itdb_Chapter *itdb_chapter_new (void)
  * @chapter: an #Itdb_Chapter
  *
  * Frees the memory used by @chapter
- **/
+ *
+ * Since: 0.7.0
+ */
 void itdb_chapter_free (Itdb_Chapter *chapter)
 {
     g_return_if_fail (chapter);
@@ -183,9 +197,11 @@ void itdb_chapter_free (Itdb_Chapter *chapter)
  *
  * Duplicates the data contained in @chapter
  *
- * Return value: a newly allocated copy of @chapter to be freed with
+ * Returns: a newly allocated copy of @chapter to be freed with
  * itdb_chapter_free() after use
- **/
+ *
+ * Since: 0.7.0
+ */
 Itdb_Chapter *itdb_chapter_duplicate (Itdb_Chapter *chapter)
 {
     Itdb_Chapter *new_chapter;
@@ -201,15 +217,17 @@ Itdb_Chapter *itdb_chapter_duplicate (Itdb_Chapter *chapter)
 
 /**
  * itdb_chapterdata_add_chapter
- * @chapterdata: an #Itdb_Chapterdata
- * @startpos: chapter start time in milliseconds
+ * @chapterdata:  an #Itdb_Chapterdata
+ * @startpos:     chapter start time in milliseconds
  * @chaptertitle: chapter title
  *
  * Appends a chapter to existing chapters in @chapterdata.
  *
- * Return value: TRUE if the chapter could be successfully added, FALSE
+ * Returns: TRUE if the chapter could be successfully added, FALSE
  * otherwise.
- **/
+ *
+ * Since: 0.7.0
+ */
 gboolean
 itdb_chapterdata_add_chapter (Itdb_Chapterdata *chapterdata,
 			      gint32 startpos,

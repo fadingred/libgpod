@@ -354,13 +354,13 @@ static void fcontents_free (FContents *cts)
  * Resolve the path to a track on the iPod
  *
  * We start by assuming that the iPod mount point exists.  Then, for
- * each component c of track-&gt;ipod_path, we try to find an entry d in
+ * each component c of @track->ipod_path, we try to find an entry d in
  * good_path that is case-insensitively equal to c.  If we find d, we
  * append d to good_path and make the result the new good_path.
  * Otherwise, we quit and return NULL.
  *
- * Return value: path to track on the iPod or NULL.
- **/
+ * Returns: path to track on the iPod or NULL.
+ */
 gchar * itdb_resolve_path (const gchar *root,
 			   const gchar * const * components)
 {
@@ -1147,7 +1147,7 @@ static void itdb_free_fimp (FImport *fimp)
  * @itdb: an #Itdb_iTunesDB
  *
  * Free the memory taken by @itdb. 
- **/
+ */
 void itdb_free (Itdb_iTunesDB *itdb)
 {
     if (itdb)
@@ -1173,8 +1173,8 @@ void itdb_free (Itdb_iTunesDB *itdb)
  * Duplicate @itdb 
  * FIXME: not implemented yet 
  *
- * Return value: always return NULL since it's unimplemented
- **/
+ * Returns: always return NULL since it's unimplemented
+ */
 Itdb_iTunesDB *itdb_duplicate (Itdb_iTunesDB *itdb)
 {
     g_return_val_if_fail (itdb, NULL);
@@ -1188,9 +1188,9 @@ Itdb_iTunesDB *itdb_duplicate (Itdb_iTunesDB *itdb)
  *
  * Counts the number of playlists stored in @itdb
  *
- * Return value: the number of playlists in @itdb (including the master 
+ * Returns: the number of playlists in @itdb (including the master 
  * playlist)
- **/
+ */
 guint32 itdb_playlists_number (Itdb_iTunesDB *itdb)
 {
     g_return_val_if_fail (itdb, 0);
@@ -1204,8 +1204,8 @@ guint32 itdb_playlists_number (Itdb_iTunesDB *itdb)
  *
  * Counts the number of tracks stored in @itdb
  *
- * Return value: the number of tracks in @itdb
- **/
+ * Returns: the number of tracks in @itdb
+ */
 guint32 itdb_tracks_number (Itdb_iTunesDB *itdb)
 {
     g_return_val_if_fail (itdb, 0);
@@ -1219,10 +1219,10 @@ guint32 itdb_tracks_number (Itdb_iTunesDB *itdb)
  *
  * Counts the number of non-transferred tracks in @itdb
  *
- * Return value: the number of tracks in @itdb that haven't been transferred
+ * Returns: the number of tracks in @itdb that haven't been transferred
  * to the iPod yet (ie the number of #Itdb_Track in which the transferred field
  * is false)
- **/
+ */
 guint32 itdb_tracks_number_nontransferred (Itdb_iTunesDB *itdb)
 {
     guint n = 0;
@@ -1244,9 +1244,9 @@ guint32 itdb_tracks_number_nontransferred (Itdb_iTunesDB *itdb)
  * Creates a new Itdb_iTunesDB with the unknowns filled in to reasonable
  * values.
  *
- * Return value: a newly created Itdb_iTunesDB to be freed with itdb_free()
+ * Returns: a newly created Itdb_iTunesDB to be freed with itdb_free()
  * when it's no longer needed
- **/
+ */
 Itdb_iTunesDB *itdb_new (void)
 {
     static GOnce g_type_init_once = G_ONCE_INIT;
@@ -2956,16 +2956,16 @@ itdb_parse_internal (Itdb_iTunesDB *itdb, GError **error)
 
 /**
  * itdb_parse:
- * @mp: mount point of the iPod (eg "/mnt/ipod) in local encoding
- * @error: return location for a #GError or NULL
+ * @mp:     mount point of the iPod (eg "/mnt/ipod") in local encoding
+ * @error:  return location for a #GError or NULL
  *
  * Parse the Itdb_iTunesDB of the iPod located at @mp
  *
- * Return value: a newly allocated #Itdb_iTunesDB struct holding the tracks and
+ * Returns: a newly allocated #Itdb_iTunesDB struct holding the tracks and
  * the playlists present on the iPod at @mp, NULL if @mp isn't an iPod mount
  * point. If non-NULL, the #Itdb_iTunesDB is to be freed with itdb_free() when
  * it's no longer needed
- **/
+ */
 Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 {
     gchar *filename;
@@ -3043,16 +3043,16 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 
 /**
  * itdb_parse_file:
- * @filename: path to a file in iTunesDB format
- * @error: return location for a #GError or NULL
+ * @filename:   path to a file in iTunesDB format
+ * @error:      return location for a #GError or NULL
  *
  *  Same as itunesdb_parse(), but filename is specified directly.
  *
- * Return value: a newly allocated #Itdb_iTunesDB struct holding the tracks and
+ * Returns: a newly allocated #Itdb_iTunesDB struct holding the tracks and
  * the playlists present in @filename, NULL if @filename isn't a parsable 
  * iTunesDB file. If non-NULL, the #Itdb_iTunesDB is to be freed with 
  * itdb_free() when it's no longer needed
- **/
+ */
 Itdb_iTunesDB *itdb_parse_file (const gchar *filename, GError **error)
 {
     Itdb_iTunesDB *itdb;
@@ -5116,15 +5116,15 @@ static gboolean write_db_checksum (FExport *fexp, GError **error)
 
 /**
  * itdb_write_file:
- * @itdb: the #Itdb_iTunesDB to save
- * @filename: filename to save @itdb to
- * @error: return location for a #GError or NULL
+ * @itdb:       the #Itdb_iTunesDB to save
+ * @filename:   filename to save @itdb to
+ * @error:      return location for a #GError or NULL
  *
  * Write the content of @itdb to @filename. If @filename is NULL, it attempts
- * to write to itdb-&gt;filename.
+ * to write to @itdb->filename.
  *
- * Return value: TRUE if all went well, FALSE otherwise
- **/
+ * Returns: TRUE if all went well, FALSE otherwise
+ */
 gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 			  GError **error)
 {
@@ -5211,8 +5211,8 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 
 /**
  * itdb_write:
- * @itdb: the #Itdb_iTunesDB to write to disk
- * @error: return location for a #GError or NULL
+ * @itdb:   the #Itdb_iTunesDB to write to disk
+ * @error:  return location for a #GError or NULL
  *
  * Write out an iTunesDB. It reassigns unique IDs to all tracks. 
  * An existing "Play Counts" file is renamed to "Play Counts.bak" if
@@ -5220,9 +5220,9 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
  * An existing "OTGPlaylistInfo" file is removed if the export was
  * successful.
  *
- * Return value: TRUE on success, FALSE on error, in which case @error is
+ * Returns: TRUE on success, FALSE on error, in which case @error is
  * set accordingly.
- **/
+ */
 gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 {
     gchar *itunes_filename, *itunes_path;
@@ -5376,21 +5376,20 @@ All integers in the iTunesSD file are in BIG endian form...
 
 /**
  * itdb_shuffle_write:
- * @itdb: the #Itdb_iTunesDB to write to disk
- * @error: return location for a #GError or NULL
+ * @itdb:   the #Itdb_iTunesDB to write to disk
+ * @error:  return location for a #GError or NULL
  *
  * Write out an iTunesSD for the Shuffle.
- * First reassigns unique IDs to all tracks.
- * An existing "Play Counts" file is renamed to "Play Counts.bak" if
- * the export was successful.
- * An existing "OTGPlaylistInfo" file is removed if the export was
- * successful.
- * @itdb->mountpoint must point to the mount point of the iPod,
- * e.g. "/mnt/ipod" and be in local encoding.
  *
- * Return value: TRUE on success, FALSE on error, in which case @error is
+ * First reassigns unique IDs to all tracks.  An existing "Play
+ * Counts" file is renamed to "Play Counts.bak" if the export was
+ * successful.  An existing "OTGPlaylistInfo" file is removed if the
+ * export was successful.  @itdb->mountpoint must point to the mount
+ * point of the iPod, e.g. "/mnt/ipod" and be in local encoding.
+ *
+ * Returns: TRUE on success, FALSE on error, in which case @error is
  * set accordingly.
- **/
+ */
 gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error)
 {
     gchar *itunes_filename, *itunes_path;
@@ -5445,15 +5444,15 @@ static gboolean haystack (gchar *filetype, gchar **desclist)
 
 /**
  * itdb_shuffle_write_file:
- * @itdb: the #Itdb_iTunesDB to write to disk
- * @filename: file to write to, cannot be NULL
- * @error: return location for a #GError or NULL
+ * @itdb:       the #Itdb_iTunesDB to write to disk
+ * @filename:   file to write to, cannot be NULL
+ * @error:      return location for a #GError or NULL
  *
  * Do the actual writing to the iTunesSD
  *
- * Return value: TRUE on success, FALSE on error, in which case @error is
+ * Returns: TRUE on success, FALSE on error, in which case @error is
  * set accordingly.
- **/
+ */
 gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 				  const gchar *filename, GError **error)
 {
@@ -5568,16 +5567,16 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 
 /**
  * itdb_rename_files:
- * @mp: mount point of the iPod
- * @error: return location for a #GError or NULL
+ * @mp:     mount point of the iPod
+ * @error:  return location for a #GError or NULL
  *
  * Renames/removes some files on the iPod (Playcounts, OTG
  * semaphore). May have to be called if you write the iTunesDB not
  * directly to the iPod but to some other location and then manually
  * copy the file from there to the iPod.
  *
- * Return value: FALSE on error and sets @error accordingly
- **/
+ * Returns: FALSE on error and sets @error accordingly
+ */
 gboolean itdb_rename_files (const gchar *mp, GError **error)
 {
     const gchar *db_plc_o[] = {"Play Counts", NULL};
@@ -5667,12 +5666,12 @@ gboolean itdb_rename_files (const gchar *mp, GError **error)
 
 /**
  * itdb_filename_fs2ipod:
- * @filename: a filename 'PC-style' (eg /iPod_Control/Music/f00/test.mp3)
+ * @filename: a 'PC-style' filename (eg /iPod_Control/Music/f00/test.mp3)
  *
- * Convert string from casual PC file name to iPod iTunesDB format using ':' 
- * instead of G_DIR_SEPARATOR_S (ie slashes on Unix-like systems). @ipod_file
- * is modified in place.
- **/
+ * Convert string from casual PC file name to iPod iTunesDB format
+ * using ':' instead of G_DIR_SEPARATOR_S (i.e. slashes on Unix-like
+ * systems). @ipod_file is modified in place.
+ */
 void itdb_filename_fs2ipod (gchar *ipod_file)
 {
     g_strdelimit (ipod_file, G_DIR_SEPARATOR_S, ':');
@@ -5680,12 +5679,12 @@ void itdb_filename_fs2ipod (gchar *ipod_file)
 
 /**
  * itdb_filename_ipod2fs:
- * @ipod_file: a filename 'PC-style' (eg /iPod_Control/Music/f00/test.mp3)
+ * @ipod_file: a 'PC-style' filename (eg /iPod_Control/Music/f00/test.mp3)
  *
- * Convert string from from iPod iTunesDB format to casual PC file name
- * using G_DIR_SEPARATOR (ie slashes on Unix-like systems) instead of ':'.
- * @ipod_file is modified in place.
- **/
+ * Convert string from from iPod iTunesDB format to casual PC file
+ * name using G_DIR_SEPARATOR (ie slashes on Unix-like systems)
+ * instead of ':'.  @ipod_file is modified in place.
+ */
 void itdb_filename_ipod2fs (gchar *ipod_file)
 {
     g_strdelimit (ipod_file, ":", G_DIR_SEPARATOR);
@@ -5693,14 +5692,16 @@ void itdb_filename_ipod2fs (gchar *ipod_file)
 
 /**
  * itdb_set_mountpoint:
- * @itdb: an #Itdb_iTunesDB
- * @mp: new mount point
+ * @itdb:   an #Itdb_iTunesDB
+ * @mp:     new mount point
  *
- * Sets the mountpoint of @db. Always use this function to set the mountpoint
- * of an #Itdb_iTunesDB as it will reset the number of available 
- * /iPod_Control/Music/F.. dirs. It doesn't attempt to parse an iPod database
- * that may be present on the iPod at @mp
- **/
+ * Sets the mountpoint of @itdb. Always use this function to set the
+ * mountpoint of an #Itdb_iTunesDB as it will reset the number of
+ * available /iPod_Control/Music/F.. dirs. It doesn't attempt to parse
+ * an iPod database that may be present on the iPod at @mp.
+ *
+ * Since: 0.1.3
+ */
 void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp)
 {
     g_return_if_fail (itdb);
@@ -5716,9 +5717,11 @@ void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp)
  *
  * Retrieve a reference to the mountpoint of @itdb
  *
- * Return value: the @itdb mountpoint, this string shouldn't be freed nor 
- * modified
- **/
+ * Returns: the @itdb mountpoint, this string shouldn't be freed
+ * nor modified
+ *
+ * Since: 0.4.0
+ */
 const gchar *itdb_get_mountpoint (Itdb_iTunesDB *itdb)
 {
     g_return_val_if_fail (itdb, NULL);
@@ -5740,12 +5743,14 @@ const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb)
  *
  * Determine the number of F.. directories in iPod_Control/Music.
  *
- * If itdb->musicdirs is already set, simply return the previously
+ * If @itdb->musicdirs is already set, simply return the previously
  * determined number. Otherwise count the directories first and set
- * itdb->musicdirs. 
+ * @itdb->musicdirs.
  *
- * Return value: max number of directories in iPod_Control/Music
- **/
+ * Returns: max number of directories in iPod_Control/Music
+ *
+ * Since: 0.1.3
+ */
 gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
 {
     g_return_val_if_fail (itdb, 0);
@@ -5756,29 +5761,31 @@ gint itdb_musicdirs_number (Itdb_iTunesDB *itdb)
 
 /**
  * itdb_cp_get_dest_filename:
- * @track: track to transfer or NULL
+ * @track:      track to transfer or NULL
  * @mountpoint: mountpoint of your iPod or NULL
- * @filename: the source file
- * @error: return location for a #GError or NULL
+ * @filename:   the source file
+ * @error:      return location for a #GError or NULL
  *
- * Creates a valid filename on the iPod where to copy @filename.
+ * Creates a valid filename on the iPod where @filename can be copied.
  *
- * You must either provide @track or @mountpoint. Providing @track is
+ * You must provide either @track or @mountpoint. Providing @track is
  * not thread-safe (accesses track->itdb->device and may even write to
  * track->itdb->device). Providing @mountpoint is thread-safe but
  * slightly slower because the number of music directories is counted
  * each time the function is called.
  *
- * You can use #itdb_cp() to copy the track to the iPod or implement
+ * You can use itdb_cp() to copy the track to the iPod or implement
  * your own copy function. After the file was copied you have to call
- * #itdb_cp_finalize() to obtain relevant update information for
+ * itdb_cp_finalize() to obtain relevant update information for
  * #Itdb_Track.
  *
- * Return value: a valid filename on the iPod to where @filename can
- * be copied or NULL in case of an error. In that case @error is set
+ * Returns: a valid filename on the iPod where @filename can be
+ * copied or NULL in case of an error. In that case @error is set
  * accordingly. You must free the filename when it is no longer
  * needed.
- **/
+ *
+ * Since: 0.5.0
+ */
 gchar *itdb_cp_get_dest_filename (Itdb_Track *track,
                                   const gchar *mountpoint,
 				  const gchar *filename,
@@ -5912,30 +5919,43 @@ gchar *itdb_cp_get_dest_filename (Itdb_Track *track,
 
 /**
  * itdb_cp_finalize:
- * @track: track to update or NULL
- * @mountpoint: mountpoint of your iPod or NULL
- * @dest_filename: the name of the file on the iPod copied to
- * @error: return location for a #GError or NULL
+ * @track:          track to update or NULL
+ * @mountpoint:     mountpoint of your iPod or NULL
+ * @dest_filename:  the name of the file on the iPod copied to
+ * @error:          return location for a #GError or NULL
  *
- * Updates information in @track necessary for the iPod. You must
- * either supply @track or @mountpoint. If @track == NULL, a new track
- * structure is created that must be freed with #itdb_track_free()
- * when it is no longer needed.
+ * Updates information in @track necessary for the iPod.
  *
- * The following fields are updated:
+ * You must supply either @track or @mountpoint. If @track == NULL, a
+ * new track structure is created that must be freed with
+ * itdb_track_free() when it is no longer needed.
  *
- * - ipod_path
- * - filetype_marker
- * - transferred
- * - size
+ * The following @track fields are updated:
  *
- * Return value: on success a pointer to the #Itdb_Track item passed
+ * <itemizedlist>
+ *   <listitem>
+ *       ipod_path
+ *   </listitem>
+ *   <listitem>
+ *       filetype_marker
+ *   </listitem>
+ *   <listitem>
+ *       transferred
+ *   </listitem>
+ *   <listitem>
+ *       size
+ *   </listitem>
+ * </itemizedlist>
+ *
+ * Returns: on success a pointer to the #Itdb_Track item passed
  * or a new #Itdb_Track item if @track was NULL. In the latter case
- * you must free the memory using #itdb_track_free() when the item is
+ * you must free the memory using itdb_track_free() when the item is
  * no longer used. If an error occurs NULL is returned and @error is
  * set accordingly. Errors occur when @dest_filename cannot be
  * accessed or the mountpoint is not set.
- **/
+ *
+ * Since: 0.5.0
+ */
 Itdb_Track *itdb_cp_finalize (Itdb_Track *track,
 			      const gchar *mountpoint,
 			      const gchar *dest_filename,
@@ -6037,9 +6057,9 @@ Itdb_Track *itdb_cp_finalize (Itdb_Track *track,
 
 /**
  * itdb_cp_track_to_ipod:
- * @track: the #Itdb_Track to copy (containing @filename metadata)
- * @filename: the source file
- * @error: return location for a #GError or NULL
+ * @track:      the #Itdb_Track to copy (containing @filename metadata)
+ * @filename:   the source file
+ * @error:      return location for a #GError or NULL
  * 
  * Copy one track to the iPod. The PC filename is @filename
  * and is taken literally.
@@ -6048,24 +6068,24 @@ Itdb_Track *itdb_cp_finalize (Itdb_Track *track,
  * with itdb_set_mountpoint() (done automatically when reading an
  * iTunesDB).
  *
- * If @track-&gt;transferred is set to TRUE, nothing is done. Upon
- * successful transfer @track-&gt;transferred is set to TRUE.
+ * If @track->transferred is set to TRUE, nothing is done. Upon
+ * successful transfer @track->transferred is set to TRUE.
  *
- * For storage, the directories "f00 ... fnn" will be used randomly.
+ * For storage, the directories "F00 ... Fnn" will be used randomly.
  *
- * The filename is constructed as "libgpod"&lt;random number&gt; and copied
- * to @track-&gt;ipod_path. If this file already exists, &lt;random number&gt;
+ * The filename is constructed as "libgpod@random_number" and copied
+ * to @track->ipod_path. If this file already exists, @random_number
  * is adjusted until an unused filename is found.
  *
- * If @track-&gt;ipod_path is already set, this one will be used
+ * If @track->ipod_path is already set, this one will be used
  * instead. If a file with this name already exists, it will be
  * overwritten.
  *
- * @track-&gt;filetype_marker is set according to the filename extension
+ * @track->filetype_marker is set according to the filename extension
  *
- * Return value: TRUE on success, FALSE on error, in which case @error is
+ * Returns: TRUE on success, FALSE on error, in which case @error is
  * set accordingly.
- **/
+ */
 gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
 				const gchar *filename, GError **error)
 {
@@ -6100,18 +6120,22 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
  * itdb_filename_on_ipod:
  * @track: an #Itdb_Track
  *
- * Return the full iPod filename as stored in @track.
+ * Get the full iPod filename as stored in @track.
  *
- * NOTE: NULL is returned when the file does not exist.
+ * <note>
+ * NULL is returned when the file does not exist.
+ * </note>
  *
- * NOTE: this code works around a problem on some systems (see
- * itdb_resolve_path() ) and might return a filename with different
- * case than the original filename. Don't copy it back to @track
- * unless you must 
+ * <note>
+ * This code works around a problem on some systems (see
+ * itdb_resolve_path()) and might return a filename with different
+ * case than the original filename. Don't copy it back to @track if
+ * you can avoid it.
+ * </note>
  *
- * Return value: full filename to @track on the iPod or NULL if no
+ * Returns: full filename to @track on the iPod or NULL if no
  * filename is set in @track. Must be freed with g_free() after use.
- **/
+ */
 gchar *itdb_filename_on_ipod (Itdb_Track *track)
 {
     gchar *result = NULL;
@@ -6150,15 +6174,15 @@ gchar *itdb_filename_on_ipod (Itdb_Track *track)
 /* Use open instead of fopen.  fwrite is really slow on the Mac. */
 /**
  * itdb_cp:
- * @from_file: source file
- * @to_file: destination file
- * @error: return location for a #GError or NULL
+ * @from_file:  source file
+ * @to_file:    destination file
+ * @error:      return location for a #GError or NULL
  *
- * Copy file "from_file" to "to_file".
+ * Copy file @from_file to @to_file.
  *
- * Return value: TRUE on success, FALSE on error, in which case @error is
+ * Returns: TRUE on success, FALSE on error, in which case @error is
  * set accordingly.
- **/
+ */
 gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 		  GError **error)
 {
@@ -6319,9 +6343,11 @@ itdb_file_set_contents (const char *filename,
  * for standard iPods and 'iTunes/iTunes_Control' for mobile
  * applications.
  *
- * Return value: path to the control dir or NULL if non-existent. Must
+ * Returns: path to the control dir or NULL if non-existent. Must
  * g_free() after use.
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_get_control_dir (const gchar *mountpoint)
 {
     gchar *p_ipod[] = {"iPod_Control", NULL};
@@ -6345,14 +6371,14 @@ gchar *itdb_get_control_dir (const gchar *mountpoint)
 /**
  * itdb_get_dir:
  * @mountpoint: the iPod mountpoint
- * @dir: a directory
+ * @dir:        a directory
  *
  * Retrieve the directory @dir by first calling itdb_get_control_dir()
  * and then adding @dir
  *
- * Return value: path to @dir or NULL if non-existent. Must g_free()
+ * Returns: path to @dir or NULL if non-existent. Must g_free()
  * after use.
- **/
+ */
 static gchar *itdb_get_dir (const gchar *mountpoint, const gchar *dir)
 {
     gchar *control_dir;
@@ -6374,14 +6400,16 @@ static gchar *itdb_get_dir (const gchar *mountpoint, const gchar *dir)
 
 /**
  * itdb_get_path:
- * @dir: a directory
- * @file: a file
+ * @dir:    a directory
+ * @file:   a file
  *
  * Retrieve a path to the @file in @dir
  *
- * Return value: path to the @file or NULL if non-existent. Must be g_free()'d 
+ * Returns: path to the @file or NULL if non-existent. Must g_free()
  * after use.
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_get_path (const gchar *dir, const gchar *file)
 {
     const gchar *p_file[] = {NULL, NULL};
@@ -6400,9 +6428,11 @@ gchar *itdb_get_path (const gchar *dir, const gchar *file)
  * Retrieve the iTunes directory (containing the iTunesDB) by first
  * calling itdb_get_control_dir() and then adding 'iTunes'
  *
- * Return value: path to the iTunes directory or NULL if non-existent.
+ * Returns: path to the iTunes directory or NULL if non-existent.
  * Must g_free() after use.
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_get_itunes_dir (const gchar *mountpoint)
 {
     g_return_val_if_fail (mountpoint, NULL);
@@ -6417,9 +6447,9 @@ gchar *itdb_get_itunes_dir (const gchar *mountpoint)
  * Retrieve the Music directory (containing the Fnn dirs) by first
  * calling itdb_get_control_dir() and then adding 'Music'
  *
- * Return value: path to the Music directory or NULL if
+ * Returns: path to the Music directory or NULL if
  * non-existent. Must g_free() after use.
- **/
+ */
 gchar *itdb_get_music_dir (const gchar *mountpoint)
 {
     g_return_val_if_fail (mountpoint, NULL);
@@ -6434,9 +6464,11 @@ gchar *itdb_get_music_dir (const gchar *mountpoint)
  * Retrieve the Device directory (containing the SysInfo file) by
  * first calling itdb_get_control_dir() and then adding 'Device'
  *
- * Return value: path to the Device directory or NULL if
+ * Returns: path to the Device directory or NULL if
  * non-existent. Must g_free() after use.
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_get_device_dir (const gchar *mountpoint)
 {
     g_return_val_if_fail (mountpoint, NULL);
@@ -6451,9 +6483,11 @@ gchar *itdb_get_device_dir (const gchar *mountpoint)
  * Retrieve the Artwork directory (containing the ArtworDB) by
  * first calling itdb_get_control_dir() and then adding 'Artwork'
  *
- * Return value: path to the Artwork directory or NULL if
+ * Returns: path to the Artwork directory or NULL if
  * non-existent. Must g_free() after use.
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_get_artwork_dir (const gchar *mountpoint)
 {
     g_return_val_if_fail (mountpoint, NULL);
@@ -6467,9 +6501,11 @@ gchar *itdb_get_artwork_dir (const gchar *mountpoint)
  *
  * Retrieve a path to the iTunesDB
  *
- * Return value: path to the iTunesDB or NULL if non-existent. Must g_free()
+ * Returns: path to the iTunesDB or NULL if non-existent. Must g_free()
  * after use.
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_get_itunesdb_path (const gchar *mountpoint)
 {
     gchar *itunes_dir, *path=NULL;
@@ -6493,9 +6529,11 @@ gchar *itdb_get_itunesdb_path (const gchar *mountpoint)
  *
  * Retrieve a path to the iTunesSD
  *
- * Return value: path to the iTunesSD or NULL if non-existent. Must g_free()
+ * Returns: path to the iTunesSD or NULL if non-existent. Must g_free()
  * after use.
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_get_itunessd_path (const gchar *mountpoint)
 {
     gchar *itunes_dir, *path=NULL;
@@ -6519,9 +6557,11 @@ gchar *itdb_get_itunessd_path (const gchar *mountpoint)
  *
  * Retrieve a path to the ArtworkDB
  *
- * Return value: path to the ArtworkDB or NULL if non-existent. Must g_free()
+ * Returns: path to the ArtworkDB or NULL if non-existent. Must g_free()
  * after use.
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_get_artworkdb_path (const gchar *mountpoint)
 {
     gchar *itunes_dir, *path=NULL;
@@ -6552,11 +6592,11 @@ gchar *itdb_get_artworkdb_path (const gchar *mountpoint)
  * Gets the current time in a format appropriate for storing in the libgpod
  * data structures
  *
- * Return value: current time
+ * Returns: current time
  *
  * Deprecated: kept for compatibility with older code, directly use
  * g_get_current_time() or time(NULL) instead
- **/
+ */
 time_t itdb_time_get_mac_time (void)
 {
     GTimeVal time;
@@ -6572,11 +6612,11 @@ time_t itdb_time_get_mac_time (void)
  *
  * Converts a timestamp from libgpod format to host system timestamp.
  *
- * Return value: timestamp for the host system
+ * Returns: timestamp for the host system
  *
  * Deprecated: It's been kept for compatibility with older code, but this
  * function is now a no-op
- **/
+ */
 time_t itdb_time_mac_to_host (time_t time)
 {
     return time;
@@ -6588,11 +6628,11 @@ time_t itdb_time_mac_to_host (time_t time)
  *
  * Convert host system timestamp to libgpod format timestamp
  *
- * Return value: a libgpod timestamp
+ * Returns: a libgpod timestamp
  *
  * Deprecated: It's been kept for compatibility with older code, but this
  * function is now a no-op
- **/
+ */
 time_t itdb_time_host_to_mac (time_t time)
 {
     return time;
@@ -6611,9 +6651,10 @@ time_t itdb_time_host_to_mac (time_t time)
  * information as well as the directory structure required for the
  * type of iPod.
  * 
- * Return value: TRUE when successful, FALSE if a failure has occurred.
- * 
- **/
+ * Returns: TRUE when successful, FALSE if a failure has occurred.
+ *
+ * Since: 0.4.0
+ */
 gboolean itdb_init_ipod (const gchar *mountpoint,
 			 const gchar *model_number,
 			 const gchar *ipod_name,

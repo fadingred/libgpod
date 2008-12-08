@@ -38,9 +38,9 @@
  *
  * Creates an empty #Itdb_Track
  *
- * Return Value: the new #Itdb_Track, free it with itdb_track_free() when no
+ * Returns: the new #Itdb_Track, free it with itdb_track_free() when no
  * longer needed
- **/
+ */
 Itdb_Track *itdb_track_new (void)
 {
     Itdb_Track *track = g_new0 (Itdb_Track, 1);
@@ -195,15 +195,15 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 
 /**
  * itdb_track_add:
- * @itdb: an #Itdb_iTunesDB
- * @track: an #Itdb_Track
- * @pos: position of the track to add
+ * @itdb:   an #Itdb_iTunesDB
+ * @track:  an #Itdb_Track
+ * @pos:    position of the track to add
  *
  * Adds @track to @itdb->tracks at position @pos (or at the end if pos
  * is -1). The application is responsible to also add it to the master
  * playlist. The @itdb gets ownership of the @track and will take care of
  * freeing the memory it uses when it's no longer necessary.
- **/
+ */
 void itdb_track_add (Itdb_iTunesDB *itdb, Itdb_Track *track, gint32 pos)
 {
     g_return_if_fail (itdb);
@@ -222,7 +222,7 @@ void itdb_track_add (Itdb_iTunesDB *itdb, Itdb_Track *track, gint32 pos)
  * @track: an #Itdb_Track
  *
  * Frees the memory used by @track
- **/
+ */
 void itdb_track_free (Itdb_Track *track)
 {
     g_return_if_fail (track);
@@ -270,7 +270,7 @@ void itdb_track_free (Itdb_Track *track)
  * Removes @track from the #Itdb_iTunesDB it's associated with, and frees the
  * memory it uses. It doesn't remove the track from the playlists it may have
  * been added to, in particular it won't be removed from the master playlist.
- **/
+ */
 void itdb_track_remove (Itdb_Track *track)
 {
     Itdb_iTunesDB *itdb;
@@ -290,8 +290,8 @@ void itdb_track_remove (Itdb_Track *track)
  * Removes @track from the #Itdb_iTunesDB it's associated with, but do not free
  * memory. It doesn't remove the track from the playlists it may have been
  * added to, in particular it won't be removed from the master playlist.
- * track->itdb is set to NULL.
- **/
+ * @track->itdb is set to NULL.
+ */
 void itdb_track_unlink (Itdb_Track *track)
 {
     Itdb_iTunesDB *itdb;
@@ -310,8 +310,8 @@ void itdb_track_unlink (Itdb_Track *track)
  *
  * Duplicates an existing track
  *
- * Return value: a newly allocated #Itdb_Track
- **/
+ * Returns: a newly allocated #Itdb_Track
+ */
 Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
 {
     Itdb_Track *tr_dup;
@@ -431,16 +431,18 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
 
 /**
  * itdb_track_set_thumbnails:
- * @track: an #Itdb_Track
+ * @track:    an #Itdb_Track
  * @filename: image file to use as a thumbnail
  *
  * Uses the image contained in @filename to generate iPod thumbnails. The image
  * can be in any format supported by gdk-pixbuf. To save memory, the thumbnails
- * will only be generated when necessary, ie when itdb_save() or a similar
+ * will only be generated when necessary, i.e. when itdb_save() or a similar
  * function is called.
  *
- * Return value: TRUE if the thumbnail could be added, FALSE otherwise.
- **/
+ * Returns: TRUE if the thumbnail could be added, FALSE otherwise.
+ *
+ * Since: 0.3.0
+ */
 gboolean itdb_track_set_thumbnails (Itdb_Track *track,
 				    const gchar *filename)
 {
@@ -453,18 +455,20 @@ gboolean itdb_track_set_thumbnails (Itdb_Track *track,
 
 /**
  * itdb_track_set_thumbnails_from_data:
- * @track: an #Itdb_Track
- * @image_data: data used to create the thumbnail (the raw contents of
- *              an image file)
+ * @track:          an #Itdb_Track
+ * @image_data:     data used to create the thumbnail (the raw contents of
+ *                  an image file)
  * @image_data_len: length of above data block
  *
  * Uses @image_data to generate iPod thumbnails. The image can be in
  * any format supported by gdk-pixbuf. To save memory, the thumbnails
- * will only be generated when necessary, ie when itdb_save() or a
+ * will only be generated when necessary, i.e. when itdb_save() or a
  * similar function is called.
  *
- * Return value: TRUE if the thumbnail could be added, FALSE otherwise.
- **/
+ * Returns: TRUE if the thumbnail could be added, FALSE otherwise.
+ *
+ * Since: 0.4.0
+ */
 gboolean itdb_track_set_thumbnails_from_data (Itdb_Track *track,
 					      const guchar *image_data,
 					      gsize image_data_len)
@@ -479,15 +483,17 @@ gboolean itdb_track_set_thumbnails_from_data (Itdb_Track *track,
 
 /**
  * itdb_track_set_thumbnails_from_pixbuf:
- * @track: an #Itdb_Track
+ * @track:  an #Itdb_Track
  * @pixbuf: a #GdkPixbuf used to generate the thumbnail
  *
  * Uses @pixbuf to generate iPod thumbnails. To save memory, the thumbnails
- * will only be generated when necessary, ie when itdb_save() or a
+ * will only be generated when necessary, i.e. when itdb_save() or a
  * similar function is called.
  *
- * Return value: TRUE if the thumbnail could be added, FALSE otherwise.
- **/
+ * Returns: TRUE if the thumbnail could be added, FALSE otherwise.
+ *
+ * Since: 0.5.0
+ */
 gboolean itdb_track_set_thumbnails_from_pixbuf (Itdb_Track *track,
                                                 gpointer pixbuf)
 {
@@ -503,7 +509,9 @@ gboolean itdb_track_set_thumbnails_from_pixbuf (Itdb_Track *track,
  * @track: an #Itdb_Track
  *
  * Removes the thumbnails associated with @track
- **/
+ *
+ * Since: 0.3.0
+ */
 void itdb_track_remove_thumbnails (Itdb_Track *track)
 {
     g_return_if_fail (track);
@@ -518,20 +526,23 @@ void itdb_track_remove_thumbnails (Itdb_Track *track)
 /**
  * itdb_track_by_id:
  * @itdb: an #Itdb_iTunesDB
- * @id: ID of the track to look for
+ * @id:   ID of the track to look for
  *
  * Looks up a track using its ID in @itdb.
+ *
  * Looking up tracks by ID is not really a good idea because the IDs
  * are created by itdb just before export. The functions are here
  * because they are needed during import of the iTunesDB which is
  * referencing tracks by IDs.
- * This function is very slow (linear in the number of tracks contained in the
- * database). If you need to lookup many IDs use itdb_track_id_tree_create(),
- * itdb_track_id_tree_destroy(), and itdb_track_id_tree_by_id().
  *
- * Return value: #Itdb_Track with the ID @id or NULL if the ID cannot be
+ * This function is very slow (linear in the number of tracks
+ * contained in the database). If you need to lookup many IDs use
+ * itdb_track_id_tree_create(), itdb_track_id_tree_destroy(), and
+ * itdb_track_id_tree_by_id().
+ *
+ * Returns: #Itdb_Track with the ID @id or NULL if the ID cannot be
  * found.
- **/
+ */
 Itdb_Track *itdb_track_by_id (Itdb_iTunesDB *itdb, guint32 id)
 {
     GList *gl;
@@ -560,11 +571,11 @@ static gint track_id_compare (gconstpointer a, gconstpointer b)
  * @itdb: an #Itdb_iTunesDB
  *
  * Creates a balanced-binary tree for quick ID lookup that is used in
- * itdb_track_by_id_tree() function below
+ * itdb_track_by_id_tree()
  *
- * Return value: a #GTree indexed by track IDs to be freed with
+ * Returns: a #GTree indexed by track IDs to be freed with
  * itdb_track_id_tree_destroy() when no longer used
- **/
+ */
 GTree *itdb_track_id_tree_create (Itdb_iTunesDB *itdb)
 {
     GTree *idtree;
@@ -588,7 +599,7 @@ GTree *itdb_track_id_tree_create (Itdb_iTunesDB *itdb)
  * @idtree: a #GTree
  *
  * Frees the memory used by @idtree
- **/
+ */
 void itdb_track_id_tree_destroy (GTree *idtree)
 {
     g_return_if_fail (idtree);
@@ -599,14 +610,14 @@ void itdb_track_id_tree_destroy (GTree *idtree)
 /**
  * itdb_track_id_tree_by_id:
  * @idtree: a #GTree created using itdb_track_id_tree_create()
- * @id: the ID of the track to search for
+ * @id:     the ID of the track to search for
  *
- * Lookup an #Itdb_Track by @id using @idtree for faster lookup (compared to
- * itdb_track_by_id)
+ * Lookup an #Itdb_Track by @id using @idtree for faster lookup
+ * (compared to itdb_track_by_id())
  *
- * Return value: the #Itdb_Track whose ID is @id, or NULL if such a track
+ * Returns: the #Itdb_Track whose ID is @id, or NULL if such a track
  * couldn't be found
- **/
+ */
 Itdb_Track *itdb_track_id_tree_by_id (GTree *idtree, guint32 id)
 {
     g_return_val_if_fail (idtree, NULL);
@@ -618,8 +629,12 @@ Itdb_Track *itdb_track_id_tree_by_id (GTree *idtree, guint32 id)
  * itdb_track_has_thumbnails:
  * @track: an #Itdb_Track
  *
- * Return value: TRUE if @track has artwork available, FALSE otherwise
- **/
+ * Determine if a @track has thumbnails
+ *
+ * Returns: TRUE if @track has artwork available, FALSE otherwise
+ *
+ * Since: 0.7.0
+ */
 gboolean itdb_track_has_thumbnails (Itdb_Track *track)
 {
     g_return_val_if_fail (track != NULL, FALSE);
@@ -628,20 +643,22 @@ gboolean itdb_track_has_thumbnails (Itdb_Track *track)
 
 /**
  * itdb_track_get_thumbnail:
- * @track: an #Itdb_Track
- * @width: width of the pixbuf to retrieve, -1 for the biggest possible size
- * (with no scaling)
+ * @track:  an #Itdb_Track
+ * @width:  width of the pixbuf to retrieve, -1 for the biggest possible size
+ *          (with no scaling)
  * @height: height of the pixbuf to retrieve, -1 for the biggest possible size
- * (with no scaling)
+ *          (with no scaling)
  *
- * Returns a #GdkPixbuf representing the cover associated with the current
- * track, scaling it if appropriate. If either height or width is -1, then the 
- * biggest unscaled thumbnail available will be returned
+ * Get a thumbnail representing the cover associated with the current track,
+ * scaling it if appropriate. If either height or width is -1, then the biggest
+ * unscaled thumbnail available will be returned.
  *
- * Return value: a #GdkPixbuf that must be unreffed when no longer used, NULL
+ * Returns: a #GdkPixbuf that must be unreffed when no longer used, NULL
  * if no artwork could be found or if libgpod is compiled without GdkPixbuf
  * support
- **/
+ *
+ * Since: 0.7.0
+ */
 gpointer itdb_track_get_thumbnail (Itdb_Track *track, gint width, gint height)
 {
     g_return_val_if_fail (track != NULL, NULL);

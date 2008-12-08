@@ -252,6 +252,26 @@ information about an iPod track.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_track_get_thumbnail ##### -->
+<para>
+
+</para>
+
+@track: 
+@width: 
+@height: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_track_has_thumbnails ##### -->
+<para>
+
+</para>
+
+@track: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_track_set_thumbnails ##### -->
 <para>
 

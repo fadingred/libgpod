@@ -39,13 +39,13 @@
 
 /**
  * itdb_spl_action_known:
- * @action: an #SPLAction
+ * @action: an #ItdbSPLAction
  *
  * Checks if @action is a known (to libgpod) smart playlist action.
  *
- * Return value: TRUE if @action is known. Otherwise a warning is displayed 
- * and FALSE is returned. 
- **/
+ * Returns: TRUE if @action is known. Otherwise a warning is
+ * displayed and FALSE is returned.
+ */
 gboolean itdb_spl_action_known (ItdbSPLAction action)
 {
     gboolean result = FALSE;
@@ -86,9 +86,9 @@ gboolean itdb_spl_action_known (ItdbSPLAction action)
  *
  * Gets the type of the field of the @splr rule
  *
- * Return value: an #Itdb_SPLFieldType corresponding to @splr field type 
- * (string, int, date, ...)
- **/
+ * Returns: an #Itdb_SPLFieldType corresponding to @splr field
+ * type (string, int, date, ...)
+ */
 ItdbSPLFieldType itdb_splr_get_field_type (const Itdb_SPLRule *splr)
 {
     g_return_val_if_fail (splr != NULL, ITDB_SPLFT_UNKNOWN);
@@ -141,8 +141,8 @@ ItdbSPLFieldType itdb_splr_get_field_type (const Itdb_SPLRule *splr)
  *
  * Gets the type of the action associated with @splr.
  *
- * Return value: type (range, date, string...) of the action field
- **/
+ * Returns: type (range, date, string...) of the action field
+ */
 ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 {
     ItdbSPLFieldType fieldType;
@@ -320,13 +320,13 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 
 /**
  * itdb_splr_eval:
- * @splr: an #Itdb_SPLRule
- * @track: an #Itdb_Track
+ * @splr:   an #Itdb_SPLRule
+ * @track:  an #Itdb_Track
  *
- * Evaluates @splr's truth against @track. track-&gt;itdb must be set.
+ * Evaluates @splr's truth against @track. @track->itdb must be set.
  *
- * Return value: TRUE if @track matches @splr, FALSE otherwise.
- **/
+ * Returns: TRUE if @track matches @splr, FALSE otherwise.
+ */
 gboolean itdb_splr_eval (Itdb_SPLRule *splr, Itdb_Track *track)
 {
     ItdbSPLFieldType ft;
@@ -681,7 +681,7 @@ static GList *randomize_glist (GList *list)
  * @pl: an #Itdb_Playlist to randomize
  *
  * Randomizes @pl
- **/
+ */
 void itdb_playlist_randomize (Itdb_Playlist *pl)
 {
     g_return_if_fail (pl);
@@ -693,11 +693,12 @@ void itdb_playlist_randomize (Itdb_Playlist *pl)
  * itdb_spl_update:
  * @spl: an #Itdb_Playlist
  *
- * Updates the content of the smart playlist @spl (meant to be called if the 
- * tracks stored in the #Itdb_iTunesDB associated with @spl have changed 
- * somehow and you want spl-&gt;members to be accurate with regards to those 
- * changes. Does nothing if @spl isn't a smart playlist.
- **/
+ * Updates the content of the smart playlist @spl (meant to be called
+ * if the tracks stored in the #Itdb_iTunesDB associated with @spl
+ * have changed somehow and you want @spl->members to be accurate
+ * with regards to those changes. Does nothing if @spl isn't a smart
+ * playlist.
+ */
 void itdb_spl_update (Itdb_Playlist *spl)
 {
     GList *gl;
@@ -909,7 +910,7 @@ void itdb_spl_update (Itdb_Playlist *spl)
  * @itdb: an #Itdb_iTunesDB
  *
  * Updates all smart playlists contained in @itdb
- **/
+ */
 void itdb_spl_update_all (Itdb_iTunesDB *itdb)
 {
     g_return_if_fail (itdb);
@@ -929,9 +930,11 @@ static void spl_update2 (Itdb_Playlist *playlist, gpointer data)
  * itdb_spl_update_live:
  * @itdb: an #Itdb_iTunesDB
  *
- * Updates all 'live' smart playlists contained in @itdb, ie those which have 
- * the 'live updating' flag set
- **/
+ * Updates all smart playlists contained in @itdb which have the
+ * @liveupdate flag set.
+ *
+ * Since: 0.2.0
+ */
 void itdb_spl_update_live (Itdb_iTunesDB *itdb)
 {
     g_return_if_fail (itdb);
@@ -947,8 +950,8 @@ void itdb_spl_update_live (Itdb_iTunesDB *itdb)
  * itdb_splr_validate:
  * @splr: an #Itdb_SPLRule
  *
- * Validates a rule 
- **/
+ * Validates a smart playlist rule
+ */
 void itdb_splr_validate (Itdb_SPLRule *splr)
 {
     ItdbSPLActionType at;
@@ -1005,7 +1008,7 @@ void itdb_splr_validate (Itdb_SPLRule *splr)
  * @splr: an #Itdb_SPLRule
  *
  * Frees the memory used by @splr
- **/
+ */
 void itdb_splr_free (Itdb_SPLRule *splr)
 {
     if (splr)
@@ -1020,9 +1023,9 @@ void itdb_splr_free (Itdb_SPLRule *splr)
  * @pl: an #Itdb_Playlist
  * @splr: an Itdb_SPLRule
  *
- * Removes the smart playlist rule @splr from playlist @pl. The memory used by
- * @splr is freed.
- **/
+ * Removes the smart playlist rule @splr from playlist @pl. The memory
+ * used by @splr is freed.
+ */
 void itdb_splr_remove (Itdb_Playlist *pl, Itdb_SPLRule *splr)
 {
     g_return_if_fail (pl);
@@ -1034,14 +1037,14 @@ void itdb_splr_remove (Itdb_Playlist *pl, Itdb_SPLRule *splr)
 
 /**
  * itdb_splr_add:
- * @pl: an #Itdb_Playlist
- * @splr: an #Itdb_SPLRule
- * @pos: position of the rule
+ * @pl:     an #Itdb_Playlist
+ * @splr:   an #Itdb_SPLRule
+ * @pos:    position of the rule
  *
- * Adds the smart rule @splr to @pl at position @pos. If @pos is -1, @splr gets
- * appended to the end. After this call, @splr memory is managed by @pl, so 
- * you no longer need to call itdb_splr_free()
- **/
+ * Adds the smart rule @splr to @pl at position @pos. If @pos is -1,
+ * @splr gets appended to the end. After this call, @splr memory is
+ * managed by @pl, so you no longer need to call itdb_splr_free()
+ */
 void itdb_splr_add (Itdb_Playlist *pl, Itdb_SPLRule *splr, gint pos)
 {
     g_return_if_fail (pl);
@@ -1056,9 +1059,9 @@ void itdb_splr_add (Itdb_Playlist *pl, Itdb_SPLRule *splr, gint pos)
  *
  * Creates a new default smart rule
  *
- * Return value: a new #Itdb_SPLRule that must be freed with itdb_splr_free() when
+ * Returns: a new #Itdb_SPLRule that must be freed with itdb_splr_free() when
  * no longer needed
- **/
+ */
 Itdb_SPLRule *itdb_splr_new (void)
 {
     Itdb_SPLRule *splr = g_new0 (Itdb_SPLRule, 1);
@@ -1077,15 +1080,16 @@ Itdb_SPLRule *itdb_splr_new (void)
 
 /**
  * itdb_splr_add_new:
- * @pl: an #Itdb_Playlist
- * @pos: position to insert the rule at
+ * @pl:     an #Itdb_Playlist
+ * @pos:    position to insert the rule at
  *
- * Creates a new smart rule and inserts it at position @pos in @pl. If @pos is
- * -1, the new rule gets appended to the end.
+ * Creates a new smart rule and inserts it at position @pos in @pl. If
+ * @pos is -1, the new rule gets appended to the end.
  *
- * Return value: pointer to the newly created #Itdb_SPLRule. Its memory is handled 
- * by @pl though, so you don't need to explicitly call itdb_splr_free() on it
- **/
+ * Returns: pointer to the newly created #Itdb_SPLRule. Its
+ * memory is handled by @pl though, so you don't need to explicitly
+ * call itdb_splr_free() on it
+ */
 Itdb_SPLRule *itdb_splr_add_new (Itdb_Playlist *pl, gint pos)
 {
     Itdb_SPLRule *splr;
@@ -1116,13 +1120,14 @@ static Itdb_SPLRule *splr_duplicate (Itdb_SPLRule *splr)
  * itdb_playlist_duplicate:
  * @pl: an #Itdb_Playlist
  *
- * Duplicates an existing playlist. pl_dup-&gt;id is set to zero, so that
- * it will be set to a unique value when adding it to an #Itdb_iTunesDB. The
- * returned playlist won't be associated with an #Itdb_iTunesDB.
+ * Duplicates an existing playlist. @pl_dup->id is set to zero, so
+ * that it will be set to a unique value when adding it to an
+ * #Itdb_iTunesDB. The returned playlist won't be associated with an
+ * #Itdb_iTunesDB.
  *
- * Return value: a newly allocated #Itdb_Playlist that you'll have to free
- * with itdb_playlist_free() when you no longer need it. 
- **/
+ * Returns: a newly allocated #Itdb_Playlist that you'll have to
+ * free with itdb_playlist_free() when you no longer need it.
+ */
 Itdb_Playlist *itdb_playlist_duplicate (Itdb_Playlist *pl)
 {
     Itdb_Playlist *pl_dup;
@@ -1166,13 +1171,13 @@ Itdb_Playlist *itdb_playlist_duplicate (Itdb_Playlist *pl)
 
 /**
  * itdb_spl_copy_rules:
- * @dest: destination #Itdb_Playlist
- * @src: source #Itdb_Playlist
+ * @dest:   destination #Itdb_Playlist
+ * @src:    source #Itdb_Playlist
  *
  * Copy all relevant information for smart playlist from playlist @src
- * to playlist @dest. If @dest is already a smart playlist, the existing data
- * is overwritten/deleted. 
- **/
+ * to playlist @dest. If @dest is already a smart playlist, the
+ * existing data is overwritten/deleted.
+ */
 void itdb_spl_copy_rules (Itdb_Playlist *dest, Itdb_Playlist *src)
 {
     GList *gl;
@@ -1202,16 +1207,16 @@ void itdb_spl_copy_rules (Itdb_Playlist *dest, Itdb_Playlist *src)
 
 /**
  * itdb_playlist_new:
- * @title: playlist title
- * @spl: smart playlist flag
+ * @title:  playlist title
+ * @spl:    smart playlist flag
  *
- * Creates a new playlist. If @spl is TRUE, a smart
- * playlist is generated. pl->id is set by itdb_playlist_add() when the 
- * playlist is added to an #Itdb_iTunesDB
- * 
- * Return value: a new #Itdb_Playlist which must be freed with 
+ * Creates a new playlist. If @spl is TRUE, a smart playlist is
+ * generated. pl->id is set by itdb_playlist_add() when the playlist
+ * is added to an #Itdb_iTunesDB
+ *
+ * Returns: a new #Itdb_Playlist which must be freed with
  * itdb_playlist_free() after use
- **/
+ */
 Itdb_Playlist *itdb_playlist_new (const gchar *title, gboolean spl)
 {
     Itdb_Playlist *pl = g_new0 (Itdb_Playlist, 1);
@@ -1244,7 +1249,7 @@ Itdb_Playlist *itdb_playlist_new (const gchar *title, gboolean spl)
  * @pl: an #Itdb_Playlist
  *
  * Frees the memory used by playlist @pl.
- **/
+ */
 void itdb_playlist_free (Itdb_Playlist *pl)
 {
     g_return_if_fail (pl);
@@ -1260,15 +1265,16 @@ void itdb_playlist_free (Itdb_Playlist *pl)
 
 /**
  * itdb_playlist_add:
- * @itdb: an #Itdb_iTunesDB
- * @pl: an #Itdb_Playlist
- * @pos: position to insert @pl at
+ * @itdb:   an #Itdb_iTunesDB
+ * @pl:     an #Itdb_Playlist
+ * @pos:    position to insert @pl at
  *
  * Adds playlist @pl to the database @itdb at position @pos (-1 for
- * "append to end"). A unique id is created if pl-&gt;id is equal to
- * zero. After calling this function, @itdb manages the memory of @pl, which
- * means you no longer need to explicitly call itdb_playlist_free()
- **/
+ * "append to end"). A unique id is created if @pl->id is equal to
+ * zero. After calling this function, @itdb manages the memory of @pl,
+ * which means you no longer need to explicitly call
+ * itdb_playlist_free()
+ */
 void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
 {
     g_return_if_fail (itdb);
@@ -1307,11 +1313,11 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
 
 /**
  * itdb_playlist_move:
- * @pl: an #Itdb_Playlist
- * @pos: new position
+ * @pl:     an #Itdb_Playlist
+ * @pos:    new position
  *
  * Moves playlist @pl to position @pos
- **/
+ */
 void itdb_playlist_move (Itdb_Playlist *pl, guint32 pos)
 {
     Itdb_iTunesDB *itdb;
@@ -1330,7 +1336,7 @@ void itdb_playlist_move (Itdb_Playlist *pl, guint32 pos)
  *
  * Removes @pl from the #Itdb_iTunesDB it's associated with
  * and frees memory
- **/
+ */
 void itdb_playlist_remove (Itdb_Playlist *pl)
 {
     Itdb_iTunesDB *itdb;
@@ -1347,9 +1353,9 @@ void itdb_playlist_remove (Itdb_Playlist *pl)
  * itdb_playlist_unlink:
  * @pl: an #Itdb_Playlist
  *
- * Remove @pl from the #Itdb_iTunesDB it's associated with but do not free 
- * memory. pl-&gt;itdb is set to NULL after this function returns
- **/
+ * Remove @pl from the #Itdb_iTunesDB it's associated with but do not
+ * free memory. @pl->itdb is set to NULL after this function returns
+ */
 void itdb_playlist_unlink (Itdb_Playlist *pl)
 {
     Itdb_iTunesDB *itdb;
@@ -1364,13 +1370,13 @@ void itdb_playlist_unlink (Itdb_Playlist *pl)
 
 /**
  * itdb_playlist_exists:
- * @itdb: an #Itdb_iTunesDB
- * @pl: an #Itdb_Playlist
+ * @itdb:   an #Itdb_iTunesDB
+ * @pl:     an #Itdb_Playlist
  *
- * Checks if @pl is present in @db
+ * Checks if @pl is present in @itdb
  *
- * Return value: TRUE if @pl exists in @db, FALSE otherwise 
- **/
+ * Returns: TRUE if @pl exists in @itdb, FALSE otherwise
+ */
 gboolean itdb_playlist_exists (Itdb_iTunesDB *itdb, Itdb_Playlist *pl)
 {
     g_return_val_if_fail (itdb, FALSE);
@@ -1382,13 +1388,12 @@ gboolean itdb_playlist_exists (Itdb_iTunesDB *itdb, Itdb_Playlist *pl)
 
 /**
  * itdb_playlist_add_track:
- * @pl: an #Itdb_Playlist
- * @track: an #Itdb_Track
- * @pos: position to insert @track at
+ * @pl:     an #Itdb_Playlist
+ * @track:  an #Itdb_Track
+ * @pos:    position to insert @track at
  *
- * Adds @track to @pl at position @pos (-1 for "append to
- * end") 
- **/
+ * Adds @track to @pl at position @pos (-1 to append at the end)
+ */
 void itdb_playlist_add_track (Itdb_Playlist *pl,
 			      Itdb_Track *track, gint32 pos)
 {
@@ -1403,14 +1408,14 @@ void itdb_playlist_add_track (Itdb_Playlist *pl,
 
 /**
  * itdb_playlist_remove_track:
- * @pl: an #Itdb_Playlist
- * @track: an #Itdb_Track
+ * @pl:     an #Itdb_Playlist
+ * @track:  an #Itdb_Track
  *
  * Removes @track from @pl. If @pl is NULL, removes @track from the
- * master playlist. If @track can't be found in @pl, nothing happens. If after
- * removing @track, @pl is empty, it's not removed from the database
- * The memory used by @track isn't freed.
- **/
+ * master playlist. If @track can't be found in @pl, nothing happens.
+ * If after removing @track, @pl is empty, it's not removed from the
+ * database The memory used by @track isn't freed.
+ */
 void itdb_playlist_remove_track (Itdb_Playlist *pl, Itdb_Track *track)
 {
     g_return_if_fail (track);
@@ -1425,14 +1430,14 @@ void itdb_playlist_remove_track (Itdb_Playlist *pl, Itdb_Track *track)
 
 /**
  * itdb_playlist_by_id:
- * @itdb: an #Itdb_iTunesDB
- * @id: ID of the playlist to look for
+ * @itdb:   an #Itdb_iTunesDB
+ * @id:     ID of the playlist to look for
  *
  * Looks up a playlist whose ID is @id
  *
- * Return value: the #Itdb_Playlist with ID @id or NULL if there is no such
- * playlist.
- **/
+ * Returns: the #Itdb_Playlist with ID @id or NULL if there is no
+ * such playlist.
+ */
 Itdb_Playlist *itdb_playlist_by_id (Itdb_iTunesDB *itdb, guint64 id)
 {
     GList *gl;
@@ -1449,13 +1454,14 @@ Itdb_Playlist *itdb_playlist_by_id (Itdb_iTunesDB *itdb, guint64 id)
 
 /**
  * itdb_playlist_by_nr:
- * @itdb: an #Itdb_iTunesDB
- * @num: the position of the playlist, counting from 0
+ * @itdb:   an #Itdb_iTunesDB
+ * @num:    the position of the playlist, counting from 0
  *
  * Gets the playlist at the given position in @itdb
  *
- * Return value: the #Itdb_Playlist, or NULL if there is no playlist at @pos
- **/
+ * Returns: the #Itdb_Playlist, or NULL if there is no playlist
+ * at @pos
+ */
 Itdb_Playlist *itdb_playlist_by_nr (Itdb_iTunesDB *itdb, guint32 num)
 {
     Itdb_Playlist *pl;
@@ -1467,14 +1473,14 @@ Itdb_Playlist *itdb_playlist_by_nr (Itdb_iTunesDB *itdb, guint32 num)
 
 /**
  * itdb_playlist_by_name:
- * @itdb: an #Itdb_iTunesDB
- * @name: name of the playlist to look for
+ * @itdb:   an #Itdb_iTunesDB
+ * @name:   name of the playlist to look for
  *
  * Searches a playlist whose name is @name in @itdb
  *
- * Return value: the first #Itdb_Playlist with name @name, NULL if there is no
- * such playlist
- **/
+ * Returns: the first #Itdb_Playlist with name @name, NULL if
+ * there is no such playlist
+ */
 Itdb_Playlist *itdb_playlist_by_name (Itdb_iTunesDB *itdb, gchar *name)
 {
     GList *gl;
@@ -1497,8 +1503,10 @@ Itdb_Playlist *itdb_playlist_by_name (Itdb_iTunesDB *itdb, gchar *name)
  *
  * Checks if @pl is the master playlist
  *
- * Return value: TRUE if @pl is the master playlist, FALSE otherwise
- **/
+ * Returns: TRUE if @pl is the master playlist, FALSE otherwise
+ *
+ * Since: 0.1.6
+ */
 gboolean itdb_playlist_is_mpl (Itdb_Playlist *pl)
 {
     g_return_val_if_fail (pl, FALSE);
@@ -1512,8 +1520,10 @@ gboolean itdb_playlist_is_mpl (Itdb_Playlist *pl)
  *
  * Checks if @pl is the podcasts playlist
  *
- * Return value: TRUE if @pl is the podcasts playlist, FALSE otherwise
- **/
+ * Returns: TRUE if @pl is the podcasts playlist, FALSE otherwise
+ *
+ * Since: 0.1.6
+ */
 gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl)
 {
     g_return_val_if_fail (pl, FALSE);
@@ -1526,7 +1536,9 @@ gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl)
  * @pl: an #Itdb_Playlist
  *
  * Sets @pl to be a master playlist
- **/
+ *
+ * Since: 0.2.0
+ */
 void itdb_playlist_set_mpl (Itdb_Playlist *pl)
 {
     g_return_if_fail (pl);
@@ -1539,7 +1551,9 @@ void itdb_playlist_set_mpl (Itdb_Playlist *pl)
  * @pl: an #Itdb_Playlist
  *
  * Set @pl to be a podcasts playlist
- **/
+ *
+ * Since: 0.2.0
+ */
 void itdb_playlist_set_podcasts (Itdb_Playlist *pl)
 {
     g_return_if_fail (pl);
@@ -1553,8 +1567,8 @@ void itdb_playlist_set_podcasts (Itdb_Playlist *pl)
  *
  * Gets the master playlist of @itdb
  *
- * Return value: the master playlist of @itdb
- **/
+ * Returns: the master playlist of @itdb
+ */
 Itdb_Playlist *itdb_playlist_mpl (Itdb_iTunesDB *itdb)
 {
     Itdb_Playlist *pl;
@@ -1570,15 +1584,17 @@ Itdb_Playlist *itdb_playlist_mpl (Itdb_iTunesDB *itdb)
     return pl;
 }
 
-
 /**
  * itdb_playlist_podcasts:
  * @itdb: an #Itdb_iTunesDB
  *
  * Gets the podcasts playlist of @itdb
  *
- * Return value: the podcasts playlist of @itdb, or NULL if it's there is none
- **/
+ * Returns: the podcasts playlist of @itdb, or NULL if there is
+ * not one
+ *
+ * Since: 0.1.6
+ */
 Itdb_Playlist *itdb_playlist_podcasts (Itdb_iTunesDB *itdb)
 {
     GList *gl;
@@ -1598,13 +1614,13 @@ Itdb_Playlist *itdb_playlist_podcasts (Itdb_iTunesDB *itdb)
 
 /**
  * itdb_playlist_contains_track:
- * @pl: an #Itdb_Playlist
- * @track: an #Itdb_Track
+ * @pl:     an #Itdb_Playlist
+ * @track:  an #Itdb_Track
  *
- * Checks if @track is in @pl.
- * 
- * Return value: TRUE if @track is in @pl, FALSE otherwise
- **/
+ * Checks if @track is in @pl
+ *
+ * Returns: TRUE if @track is in @pl, FALSE otherwise
+ */
 gboolean itdb_playlist_contains_track (Itdb_Playlist *pl, Itdb_Track *tr)
 {
     g_return_val_if_fail (tr, FALSE);
@@ -1622,11 +1638,11 @@ gboolean itdb_playlist_contains_track (Itdb_Playlist *pl, Itdb_Track *tr)
  * itdb_playlist_contain_track_number:
  * @tr: an #Itdb_Track
  *
- * Counts the number of playlist @track is a member of (not including the 
- * master playlist)
+ * Counts the number of playlist @track is a member of (not including
+ * the master playlist)
  *
- * Return value: number of playlist containing @track
- **/
+ * Returns: the number of playlist containing @track
+ */
 guint32 itdb_playlist_contain_track_number (Itdb_Track *tr)
 {
     Itdb_iTunesDB *itdb;
@@ -1654,8 +1670,8 @@ guint32 itdb_playlist_contain_track_number (Itdb_Track *tr)
  *
  * Counts the number of tracks in @pl
  *
- * Return value: track count
- **/
+ * Returns: the number of tracks in @pl
+ */
 guint32 itdb_playlist_tracks_number (Itdb_Playlist *pl)
 {
     g_return_val_if_fail (pl, 0);

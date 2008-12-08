@@ -26,7 +26,7 @@
       </author>
     </authorgroup>
     <copyright>
-      <year>2006</year>
+      <year>2006-2008</year>
       <holder>Christophe Fergeau</holder>
     </copyright>
 
@@ -88,6 +88,7 @@
       <xi:include href="xml/playlists.xml"/>
       <xi:include href="xml/smart-playlists.xml"/>
       <xi:include href="xml/artwork.xml"/>
+      <xi:include href="xml/chapterdata.xml"/>
       <xi:include href="xml/device.xml"/>
     </chapter>
   </part>

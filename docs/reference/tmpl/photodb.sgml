@@ -60,19 +60,20 @@ Library Album if called with no name.
 <para>
 If you cannot add photos because your iPod is not recognized,
 you may have to set the iPod model by calling
+itdb_device_set_sysinfo(), e.g. for an 80 GB 6th generation
+iPod Video, you would use:
 </para>
+<programlisting>
+itdb_device_set_sysinfo (db->device, "ModelNumStr", "MA450");
+</programlisting>
 <para>
-itdb_device_set_sysinfo (db->device, "ModelNumStr", model);
-</para>
-<para>
-For example, "MA450" would stand for an 80 GB 6th generation iPod Video. See
-<ulink type="http"
+See <ulink type="http"
 url="http://gtkpod.svn.sourceforge.net/svnroot/gtkpod/libgpod/trunk/src/itdb_device.c">itdb_device.c</ulink>
 for a list of supported models.
 </para>
 <para>
-This information will be written to the iPod when the PhotoDB is
-saved (itdb_device_write_sysinfo() is called).
+The model number will be saved on the iPod when the PhotoDB is
+written (itdb_photodb_write() calls itdb_device_write_sysinfo()).
 </para>
 <para>
 Have a look at the <ulink type="http"
@@ -90,37 +91,6 @@ directory of the libgpod source for an example of how to use the interface.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<!-- ##### STRUCT Itdb_PhotoAlbum ##### -->
-<para>
-
-</para>
-
-@name: 
-@members: 
-@album_type: 
-@playmusic: 
-@repeat: 
-@random: 
-@show_titles: 
-@transition_direction: 
-@slide_duration: 
-@transition_duration: 
-@song_id: 
-@unk024: 
-@unk028: 
-@unk044: 
-@unk048: 
-@album_id: 
-@prev_album_id: 
-@reserved_int1: 
-@reserved_int2: 
-@reserved1: 
-@reserved2: 
-@usertype: 
-@userdata: 
-@userdata_duplicate: 
-@userdata_destroy: 
-
 <!-- ##### STRUCT Itdb_PhotoDB ##### -->
 <para>
 
@@ -137,6 +107,43 @@ directory of the libgpod source for an example of how to use the interface.
 @userdata: 
 @userdata_duplicate: 
 @userdata_destroy: 
+
+<!-- ##### FUNCTION itdb_photodb_create ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_photodb_free ##### -->
+<para>
+
+</para>
+
+@photodb: 
+
+
+<!-- ##### FUNCTION itdb_photodb_parse ##### -->
+<para>
+
+</para>
+
+@mp: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_photodb_write ##### -->
+<para>
+
+</para>
+
+@photodb: 
+@error: 
+@Returns: 
+
 
 <!-- ##### FUNCTION itdb_photodb_add_photo ##### -->
 <para>
@@ -178,30 +185,56 @@ directory of the libgpod source for an example of how to use the interface.
 @Returns: 
 
 
-<!-- ##### FUNCTION itdb_photodb_create ##### -->
+<!-- ##### FUNCTION itdb_photodb_remove_photo ##### -->
 <para>
 
 </para>
 
-@mountpoint: 
-@Returns: 
+@db: 
+@album: 
+@photo: 
 
 
-<!-- ##### FUNCTION itdb_photodb_free ##### -->
+<!-- ##### STRUCT Itdb_PhotoAlbum ##### -->
 <para>
 
 </para>
 
 @photodb: 
+@name: 
+@members: 
+@album_type: 
+@playmusic: 
+@repeat: 
+@random: 
+@show_titles: 
+@transition_direction: 
+@slide_duration: 
+@transition_duration: 
+@song_id: 
+@unk024: 
+@unk028: 
+@unk044: 
+@unk048: 
+@album_id: 
+@prev_album_id: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
+@usertype: 
+@userdata: 
+@userdata_duplicate: 
+@userdata_destroy: 
 
-
-<!-- ##### FUNCTION itdb_photodb_parse ##### -->
+<!-- ##### FUNCTION itdb_photodb_photoalbum_create ##### -->
 <para>
 
 </para>
 
-@mp: 
-@error: 
+@db: 
+@albumname: 
+@pos: 
 @Returns: 
 
 
@@ -226,17 +259,6 @@ directory of the libgpod source for an example of how to use the interface.
 @Returns: 
 
 
-<!-- ##### FUNCTION itdb_photodb_photoalbum_create ##### -->
-<para>
-
-</para>
-
-@db: 
-@albumname: 
-@pos: 
-@Returns: 
-
-
 <!-- ##### FUNCTION itdb_photodb_photoalbum_remove ##### -->
 <para>
 
@@ -245,25 +267,5 @@ directory of the libgpod source for an example of how to use the interface.
 @db: 
 @album: 
 @remove_pics: 
-
-
-<!-- ##### FUNCTION itdb_photodb_remove_photo ##### -->
-<para>
-
-</para>
-
-@db: 
-@album: 
-@photo: 
-
-
-<!-- ##### FUNCTION itdb_photodb_write ##### -->
-<para>
-
-</para>
-
-@photodb: 
-@error: 
-@Returns: 
 
 

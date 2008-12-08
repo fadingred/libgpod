@@ -121,8 +121,10 @@ static void error_no_photos_dir (const gchar *mp, GError **error)
  * Retrieve the Photo directory by
  * first calling itdb_get_control_dir() and then adding 'Photos'
  *
- * Return value: path to the Artwork directory or NULL if
+ * Returns: path to the Artwork directory or NULL if
  * non-existent. Must g_free() after use.
+ *
+ * Since: 0.4.0
  */
 gchar *itdb_get_photos_dir (const gchar *mountpoint)
 {
@@ -149,9 +151,11 @@ gchar *itdb_get_photos_dir (const gchar *mountpoint)
  *
  * Retrieve a path to the Photo DB
  *
- * Return value: path to the PhotoDB or NULL if non-existent. Must
+ * Returns: path to the PhotoDB or NULL if non-existent. Must
  * g_free() after use.
- **/
+ *
+ * Since: 0.4.0
+ */
 gchar *itdb_get_photodb_path (const gchar *mountpoint)
 {
     gchar *photo_dir, *path=NULL;
@@ -176,8 +180,10 @@ gchar *itdb_get_photodb_path (const gchar *mountpoint)
  * Retrieve the Photo Thumbnail directory by
  * first calling itdb_get_control_dir() and then adding 'Photos/Thumbs'
  *
- * Return value: path to the Artwork directory or NULL if
+ * Returns: path to the Artwork directory or NULL if
  * non-existent. Must g_free() after use.
+ *
+ * Since: 0.4.0
  */
 gchar *itdb_get_photos_thumb_dir (const gchar *mountpoint)
 {
@@ -201,13 +207,15 @@ gchar *itdb_get_photos_thumb_dir (const gchar *mountpoint)
 
 /**
  * itdb_photodb_parse:
- * @mp: mountpoint of the iPod
- * @error: will contain the error description when an error occured.
+ * @mp:     mountpoint of the iPod
+ * @error:  will contain the error description when an error occured.
  *
  * Parses the photo database of an iPod mounted at @mp.
  *
- * Return value: the imported PhotoDB or NULL in case of an error.
- **/
+ * Returns: the imported PhotoDB or NULL in case of an error.
+ *
+ * Since: 0.4.0
+ */
 Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error)
 {
     gchar *photos_dir;
@@ -244,10 +252,12 @@ Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error)
  * Creates a new Itdb_PhotoDB. If mountpoint is NULL, you will have to
  * set it manually later by calling itdb_device_set_mountpoint().
  *
- * Return value: a newly created Itdb_PhotoDB to be freed with
+ * Returns: a newly created Itdb_PhotoDB to be freed with
  * itdb_photodb_free() when it's no longer needed. The Photo Library
  * Album is created automatically.
- **/
+ *
+ * Since: 0.4.2
+ */
 Itdb_PhotoDB *itdb_photodb_create (const gchar *mountpoint)
 {
     Itdb_PhotoDB *photodb = itdb_photodb_new ();
@@ -280,7 +290,9 @@ static Itdb_PhotoDB *itdb_photodb_new (void)
  * @photodb: an #Itdb_PhotoDB
  *
  * Free the memory taken by @photodb.
- **/
+ *
+ * Since: 0.4.0
+ */
 void itdb_photodb_free (Itdb_PhotoDB *photodb)
 {
 	if (photodb)
@@ -460,24 +472,26 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 
 /**
  * itdb_photodb_add_photo:
- * @db: the #Itdb_PhotoDB to add the photo to.
- * @filename: file with the photo to add.
- * @position: position where to insert the new photo (-1 to append at
- * the end)
- * @rotation: angle by which the image should be rotated
- * counterclockwise. Valid values are 0, 90, 180 and 270.
- * @error: return location for a #GError or NULL
- * 
+ * @db:         the #Itdb_PhotoDB to add the photo to
+ * @filename:   path of the photo to add.
+ * @position:   position where to insert the new photo (-1 to append
+ *              at the end)
+ * @rotation:   angle by which the image should be rotated
+ *              counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error:      return location for a #GError or NULL
+ *
  * Add a photo to the PhotoDB. The photo is automatically added to the
  * first Photoalbum, which by default contains a list of all photos in
  * the database. If no Photoalbums exist one is created automatically.
  *
  * For the rotation angle you can also use the gdk constants
- * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
- * ..._CLOCKWISE.
+ * %GDK_PIXBUF_ROTATE_NONE, %GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE,
+ * %GDK_PIXBUF_ROTATE_UPSIDEDOWN, AND %GDK_PIXBUF_ROTATE_CLOCKWISE.
  *
- * Return value: a pointer to the added photo.
- **/
+ * Returns: a pointer to the added photo.
+ *
+ * Since: 0.4.0
+ */
 Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db,
 				      const gchar *filename,
 				      gint position,
@@ -493,26 +507,28 @@ Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db,
 
 /**
  * itdb_photodb_add_photo_from_data:
- * @db: the #Itdb_PhotoDB to add the photo to.
- * @image_data: chunk of memory containing the image data (for example
- * a jpg file)
+ * @db:             the #Itdb_PhotoDB to add the photo to
+ * @image_data:     chunk of memory containing the image data (for
+ *                  example a jpg file)
  * @image_data_len: length of above chunk of memory
- * @position: position where to insert the new photo (-1 to append at
- * the end)
- * @rotation: angle by which the image should be rotated
- * counterclockwise. Valid values are 0, 90, 180 and 270.
- * @error: return location for a #GError or NULL
- * 
+ * @position:       position where to insert the new photo (-1 to
+ *                  append at the end)
+ * @rotation:       angle by which the image should be rotated
+ *                  counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error:          return location for a #GError or NULL
+ *
  * Add a photo to the PhotoDB. The photo is automatically added to the
  * first Photoalbum, which by default contains a list of all photos in
  * the database. If no Photoalbums exist one is created automatically.
  *
  * For the rotation angle you can also use the gdk constants
- * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
- * ..._CLOCKWISE.
+ * %GDK_PIXBUF_ROTATE_NONE, %GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE,
+ * %GDK_PIXBUF_ROTATE_UPSIDEDOWN, AND %GDK_PIXBUF_ROTATE_CLOCKWISE.
  *
- * Return value: a pointer to the added photo.
- **/
+ * Returns: a pointer to the added photo.
+ *
+ * Since: 0.4.0
+ */
 Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
 						const guchar *image_data,
 						gsize image_data_len,
@@ -530,24 +546,26 @@ Itdb_Artwork *itdb_photodb_add_photo_from_data (Itdb_PhotoDB *db,
 
 /**
  * itdb_photodb_add_photo_from_pixbuf:
- * @db: the #Itdb_PhotoDB to add the photo to.
- * @pixbuf: a #GdkPixbuf to use as the image data
- * @position: position where to insert the new photo (-1 to append at
- * the end)
- * @rotation: angle by which the image should be rotated
- * counterclockwise. Valid values are 0, 90, 180 and 270.
- * @error: return location for a #GError or NULL
- * 
+ * @db:         the #Itdb_PhotoDB to add the photo to
+ * @pixbuf:     a #GdkPixbuf to use as the image data
+ * @position:   position where to insert the new photo (-1 to append
+ *              at the end)
+ * @rotation:   angle by which the image should be rotated
+ *              counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error:      return location for a #GError or NULL
+ *
  * Add a photo to the PhotoDB. The photo is automatically added to the
  * first Photoalbum, which by default contains a list of all photos in
  * the database. If no Photoalbums exist one is created automatically.
  *
  * For the rotation angle you can also use the gdk constants
- * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
- * ..._CLOCKWISE.
+ * %GDK_PIXBUF_ROTATE_NONE, %GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE,
+ * %GDK_PIXBUF_ROTATE_UPSIDEDOWN, AND %GDK_PIXBUF_ROTATE_CLOCKWISE.
  *
- * Return value: a pointer to the added photo.
- **/
+ * Returns: a pointer to the added photo.
+ *
+ * Since: 0.5.0
+ */
 Itdb_Artwork *itdb_photodb_add_photo_from_pixbuf (Itdb_PhotoDB *db,
 						  gpointer pixbuf,
 						  gint position,
@@ -563,19 +581,23 @@ Itdb_Artwork *itdb_photodb_add_photo_from_pixbuf (Itdb_PhotoDB *db,
 
 /**
  * itdb_photodb_remove_photo:
- * @db: the #Itdb_PhotoDB to remove the photo from
- * @album: the album to remove the photo from. If album is NULL, then
- * it will first be removed from all photoalbums and then from the
- * photo database as well.
- * @photo: #Itdb_Artwork (photo) to remove.
+ * @db:     the #Itdb_PhotoDB to remove the photo from
+ * @album:  the album to remove the photo from. If album is NULL, then
+ *          it will first be removed from all photoalbums and then
+ *          from the photo database as well.
+ * @photo:  #Itdb_Artwork (photo) to remove.
  *
- * Remove photo. If @album is not the first photoalbum, the photo will
- * be removed from that album only. If @album is NULL or the first
- * photoalbum (Photo Library), the photo will be removed from all
- * albums and the #Itdb_PhotoDB.
+ * Removes a photo. If @album is not the first photoalbum, the photo
+ * will be removed from that album only. If @album is NULL or the
+ * first photoalbum (Photo Library), the photo will be removed from
+ * all albums and the #Itdb_PhotoDB.
  *
+ * <note>
  * @photo will be freed and can no longer be used if removed from the
  * first photoalbum.
+ * </note>
+ *
+ * Since: 0.4.0
  */
 void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
 				Itdb_PhotoAlbum *album,
@@ -609,15 +631,17 @@ void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
 
 /**
  * itdb_photodb_photoalbum_by_name:
- * @db: the #Itdb_PhotoDB to retrieve the album from
- * @albumname: the name of the photoalbum to get or NULL for the
- * master photoalbum.
+ * @db:         the #Itdb_PhotoDB to retrieve the album from
+ * @albumname:  the name of the photoalbum to get or NULL for the
+ *              master photoalbum.
  *
  * Find the first photoalbum with a given name or the Photo Library
  * Album if called with no name.
  *
- * Return value: a pointer to the first photoalbum named @albumname,
+ * Returns: a pointer to the first photoalbum named @albumname,
  * else NULL
+ *
+ * Since: 0.4.2
  */
 Itdb_PhotoAlbum *itdb_photodb_photoalbum_by_name (Itdb_PhotoDB *db, const gchar *albumname)
 {
@@ -638,17 +662,21 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_by_name (Itdb_PhotoDB *db, const gchar 
 
 /**
  * itdb_photodb_photoalbum_remove:
- * @db: the #Itdb_PhotoDB to apply changes to
- * @album: the album to be removed from the database
- * @remove_pics: TRUE to remove pics in that album permanently from
- * the database.
+ * @db:             the #Itdb_PhotoDB to apply changes to
+ * @album:          the album to be removed from the database
+ * @remove_pics:    TRUE to remove pics in that album permanently
+ *                  from the database.
  *
- * Remove @album from the Photo Database. If remove_pics is TRUE,
+ * Remove @album from the Photo Database. If @remove_pics is TRUE,
  * remove all photos contained in @album from the Photo Database.
  *
+ * <note>
  * Memory used by the removed album will be freed and the album cannot
  * be accessed any more.
- **/
+ * </note>
+ *
+ * Since: 0.4.2
+ */
 void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 				     Itdb_PhotoAlbum *album,
 				     gboolean remove_pics)
@@ -677,11 +705,12 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 
 /**
  * itdb_photodb_photoalbum_add_photo:
- * @db: the #Itdb_PhotoDB to act on
- * @album: the #Itdb_PhotoAlbum to add the photo to
- * @photo: a pointer to the photo (#Itdb_Artwork) to add to the album
- * @position: position where to insert the new photo (-1 to append at
- * the end)
+ * @db:         the #Itdb_PhotoDB to act on
+ * @album:      the #Itdb_PhotoAlbum to add the photo to
+ * @photo:      a pointer to the photo (#Itdb_Artwork) to add to the
+ *              album
+ * @position:   position where to insert the new photo (-1 to append
+ *              at the end)
  *
  * Adds a photo already in the library to the specified album
  * @album. Photos are automatically added to the first album (Photo
@@ -689,8 +718,8 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
  * itdb_photodb_add_photo_from_data(), so you don't have to use this
  * function to add them there.
  *
+ * Since: 0.4.2
  */
-
 void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
 					Itdb_PhotoAlbum *album,
 					Itdb_Artwork *photo,
@@ -705,14 +734,16 @@ void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
 
 /**
  * itdb_photodb_photoalbum_create:
- * @db: The database to create a new album in
- * @albumname: the name of the new album
- * @pos: position where to insert the newly created album (-1 for
- * append to end).
+ * @db:         The database to create a new album in
+ * @albumname:  the name of the new album
+ * @pos:        position where to insert the newly created album (-1
+ *              to append at the end).
  *
  * Create and add a new photoalbum.
  *
- * Return value: the album which was created and added.
+ * Returns: the album which was created and added.
+ *
+ * Since: 0.4.2
  */
 Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
 						 const gchar *albumname,
@@ -734,16 +765,18 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
 
 /**
  * itdb_photodb_write:
- * @photodb: the #Itdb_PhotoDB to write to disk
- * @error: return location for a #GError or NULL
+ * @photodb:    the #Itdb_PhotoDB to write to disk
+ * @error:      return location for a #GError or NULL
  *
  * Write out a PhotoDB.
  *
  * FIXME: error is not set yet.
  *
- * Return value: TRUE on success, FALSE on error, in which case @error is
+ * Returns: TRUE on success, FALSE on error, in which case @error is
  * set accordingly.
- **/
+ *
+ * Since: 0.4.0
+ */
 gboolean itdb_photodb_write (Itdb_PhotoDB *photodb, GError **error)
 {
     gint result;

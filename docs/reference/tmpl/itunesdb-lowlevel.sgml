@@ -137,27 +137,6 @@ control over the iPod database.
 @Returns: 
 
 
-<!-- ##### FUNCTION itdb_shuffle_write ##### -->
-<para>
-
-</para>
-
-@itdb: 
-@error: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_shuffle_write_file ##### -->
-<para>
-
-</para>
-
-@itdb: 
-@filename: 
-@error: 
-@Returns: 
-
-
 <!-- ##### FUNCTION itdb_cp ##### -->
 <para>
 
@@ -204,6 +183,27 @@ control over the iPod database.
 
 
 <!-- ##### FUNCTION itdb_write_file ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@filename: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_shuffle_write ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_shuffle_write_file ##### -->
 <para>
 
 </para>

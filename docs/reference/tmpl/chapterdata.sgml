@@ -1,0 +1,124 @@
+<!-- ##### SECTION Title ##### -->
+Chapter Data
+
+<!-- ##### SECTION Short_Description ##### -->
+Data structure to store chapter data for tracks
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Chapters allow for a large file to be divided into sections.  The start and stop
+points in the track are defined here, as well as the title for each chapter.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT Itdb_Chapter ##### -->
+<para>
+
+</para>
+
+@startpos: 
+@chaptertitle: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
+
+<!-- ##### STRUCT Itdb_Chapterdata ##### -->
+<para>
+
+</para>
+
+@chapters: 
+@unk024: 
+@unk028: 
+@unk032: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
+
+<!-- ##### FUNCTION itdb_chapter_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_chapter_duplicate ##### -->
+<para>
+
+</para>
+
+@chapter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_chapter_free ##### -->
+<para>
+
+</para>
+
+@chapter: 
+
+
+<!-- ##### FUNCTION itdb_chapterdata_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_chapterdata_add_chapter ##### -->
+<para>
+
+</para>
+
+@chapterdata: 
+@startpos: 
+@chaptertitle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_chapterdata_duplicate ##### -->
+<para>
+
+</para>
+
+@chapterdata: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_chapterdata_remove_chapter ##### -->
+<para>
+
+</para>
+
+@chapterdata: 
+@chapter: 
+
+
+<!-- ##### FUNCTION itdb_chapterdata_remove_chapters ##### -->
+<para>
+
+</para>
+
+@chapterdata: 
+
+
+<!-- ##### FUNCTION itdb_chapterdata_free ##### -->
+<para>
+
+</para>
+
+@chapterdata: 
+
+

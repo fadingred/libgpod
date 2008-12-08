@@ -48,9 +48,11 @@
  *
  * Creates a new #Itdb_Artwork
  *
- * Return value: a new #Itdb_Artwork to be freed with itdb_artwork_free() when
+ * Returns: a new #Itdb_Artwork to be freed with itdb_artwork_free() when
  * no longer needed
- **/
+ *
+ * Since: 0.3.0
+ */
 Itdb_Artwork *itdb_artwork_new (void)
 {
     Itdb_Artwork *artwork = g_new0 (Itdb_Artwork, 1);
@@ -62,7 +64,9 @@ Itdb_Artwork *itdb_artwork_new (void)
  * @artwork: an #Itdb_Artwork
  *
  * Frees memory used by @artwork
- **/
+ *
+ * Since: 0.3.0
+ */
 void itdb_artwork_free (Itdb_Artwork *artwork)
 {
     g_return_if_fail (artwork);
@@ -78,8 +82,10 @@ void itdb_artwork_free (Itdb_Artwork *artwork)
  *
  * Duplicates @artwork
  *
- * Return value: a new copy of @artwork
- **/
+ * Returns: a new copy of @artwork
+ *
+ * Since: 0.3.0
+ */
 Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork)
 {
     Itdb_Artwork *dup;
@@ -101,7 +107,9 @@ Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork)
  * @artwork: an #Itdb_Artwork
  *
  * Removes all thumbnails from @artwork
- **/
+ *
+ * Since: 0.3.0
+ */
 void
 itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
 {
@@ -117,24 +125,25 @@ itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
 
 /**
  * itdb_artwork_set_thumbnail
- * @artwork: an #Itdb_Thumbnail
- * @type: thumbnail size
- * @filename: image file to use to create the thumbnail
- * @rotation: angle by which the image should be rotated
- * counterclockwise. Valid values are 0, 90, 180 and 270.
- * @error: return location for a #GError or NULL
+ * @artwork:    an #Itdb_Artwork
+ * @filename:   image file to use to create the thumbnail
+ * @rotation:   angle by which the image should be rotated
+ *              counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error:      return location for a #GError or NULL
  *
  * Appends a thumbnail of type @type to existing thumbnails in @artwork. No
  * data is read from @filename yet, the file will be when @artwork is saved to
  * disk. @filename must still exist when that happens.
  *
  * For the rotation angle you can also use the gdk constants
- * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
- * ..._CLOCKWISE.
+ * %GDK_PIXBUF_ROTATE_NONE, %GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE,
+ * %GDK_PIXBUF_ROTATE_UPSIDEDOWN, AND %GDK_PIXBUF_ROTATE_CLOCKWISE.
  *
- * Return value: TRUE if the thumbnail could be successfully added, FALSE
+ * Returns: TRUE if the thumbnail could be successfully added, FALSE
  * otherwise. @error is set appropriately.
- **/
+ *
+ * Since: 0.7.0
+ */
 gboolean
 itdb_artwork_set_thumbnail (Itdb_Artwork *artwork,
 			    const gchar *filename,
@@ -176,24 +185,25 @@ itdb_artwork_set_thumbnail (Itdb_Artwork *artwork,
 
 /**
  * itdb_artwork_set_thumbnail_from_pixbuf
- * @artwork: an #Itdb_Thumbnail
- * @pixbuf: #GdkPixbuf to use to create the thumbnail
- * @rotation: angle by which the image should be rotated
- * counterclockwise. Valid values are 0, 90, 180 and 270.
- * @error: return location for a #GError or NULL
+ * @artwork:    an #Itdb_Artwork
+ * @pixbuf:     #GdkPixbuf to use to create the thumbnail
+ * @rotation:   angle by which the image should be rotated
+ *              counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error:      return location for a #GError or NULL
  *
- * Appends a thumbnail of type @type to existing thumbnails in @artwork. No 
- * data is generated from @pixbuf yet, it will be done when @artwork is saved 
- * to disk. @pixbuf is ref'ed by this function, but is not copied, so it should
- * not be modified before the database is saved.
+ * Set a thumbnail in @artwork. No data is generated from @pixbuf yet, it will
+ * be done when @artwork is saved to disk. @pixbuf is ref'ed by this function,
+ * but is not copied, so it should not be modified before the database is saved.
  *
  * For the rotation angle you can also use the gdk constants
- * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
- * ..._CLOCKWISE.
+ * %GDK_PIXBUF_ROTATE_NONE, %GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE,
+ * %GDK_PIXBUF_ROTATE_UPSIDEDOWN, AND %GDK_PIXBUF_ROTATE_CLOCKWISE.
  *
- * Return value: TRUE if the thumbnail could be successfully added, FALSE
+ * Returns: TRUE if the thumbnail could be successfully added, FALSE
  * otherwise. @error is set appropriately.
- **/
+ *
+ * Since: 0.7.0
+ */
 gboolean
 itdb_artwork_set_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
                                         gpointer pixbuf,
@@ -235,25 +245,26 @@ itdb_artwork_set_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
 
 /**
  * itdb_artwork_set_thumbnail_from_data
- * @artwork: an #Itdb_Thumbnail
- * @image_data: data used to create the thumbnail (the raw contents of
- *              an image file)
+ * @artwork:        an #Itdb_Artwork
+ * @image_data:     data used to create the thumbnail (the raw contents of
+ *                  an image file)
  * @image_data_len: length of above data block
- * @rotation: angle by which the image should be rotated
- * counterclockwise. Valid values are 0, 90, 180 and 270.
- * @error: return location for a #GError or NULL
+ * @rotation:       angle by which the image should be rotated
+ *                  counterclockwise. Valid values are 0, 90, 180 and 270.
+ * @error:          return location for a #GError or NULL
  *
- * Appends a thumbnail of type @type to existing thumbnails in
- * @artwork. No data is processed yet. This will be done when @artwork
- * is saved to disk.
+ * Set a thumbnail in @artwork. No data is processed yet. This will be done when
+ * @artwork is saved to disk.
  *
  * For the rotation angle you can also use the gdk constants
- * GDK_PIXBUF_ROTATE_NONE, ..._COUNTERCLOCKWISE, ..._UPSIDEDOWN AND
- * ..._CLOCKWISE.
+ * %GDK_PIXBUF_ROTATE_NONE, %GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE,
+ * %GDK_PIXBUF_ROTATE_UPSIDEDOWN, AND %GDK_PIXBUF_ROTATE_CLOCKWISE.
  *
- * Return value: TRUE if the thumbnail could be successfully added, FALSE
+ * Returns: TRUE if the thumbnail could be successfully added, FALSE
  * otherwise. @error is set appropriately.
- **/
+ *
+ * Since: 0.7.0
+ */
 gboolean
 itdb_artwork_set_thumbnail_from_data (Itdb_Artwork *artwork,
 				      const guchar *image_data,
@@ -881,23 +892,25 @@ gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
 #endif
 
 /**
- * itdb_artwork_get_thumbnail!
- * @artwork: an #Itdb_Artwork
- *
- * @width: width of the pixbuf to retrieve, -1 for the biggest
- * possible size and 0 for the smallest possible size (with no scaling)
- *
- * @height: height of the pixbuf to retrieve, -1 for the biggest possible size
- * and 0 for the smallest possible size (with no scaling)
+ * itdb_artwork_get_pixbuf:
+ * @artwork:    an #Itdb_Artwork
+ * @device:     an #Itdb_Device
+ * @width:      width of the pixbuf to retrieve, -1 for the biggest
+ *              possible size and 0 for the smallest possible size (with no
+ *              scaling)
+ * @height:     height of the pixbuf to retrieve, -1 for the biggest possible
+ *              size and 0 for the smallest possible size (with no scaling)
  *
  * Returns a #GdkPixbuf representing the thumbnail stored in @artwork
  * scaling it if appropriate. If either height or width is -1, then the
  * biggest unscaled thumbnail available will be returned
  *
- * Return value: a #GdkPixbuf that must be unreffed when no longer used, NULL
+ * Returns: a #GdkPixbuf that must be unreffed when no longer used, NULL
  * if no artwork could be found or if libgpod is compiled without GdkPixbuf
  * support
- **/
+ *
+ * Since: 0.7.0
+ */
 gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork,
                                   gint width, gint height)
 {

@@ -373,15 +373,16 @@ itdb_plist_parse (xmlNode * a_node, GError **error)
 
 /**
  * itdb_plist_parse:
- * @filename: name of the XML plist file to parse
- * @error: return location for a #GError
+ * @filename:   name of the XML plist file to parse
+ * @error:      return location for a #GError
  *
- * Returns: NULL on error (@error will be set), a newly allocated GValue
- * containing a GHashTable otherwise.
+ * Parses the XML plist file stored in @filename. If an error occurs
+ * during the parsing, itdb_plist_parse will return NULL and @error
+ * will be set
  *
- * Parses the XML plist file stored in @filename. If an error occurs during
- * the parsing, itdb_plist_parse will return NULL and @error will be set
- **/
+ * Returns: NULL on error (@error will be set), a newly allocated
+ * #GValue containing a #GHashTable otherwise.
+ */
 GValue *
 itdb_plist_parse_from_file (const char *filename, GError **error)
 {
@@ -409,17 +410,18 @@ itdb_plist_parse_from_file (const char *filename, GError **error)
 
 /**
  * itdb_plist_parse_from_memory:
- * @data: memory location containing XML plist data to parse
- * @len: length in bytes of the string to parse
- * @error: return location for a #GError
+ * @data:   memory location containing XML plist data to parse
+ * @len:    length in bytes of the string to parse
+ * @error:  return location for a #GError
  *
- * Returns: NULL on error (@error will be set), a newly allocated GValue
- * containing a GHashTable otherwise.
+ * Parses the XML plist file stored in @data which length is @len
+ * bytes. If an error occurs during the parsing,
+ * itdb_plist_parse_from_memory() will return NULL and @error will be
+ * set.
  *
- * Parses the XML plist file stored in @data which length is @len bytes. If
- * an error occurs during the parsing, itdb_plist_parse_from_memory will
- * return NULL and @error will be set
- **/
+ * Returns: NULL on error (@error will be set), a newly allocated
+ * #GValue containing a #GHashTable otherwise.
+ */
 GValue *
 itdb_plist_parse_from_memory (const char *data, gsize len, GError **error)
 {
