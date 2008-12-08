@@ -1,5 +1,7 @@
 2008-12-08  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
+	* configure.ac: Bump version and soname for 0.7.0rc1
+
 	* po/de.po
 	  po/es.po
 	  po/fr.po
