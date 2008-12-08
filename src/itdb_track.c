@@ -1,7 +1,7 @@
 /*
 |  Copyright (C) 2002-2007 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
-| 
+|
 |  URL: http://www.gtkpod.org/
 |  URL: http://gtkpod.sourceforge.net/
 |
@@ -35,8 +35,8 @@
 
 /**
  * itdb_track_new:
- * 
- * Creates an empty #Itdb_Track 
+ *
+ * Creates an empty #Itdb_Track
  *
  * Return Value: the new #Itdb_Track, free it with itdb_track_free() when no
  * longer needed
@@ -192,18 +192,16 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
     }
     if (tr->dbid2 == 0)  tr->dbid2 = tr->dbid;
 }
-    
-
 
 /**
  * itdb_track_add:
  * @itdb: an #Itdb_iTunesDB
  * @track: an #Itdb_Track
  * @pos: position of the track to add
- * 
+ *
  * Adds @track to @itdb->tracks at position @pos (or at the end if pos
  * is -1). The application is responsible to also add it to the master
- * playlist. The @itdb gets ownership of the @track and will take care of 
+ * playlist. The @itdb gets ownership of the @track and will take care of
  * freeing the memory it uses when it's no longer necessary.
  **/
 void itdb_track_add (Itdb_iTunesDB *itdb, Itdb_Track *track, gint32 pos)
@@ -223,7 +221,7 @@ void itdb_track_add (Itdb_iTunesDB *itdb, Itdb_Track *track, gint32 pos)
  * itdb_track_free:
  * @track: an #Itdb_Track
  *
- * Frees the memory used by @track 
+ * Frees the memory used by @track
  **/
 void itdb_track_free (Itdb_Track *track)
 {
@@ -288,9 +286,9 @@ void itdb_track_remove (Itdb_Track *track)
 /**
  * itdb_track_unlink:
  * @track: an #Itdb_Track
- * 
+ *
  * Removes @track from the #Itdb_iTunesDB it's associated with, but do not free
- * memory. It doesn't remove the track from the playlists it may have been 
+ * memory. It doesn't remove the track from the playlists it may have been
  * added to, in particular it won't be removed from the master playlist.
  * track->itdb is set to NULL.
  **/
@@ -312,7 +310,7 @@ void itdb_track_unlink (Itdb_Track *track)
  *
  * Duplicates an existing track
  *
- * Return value: a newly allocated #Itdb_Track 
+ * Return value: a newly allocated #Itdb_Track
  **/
 Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
 {
@@ -379,7 +377,7 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
                                                     gpointer *pixbuf,
 						    gint rotation,
 						    GError **error)
-{					     
+{
     gboolean result = FALSE;
 
     g_return_val_if_fail (track, FALSE);
@@ -438,7 +436,7 @@ static gboolean itdb_track_set_thumbnails_internal (Itdb_Track *track,
  *
  * Uses the image contained in @filename to generate iPod thumbnails. The image
  * can be in any format supported by gdk-pixbuf. To save memory, the thumbnails
- * will only be generated when necessary, ie when itdb_save() or a similar 
+ * will only be generated when necessary, ie when itdb_save() or a similar
  * function is called.
  *
  * Return value: TRUE if the thumbnail could be added, FALSE otherwise.
@@ -500,11 +498,10 @@ gboolean itdb_track_set_thumbnails_from_pixbuf (Itdb_Track *track,
                                                pixbuf, 0, NULL);
 }
 
-
 /**
  * itdb_track_remove_thumbnails:
  * @track: an #Itdb_Track
- * 
+ *
  * Removes the thumbnails associated with @track
  **/
 void itdb_track_remove_thumbnails (Itdb_Track *track)
@@ -523,17 +520,17 @@ void itdb_track_remove_thumbnails (Itdb_Track *track)
  * @itdb: an #Itdb_iTunesDB
  * @id: ID of the track to look for
  *
- * Looks up a track using its ID in @itdb. 
+ * Looks up a track using its ID in @itdb.
  * Looking up tracks by ID is not really a good idea because the IDs
  * are created by itdb just before export. The functions are here
  * because they are needed during import of the iTunesDB which is
  * referencing tracks by IDs.
- * This function is very slow (linear in the number of tracks contained in the 
- * database). If you need to lookup many IDs use itdb_track_id_tree_create(), 
+ * This function is very slow (linear in the number of tracks contained in the
+ * database). If you need to lookup many IDs use itdb_track_id_tree_create(),
  * itdb_track_id_tree_destroy(), and itdb_track_id_tree_by_id().
  *
  * Return value: #Itdb_Track with the ID @id or NULL if the ID cannot be
- * found. 
+ * found.
  **/
 Itdb_Track *itdb_track_by_id (Itdb_iTunesDB *itdb, guint32 id)
 {
@@ -563,9 +560,9 @@ static gint track_id_compare (gconstpointer a, gconstpointer b)
  * @itdb: an #Itdb_iTunesDB
  *
  * Creates a balanced-binary tree for quick ID lookup that is used in
- * itdb_track_by_id_tree() function below 
+ * itdb_track_by_id_tree() function below
  *
- * Return value: a #GTree indexed by track IDs to be freed with 
+ * Return value: a #GTree indexed by track IDs to be freed with
  * itdb_track_id_tree_destroy() when no longer used
  **/
 GTree *itdb_track_id_tree_create (Itdb_iTunesDB *itdb)
@@ -590,7 +587,7 @@ GTree *itdb_track_id_tree_create (Itdb_iTunesDB *itdb)
  * itdb_track_id_tree_destroy:
  * @idtree: a #GTree
  *
- * Frees the memory used by @idtree 
+ * Frees the memory used by @idtree
  **/
 void itdb_track_id_tree_destroy (GTree *idtree)
 {
@@ -607,7 +604,7 @@ void itdb_track_id_tree_destroy (GTree *idtree)
  * Lookup an #Itdb_Track by @id using @idtree for faster lookup (compared to
  * itdb_track_by_id)
  *
- * Return value: the #Itdb_Track whose ID is @id, or NULL if such a track 
+ * Return value: the #Itdb_Track whose ID is @id, or NULL if such a track
  * couldn't be found
  **/
 Itdb_Track *itdb_track_id_tree_by_id (GTree *idtree, guint32 id)
@@ -623,7 +620,7 @@ Itdb_Track *itdb_track_id_tree_by_id (GTree *idtree, guint32 id)
  *
  * Return value: TRUE if @track has artwork available, FALSE otherwise
  **/
-gboolean itdb_track_has_thumbnails (Itdb_Track *track) 
+gboolean itdb_track_has_thumbnails (Itdb_Track *track)
 {
     g_return_val_if_fail (track != NULL, FALSE);
     return ((track->artwork) && (track->artwork->thumbnail));
@@ -632,7 +629,7 @@ gboolean itdb_track_has_thumbnails (Itdb_Track *track)
 /**
  * itdb_track_get_thumbnail:
  * @track: an #Itdb_Track
- * @width: width of the pixbuf to retrieve, -1 for the biggest possible size 
+ * @width: width of the pixbuf to retrieve, -1 for the biggest possible size
  * (with no scaling)
  * @height: height of the pixbuf to retrieve, -1 for the biggest possible size
  * (with no scaling)

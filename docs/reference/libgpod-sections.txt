@@ -207,9 +207,6 @@ itdb_photodb_remove_photo
 itdb_photodb_write
 </SECTION>
 
-
-
-
 <SECTION>
 <FILE>Internal</FILE>
 <SUBSECTION Private>

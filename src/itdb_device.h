@@ -1,7 +1,7 @@
 /*
 |  Copyright (C) 2002-2007 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
-| 
+|
 |  URL: http://www.gtkpod.org/
 |  URL: http://gtkpod.sourceforge.net/
 |
@@ -99,12 +99,12 @@ struct _Itdb_ArtworkFormat {
         gint width;
         gint height;
         ItdbThumbFormat format;
-        gint32 padding; /* not found in SysInfoExtended, added  
-                         * for compatibility with hardcoded artwork formats */ 
+        gint32 padding; /* not found in SysInfoExtended, added
+                         * for compatibility with hardcoded artwork formats */
         gboolean crop;
         gint rotation;
         guchar back_color[4];
- 
+
         gint display_width;
         gboolean interlaced;
         gboolean align_row_bytes;

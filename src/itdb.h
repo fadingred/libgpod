@@ -1192,7 +1192,7 @@ gboolean itdb_artwork_set_thumbnail_from_pixbuf (Itdb_Artwork *artwork,
 void itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork);
 /* the following function returns a pointer to a GdkPixbuf if
    gdk-pixbuf is installed -- a NULL pointer otherwise. */
-gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork, 
+gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork,
                                   gint width, gint height);
 
 /* itdb_thumb_... */

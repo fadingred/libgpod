@@ -1198,7 +1198,6 @@ guint32 itdb_playlists_number (Itdb_iTunesDB *itdb)
     return g_list_length (itdb->playlists);
 }
 
-
 /**
  * itdb_tracks_number:
  * @itdb: an #Itdb_iTunesDB
@@ -1238,8 +1237,6 @@ guint32 itdb_tracks_number_nontransferred (Itdb_iTunesDB *itdb)
     }
     return n;
 }
-
-
 
 /**
  * itdb_new:
@@ -3043,7 +3040,6 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
     g_free (itunes_dir);
     return itdb;
 }
-
 
 /**
  * itdb_parse_file:
@@ -5378,7 +5374,6 @@ All integers in the iTunesSD file are in BIG endian form...
 
 */
 
-
 /**
  * itdb_shuffle_write:
  * @itdb: the #Itdb_iTunesDB to write to disk
@@ -5405,7 +5400,7 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error)
     g_return_val_if_fail (itdb_get_mountpoint (itdb), FALSE);
 
     itunes_path = itdb_get_itunes_dir (itdb_get_mountpoint (itdb));
-    
+
     if(!itunes_path)
     {
 	gchar *str = g_build_filename (itdb_get_mountpoint (itdb),
@@ -5447,13 +5442,14 @@ static gboolean haystack (gchar *filetype, gchar **desclist)
     }
     return FALSE;
 }
+
 /**
  * itdb_shuffle_write_file:
  * @itdb: the #Itdb_iTunesDB to write to disk
  * @filename: file to write to, cannot be NULL
  * @error: return location for a #GError or NULL
  *
- * Do the actual writing to the iTunesSD 
+ * Do the actual writing to the iTunesSD
  *
  * Return value: TRUE on success, FALSE on error, in which case @error is
  * set accordingly.
@@ -5564,22 +5560,11 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
     return result;
 }
 
-
-
-
-
-
-
-
-
-
-
 /*------------------------------------------------------------------*\
  *                                                                  *
  *                  Other file/filename stuff                       *
  *                                                                  *
 \*------------------------------------------------------------------*/
-
 
 /**
  * itdb_rename_files:
@@ -5589,7 +5574,7 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
  * Renames/removes some files on the iPod (Playcounts, OTG
  * semaphore). May have to be called if you write the iTunesDB not
  * directly to the iPod but to some other location and then manually
- * copy the file from there to the iPod. 
+ * copy the file from there to the iPod.
  *
  * Return value: FALSE on error and sets @error accordingly
  **/
@@ -5616,7 +5601,7 @@ gboolean itdb_rename_files (const gchar *mp, GError **error)
     }
 
     plcname_o = itdb_resolve_path (itunesdir, db_plc_o);
-    plcname_n = g_build_filename (itunesdir, 
+    plcname_n = g_build_filename (itunesdir,
 					 "Play Counts.bak", NULL);
     otgname = itdb_resolve_path (itunesdir, db_otg);
     shuname = itdb_resolve_path (itunesdir, db_shu);
@@ -5705,8 +5690,6 @@ void itdb_filename_ipod2fs (gchar *ipod_file)
 {
     g_strdelimit (ipod_file, ":", G_DIR_SEPARATOR);
 }
-
-
 
 /**
  * itdb_set_mountpoint:
@@ -5869,7 +5852,7 @@ gchar *itdb_cp_get_dest_filename (Itdb_Track *track,
 
 	g_snprintf (dir_num_str, 6, "F%02d", dir_num);
 	dest_components[0] = dir_num_str;
-  
+
 	parent_dir_filename =
 	    itdb_resolve_path (music_dir, (const gchar **)dest_components);
 	if(parent_dir_filename == NULL)
@@ -5926,7 +5909,6 @@ gchar *itdb_cp_get_dest_filename (Itdb_Track *track,
 
     return ipod_fullfile;
 }
-
 
 /**
  * itdb_cp_finalize:
@@ -6053,7 +6035,6 @@ Itdb_Track *itdb_cp_finalize (Itdb_Track *track,
     return use_track;
 }
 
-
 /**
  * itdb_cp_track_to_ipod:
  * @track: the #Itdb_Track to copy (containing @filename metadata)
@@ -6115,8 +6096,6 @@ gboolean itdb_cp_track_to_ipod (Itdb_Track *track,
     return result;
 }
 
-
-
 /**
  * itdb_filename_on_ipod:
  * @track: an #Itdb_Track
@@ -6167,7 +6146,6 @@ gchar *itdb_filename_on_ipod (Itdb_Track *track)
 
     return result;
 }
-
 
 /* Use open instead of fopen.  fwrite is really slow on the Mac. */
 /**
@@ -6332,7 +6310,6 @@ itdb_file_set_contents (const char *filename,
 
     return TRUE;
 }
-
 
 /**
  * itdb_get_control_dir:
@@ -6542,7 +6519,7 @@ gchar *itdb_get_itunessd_path (const gchar *mountpoint)
  *
  * Retrieve a path to the ArtworkDB
  *
- * Return value: path to the ArtworkDB or NULL if non-existent. Must g_free() 
+ * Return value: path to the ArtworkDB or NULL if non-existent. Must g_free()
  * after use.
  **/
 gchar *itdb_get_artworkdb_path (const gchar *mountpoint)
@@ -6574,10 +6551,10 @@ gchar *itdb_get_artworkdb_path (const gchar *mountpoint)
  *
  * Gets the current time in a format appropriate for storing in the libgpod
  * data structures
- * 
+ *
  * Return value: current time
  *
- * Deprecated: kept for compatibility with older code, directly use 
+ * Deprecated: kept for compatibility with older code, directly use
  * g_get_current_time() or time(NULL) instead
  **/
 time_t itdb_time_get_mac_time (void)
@@ -6588,7 +6565,6 @@ time_t itdb_time_get_mac_time (void)
 
     return time.tv_sec;
 }
-
 
 /**
  * itdb_time_mac_to_host:
@@ -6648,29 +6624,29 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	Itdb_Playlist *mpl = NULL;
 	Itdb_IpodInfo const *info = NULL;
 	gchar *path;
-	
+
 	g_return_val_if_fail (mountpoint, FALSE);
-						
+
 	/* Create new blank itdb database for writing to iPod */
 	itdb = itdb_new();
-					
+
 	/* Assign iPod device reference to new database */
 	itdb_set_mountpoint(itdb, mountpoint);
-	
+
 	/* Insert model_number into sysinfo file if present
 	 * The model number can be extracted in a couple of ways:
 	 *		- use the read_sysinfo_file function
-	 * 		- use libipoddevice and hal to get the model
-	 *                (as far as I know, libipoddevice will also
-         *                read the sysinfo file, complemented by some
-	 *	          guessing).
+	 *		- use libipoddevice and hal to get the model
+	 *		  (as far as I know, libipoddevice will also
+	 *		  read the sysinfo file, complemented by some
+	 *		  guessing).
 	 */
 	if (model_number)
 	{
 	    itdb_device_set_sysinfo (itdb->device,
 				     "ModelNumStr", model_number);
 	}
-	
+
 	/* Create the remaining directories resident on blank ipod */
 	writeok = itdb_create_directories(itdb->device, error);
 	if(! writeok)
@@ -6707,7 +6683,7 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 
 	/* Retrieve the model from the device information */
 	info = itdb_device_get_ipod_info(itdb->device);
-    
+
 	/* If model is a shuffle or the model is undetermined,
 	 * ie. @model_number is NULL, then create the itunesSD database
 	 */
@@ -6716,12 +6692,12 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	    path = itdb_get_itunessd_path (mountpoint);
 	    if (!path)
 	    {
-	    	writeok = itdb_shuffle_write(itdb, error);
-	    	if(! writeok)
-	    	{
-	    	    itdb_free (itdb);
+		writeok = itdb_shuffle_write(itdb, error);
+		if(! writeok)
+		{
+		    itdb_free (itdb);
 		    return FALSE;
-	    	}
+		}
 	    }
 	    g_free (path);
 	}
@@ -6905,7 +6881,6 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	}
 	g_free (pbuf);
     }
-    
 
     /* Build the directories that hold the music files */
     dirnum = info->musicdirs;
@@ -6983,11 +6958,11 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	    {
 		goto error_dir;
 	    }
-   	}
+	}
 	g_free (pbuf);
 
 	model_number = itdb_device_get_sysinfo (device, "ModelNumStr");
-   	/* Construct a SysInfo file */
+	/* Construct a SysInfo file */
 	if (model_number && (strlen (model_number) != 0))
 	{
 	    pbuf = NULL;
@@ -7005,7 +6980,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     if (pbuf)
     {
 	g_set_error (error, 0, -1,
-		     _("Problem creating iPod directory or file: '%s'."), 
+		     _("Problem creating iPod directory or file: '%s'."),
 		     pbuf);
 	result = FALSE;
     } else

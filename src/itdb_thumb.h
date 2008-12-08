@@ -106,16 +106,16 @@ G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_new_from_data (const guchar *data,
 G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_new_from_pixbuf (gpointer pixbuf);
 G_GNUC_INTERNAL Itdb_Thumb_Ipod_Item *itdb_thumb_new_item_from_ipod (const Itdb_ArtworkFormat *format);
 G_GNUC_INTERNAL Itdb_Thumb *itdb_thumb_ipod_new (void);
-G_GNUC_INTERNAL void itdb_thumb_set_rotation (Itdb_Thumb *thumb, 
+G_GNUC_INTERNAL void itdb_thumb_set_rotation (Itdb_Thumb *thumb,
                                               guint rotation);
 G_GNUC_INTERNAL guint itdb_thumb_get_rotation (Itdb_Thumb *thumb);
-G_GNUC_INTERNAL void itdb_thumb_ipod_add (Itdb_Thumb_Ipod *thumbs, 
+G_GNUC_INTERNAL void itdb_thumb_ipod_add (Itdb_Thumb_Ipod *thumbs,
                                           Itdb_Thumb_Ipod_Item *thumb);
 G_GNUC_INTERNAL const GList *itdb_thumb_ipod_get_thumbs (Itdb_Thumb_Ipod *thumbs);
 G_GNUC_INTERNAL char *itdb_thumb_ipod_get_filename (Itdb_Device *device, Itdb_Thumb_Ipod_Item *thumb);
 G_GNUC_INTERNAL Itdb_Thumb_Ipod_Item *itdb_thumb_ipod_get_item_by_type (Itdb_Thumb *thumbs,
                                                         const Itdb_ArtworkFormat *format);
 G_GNUC_INTERNAL gpointer
-itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device, 
-                                Itdb_Thumb_Ipod_Item *item); 
+itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
+                                Itdb_Thumb_Ipod_Item *item);
 #endif

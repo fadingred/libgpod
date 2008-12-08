@@ -1,7 +1,7 @@
 /*
 |  Copyright (C) 2008 Christophe Fergeau <teuf@gnome.org>
 |  Part of the gtkpod project.
-| 
+|
 |  URL: http://www.gtkpod.org/
 |  URL: http://gtkpod.sourceforge.net/
 |
@@ -29,11 +29,11 @@
 /* This file implements a generic plist parser. A plist file is an
  * Apple-specific XML format which is used to serialize (simple) data
  * structures to disk, see http://en.wikipedia.org/wiki/Property_list
- * 
+ *
  * This parser should handle most plist files, with those limitations :
  *      - no support for <date> tags
  *
- * The plist file is parsed using libxml, and the parsed result is stored 
+ * The plist file is parsed using libxml, and the parsed result is stored
  * in GValue. The types are mapped in the following way:
  *      - <string> => G_TYPE_STRING (char*)
  *      - <real> => G_TYPE_DOUBLE (double)
@@ -70,14 +70,14 @@ extern GQuark itdb_device_error_quark (void);
 
 static GValue *parse_node (xmlNode *a_node, GError **error);
 
-static void 
+static void
 value_free (GValue *val)
 {
     g_value_unset (val);
     g_free (val);
 }
 
-static GValue * 
+static GValue *
 parse_integer(xmlNode *a_node, GError **error)
 {
     char *str_val;
@@ -102,7 +102,7 @@ parse_integer(xmlNode *a_node, GError **error)
     return value;
 }
 
-static GValue * 
+static GValue *
 parse_string(xmlNode *a_node, G_GNUC_UNUSED GError **error)
 {
     char *str_val;
@@ -232,14 +232,14 @@ parse_one_dict_entry (xmlNode *a_node, GHashTable *dict, GError **error)
     return cur_node->next;
 }
 
-static GValue * 
+static GValue *
 parse_dict (xmlNode *a_node, GError **error)
 {
     xmlNode *cur_node = a_node->children;
     GValue *value;
     GHashTable *dict;
 
-    dict = g_hash_table_new_full (g_str_hash, g_str_equal, 
+    dict = g_hash_table_new_full (g_str_hash, g_str_equal,
                                   g_free, (GDestroyNotify)value_free);
 
     while (cur_node != NULL) {
@@ -263,7 +263,7 @@ parse_dict (xmlNode *a_node, GError **error)
 typedef GValue *(*ParseCallback) (xmlNode *, GError **);
 static ParseCallback get_parser_for_type (const xmlChar *type);
 
-static GValue * 
+static GValue *
 parse_array (xmlNode *a_node, GError **error)
 {
     xmlNode *cur_node = a_node->children;
@@ -282,9 +282,9 @@ parse_array (xmlNode *a_node, GError **error)
 		g_free (cur_value);
 	    }
 	}
-	/* When an array contains an element enclosed in "unknown" tags (ie 
+	/* When an array contains an element enclosed in "unknown" tags (ie
 	 * non-type ones), we silently skip them since early
-	 * SysInfoExtended files used to have <key> values enclosed within 
+	 * SysInfoExtended files used to have <key> values enclosed within
 	 * <array> tags.
 	 */
 	cur_node = cur_node->next;
@@ -312,7 +312,7 @@ static const struct Parser parsers[] = { {"integer", parse_integer},
 					 {"true",    parse_boolean},
 					 {"false",   parse_boolean},
 					 {"data",    parse_data},
-					 {"dict",    parse_dict}, 
+					 {"dict",    parse_dict},
 					 {"array",   parse_array},
 					 {NULL,      NULL} };
 
@@ -320,7 +320,7 @@ static ParseCallback get_parser_for_type (const xmlChar *type)
 {
     guint i = 0;
 
-    while (parsers[i].type_name != NULL) {        
+    while (parsers[i].type_name != NULL) {
         if (xmlStrcmp (type, (xmlChar *)parsers[i].type_name) == 0) {
             if (parsers[i].parser != NULL) {
                 return parsers[i].parser;
@@ -376,7 +376,7 @@ itdb_plist_parse (xmlNode * a_node, GError **error)
  * @filename: name of the XML plist file to parse
  * @error: return location for a #GError
  *
- * Returns: NULL on error (@error will be set), a newly allocated GValue 
+ * Returns: NULL on error (@error will be set), a newly allocated GValue
  * containing a GHashTable otherwise.
  *
  * Parses the XML plist file stored in @filename. If an error occurs during
@@ -413,7 +413,7 @@ itdb_plist_parse_from_file (const char *filename, GError **error)
  * @len: length in bytes of the string to parse
  * @error: return location for a #GError
  *
- * Returns: NULL on error (@error will be set), a newly allocated GValue 
+ * Returns: NULL on error (@error will be set), a newly allocated GValue
  * containing a GHashTable otherwise.
  *
  * Parses the XML plist file stored in @data which length is @len bytes. If
@@ -444,7 +444,7 @@ itdb_plist_parse_from_memory (const char *data, gsize len, GError **error)
 
     return parsed_doc;
 }
-#else 
+#else
 #include <glib-object.h>
 #include "itdb_plist.h"
 
@@ -454,7 +454,7 @@ GValue *itdb_plist_parse_from_file (G_GNUC_UNUSED const char *filename,
     return NULL;
 }
 
-GValue *itdb_plist_parse_from_memory (G_GNUC_UNUSED const char *data, 
+GValue *itdb_plist_parse_from_memory (G_GNUC_UNUSED const char *data,
                                       G_GNUC_UNUSED gsize len,
                                       G_GNUC_UNUSED GError **error)
 {

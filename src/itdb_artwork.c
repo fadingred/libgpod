@@ -1,7 +1,7 @@
 /*
 |  Copyright (C) 2002-2005 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
-| 
+|
 |  URL: http://www.gtkpod.org/
 |  URL: http://gtkpod.sourceforge.net/
 |
@@ -45,8 +45,8 @@
 
 /**
  * itdb_artwork_new:
- * 
- * Creates a new #Itdb_Artwork 
+ *
+ * Creates a new #Itdb_Artwork
  *
  * Return value: a new #Itdb_Artwork to be freed with itdb_artwork_free() when
  * no longer needed
@@ -100,7 +100,7 @@ Itdb_Artwork *itdb_artwork_duplicate (Itdb_Artwork *artwork)
  * itdb_artwork_remove_thumbnails:
  * @artwork: an #Itdb_Artwork
  *
- * Removes all thumbnails from @artwork 
+ * Removes all thumbnails from @artwork
  **/
 void
 itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
@@ -115,9 +115,6 @@ itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
     artwork->id = 0;
 }
 
-
-
-
 /**
  * itdb_artwork_set_thumbnail
  * @artwork: an #Itdb_Thumbnail
@@ -127,7 +124,7 @@ itdb_artwork_remove_thumbnails (Itdb_Artwork *artwork)
  * counterclockwise. Valid values are 0, 90, 180 and 270.
  * @error: return location for a #GError or NULL
  *
- * Appends a thumbnail of type @type to existing thumbnails in @artwork. No 
+ * Appends a thumbnail of type @type to existing thumbnails in @artwork. No
  * data is read from @filename yet, the file will be when @artwork is saved to
  * disk. @filename must still exist when that happens.
  *
@@ -311,7 +308,7 @@ unpack_RGB_565 (guint16 *pixels, guint bytes_len, guint byte_order)
 		result[3*i] = (cur_pixel & RED_MASK_565) >> RED_SHIFT_565;
 		result[3*i+1] = (cur_pixel & GREEN_MASK_565) >> GREEN_SHIFT_565;
 		result[3*i+2] = (cur_pixel & BLUE_MASK_565) >> BLUE_SHIFT_565;
-		
+
 		/* Normalize color values so that they use a [0..255] range */
 		result[3*i] <<= (8 - RED_BITS_565);
 		result[3*i+1] <<= (8 - GREEN_BITS_565);
@@ -339,7 +336,7 @@ unpack_RGB_555 (guint16 *pixels, guint bytes_len, guint byte_order)
 		result[3*i] = (cur_pixel & RED_MASK_555) >> RED_SHIFT_555;
 		result[3*i+1] = (cur_pixel & GREEN_MASK_555) >> GREEN_SHIFT_555;
 		result[3*i+2] = (cur_pixel & BLUE_MASK_555) >> BLUE_SHIFT_555;
-		
+
 		/* Normalize color values so that they use a [0..255] range */
 		result[3*i] <<= (8 - RED_BITS_555);
 		result[3*i+1] <<= (8 - GREEN_BITS_555);
@@ -368,7 +365,7 @@ unpack_RGB_888 (guint16 *pixels, guint bytes_len, guint byte_order)
 		result[3*i] = (cur_pixel & RED_MASK_888) >> RED_SHIFT_888;
 		result[3*i+1] = (cur_pixel & GREEN_MASK_888) >> GREEN_SHIFT_888;
 		result[3*i+2] = (cur_pixel & BLUE_MASK_888) >> BLUE_SHIFT_888;
-		
+
 		/* Normalize color values so that they use a [0..255] range */
 		/* (not necessary for 888 encoding) */
 /* 		result[3*i] <<= (8 - RED_BITS_888); */
@@ -413,7 +410,7 @@ static guint16 *rearrange_pixels (guint16 *pixels_s, guint16 *pixels_d,
 			  width/2, height/2,
 			  row_stride);
     }
-    
+
     return pixels_d;
 }
 
@@ -462,7 +459,7 @@ unpack_rec_RGB_555 (guint16 *pixels, guint bytes_len, guint byte_order,
 		result[3*i] = (cur_pixel & RED_MASK_555) >> RED_SHIFT_555;
 		result[3*i+1] = (cur_pixel & GREEN_MASK_555) >> GREEN_SHIFT_555;
 		result[3*i+2] = (cur_pixel & BLUE_MASK_555) >> BLUE_SHIFT_555;
-		
+
 		/* Normalize color values so that they use a [0..255] range */
 		result[3*i] <<= (8 - RED_BITS_555);
 		result[3*i+1] <<= (8 - GREEN_BITS_555);
@@ -503,7 +500,7 @@ printf ("%8x\n", cur_pixel);
 		result[3*i] = (cur_pixel & RED_MASK_888) >> RED_SHIFT_888;
 		result[3*i+1] = (cur_pixel & GREEN_MASK_888) >> GREEN_SHIFT_888;
 		result[3*i+2] = (cur_pixel & BLUE_MASK_888) >> BLUE_SHIFT_888;
-		
+
 		/* Normalize color values so that they use a [0..255] range */
 		/* (not really necessary for 888 encoding) */
 /* 		result[3*i] <<= (8 - RED_BITS_888); */
@@ -561,9 +558,9 @@ unpack_I420 (guchar *yuvdata, gint bytes_len, guint byte_order,
 		u = yuvdata[ustart + (row/2)*(width/2) + col/2];
 		v = yuvdata[vstart + (row/2)*(width/2) + col/2];
 
-		rgbdata[z] = limit8bit((y-16)*1.164 + (v-128)*1.596); 
-		rgbdata[z+1] = limit8bit((y-16)*1.164 - (v-128)*0.813 - (u-128)*0.391); 
-		rgbdata[z+2] = limit8bit((y-16)*1.164 + (u-128)*2.018); 
+		rgbdata[z] = limit8bit((y-16)*1.164 + (v-128)*1.596);
+		rgbdata[z+1] = limit8bit((y-16)*1.164 - (v-128)*0.813 - (u-128)*0.391);
+		rgbdata[z+2] = limit8bit((y-16)*1.164 + (u-128)*2.018);
 
 		z+=3;
 		h++;
@@ -664,7 +661,7 @@ get_pixel_data (Itdb_Device *device, Itdb_Thumb_Ipod_Item *thumb)
 
 	f = fopen (filename, "r");
 	if (f == NULL) {
-		g_print ("Failed to open %s: %s\n", 
+		g_print ("Failed to open %s: %s\n",
 			 filename, strerror (errno));
 		goto error;
 	}
@@ -678,7 +675,7 @@ get_pixel_data (Itdb_Device *device, Itdb_Thumb_Ipod_Item *thumb)
 
 	res = fread (result, thumb->size, 1, f);
 	if (res != 1) {
-		g_print ("Failed to read %u bytes from %s: %s\n", 
+		g_print ("Failed to read %u bytes from %s: %s\n",
 			 thumb->size, thumb->filename, strerror (errno));
 		goto error;
 	}
@@ -709,11 +706,11 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb_Ipod_Item *item)
 #endif
 	void *pixels_raw;
 	guchar *pixels=NULL;
-            
+
 	g_return_val_if_fail (device, NULL);
 	g_return_val_if_fail (item, NULL);
 	g_return_val_if_fail (item->size != 0, NULL);
-	
+
         if (item->format == NULL) {
             return NULL;
         }
@@ -800,8 +797,8 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb_Ipod_Item *item)
 
 }
 
-gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device, 
-                                         Itdb_Thumb_Ipod_Item *item) 
+gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
+                                         Itdb_Thumb_Ipod_Item *item)
 {
 	/* pixbuf is already on the iPod -> read from there */
 	GdkPixbuf *pixbuf_full;
@@ -876,7 +873,7 @@ gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
         return pixbuf;
 }
 #else
-gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device, 
+gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
                                          Itdb_Thumb_Ipod_Item *item)
 {
     return NULL;
@@ -894,20 +891,20 @@ gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
  * and 0 for the smallest possible size (with no scaling)
  *
  * Returns a #GdkPixbuf representing the thumbnail stored in @artwork
- * scaling it if appropriate. If either height or width is -1, then the 
+ * scaling it if appropriate. If either height or width is -1, then the
  * biggest unscaled thumbnail available will be returned
  *
  * Return value: a #GdkPixbuf that must be unreffed when no longer used, NULL
  * if no artwork could be found or if libgpod is compiled without GdkPixbuf
  * support
  **/
-gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork, 
+gpointer itdb_artwork_get_pixbuf (Itdb_Device *device, Itdb_Artwork *artwork,
                                   gint width, gint height)
 {
     g_return_val_if_fail (artwork != NULL, NULL);
     if (artwork->thumbnail == NULL) {
         return NULL;
     }
-    return itdb_thumb_to_pixbuf_at_size (device, artwork->thumbnail, 
+    return itdb_thumb_to_pixbuf_at_size (device, artwork->thumbnail,
                                          width, height);
 }

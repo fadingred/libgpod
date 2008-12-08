@@ -1,7 +1,7 @@
 /*
 |  Copyright (C) 2008 Christophe Fergeau <teuf@gnome.org>
 |  Part of the gtkpod project.
-| 
+|
 |  URL: http://www.gtkpod.org/
 |  URL: http://gtkpod.sourceforge.net/
 |
@@ -46,7 +46,7 @@
  * If DEBUG_PARSING is defined when building that file, the fields that
  * were found in the SysInfoExtended file but which were not used to build
  * the data structures defined in that file will be dumped to stdout. It's
- * normal to get a few unhandled fields, I left out on purpose a few <dict> 
+ * normal to get a few unhandled fields, I left out on purpose a few <dict>
  * because I was too lazy to parse them ;)
  */
 #ifdef HAVE_CONFIG_H
@@ -247,8 +247,8 @@ static void dump_key_name (gpointer key, gpointer val, gpointer data)
 }
 #endif
 
-static void dict_to_struct (GHashTable *dict, 
-                            const DictFieldMapping *mapping, 
+static void dict_to_struct (GHashTable *dict,
+                            const DictFieldMapping *mapping,
                             void *struct_ptr)
 {
     const DictFieldMapping *it = mapping;
@@ -261,7 +261,7 @@ static void dict_to_struct (GHashTable *dict,
                 *field = get_int (dict, it->name);
                 break;
             }
-                
+
             case G_TYPE_BOOLEAN: {
                 gboolean *field;
                 field = G_STRUCT_MEMBER_P (struct_ptr, it->offset);
@@ -295,7 +295,7 @@ static void dict_to_struct (GHashTable *dict,
 #endif
 }
 
-static void free_struct (const DictFieldMapping *mapping, 
+static void free_struct (const DictFieldMapping *mapping,
                          void *struct_ptr)
 {
     const DictFieldMapping *it = mapping;
@@ -326,7 +326,7 @@ void itdb_sysinfo_properties_free (SysInfoIpodProperties *props)
     free_struct (sysinfo_ipod_properties_fields_mapping, props);
 }
 
-static void dump_struct (const DictFieldMapping *mapping, 
+static void dump_struct (const DictFieldMapping *mapping,
                          void *struct_ptr)
 {
     const DictFieldMapping *it = mapping;
@@ -339,7 +339,7 @@ static void dump_struct (const DictFieldMapping *mapping,
                 g_print ("%s: %d\n", it->name, *field);
                 break;
             }
-                
+
             case G_TYPE_BOOLEAN: {
                 gboolean *field;
                 field = G_STRUCT_MEMBER_P (struct_ptr, it->offset);
@@ -378,7 +378,7 @@ void itdb_sysinfo_properties_dump (SysInfoIpodProperties *props)
     g_list_foreach (props->chapter_image_formats, (GFunc)dump_image_format, NULL);
 }
 
-static gboolean 
+static gboolean
 set_pixel_format (Itdb_ArtworkFormat *img_spec, GHashTable *dict)
 {
     char *pixel_format;
@@ -433,16 +433,16 @@ static Itdb_ArtworkFormat *g_value_to_image_format (GValue *value)
     g_return_val_if_fail (G_VALUE_HOLDS (value, G_TYPE_HASH_TABLE), NULL);
     dict = g_value_get_boxed (value);
     g_return_val_if_fail (dict != NULL, NULL);
-   
+
     img_spec = g_new0 (Itdb_ArtworkFormat, 1);
     if (img_spec == NULL) {
-        return NULL;             
+        return NULL;
     }
-   
+
     if (!set_pixel_format (img_spec, dict)) {
         g_free (img_spec);
         return NULL;
-    }   
+    }
     set_back_color (img_spec, dict);
 
     dict_to_struct (dict, sysinfo_image_format_fields_mapping, img_spec);
@@ -484,16 +484,16 @@ static SysInfoIpodProperties *g_value_to_ipod_properties (GValue *value)
 
     g_return_val_if_fail (G_VALUE_HOLDS (value, G_TYPE_HASH_TABLE), NULL);
     sysinfo_dict = g_value_get_boxed (value);
- 
+
     props = g_new0 (SysInfoIpodProperties, 1);
-    props->artwork_formats = parse_one_formats_list (sysinfo_dict, 
+    props->artwork_formats = parse_one_formats_list (sysinfo_dict,
                                                      "AlbumArt");
-    props->photo_formats = parse_one_formats_list (sysinfo_dict, 
+    props->photo_formats = parse_one_formats_list (sysinfo_dict,
                                                    "ImageSpecifications");
-    props->chapter_image_formats = parse_one_formats_list (sysinfo_dict, 
+    props->chapter_image_formats = parse_one_formats_list (sysinfo_dict,
                                                            "ChapterImageSpecs");
-    dict_to_struct (sysinfo_dict, 
-                    sysinfo_ipod_properties_fields_mapping, 
+    dict_to_struct (sysinfo_dict,
+                    sysinfo_ipod_properties_fields_mapping,
                     props);
 
     return props;

@@ -2,7 +2,7 @@
 |
 |  Copyright (C) 2002-2006 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
-| 
+|
 |  URL: http://www.gtkpod.org/
 |  URL: http://gtkpod.sourceforge.net/
 |
@@ -86,7 +86,7 @@
 
    For example, "MA450" would stand for an 80 GB 6th generation iPod
    Video. See itdb_device.c for a list of supported models.
-   
+
    This information will be written to the iPod when the PhotoDB is
    saved (itdb_device_write_sysinfo() is called).
 */
@@ -113,7 +113,6 @@ static void error_no_photos_dir (const gchar *mp, GError **error)
 	g_free (str);
     }
 }
-
 
 /**
  * itdb_get_photos_dir:
@@ -200,7 +199,6 @@ gchar *itdb_get_photos_thumb_dir (const gchar *mountpoint)
     return result;
 }
 
-
 /**
  * itdb_photodb_parse:
  * @mp: mountpoint of the iPod
@@ -239,7 +237,6 @@ Itdb_PhotoDB *itdb_photodb_parse (const gchar *mp, GError **error)
     return photodb;
 }
 
-
 /**
  * itdb_photodb_create:
  * @mountpoint: mountpoint or NULL.
@@ -268,7 +265,6 @@ Itdb_PhotoDB *itdb_photodb_create (const gchar *mountpoint)
 }
 
 
-
 static Itdb_PhotoDB *itdb_photodb_new (void)
 {
     Itdb_PhotoDB *photodb;
@@ -279,13 +275,11 @@ static Itdb_PhotoDB *itdb_photodb_new (void)
     return photodb;
 }
 
-
-
-/** 
+/**
  * itdb_photodb_free:
  * @photodb: an #Itdb_PhotoDB
  *
- * Free the memory taken by @photodb. 
+ * Free the memory taken by @photodb.
  **/
 void itdb_photodb_free (Itdb_PhotoDB *photodb)
 {
@@ -309,7 +303,7 @@ void itdb_photodb_free (Itdb_PhotoDB *photodb)
 
 
 
-G_GNUC_INTERNAL gint itdb_get_max_photo_id ( Itdb_PhotoDB *db ) 
+G_GNUC_INTERNAL gint itdb_get_max_photo_id ( Itdb_PhotoDB *db )
 {
 	gint max_seen_id = 0;
 	GList *it;
@@ -464,8 +458,6 @@ static Itdb_Artwork *itdb_photodb_add_photo_internal (Itdb_PhotoDB *db,
 #endif
 }
 
-
-
 /**
  * itdb_photodb_add_photo:
  * @db: the #Itdb_PhotoDB to add the photo to.
@@ -498,7 +490,6 @@ Itdb_Artwork *itdb_photodb_add_photo (Itdb_PhotoDB *db,
     return itdb_photodb_add_photo_internal (db, filename, NULL, 0, NULL,
 					    position, rotation, error);
 }
-
 
 /**
  * itdb_photodb_add_photo_from_data:
@@ -569,7 +560,6 @@ Itdb_Artwork *itdb_photodb_add_photo_from_pixbuf (Itdb_PhotoDB *db,
     return itdb_photodb_add_photo_internal (db, NULL, NULL, 0, pixbuf,
 					    position, rotation, error);
 }
-
 
 /**
  * itdb_photodb_remove_photo:
@@ -712,7 +702,6 @@ void itdb_photodb_photoalbum_add_photo (Itdb_PhotoDB *db,
 
     album->members = g_list_insert (album->members, photo, position);
 }
-
 
 /**
  * itdb_photodb_photoalbum_create:

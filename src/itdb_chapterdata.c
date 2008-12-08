@@ -2,7 +2,7 @@
 |
 |  Copyright (C) 2002-2007 Jorg Schuler <jcsjcs at users sourceforge net>
 |  Part of the gtkpod project.
-| 
+|
 |  URL: http://www.gtkpod.org/
 |  URL: http://gtkpod.sourceforge.net/
 |
@@ -36,11 +36,10 @@
 #include <string.h>
 #include <glib/gi18n-lib.h>
 
-
 /**
  * itdb_chapterdata_new:
- * 
- * Creates a new #Itdb_Chapterdata 
+ *
+ * Creates a new #Itdb_Chapterdata
  *
  * Return value: a new #Itdb_Chapterdata to be freed with itdb_chapterdata_free() when
  * no longer needed
@@ -68,7 +67,7 @@ static GList *dup_chapters (GList *chapters)
 {
     GList *it;
     GList *result;
-    
+
     g_return_val_if_fail (chapters, NULL);
     result = NULL;
     for (it = chapters; it != NULL; it = it->next)
@@ -80,7 +79,7 @@ static GList *dup_chapters (GList *chapters)
 	g_return_val_if_fail (chapter, NULL);
 
 	new_chapter = itdb_chapter_duplicate (chapter);
-	
+
 	result = g_list_prepend (result, new_chapter);
     }
 
@@ -135,7 +134,7 @@ itdb_chapterdata_remove_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *ch
  * itdb_chapterdata_remove_chapters:
  * @chapterdata: an #Itdb_Chapterdata
  *
- * Removes all chapters from @chapterdata 
+ * Removes all chapters from @chapterdata
  **/
 void
 itdb_chapterdata_remove_chapters (Itdb_Chapterdata *chapterdata)
@@ -152,7 +151,7 @@ itdb_chapterdata_remove_chapters (Itdb_Chapterdata *chapterdata)
 
 /**
  * itdb_chapter_new:
- * 
+ *
  * Creates a new #Itdb_Chapter
  *
  * Return Value: newly allocated #Itdb_Chapter to be freed with itdb_chapter_free()
@@ -164,7 +163,7 @@ Itdb_Chapter *itdb_chapter_new (void)
     return chapter;
 }
 
-/** 
+/**
  * itdb_chapter_free:
  * @chapter: an #Itdb_Chapter
  *
@@ -178,13 +177,13 @@ void itdb_chapter_free (Itdb_Chapter *chapter)
     g_free (chapter);
 }
 
-/** 
+/**
  * itdb_chapter_duplicate:
  * @chapter: an #Itdb_Chapter
  *
  * Duplicates the data contained in @chapter
  *
- * Return value: a newly allocated copy of @chapter to be freed with 
+ * Return value: a newly allocated copy of @chapter to be freed with
  * itdb_chapter_free() after use
  **/
 Itdb_Chapter *itdb_chapter_duplicate (Itdb_Chapter *chapter)
@@ -196,7 +195,7 @@ Itdb_Chapter *itdb_chapter_duplicate (Itdb_Chapter *chapter)
     new_chapter = itdb_chapter_new ();
     memcpy (new_chapter, chapter, sizeof (Itdb_Chapter));
     new_chapter->chaptertitle = g_strdup (chapter->chaptertitle);
- 
+
     return new_chapter;
 }
 

@@ -1204,7 +1204,6 @@ static guint endianess_check_path (const gchar *path, const gchar *hdr)
  * It will overwrite the previous setting.
  *
  */
-
 G_GNUC_INTERNAL void
 itdb_device_autodetect_endianess (Itdb_Device *device)
 {
@@ -1362,7 +1361,6 @@ gboolean itdb_device_supports_artwork (const Itdb_Device *device)
  *
  * Return value: true if @device can play videos.
  */
-
 gboolean itdb_device_supports_video (const Itdb_Device *device)
 {
     const Itdb_IpodInfo *info;
@@ -1409,7 +1407,6 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
  *
  * Return value: true if @device can display photos.
  */
-
 gboolean itdb_device_supports_photo (const Itdb_Device *device)
 {
     GList *formats;
