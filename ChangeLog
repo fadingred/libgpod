@@ -1,3 +1,15 @@
+2008-12-08  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* po/de.po
+	  po/es.po
+	  po/fr.po
+	  po/he.po
+	  po/it.po
+	  po/ja.po
+	  po/libgpod.pot
+	  po/ro.po
+	  po/sv.po: Update po files
+
 2008-12-07  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* docs/reference/libgpod-docs.xml
