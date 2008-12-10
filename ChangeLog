@@ -2,6 +2,8 @@
 
 	* po/he.po: Update Hebrew translation (Assaf Gillat)
 
+	* po/sv.po: Update Swedish translation (Stefan Asserhäll)
+
 2008-12-08  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* configure.ac: Bump version and soname for 0.7.0rc1

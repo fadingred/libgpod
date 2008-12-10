@@ -1,13 +1,13 @@
-# Translation of gtkpod to Swedish.
+# Translation of libgpod to Swedish.
 # This file is distributed under the same license as libgpod.
-# Copyright (C) Stefan Asserhäll <stefan.asserhall@comhem.se>, 2004, 2005, 2007.
+# Copyright (C) Stefan Asserhäll <stefan.asserhall@comhem.se>, 2004, 2005, 2007, 2008.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: sv\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-07 20:48-0500\n"
-"PO-Revision-Date: 2007-01-14 15:53+0100\n"
+"PO-Revision-Date: 2008-12-09 20:05+0100\n"
 "Last-Translator: Stefan Asserhäll <stefan.asserhall@comhem.se>\n"
 "Language-Team: Svenska <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,9 +17,9 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 
 #: ../src/db-artwork-parser.c:156
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected mhod string type: %d\n"
-msgstr "Oväntad mhod3 strängtyp; %d\n"
+msgstr "Oväntad mhod strängtyp; %d\n"
 
 #: ../src/db-artwork-parser.c:476
 #, c-format
@@ -39,14 +39,14 @@ msgstr ""
 "= %d)\n"
 
 #: ../src/db-artwork-parser.c:566
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find artwork entry (mhii id: %u) for track (dbid: %s).\n"
-msgstr "Kunde inte hitta motsvarande spår (dbid: %s) för grafikpost.\n"
+msgstr "Kunde inte hitta motsvarande grafikpost (mhii id: %u) för spår (dbid: %s).\n"
 
 #: ../src/db-image-parser.c:91
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected image type in mhni: %d, offset: %d\n"
-msgstr "Oväntad bildtyp i mhni: storlek: %ux%u (%d), position: %d\n"
+msgstr "Oväntad bildtyp i mhni: %d, position: %d\n"
 
 #: ../src/itdb_artwork.c:163
 #, c-format
@@ -65,13 +65,13 @@ msgid "Could not find on iPod: '%s'\n"
 msgstr "Kunde inte hitta på iPod: '%s'\n"
 
 #: ../src/itdb_artwork.c:828
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unable to retrieve thumbnail (appears to be on iPod, but no image info "
 "available): filename: '%s'\n"
 msgstr ""
 "Kunde inte hämta miniatyrbild (verkar finnas på iPod, men någon "
-"bildinformation är inte tillgänglig): typ: %d, filnamne: '%s'\n"
+"bildinformation är inte tillgänglig): filnamne: '%s'\n"
 
 #: ../src/itdb_device.c:256
 msgid "Invalid"
@@ -162,173 +162,148 @@ msgid "Nano (Pink)"
 msgstr "Nano (rosa)"
 
 #: ../src/itdb_device.c:278
-#, fuzzy
 msgid "Nano (Red)"
-msgstr "Nano (blå)"
+msgstr "Nano (röd)"
 
 #: ../src/itdb_device.c:279
-#, fuzzy
 msgid "Nano (Yellow)"
-msgstr "Nano (blå)"
+msgstr "Nano (gul)"
 
 #: ../src/itdb_device.c:280
-#, fuzzy
 msgid "Nano (Purple)"
-msgstr "Nano (blå)"
+msgstr "Nano (violett)"
 
 #: ../src/itdb_device.c:281
-#, fuzzy
 msgid "Nano (Orange)"
-msgstr "Nano (grön)"
+msgstr "Nano (orange)"
 
 #: ../src/itdb_device.c:282
-#, fuzzy
 msgid "iPhone (1)"
-msgstr "Mobil (1)"
+msgstr "iPhone (1)"
 
 #: ../src/itdb_device.c:283
-#, fuzzy
 msgid "Shuffle (Silver)"
-msgstr "Mini (silver)"
+msgstr "Shuffle (silver)"
 
 #: ../src/itdb_device.c:284
-#, fuzzy
 msgid "Shuffle (Pink)"
-msgstr "Shuffle"
+msgstr "Shuffle (rosa)"
 
 #: ../src/itdb_device.c:285
-#, fuzzy
 msgid "Shuffle (Blue)"
-msgstr "Shuffle"
+msgstr "Shuffle (blå)"
 
 #: ../src/itdb_device.c:286
-#, fuzzy
 msgid "Shuffle (Green)"
-msgstr "Shuffle"
+msgstr "Shuffle (grön)"
 
 #: ../src/itdb_device.c:287
-#, fuzzy
 msgid "Shuffle (Orange)"
-msgstr "Shuffle"
+msgstr "Shuffle (orange)"
 
 #: ../src/itdb_device.c:288
-#, fuzzy
 msgid "Shuffle (Purple)"
-msgstr "Shuffle"
+msgstr "Shuffle (violett)"
 
 #: ../src/itdb_device.c:289
-#, fuzzy
 msgid "Shuffle (Red)"
-msgstr "Shuffle"
+msgstr "Shuffle (röd)"
 
 #: ../src/itdb_device.c:290
-#, fuzzy
 msgid "Classic (Silver)"
-msgstr "Mini (silver)"
+msgstr "Klassisk (silver)"
 
 #: ../src/itdb_device.c:291
-#, fuzzy
 msgid "Classic (Black)"
-msgstr "Nano (svart)"
+msgstr "Klassisk (svart)"
 
 #: ../src/itdb_device.c:292
-#, fuzzy
 msgid "Touch (Black)"
-msgstr "Nano (svart)"
+msgstr "Touch (svart)"
 
 #: ../src/itdb_device.c:299
 msgid "Regular (1st Gen.)"
-msgstr ""
+msgstr "Vanlig (1:a gen.)"
 
 #: ../src/itdb_device.c:300
 msgid "Regular (2nd Gen.)"
-msgstr ""
+msgstr "Vanlig (2:a gen.)"
 
 #: ../src/itdb_device.c:301
 msgid "Regular (3rd Gen.)"
-msgstr ""
+msgstr "Vanlig (3:e gen.)"
 
 #: ../src/itdb_device.c:302
 msgid "Regular (4th Gen.)"
-msgstr ""
+msgstr "Vanlig (4:e gen.)"
 
 #: ../src/itdb_device.c:303
 msgid "Photo"
-msgstr ""
+msgstr "Foto"
 
 #: ../src/itdb_device.c:304
-#, fuzzy
 msgid "Mobile Phones"
-msgstr "Mobiltelefon"
+msgstr "Mobiltelefoner"
 
 #: ../src/itdb_device.c:305
-#, fuzzy
 msgid "Mini (1st Gen.)"
-msgstr "Mini (grön)"
+msgstr "Mini (1:a gen.)"
 
 #: ../src/itdb_device.c:306
-#, fuzzy
 msgid "Mini (2nd Gen.)"
-msgstr "Mini (grön)"
+msgstr "Mini (2:a gen.)"
 
 #: ../src/itdb_device.c:307
 msgid "Shuffle (1st Gen.)"
-msgstr ""
+msgstr "Shuffle (1:a gen.)"
 
 #: ../src/itdb_device.c:308
 msgid "Shuffle (2nd Gen.)"
-msgstr ""
+msgstr "Shuffle (2:a gen.)"
 
 #: ../src/itdb_device.c:309
 msgid "Shuffle (3rd Gen.)"
-msgstr ""
+msgstr "Shuffle (3:e gen.)"
 
 #: ../src/itdb_device.c:310
-#, fuzzy
 msgid "Nano (1st Gen.)"
-msgstr "Nano (grön)"
+msgstr "Nano (1:a gen.)"
 
 #: ../src/itdb_device.c:311
-#, fuzzy
 msgid "Nano (2nd Gen.)"
-msgstr "Nano (grön)"
+msgstr "Nano (2:a gen.)"
 
 #: ../src/itdb_device.c:312
-#, fuzzy
 msgid "Nano Video (3rd Gen.)"
-msgstr "Nano (grön)"
+msgstr "Nano video (3:e gen.)"
 
 #: ../src/itdb_device.c:313
-#, fuzzy
 msgid "Nano Video (4th Gen.)"
-msgstr "Nano (grön)"
+msgstr "Nano video (4:e gen.)"
 
 #: ../src/itdb_device.c:314
-#, fuzzy
 msgid "Video (1st Gen.)"
-msgstr "Video (vit)"
+msgstr "Video (1:a gen.)"
 
 #: ../src/itdb_device.c:315
-#, fuzzy
 msgid "Video (2nd Gen.)"
-msgstr "Video (vit)"
+msgstr "Video (2:a gen.)"
 
 #: ../src/itdb_device.c:316 ../src/itdb_device.c:317
 msgid "Classic"
-msgstr ""
+msgstr "Klassisk"
 
 #: ../src/itdb_device.c:318
 msgid "Touch"
-msgstr ""
+msgstr "Touch"
 
 #: ../src/itdb_device.c:319
-#, fuzzy
 msgid "iPhone"
-msgstr "Mobiltelefon"
+msgstr "iPhone"
 
 #: ../src/itdb_device.c:320 ../src/itdb_device.c:321
 msgid "Unused"
-msgstr ""
+msgstr "Oanvänd"
 
 #: ../src/itdb_device.c:874
 #, c-format
@@ -373,7 +348,7 @@ msgstr "iTunes databas skadad: Ingen MHOD på position %ld i filen '%s'."
 #: ../src/itdb_itunesdb.c:1524
 #, c-format
 msgid "Unknown smart rule action at %ld: %x. Trying to continue.\n"
-msgstr ""
+msgstr "Okänd smart regelåtgärd vid %ld: %x. Försöker fortsätta.\n"
 
 #: ../src/itdb_itunesdb.c:1555
 #, c-format
@@ -402,13 +377,11 @@ msgstr ""
 #: ../src/itdb_itunesdb.c:1691
 #, c-format
 msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
-msgstr ""
-"iTunes databas skadad: Datalängd 0 för data på position %ld i filen '%s'."
+msgstr "iTunes databas skadad: Datalängd 0 för data på position %ld i filen '%s'."
 
 #: ../src/itdb_itunesdb.c:1704
 #, c-format
-msgid ""
-"iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
+msgid "iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
 msgstr ""
 "iTunes databas skadad: Någon sektion '%s' hittades inte i sektion '%s' med "
 "början på %ld."
@@ -418,8 +391,7 @@ msgstr ""
 msgid ""
 "header length of '%s' smaller than expected (%d < %d) at offset %ld in file "
 "'%s'."
-msgstr ""
-"Huvudlängd för '%s' mindre än väntat (%d < %d) på position %ld i filen '%s'."
+msgstr "Huvudlängd för '%s' mindre än väntat (%d < %d) på position %ld i filen '%s'."
 
 #: ../src/itdb_itunesdb.c:1803
 #, c-format
@@ -491,9 +463,9 @@ msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
 msgstr "OTG-spellistefil ('%s'): Huvudlängd mindre än väntat (%d < 20)"
 
 #: ../src/itdb_itunesdb.c:2571
-#, fuzzy, c-format
+#, c-format
 msgid "OTG playlist file ('%s'): entry length smaller than expected (%d<4)."
-msgstr "OTG-spellistefil ('%s'): Postlängd mindre än väntat (%d < 4)"
+msgstr "OTG-spellistefil ('%s'): Postlängd mindre än väntat (%d < 4)."
 
 #: ../src/itdb_itunesdb.c:2606
 #, c-format
@@ -577,9 +549,9 @@ msgid "Error removing '%s' (%s)."
 msgstr "Fel vid borttagning av '%s' (%s)."
 
 #: ../src/itdb_itunesdb.c:5812 ../src/itdb_itunesdb.c:5985
-#, fuzzy, c-format
+#, c-format
 msgid "Mountpoint not set."
-msgstr "Monteringsplats inte inställd.\n"
+msgstr "Monteringsplats inte inställd."
 
 #: ../src/itdb_itunesdb.c:5852
 #, c-format
@@ -592,15 +564,14 @@ msgid "Path not found: '%s'."
 msgstr "Sökväg hittades inte: '%s'."
 
 #: ../src/itdb_itunesdb.c:5994
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' could not be accessed (%s)."
-msgstr "Kunde inte komma åt filen '%s'."
+msgstr "Kunde inte komma åt '%s' (%s)."
 
 #: ../src/itdb_itunesdb.c:6004
 #, c-format
-msgid ""
-"Destination file '%s' does not appear to be on the iPod mounted at '%s'."
-msgstr ""
+msgid "Destination file '%s' does not appear to be on the iPod mounted at '%s'."
+msgstr "Målfilen '%s' verkar inte finnas på iPod monterad som '%s'."
 
 #: ../src/itdb_itunesdb.c:6212
 #, c-format
@@ -648,8 +619,7 @@ msgstr "Fotobibliotek"
 #: ../src/itdb_photoalbum.c:386
 #, c-format
 msgid "You need to specify the iPod model used before photos can be added."
-msgstr ""
-"Du måste ange vilken iPod-modell som används innan foton kan läggas till."
+msgstr "Du måste ange vilken iPod-modell som används innan foton kan läggas till."
 
 #: ../src/itdb_photoalbum.c:407
 #, c-format
@@ -676,8 +646,7 @@ msgstr ""
 
 #: ../src/itdb_photoalbum.c:468
 #, c-format
-msgid ""
-"Library compiled without gdk-pixbuf support. Picture support is disabled."
+msgid "Library compiled without gdk-pixbuf support. Picture support is disabled."
 msgstr ""
 "Biblioteket kompilerat utan stöd för gdk-pixbuf. Stöd för bilder är "
 "inaktiverat."
@@ -733,7 +702,7 @@ msgstr ""
 "  %s list <mountpoint>\n"
 
 #: ../tests/test-photos.c:44
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage to remove photo IDs from Photo Library:\n"
 "  %s remove <mountpoint> <albumname> [<ID(s)>]\n"
@@ -802,8 +771,7 @@ msgstr ""
 
 #: ../tests/test-photos.c:242
 #, c-format
-msgid ""
-"Error reading iPod photo database, will attempt to create a new database\n"
+msgid "Error reading iPod photo database, will attempt to create a new database\n"
 msgstr "Fel vid läsning av iPod fotodatabas, försöker skapa en ny databas\n"
 
 #: ../tests/test-photos.c:267
@@ -822,9 +790,9 @@ msgid "Cannot remove Photo Library playlist. Aborting.\n"
 msgstr "Kan inte ta bort fotobibliotekets spellista. Avbryter.\n"
 
 #: ../tests/test-photos.c:357
-#, fuzzy, c-format
+#, c-format
 msgid "Warning: could not find photo with ID <%d>. Skipping...\n"
-msgstr "Fel: Kunde inte hitta foto med id <%d>. Hoppar över det...\n"
+msgstr "Varning: Kunde inte hitta foto med id <%d>. Hoppar över det...\n"
 
 #: ../tests/test-photos.c:403
 #, c-format
@@ -834,64 +802,35 @@ msgstr "Okänt kommando '%s'\n"
 #: ../tests/test-init-ipod.c:66
 #, c-format
 msgid "Error initialising iPod: %s\n"
-msgstr ""
+msgstr "Fel vid initiering av iPod: %s\n"
 
 #: ../tests/test-init-ipod.c:73
 #, c-format
 msgid "Error initialising iPod, unknown error\n"
-msgstr ""
+msgstr "Fel vid initiering av iPod, okänt fel\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:39
 #, c-format
 msgid "usage: %s <device> <mountpoint>\n"
-msgstr ""
+msgstr "användning: %s <enhet> <monteringsplats>\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:45
 #, c-format
 msgid "Couldn't read xml sysinfo from %s\n"
-msgstr ""
+msgstr "Kunde inte läsa XML-systeminformation från %s\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:56
 #, c-format
 msgid "Couldn't resolve Device directory path on %s"
-msgstr ""
+msgstr "Kunde inte lösa upp enhetens katalogsökväg på %s"
 
 #: ../tools/read-sysinfoextended-sgutils.c:64
 #, c-format
 msgid "Couldn't resolve SysInfoExtended path on %s"
-msgstr ""
+msgstr "Kunde inte lösa upp sökväg till utökad systeminformation på %s"
 
 #: ../tools/read-sysinfoextended-sgutils.c:74
 #, c-format
 msgid "Couldn't write SysInfoExtended to %s"
-msgstr ""
+msgstr "Kunde inte skriva utökad systeminformation på %s"
 
-#~ msgid "First Generation"
-#~ msgstr "Första generationen"
-
-#~ msgid "Second Generation"
-#~ msgstr "Andra generationen"
-
-#~ msgid "Third Generation"
-#~ msgstr "Tredje generationen"
-
-#~ msgid "Fourth Generation"
-#~ msgstr "Fjärde generationen"
-
-#~ msgid "Fifth Generation"
-#~ msgstr "Femte generationen"
-
-#~ msgid "Sixth Generation"
-#~ msgstr "Sjätte generationen"
-
-#~ msgid "Opening of '%s' for writing failed (%s)."
-#~ msgstr "Fel när '%s' skulle öppnas för skrivning (%s)."
-
-#~ msgid "Writing to '%s' failed (%s)."
-#~ msgstr "Fel vid skrivning till '%s' (%s)."
-
-#~ msgid "Cannot write mhod of type %d\n"
-#~ msgstr "Kan inte skriva mhod av typen %d\n"
-
-#~ msgid "Error reading iPod photo database"
-#~ msgstr "Fel vid läsning av iPod fotodatabas"
