@@ -1,316 +1,317 @@
 # translation of gtkpod.po to HEBREW
 # This file is distributed under the same license as the gtkpod package
-# Assaf Gillat <gillata@gmail.com>, 2005.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+# Assaf Gillat <gillata@gmail.com>, 2008.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gtkpod\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-07 20:48-0500\n"
-"PO-Revision-Date: 2005-08-02 21:19+0300\n"
-"Last-Translator: Assaf Gillat\n"
+"PO-Revision-Date: 2008-12-09 23:07+0200\n"
+"Last-Translator: Assaf Gillat <gillata@gmail.com>\n"
 "Language-Team: HEBREW <kde-il@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: KBabel 1.9.1\n"
+"X-Generator: poedit\n"
 
 #: ../src/db-artwork-parser.c:156
 #, c-format
 msgid "Unexpected mhod string type: %d\n"
-msgstr ""
+msgstr "סוג מחרוזת mhod לא צפוי: %d\n"
 
 #: ../src/db-artwork-parser.c:476
 #, c-format
 msgid "Unexpected mhsd index: %d\n"
-msgstr ""
+msgstr "אינדקס mhsd לא צפוי: %d\n"
 
 #: ../src/db-artwork-parser.c:522
 #, c-format
 msgid "Could not find corresponding track (dbid: %s) for artwork entry.\n"
-msgstr ""
+msgstr "אי אפשר היה למצוא רצועה מתאימה (dbid: %s) עבור רשומת תמונת גלרייה.\n"
 
 #: ../src/db-artwork-parser.c:530
 #, c-format
 msgid "iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)\n"
-msgstr ""
+msgstr "גודל תמונות הגלריה בין הiTunesDB והArtworkDB לא עקבי (%d+%d != %d)\n"
 
 #: ../src/db-artwork-parser.c:566
 #, c-format
 msgid "Could not find artwork entry (mhii id: %u) for track (dbid: %s).\n"
-msgstr ""
+msgstr "אי אפשר למצוא רשומת גלריית תמונות (mhii id: %u) עבור רצועה (dbid: %s).\n"
 
 #: ../src/db-image-parser.c:91
 #, c-format
 msgid "Unexpected image type in mhni: %d, offset: %d\n"
-msgstr ""
+msgstr "סוג תמונה לא צפוי ב mhni: %d, היסט: %d\n"
 
 #: ../src/itdb_artwork.c:163
-#, fuzzy, c-format
+#, c-format
 msgid "Could not access file '%s'."
-msgstr "קובץ לא קיים: '%s'."
+msgstr "אי אפשר לגשת לקובץ: '%s'."
 
-#: ../src/itdb_artwork.c:181 ../src/itdb_artwork.c:241
+#: ../src/itdb_artwork.c:181
+#: ../src/itdb_artwork.c:241
 #: ../src/itdb_artwork.c:298
 #, c-format
 msgid "Artwork support not compiled into libgpod."
-msgstr ""
+msgstr "תמיכה בגלריית תמונות לא הודרה לתוך libgpod."
 
 #: ../src/itdb_artwork.c:668
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find on iPod: '%s'\n"
-msgstr "קובץ לא קיים: '%s'."
+msgstr "אי אפשר למצוא iPod: '%s'.\n"
 
 #: ../src/itdb_artwork.c:828
 #, c-format
-msgid ""
-"Unable to retrieve thumbnail (appears to be on iPod, but no image info "
-"available): filename: '%s'\n"
-msgstr ""
+msgid "Unable to retrieve thumbnail (appears to be on iPod, but no image info available): filename: '%s'\n"
+msgstr "אי אפשר היה לאחזר את התמונות הממוזערות (כנראה הן על הiPod, אבל אין מידע תמונה זמין): קובץ '%s'\n"
 
 #: ../src/itdb_device.c:256
 msgid "Invalid"
-msgstr ""
+msgstr "לא תקין"
 
-#: ../src/itdb_device.c:257 ../src/itdb_device.c:298
+#: ../src/itdb_device.c:257
+#: ../src/itdb_device.c:298
 msgid "Unknown"
-msgstr ""
+msgstr "לא ידוע"
 
 #: ../src/itdb_device.c:258
 msgid "Color"
-msgstr ""
+msgstr "צבע"
 
 #: ../src/itdb_device.c:259
 msgid "Color U2"
-msgstr ""
+msgstr "צבע U2"
 
 #: ../src/itdb_device.c:260
 msgid "Grayscale"
-msgstr ""
+msgstr "גווני אפור"
 
 #: ../src/itdb_device.c:261
 msgid "Grayscale U2"
-msgstr ""
+msgstr "גווני אפור U2"
 
 #: ../src/itdb_device.c:262
 msgid "Mini (Silver)"
-msgstr ""
+msgstr "מיני (כסוף)"
 
 #: ../src/itdb_device.c:263
 msgid "Mini (Blue)"
-msgstr ""
+msgstr "מיני (כחול)"
 
 #: ../src/itdb_device.c:264
 msgid "Mini (Pink)"
-msgstr ""
+msgstr "מיני (ורוד)"
 
 #: ../src/itdb_device.c:265
 msgid "Mini (Green)"
-msgstr ""
+msgstr "מיני (ירוק)"
 
 #: ../src/itdb_device.c:266
 msgid "Mini (Gold)"
-msgstr ""
+msgstr "מיני (זהב)"
 
 #: ../src/itdb_device.c:267
 msgid "Shuffle"
-msgstr ""
+msgstr "שאפל"
 
 #: ../src/itdb_device.c:268
 msgid "Nano (White)"
-msgstr ""
+msgstr "נאנו (לבן)"
 
 #: ../src/itdb_device.c:269
 msgid "Nano (Black)"
-msgstr ""
+msgstr "נאנו (שחור)"
 
 #: ../src/itdb_device.c:270
 msgid "Video (White)"
-msgstr ""
+msgstr "וידאו (לבן)"
 
 #: ../src/itdb_device.c:271
 msgid "Video (Black)"
-msgstr ""
+msgstr "וידאו (שחור)"
 
 #: ../src/itdb_device.c:272
 msgid "Mobile (1)"
-msgstr ""
+msgstr "נייד (1)"
 
 #: ../src/itdb_device.c:273
 msgid "Video U2"
-msgstr ""
+msgstr "וידאו U2"
 
 #: ../src/itdb_device.c:274
 msgid "Nano (Silver)"
-msgstr ""
+msgstr "נאנו (כסוף)"
 
 #: ../src/itdb_device.c:275
 msgid "Nano (Blue)"
-msgstr ""
+msgstr "נאנו (כחול)"
 
 #: ../src/itdb_device.c:276
 msgid "Nano (Green)"
-msgstr ""
+msgstr "נאנו (ירוק)"
 
 #: ../src/itdb_device.c:277
 msgid "Nano (Pink)"
-msgstr ""
+msgstr "נאנו (ורוד)"
 
 #: ../src/itdb_device.c:278
 msgid "Nano (Red)"
-msgstr ""
+msgstr "נאנו (אדום)"
 
 #: ../src/itdb_device.c:279
 msgid "Nano (Yellow)"
-msgstr ""
+msgstr "נאנו (צהוב)"
 
 #: ../src/itdb_device.c:280
 msgid "Nano (Purple)"
-msgstr ""
+msgstr "נאנו (סגול)"
 
 #: ../src/itdb_device.c:281
 msgid "Nano (Orange)"
-msgstr ""
+msgstr "נאנו (כתום)"
 
 #: ../src/itdb_device.c:282
 msgid "iPhone (1)"
-msgstr ""
+msgstr "אייפון (1)"
 
 #: ../src/itdb_device.c:283
 msgid "Shuffle (Silver)"
-msgstr ""
+msgstr "שאפל (כסוף)"
 
 #: ../src/itdb_device.c:284
 msgid "Shuffle (Pink)"
-msgstr ""
+msgstr "שאפל (ורוד)"
 
 #: ../src/itdb_device.c:285
 msgid "Shuffle (Blue)"
-msgstr ""
+msgstr "שאפל (כחול)"
 
 #: ../src/itdb_device.c:286
 msgid "Shuffle (Green)"
-msgstr ""
+msgstr "שאפל (ירוק)"
 
 #: ../src/itdb_device.c:287
 msgid "Shuffle (Orange)"
-msgstr ""
+msgstr "שאפל (כתום)"
 
 #: ../src/itdb_device.c:288
 msgid "Shuffle (Purple)"
-msgstr ""
+msgstr "שאפל (סגול)"
 
 #: ../src/itdb_device.c:289
 msgid "Shuffle (Red)"
-msgstr ""
+msgstr "שאפל (אדום)"
 
 #: ../src/itdb_device.c:290
 msgid "Classic (Silver)"
-msgstr ""
+msgstr "קלאסי (כסוף)"
 
 #: ../src/itdb_device.c:291
 msgid "Classic (Black)"
-msgstr ""
+msgstr "קלאסי (שחור)"
 
 #: ../src/itdb_device.c:292
 msgid "Touch (Black)"
-msgstr ""
+msgstr "טאץ (שחור)"
 
 #: ../src/itdb_device.c:299
 msgid "Regular (1st Gen.)"
-msgstr ""
+msgstr "רגיל (דור ראשון)"
 
 #: ../src/itdb_device.c:300
 msgid "Regular (2nd Gen.)"
-msgstr ""
+msgstr "רגיל (דור שני)"
 
 #: ../src/itdb_device.c:301
 msgid "Regular (3rd Gen.)"
-msgstr ""
+msgstr "רגיל (דור שלישי)"
 
 #: ../src/itdb_device.c:302
 msgid "Regular (4th Gen.)"
-msgstr ""
+msgstr "רגיל (דור רביעי)"
 
 #: ../src/itdb_device.c:303
 msgid "Photo"
-msgstr ""
+msgstr "פוטו"
 
 #: ../src/itdb_device.c:304
 msgid "Mobile Phones"
-msgstr ""
+msgstr "טלפונים סלולריים"
 
 #: ../src/itdb_device.c:305
 msgid "Mini (1st Gen.)"
-msgstr ""
+msgstr "מיני (דור ראשון)"
 
 #: ../src/itdb_device.c:306
 msgid "Mini (2nd Gen.)"
-msgstr ""
+msgstr "מיני (דור שני)"
 
 #: ../src/itdb_device.c:307
 msgid "Shuffle (1st Gen.)"
-msgstr ""
+msgstr "שאפל (דור ראשון)"
 
 #: ../src/itdb_device.c:308
 msgid "Shuffle (2nd Gen.)"
-msgstr ""
+msgstr "שאפל (דור שני)"
 
 #: ../src/itdb_device.c:309
 msgid "Shuffle (3rd Gen.)"
-msgstr ""
+msgstr "שאפל (דור שלישי)"
 
 #: ../src/itdb_device.c:310
 msgid "Nano (1st Gen.)"
-msgstr ""
+msgstr "נאנו (דור ראשון)"
 
 #: ../src/itdb_device.c:311
 msgid "Nano (2nd Gen.)"
-msgstr ""
+msgstr "נאנו (דור שני)"
 
 #: ../src/itdb_device.c:312
 msgid "Nano Video (3rd Gen.)"
-msgstr ""
+msgstr "נאנו וידאו (דור שלישי)"
 
 #: ../src/itdb_device.c:313
 msgid "Nano Video (4th Gen.)"
-msgstr ""
+msgstr "נאנו וידאו (דור רביעי)"
 
 #: ../src/itdb_device.c:314
 msgid "Video (1st Gen.)"
-msgstr ""
+msgstr "וידאו (דור ראשון)"
 
 #: ../src/itdb_device.c:315
 msgid "Video (2nd Gen.)"
-msgstr ""
+msgstr "וידאו (דור שני)"
 
-#: ../src/itdb_device.c:316 ../src/itdb_device.c:317
+#: ../src/itdb_device.c:316
+#: ../src/itdb_device.c:317
 msgid "Classic"
-msgstr ""
+msgstr "קלאסי"
 
 #: ../src/itdb_device.c:318
 msgid "Touch"
-msgstr ""
+msgstr "טאץ"
 
 #: ../src/itdb_device.c:319
 msgid "iPhone"
-msgstr ""
+msgstr "אייפון"
 
-#: ../src/itdb_device.c:320 ../src/itdb_device.c:321
+#: ../src/itdb_device.c:320
+#: ../src/itdb_device.c:321
 msgid "Unused"
-msgstr ""
+msgstr "לא בשימוש"
 
 #: ../src/itdb_device.c:874
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open '%s' for writing."
-msgstr "תקלה בפתיחת '%s' לכתיבה (%s)."
+msgstr "אי אפשר לפתוח את '%s' לכתיבה."
 
 #: ../src/itdb_device.c:883
 #, c-format
 msgid "Device directory does not exist."
-msgstr ""
+msgstr "תיקיית מכשיר לא קיימת."
 
 #: ../src/itdb_itunesdb.c:462
 #, c-format
@@ -333,32 +334,29 @@ msgid "Play Counts file ('%s'): entry length smaller than expected (%d<12)."
 msgstr "קובץ ספירת השמעה ('%s'): אורך רשומה קטן מהצפוי (%d<12)."
 
 #: ../src/itdb_itunesdb.c:1019
-#, fuzzy, c-format
+#, c-format
 msgid "iTunesStats file ('%s'): entry length smaller than expected (%d<18)."
-msgstr "קובץ ספירת השמעה ('%s'): אורך רשומה קטן מהצפוי (%d<12)."
+msgstr "קובץ iTunesStats ('%s'): אורך רשומה קטן מהצפוי (%d<18)."
 
 #: ../src/itdb_itunesdb.c:1338
 #, c-format
 msgid "iTunesDB corrupt: no MHOD at offset %ld in file '%s'."
-msgstr "iTunesDB שבור: אין MHOD בהיסט %ld בקובץ '%s'."
+msgstr "הiTunesDB שבור: אין MHOD בהיסט %ld בקובץ '%s'."
 
 #: ../src/itdb_itunesdb.c:1524
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown smart rule action at %ld: %x. Trying to continue.\n"
-msgstr "לא נמצאה חתיכת SLst כצפוי. מנסה להמשיך.\n"
+msgstr "פעולת חוק חכם לא ידועה ב-%ld: %x . מנסה להמשיך.\n"
 
 #: ../src/itdb_itunesdb.c:1555
 #, c-format
-msgid ""
-"Length of smart playlist rule field (%d) not as expected. Trying to continue "
-"anyhow.\n"
-msgstr ""
-"אורך שדה של חוק (%d) רשימת השמעה חכמה הוא לא כצפוי. מנסה להמשיך בכל זאת.\n"
+msgid "Length of smart playlist rule field (%d) not as expected. Trying to continue anyhow.\n"
+msgstr "אורך שדה של חוק (%d) רשימת השמעה חכמה הוא לא כצפוי. מנסה להמשיך בכל זאת.\n"
 
 #: ../src/itdb_itunesdb.c:1598
-#, fuzzy, c-format
+#, c-format
 msgid "iTunesDB corrupt: no SLst at offset %ld in file '%s'."
-msgstr "iTunesDB שבור: אין MHOD בהיסט %ld בקובץ '%s'."
+msgstr "הiTunesDB שבור: אין SLst בהיסט %ld בקובץ '%s'."
 
 #: ../src/itdb_itunesdb.c:1611
 #, c-format
@@ -372,21 +370,17 @@ msgstr ""
 #: ../src/itdb_itunesdb.c:1691
 #, c-format
 msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
-msgstr "iTunesDB שבור: אורך חתיכה 0 בחתיכה  %ld בקובץ '%s'."
+msgstr "הiTunesDB שבור: אורך חתיכה 0 בחתיכה  %ld בקובץ '%s'."
 
 #: ../src/itdb_itunesdb.c:1704
-#, fuzzy, c-format
-msgid ""
-"iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
-msgstr "iTunesDB שבור: אין MHOD בהיסט %ld בקובץ '%s'."
+#, c-format
+msgid "iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
+msgstr "הiTunesDB שבור: מקטע '%s' לא נמצא במקטע '%s' המתחיל ב- %ld."
 
 #: ../src/itdb_itunesdb.c:1718
-#, fuzzy, c-format
-msgid ""
-"header length of '%s' smaller than expected (%d < %d) at offset %ld in file "
-"'%s'."
-msgstr ""
-"iTunesDB ('%s'): גודל תחילית של החתיכה mhsd קטנה מהצפוי (%ld<32). מבטל."
+#, c-format
+msgid "header length of '%s' smaller than expected (%d < %d) at offset %ld in file '%s'."
+msgstr "גודל תחילית של המקטע '%s' קטן מהצפוי (%d < %d) בהיסט %ld בקובץ '%s'."
 
 #: ../src/itdb_itunesdb.c:1803
 #, c-format
@@ -394,22 +388,19 @@ msgid "Not a iTunesDB: '%s' (missing mhdb header)."
 msgstr "זהו לא iTunesDB: '%s' (חסרה תחילית mhdb)."
 
 #: ../src/itdb_itunesdb.c:1820
-#, fuzzy, c-format
-msgid ""
-"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). "
-"Aborting."
-msgstr ""
-"iTunesDB ('%s'): גודל תחילית של החתיכה mhsd קטנה מהצפוי (%ld<32). מבטל."
+#, c-format
+msgid "iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). Aborting."
+msgstr "הiTunesDB ('%s'): גודל התחילית של המקטע mhsd קטנה מהצפוי (%d<32). מבטל."
 
 #: ../src/itdb_itunesdb.c:1841
-#, fuzzy, c-format
+#, c-format
 msgid "iTunesDB '%s' corrupt: mhsd expected at %ld."
-msgstr "iTunesDB שבור: נמצא mhyp ב %ld בקובץ '%s'."
+msgstr "הiTunesDB '%s' שבור: mhsd צפוי ב-%ld."
 
 #: ../src/itdb_itunesdb.c:1958
 #, c-format
 msgid "Number of MHODs in mhip at %ld inconsistent in file '%s'."
-msgstr ""
+msgstr "מספר ה-MHODים ב-mhip ב-%ld הם לא עקביים בקובץ \"%s\"."
 
 #: ../src/itdb_itunesdb.c:1976
 #, c-format
@@ -417,9 +408,9 @@ msgid "Itdb_Track ID '%d' not found.\n"
 msgstr "מזהה Itdb_Track '%d' לא נמצא.\n"
 
 #: ../src/itdb_itunesdb.c:2146
-#, fuzzy, c-format
+#, c-format
 msgid "Number of MHODs in mhyp at %ld inconsistent in file '%s'."
-msgstr "iTunesDB שבור: נמצא mhyp ב %ld בקובץ '%s'."
+msgstr "מספר ה-MHOD ב-mhyp ב-%ld לא עקביים בקובץ '%s'."
 
 #: ../src/itdb_itunesdb.c:2156
 msgid "Master-PL"
@@ -427,18 +418,16 @@ msgstr "רשימת ראשית"
 
 #: ../src/itdb_itunesdb.c:2160
 msgid "Podcasts"
-msgstr ""
+msgstr "פודקאסט"
 
 #: ../src/itdb_itunesdb.c:2162
 msgid "Playlist"
 msgstr "רשימת השמעה"
 
 #: ../src/itdb_itunesdb.c:2184
-#, fuzzy, c-format
-msgid ""
-"iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %"
-"ld in file '%s'."
-msgstr "iTunesDB שבור: נמצא mhyp ב %ld בקובץ '%s'."
+#, c-format
+msgid "iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %ld in file '%s'."
+msgstr "הiTunesDB שבור: מספר קטעי ה-mhip לא עקביים ב-mhyp המתחילים ב- %ld בקובץ '%s'."
 
 #: ../src/itdb_itunesdb.c:2527
 msgid "OTG Playlist"
@@ -455,7 +444,7 @@ msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
 msgstr "קובץ רשימת השמעה OTG ('%s'): גודל תחילית קטן מהצפוי (%d<20)."
 
 #: ../src/itdb_itunesdb.c:2571
-#, fuzzy, c-format
+#, c-format
 msgid "OTG playlist file ('%s'): entry length smaller than expected (%d<4)."
 msgstr "קובץ רשימת השמעה OTG ('%s'): גודל רשומה קטן מהצפוי (%d<4)."
 
@@ -471,51 +460,38 @@ msgstr "רשימת השמעה OTG %d"
 
 #. this should not be -- issue warning
 #: ../src/itdb_itunesdb.c:2719
-#, fuzzy
-msgid ""
-"iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to "
-"continue.\n"
-msgstr ""
-"יכול להיות ש-iTuneDB שבור: מספר רצועות (mhit חתיכות) לא עקביות. מנסה "
-"להמשיך.\n"
+msgid "iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to continue.\n"
+msgstr "הiTuneDB שבור: מספר רצועות (mhit חתיכות) לא עקביות. מנסה להמשיך.\n"
 
 #. this should not be -- issue warning
 #: ../src/itdb_itunesdb.c:2782
-msgid ""
-"iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. "
-"Trying to continue.\n"
-msgstr ""
-"יכול להיות ש-iTuneDB שבור: מספר רשימות השמעה (mhyp חתיכות) לא עקביות. מנסה "
-"להמשיך.\n"
+msgid "iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. Trying to continue.\n"
+msgstr "יכול להיות ש-iTuneDB שבור: מספר רשימות השמעה (mhyp חתיכות) לא עקביות. מנסה להמשיך.\n"
 
 #: ../src/itdb_itunesdb.c:2829
-#, fuzzy, c-format
-msgid ""
-"iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section "
-"found)"
-msgstr "iTunesDB '%s' שבור: כבר מצאנו mhsds של שתי רשימות השמעה -- מוותר."
+#, c-format
+msgid "iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section found)"
+msgstr "הiTunesDB '%s' שבור: אי אפשר למצוא רשימת רצועות (לא קיים מקטע mhsd סוג 1)"
 
 #: ../src/itdb_itunesdb.c:2858
-#, fuzzy, c-format
-msgid ""
-"iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 "
-"sections found)"
-msgstr "iTunesDB '%s' שבור: כבר מצאנו mhsds של שתי רשימות השמעה -- מוותר."
+#, c-format
+msgid "iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 sections found)"
+msgstr "הiTunesDB '%s' שבור: אי אפשר למצוא רשימת השמעה (לא נמצאו mhsd מסוג 2 או 3)"
 
 #: ../src/itdb_itunesdb.c:2880
 #, c-format
 msgid "iTunes directory not found: '%s' (or similar)."
-msgstr ""
+msgstr "תיקיית iTunes לא נמצאה: '%s' (או דומה)."
 
 #: ../src/itdb_itunesdb.c:2897
 #, c-format
 msgid "Music directory not found: '%s' (or similar)."
-msgstr ""
+msgstr "תיקיית מוזיקה לא נמצאה: '%s' (או דומה)."
 
 #: ../src/itdb_itunesdb.c:2915
 #, c-format
 msgid "Control directory not found: '%s' (or similar)."
-msgstr ""
+msgstr "תיקיית בקרה לא נמצאה: '%s' (או דומה)."
 
 #: ../src/itdb_itunesdb.c:3036
 #, c-format
@@ -523,29 +499,31 @@ msgid "File not found: '%s'."
 msgstr "קובץ לא קיים: '%s'."
 
 #: ../src/itdb_itunesdb.c:5410
-#, fuzzy, c-format
+#, c-format
 msgid "Path not found: '%s' (or similar)."
-msgstr "נתיב לא נמצא: '%s'."
+msgstr "נתיב לא נמצא: '%s' (או דומה)."
 
 #: ../src/itdb_itunesdb.c:5616
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s)."
 msgstr "תקלה בשינוי שם '%s' ל '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:5633 ../src/itdb_itunesdb.c:5650
+#: ../src/itdb_itunesdb.c:5633
+#: ../src/itdb_itunesdb.c:5650
 #, c-format
 msgid "Error removing '%s' (%s)."
 msgstr "תקלה בהסרת '%s' (%s)"
 
-#: ../src/itdb_itunesdb.c:5812 ../src/itdb_itunesdb.c:5985
+#: ../src/itdb_itunesdb.c:5812
+#: ../src/itdb_itunesdb.c:5985
 #, c-format
 msgid "Mountpoint not set."
-msgstr ""
+msgstr "לא נקבעה נקודת עגינה."
 
 #: ../src/itdb_itunesdb.c:5852
 #, c-format
 msgid "No 'F..' directories found in '%s'."
-msgstr ""
+msgstr "לא נמצאו תיקיות מסוג \"F..\" ב-\"%s\"."
 
 #: ../src/itdb_itunesdb.c:5873
 #, c-format
@@ -553,15 +531,14 @@ msgid "Path not found: '%s'."
 msgstr "נתיב לא נמצא: '%s'."
 
 #: ../src/itdb_itunesdb.c:5994
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' could not be accessed (%s)."
-msgstr "קובץ לא קיים: '%s'."
+msgstr "אי אפשר לגשת אל '%s' (%s)."
 
 #: ../src/itdb_itunesdb.c:6004
 #, c-format
-msgid ""
-"Destination file '%s' does not appear to be on the iPod mounted at '%s'."
-msgstr ""
+msgid "Destination file '%s' does not appear to be on the iPod mounted at '%s'."
+msgstr "קובץ יעד \"%s\" כנראה לא מופיע על ה-iPod המעוגן בנקודה \"%s\"."
 
 #: ../src/itdb_itunesdb.c:6212
 #, c-format
@@ -583,58 +560,55 @@ msgstr "תקלה בזמן קריאה מ '%s' (%s)."
 msgid "Error while writing to '%s' (%s)."
 msgstr "תקלה בזמן כתיבה ל '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:6268 ../src/itdb_itunesdb.c:6278
+#: ../src/itdb_itunesdb.c:6268
+#: ../src/itdb_itunesdb.c:6278
 #, c-format
 msgid "Error when closing '%s' (%s)."
 msgstr "תקלה בזמן סגירה '%s' (%s)."
 
 #: ../src/itdb_itunesdb.c:6702
 msgid "iPod"
-msgstr ""
+msgstr "iPod"
 
 #: ../src/itdb_itunesdb.c:7024
 #, c-format
 msgid "Problem creating iPod directory or file: '%s'."
-msgstr ""
+msgstr "בעייה ביצירת תיקיית iPod או קובץ: \"%s\"."
 
 #: ../src/itdb_photoalbum.c:111
-#, fuzzy, c-format
+#, c-format
 msgid "Photos directory not found: '%s' (or similar)."
-msgstr "נתיב לא נמצא: '%s'."
+msgstr "נתיב תמונות לא נמצא: '%s' (או דומה)."
 
-#: ../src/itdb_photoalbum.c:266 ../src/itdb_photoalbum.c:460
+#: ../src/itdb_photoalbum.c:266
+#: ../src/itdb_photoalbum.c:460
 msgid "Photo Library"
-msgstr ""
+msgstr "ספריית תמונות"
 
 #: ../src/itdb_photoalbum.c:386
 #, c-format
 msgid "You need to specify the iPod model used before photos can be added."
-msgstr ""
+msgstr "צריך לציין את סוג ה-iPod לפני שניתן יהיה להוסיף תמונות."
 
 #: ../src/itdb_photoalbum.c:407
 #, c-format
-msgid ""
-"Your iPod does not seem to support photos. Maybe you need to specify the "
-"correct iPod model number? It is currently set to 'x%s' (%s/%s)."
-msgstr ""
+msgid "Your iPod does not seem to support photos. Maybe you need to specify the correct iPod model number? It is currently set to 'x%s' (%s/%s)."
+msgstr "נראה שה-iPod שלך לא תומך בתמונות. אולי צריך לציין את הסוג המדוייק של ה-iPod? הוא כרגע מכוון ל  'x%s' (%s/%s)."
 
 #: ../src/itdb_photoalbum.c:419
 #, c-format
 msgid "Could not access file '%s'. Photo not added."
-msgstr ""
+msgstr "אי אפשר לגשת לקובץ '%s'. התמונה לא הוספה."
 
 #: ../src/itdb_photoalbum.c:448
 #, c-format
-msgid ""
-"Unexpected error in itdb_photodb_add_photo_internal() while adding photo, "
-"please report."
-msgstr ""
+msgid "Unexpected error in itdb_photodb_add_photo_internal() while adding photo, please report."
+msgstr "תקלה לא צפוייה ב-itdb_photodb_add_photo_internal() בזמן הוספת תמונה, אנא דווח על התקלה."
 
 #: ../src/itdb_photoalbum.c:468
 #, c-format
-msgid ""
-"Library compiled without gdk-pixbuf support. Picture support is disabled."
-msgstr ""
+msgid "Library compiled without gdk-pixbuf support. Picture support is disabled."
+msgstr "הספרייה הודרה ללא תמיכה ב-gdk-pixbuf. תמיכה בתמונות לא מאופשרת."
 
 #. New action!
 #: ../src/itdb_playlist.c:78
@@ -645,24 +619,26 @@ msgstr "התעלמות מפעולה לא ידועה (%d) ברשימת השמעה
 #: ../src/itdb_thumb.c:326
 #, c-format
 msgid "Illegal filename: '%s'.\n"
-msgstr ""
+msgstr "שם קובץ לא חוקי: '%s'.\n"
 
 #: ../src/itdb_thumb.c:331
 #, c-format
 msgid "Mountpoint not set.\n"
-msgstr ""
+msgstr "לא נקבעה נקודת עגינה.\n"
 
 #: ../tests/test-photos.c:41
 #, c-format
 msgid ""
 "Usage to add photos:\n"
 "  %s add <mountpoint> <albumname> [<filename(s)>]\n"
-"  <albumname> should be set to 'NULL' to add photos to the master photo "
-"album\n"
-"  (Photo Library) only. If you don't specify any filenames an empty album "
-"will\n"
+"  <albumname> should be set to 'NULL' to add photos to the master photo album\n"
+"  (Photo Library) only. If you don't specify any filenames an empty album will\n"
 "  be created.\n"
 msgstr ""
+"הוראות שימוש להוספת תמונות:\n"
+"  %s add <mountpoint> <albumname> [<filename(s)>]\n"
+"  <albumname> צריך להיות 'NULL' על מנת להוסיף תמונות אל האלבום הראשי\n"
+"  (Photo Library) בלבד.אם לא יצויין שום קובץ יווצר אלבום ריק.\n"
 
 #: ../tests/test-photos.c:42
 #, c-format
@@ -670,6 +646,8 @@ msgid ""
 "Usage to dump all photos to <output_dir>:\n"
 "  %s dump <mountpoint> <output_dir>\n"
 msgstr ""
+"הוראות שימוש על מנת לשלוף את כל התמונות אל <תיקיית הפלט>:\n"
+"%s dump <mountpoint> <output_dir>\n"
 
 #: ../tests/test-photos.c:43
 #, c-format
@@ -677,6 +655,8 @@ msgid ""
 "Usage to list all photos IDs to stdout:\n"
 "  %s list <mountpoint>\n"
 msgstr ""
+"הוראות שימוש על מנת להדפיס את רשימת כל מזהי התמונות אל הפלט הסטנדרטי:\n"
+"  %s list <mountpoint>\n"
 
 #: ../tests/test-photos.c:44
 #, c-format
@@ -688,48 +668,57 @@ msgid ""
 "  instead.\n"
 "  WARNING: IDs may change when writing the PhotoDB file.\n"
 msgstr ""
+"הוראות שימוש על מנת להסיר את מזהי התמונות מספריית התמונות:\n"
+"  %s remove <mountpoint> <albumname> [<ID(s)>]\n"
+"  <albumname> צריך להיות 'NULL' על מנת להסיר תמונות לגמרי מה- iPod.\n"
+"  אם לא יצויין כל מזהה, כל אלבום התמונות יוסר במקום.\n"
+"אזהרה: המזהים עלולים להשתנות בזמן כתיבת אל קובץ ה-PhotoDB.\n"
 
 #: ../tests/test-photos.c:119
 #, c-format
 msgid "Wrong number of command line arguments.\n"
-msgstr ""
+msgstr "מספר לא נכון של פרמטרים בשורת הפקודה.\n"
 
 #: ../tests/test-photos.c:128
-#, fuzzy, c-format
+#, c-format
 msgid "Error creating '%s' (mkdir)\n"
-msgstr "תקלה בהסרת '%s' (%s)"
+msgstr "תקלה ביצירת '%s' (mkdir)\n"
 
 #: ../tests/test-photos.c:134
 #, c-format
 msgid "Error: '%s' is not a directory\n"
-msgstr ""
+msgstr "שגיאה: '%s' היא לא תיקייה\n"
 
-#: ../tests/test-photos.c:143 ../tests/test-photos.c:177
+#: ../tests/test-photos.c:143
+#: ../tests/test-photos.c:177
 #: ../tests/test-photos.c:306
-#, fuzzy, c-format
+#, c-format
 msgid "Error reading iPod photo database (%s).\n"
-msgstr "תקלה בשינוי שם '%s' ל '%s' (%s)."
+msgstr "תקלה בקריאת מסד נתונים של iPod photo במיקום (%s).\n"
 
-#: ../tests/test-photos.c:149 ../tests/test-photos.c:183
+#: ../tests/test-photos.c:149
+#: ../tests/test-photos.c:183
 #: ../tests/test-photos.c:313
 #, c-format
 msgid "Error reading iPod photo database.\n"
-msgstr ""
+msgstr "תקלה בקריאת מסד נתונים של iPod photo.\n"
 
-#: ../tests/test-photos.c:167 ../tests/test-photos.c:226
-#: ../tests/test-photos.c:296 ../tests/test-photos.c:379
+#: ../tests/test-photos.c:167
+#: ../tests/test-photos.c:226
+#: ../tests/test-photos.c:296
+#: ../tests/test-photos.c:379
 #, c-format
 msgid "Insufficient number of command line arguments.\n"
-msgstr ""
+msgstr "מספר לא מספק של פרמטרים לשורת הפקודה.\n"
 
 #: ../tests/test-photos.c:194
 msgid "<Unnamed>"
-msgstr ""
+msgstr "<ללא שם>"
 
 #: ../tests/test-photos.c:209
 #, c-format
 msgid "<No members>\n"
-msgstr ""
+msgstr "<ללא חברים>\n"
 
 #: ../tests/test-photos.c:236
 #, c-format
@@ -737,93 +726,70 @@ msgid ""
 "Error reading iPod photo database (%s).\n"
 "Will attempt to create a new database.\n"
 msgstr ""
+"תקלה בזמן קריאת מסד נתונים של iPod photo (%s).\n"
+"יעשה ניסיון ליצור מסד נתוני חדש.\n"
 
 #: ../tests/test-photos.c:242
 #, c-format
-msgid ""
-"Error reading iPod photo database, will attempt to create a new database\n"
-msgstr ""
+msgid "Error reading iPod photo database, will attempt to create a new database\n"
+msgstr "תקלה בזמן קריאת מסד נתונים של iPod photo, יעשה ניסיון ליצור מסד נתונים חדש\n"
 
 #: ../tests/test-photos.c:267
-#, fuzzy, c-format
+#, c-format
 msgid "Error adding photo (%s) to photo database: %s\n"
-msgstr "תקלה בשינוי שם '%s' ל '%s' (%s)."
+msgstr "תקלה בזמן הוספת תמונה (%s) אל מסד הנתונים של התמונות: %s\n"
 
 #: ../tests/test-photos.c:324
 #, c-format
 msgid "Specified album '%s' not found. Aborting.\n"
-msgstr ""
+msgstr "האלבום המצויין '%s' לא נמצא. מבטל.\n"
 
 #: ../tests/test-photos.c:336
 #, c-format
 msgid "Cannot remove Photo Library playlist. Aborting.\n"
-msgstr ""
+msgstr "אי אפשר היה להסיר רשימת תמונות ספריה. מבטל.\n"
 
 #: ../tests/test-photos.c:357
 #, c-format
 msgid "Warning: could not find photo with ID <%d>. Skipping...\n"
-msgstr ""
+msgstr "אזהרה: אי אפשר למצוא תמונה עם מזהה <%d>. מדלג...\n"
 
 #: ../tests/test-photos.c:403
 #, c-format
 msgid "Unknown command '%s'\n"
-msgstr ""
+msgstr "פקודה לא ידועה '%s'\n"
 
 #: ../tests/test-init-ipod.c:66
 #, c-format
 msgid "Error initialising iPod: %s\n"
-msgstr ""
+msgstr "תקלה באתחול ה-iPod: %s\n"
 
 #: ../tests/test-init-ipod.c:73
 #, c-format
 msgid "Error initialising iPod, unknown error\n"
-msgstr ""
+msgstr "תקלה באתחול ה-iPod, תקלה לא ידועה\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:39
 #, c-format
 msgid "usage: %s <device> <mountpoint>\n"
-msgstr ""
+msgstr "הוראות שימוש: %s <device> <mountpoint>\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:45
 #, c-format
 msgid "Couldn't read xml sysinfo from %s\n"
-msgstr ""
+msgstr "אי אפשר לקרוא xml sysinfo מ %s\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:56
 #, c-format
 msgid "Couldn't resolve Device directory path on %s"
-msgstr ""
+msgstr "אי אפשר לפענח נתיב תיקייה מכשיר ב %s"
 
 #: ../tools/read-sysinfoextended-sgutils.c:64
 #, c-format
 msgid "Couldn't resolve SysInfoExtended path on %s"
-msgstr ""
+msgstr "אי אפשר לפענח נתיב SysInfoExtended ב %s"
 
 #: ../tools/read-sysinfoextended-sgutils.c:74
 #, c-format
 msgid "Couldn't write SysInfoExtended to %s"
-msgstr ""
-
-#, fuzzy
-#~ msgid "Opening of '%s' for writing failed (%s)."
-#~ msgstr "פתיחת '%s' לכתיבה נכשלה."
-
-#~ msgid "Writing to '%s' failed (%s)."
-#~ msgstr "נכשלה כתיבה ל '%s' (%s)."
-
-#~ msgid "Cannot write mhod of type %d\n"
-#~ msgstr "לא יכול לכתוב mhod של סוג %d\n"
-
-#, fuzzy
-#~ msgid "Error reading iPod photo database"
-#~ msgstr "תקלה בשינוי שם '%s' ל '%s' (%s)."
-
-#~ msgid "Writing to '%s' failed."
-#~ msgstr "נכשלה כתיבה ל '%s'."
-
-#~ msgid "Database in memory corrupt (track pointer == NULL). Aborting export."
-#~ msgstr "מסד הנתונים בזיכרון שבור (מצביע רצועה == NULL). מבטל ייצוא."
-
-#~ msgid ""
-#~ "Database in memory corrupt (playlist pointer == NULL). Aborting export."
-#~ msgstr "מסד הנתונים בזיכרון שבור (מצביע רשימת השמעה == NULL). מבטל ייצוא."
+msgstr "אי אפשר לכתוב SysInfoExtended אל %s"

@@ -1,3 +1,7 @@
+2008-12-10  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* po/he.po: Update Hebrew translation (Assaf Gillat)
+
 2008-12-08  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* configure.ac: Bump version and soname for 0.7.0rc1
