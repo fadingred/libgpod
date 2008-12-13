@@ -1,3 +1,7 @@
+2008-12-13  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* po/fr.po: Update French translation (Éric Lassauge)
+
 2008-12-12  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: add hardcoded table for nano4g artwork

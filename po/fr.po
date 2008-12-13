@@ -1,16 +1,16 @@
 # French language translation for gtkpod 
-# Copyright (C) 2005-2007 Éric Lassauge
-# Éric Lassauge <lassauge@users.sf.net>, 2007.
+# Copyright (C) 2005-2008 Éric Lassauge
+# Éric Lassauge <lassauge@users.sf.net>, 2008.
 # Copyright (C) 2003 David Le Brun
 # David Le Brun <david@dyn-ns.net>, 2003.
 #
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: libgpod-0.5.2\n"
+"Project-Id-Version: libgpod-0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-07 20:48-0500\n"
-"PO-Revision-Date: 2007-07-02 22:31+0100\n"
+"PO-Revision-Date: 2008-12-11 14:37+0000\n"
 "Last-Translator: Éric Lassauge <rpmfarm@free.fr>\n"
 "Language-Team: FR\n"
 "MIME-Version: 1.0\n"
@@ -19,9 +19,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n>1;\n"
 
 #: ../src/db-artwork-parser.c:156
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected mhod string type: %d\n"
-msgstr "Type de chaîne mhod3 inattendu : %d\n"
+msgstr "Type de chaîne mhod inattendu : %d\n"
 
 #: ../src/db-artwork-parser.c:476
 #, c-format
@@ -41,19 +41,20 @@ msgstr ""
 "d)\n"
 
 #: ../src/db-artwork-parser.c:566
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find artwork entry (mhii id: %u) for track (dbid: %s).\n"
-msgstr "Impossible de trouver la piste (dbid : %s) pour l'image.\n"
+msgstr ""
+"Impossible de trouver l'image (mhii id : %u) pour la piste (dbid : %s).\n"
 
 #: ../src/db-image-parser.c:91
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected image type in mhni: %d, offset: %d\n"
-msgstr "Type d'image inattendu dans mhni : taille : %ux%u (%d), offset : %d\n"
+msgstr "Type d'image inattendu dans mhni : %d, offset : %d\n"
 
 #: ../src/itdb_artwork.c:163
 #, c-format
 msgid "Could not access file '%s'."
-msgstr "Impossible de trouver sur le iPod : « %s »."
+msgstr "Impossible d'accéder au fichier « %s »."
 
 #: ../src/itdb_artwork.c:181 ../src/itdb_artwork.c:241
 #: ../src/itdb_artwork.c:298
@@ -67,13 +68,13 @@ msgid "Could not find on iPod: '%s'\n"
 msgstr "Impossible de trouver sur le iPod : « %s »\n"
 
 #: ../src/itdb_artwork.c:828
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unable to retrieve thumbnail (appears to be on iPod, but no image info "
 "available): filename: '%s'\n"
 msgstr ""
 "Impossible de récupérer l'imagette (apparemment sur l'iPod, mais aucune info "
-"d'image disponible : type : %d, fichier : « %s »\n"
+"d'image disponible : fichier : « %s »\n"
 
 #: ../src/itdb_device.c:256
 msgid "Invalid"
@@ -89,7 +90,7 @@ msgstr "Couleur"
 
 #: ../src/itdb_device.c:259
 msgid "Color U2"
-msgstr "U2 Couleur"
+msgstr "U2 couleur"
 
 #: ../src/itdb_device.c:260
 msgid "Grayscale"
@@ -101,23 +102,23 @@ msgstr "U2 niveaux de gris"
 
 #: ../src/itdb_device.c:262
 msgid "Mini (Silver)"
-msgstr "Mini (Argent)"
+msgstr "Mini (argent)"
 
 #: ../src/itdb_device.c:263
 msgid "Mini (Blue)"
-msgstr "Mini (Bleu)"
+msgstr "Mini (bleu)"
 
 #: ../src/itdb_device.c:264
 msgid "Mini (Pink)"
-msgstr "Mini (Rose)"
+msgstr "Mini (rose)"
 
 #: ../src/itdb_device.c:265
 msgid "Mini (Green)"
-msgstr "Mini (Vert)"
+msgstr "Mini (vert)"
 
 #: ../src/itdb_device.c:266
 msgid "Mini (Gold)"
-msgstr "Mini (Or)"
+msgstr "Mini (or)"
 
 #: ../src/itdb_device.c:267
 msgid "Shuffle"
@@ -125,19 +126,19 @@ msgstr "Shuffle"
 
 #: ../src/itdb_device.c:268
 msgid "Nano (White)"
-msgstr "Nano (Blanc)"
+msgstr "Nano (blanc)"
 
 #: ../src/itdb_device.c:269
 msgid "Nano (Black)"
-msgstr "Nano (Noir)"
+msgstr "Nano (noir)"
 
 #: ../src/itdb_device.c:270
 msgid "Video (White)"
-msgstr "Vidéo (Blanc)"
+msgstr "Vidéo (blanc)"
 
 #: ../src/itdb_device.c:271
 msgid "Video (Black)"
-msgstr "Vidéo (Noir)"
+msgstr "Vidéo (noir)"
 
 #: ../src/itdb_device.c:272
 msgid "Mobile (1)"
@@ -149,188 +150,163 @@ msgstr "U2 Vidéo"
 
 #: ../src/itdb_device.c:274
 msgid "Nano (Silver)"
-msgstr "Nano (Argent)"
+msgstr "Nano (argent)"
 
 #: ../src/itdb_device.c:275
 msgid "Nano (Blue)"
-msgstr "Nano (Bleu)"
+msgstr "Nano (bleu)"
 
 #: ../src/itdb_device.c:276
 msgid "Nano (Green)"
-msgstr "Nano (Vert)"
+msgstr "Nano (vert)"
 
 #: ../src/itdb_device.c:277
 msgid "Nano (Pink)"
-msgstr "Nano (Rose)"
+msgstr "Nano (rose)"
 
 #: ../src/itdb_device.c:278
-#, fuzzy
 msgid "Nano (Red)"
-msgstr "Nano (Bleu)"
+msgstr "Nano (rouge)"
 
 #: ../src/itdb_device.c:279
-#, fuzzy
 msgid "Nano (Yellow)"
-msgstr "Nano (Bleu)"
+msgstr "Nano (jaune)"
 
 #: ../src/itdb_device.c:280
-#, fuzzy
 msgid "Nano (Purple)"
-msgstr "Nano (Bleu)"
+msgstr "Nano (violet)"
 
 #: ../src/itdb_device.c:281
-#, fuzzy
 msgid "Nano (Orange)"
-msgstr "Nano (Vert)"
+msgstr "Nano (orange)"
 
 #: ../src/itdb_device.c:282
-#, fuzzy
 msgid "iPhone (1)"
-msgstr "Mobile (1)"
+msgstr "iPhone (1)"
 
 #: ../src/itdb_device.c:283
-#, fuzzy
 msgid "Shuffle (Silver)"
-msgstr "Mini (Argent)"
+msgstr "Shuffle (argent)"
 
 #: ../src/itdb_device.c:284
-#, fuzzy
 msgid "Shuffle (Pink)"
-msgstr "Shuffle"
+msgstr "Shuffle (rose)"
 
 #: ../src/itdb_device.c:285
-#, fuzzy
 msgid "Shuffle (Blue)"
-msgstr "Shuffle"
+msgstr "Shuffle (bleu)"
 
 #: ../src/itdb_device.c:286
-#, fuzzy
 msgid "Shuffle (Green)"
-msgstr "Shuffle"
+msgstr "Shuffle (vert)"
 
 #: ../src/itdb_device.c:287
-#, fuzzy
 msgid "Shuffle (Orange)"
-msgstr "Shuffle"
+msgstr "Shuffle (orange)"
 
 #: ../src/itdb_device.c:288
-#, fuzzy
 msgid "Shuffle (Purple)"
-msgstr "Shuffle"
+msgstr "Shuffle (violet)"
 
 #: ../src/itdb_device.c:289
-#, fuzzy
 msgid "Shuffle (Red)"
-msgstr "Shuffle"
+msgstr "Shuffle (rouge)"
 
 #: ../src/itdb_device.c:290
-#, fuzzy
 msgid "Classic (Silver)"
-msgstr "Mini (Argent)"
+msgstr "Classic (argent)"
 
 #: ../src/itdb_device.c:291
-#, fuzzy
 msgid "Classic (Black)"
-msgstr "Nano (Noir)"
+msgstr "Classic (noir)"
 
 #: ../src/itdb_device.c:292
-#, fuzzy
 msgid "Touch (Black)"
-msgstr "Nano (Noir)"
+msgstr "Touch (noir)"
 
 #: ../src/itdb_device.c:299
 msgid "Regular (1st Gen.)"
-msgstr ""
+msgstr "Normal (1ière gen.)"
 
 #: ../src/itdb_device.c:300
 msgid "Regular (2nd Gen.)"
-msgstr ""
+msgstr "Normal (2nde gen.)"
 
 #: ../src/itdb_device.c:301
 msgid "Regular (3rd Gen.)"
-msgstr ""
+msgstr "Normal (3ième gen.)"
 
 #: ../src/itdb_device.c:302
 msgid "Regular (4th Gen.)"
-msgstr ""
+msgstr "Normal (4ième gen.)"
 
 #: ../src/itdb_device.c:303
 msgid "Photo"
-msgstr ""
+msgstr "Photo"
 
 #: ../src/itdb_device.c:304
-#, fuzzy
 msgid "Mobile Phones"
-msgstr "Téléphone Mobile"
+msgstr "Téléphones mobiles"
 
 #: ../src/itdb_device.c:305
-#, fuzzy
 msgid "Mini (1st Gen.)"
-msgstr "Mini (Vert)"
+msgstr "Mini (1ière gen.)"
 
 #: ../src/itdb_device.c:306
-#, fuzzy
 msgid "Mini (2nd Gen.)"
-msgstr "Mini (Vert)"
+msgstr "Mini (2nde gen.)"
 
 #: ../src/itdb_device.c:307
 msgid "Shuffle (1st Gen.)"
-msgstr ""
+msgstr "Shuffle (1ière gen.)"
 
 #: ../src/itdb_device.c:308
 msgid "Shuffle (2nd Gen.)"
-msgstr ""
+msgstr "Shuffle (2nde gen.)"
 
 #: ../src/itdb_device.c:309
 msgid "Shuffle (3rd Gen.)"
-msgstr ""
+msgstr "Shuffle (3ième gen.)"
 
 #: ../src/itdb_device.c:310
-#, fuzzy
 msgid "Nano (1st Gen.)"
-msgstr "Nano (Vert)"
+msgstr "Nano (1ière gen.)"
 
 #: ../src/itdb_device.c:311
-#, fuzzy
 msgid "Nano (2nd Gen.)"
-msgstr "Nano (Vert)"
+msgstr "Nano (2nde gen.)"
 
 #: ../src/itdb_device.c:312
-#, fuzzy
 msgid "Nano Video (3rd Gen.)"
-msgstr "Nano (Vert)"
+msgstr "Nano (3ième gen.)"
 
 #: ../src/itdb_device.c:313
-#, fuzzy
 msgid "Nano Video (4th Gen.)"
-msgstr "Nano (Vert)"
+msgstr "Nano vidéo(4ième gen.)"
 
 #: ../src/itdb_device.c:314
-#, fuzzy
 msgid "Video (1st Gen.)"
-msgstr "Vidéo (Blanc)"
+msgstr "Vidéo (1ière gen.)"
 
 #: ../src/itdb_device.c:315
-#, fuzzy
 msgid "Video (2nd Gen.)"
-msgstr "Vidéo (Blanc)"
+msgstr "Vidéo (2nde gen.)"
 
 #: ../src/itdb_device.c:316 ../src/itdb_device.c:317
 msgid "Classic"
-msgstr ""
+msgstr "Classic"
 
 #: ../src/itdb_device.c:318
 msgid "Touch"
-msgstr ""
+msgstr "Touch"
 
 #: ../src/itdb_device.c:319
-#, fuzzy
 msgid "iPhone"
-msgstr "Téléphone Mobile"
+msgstr "iPhone"
 
 #: ../src/itdb_device.c:320 ../src/itdb_device.c:321
 msgid "Unused"
-msgstr ""
+msgstr "Inutilisé"
 
 #: ../src/itdb_device.c:874
 #, c-format
@@ -857,58 +833,34 @@ msgstr "Commande inconnue « %s »\n"
 #: ../tests/test-init-ipod.c:66
 #, c-format
 msgid "Error initialising iPod: %s\n"
-msgstr ""
+msgstr "Erreur d'initialisation du iPod : %s\n"
 
 #: ../tests/test-init-ipod.c:73
 #, c-format
 msgid "Error initialising iPod, unknown error\n"
-msgstr ""
+msgstr "Erreur d'initialisation du iPod : erreur inconnue\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:39
 #, c-format
 msgid "usage: %s <device> <mountpoint>\n"
-msgstr ""
+msgstr "utilisation : %s <périphérique> <point_de_montage>\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:45
 #, c-format
 msgid "Couldn't read xml sysinfo from %s\n"
-msgstr ""
+msgstr "Impossible de lire les « sysinfo xml » depuis %s\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:56
 #, c-format
 msgid "Couldn't resolve Device directory path on %s"
-msgstr ""
+msgstr "Impossible de trouver le répertoire « Device » dans %s"
 
 #: ../tools/read-sysinfoextended-sgutils.c:64
 #, c-format
 msgid "Couldn't resolve SysInfoExtended path on %s"
-msgstr ""
+msgstr "Impossible de trouver le chemin de « SysInfoExtended » dans %s"
 
 #: ../tools/read-sysinfoextended-sgutils.c:74
 #, c-format
 msgid "Couldn't write SysInfoExtended to %s"
-msgstr ""
-
-#~ msgid "First Generation"
-#~ msgstr "Premiére Génération"
-
-#~ msgid "Second Generation"
-#~ msgstr "Seconde Génération"
-
-#~ msgid "Third Generation"
-#~ msgstr "Troisième Génération"
-
-#~ msgid "Fourth Generation"
-#~ msgstr "Quatrième Génération"
-
-#~ msgid "Fifth Generation"
-#~ msgstr "Cinquième Génération"
-
-#~ msgid "Sixth Generation"
-#~ msgstr "Sixième Génération"
-
-#~ msgid "Opening of '%s' for writing failed (%s)."
-#~ msgstr "Échec de l'ouverture en écriture de « %s » (%s)."
-
-#~ msgid "Writing to '%s' failed (%s)."
-#~ msgstr "Échec de l'écriture dans « %s » (%s)."
+msgstr "Impossible d'écrire « SysInfoExtended » dans %s"
