@@ -39,6 +39,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
+#ifdef __CYGWIN__
+    extern __IMPORT long _timezone;
+#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -1575,7 +1578,11 @@ static gboolean raw_timezone_to_utc_shift_5g (gint16 raw_timezone,
 
 static gint get_local_timezone (void)
 {
+#ifdef __CYGWIN__
+    return (gint) _timezone; /* global variable defined by time.h, see man tzset */
+#else
     return timezone; /* global variable defined by time.h, see man tzset */
+#endif
 }
 
 /* This function reads the timezone information from the iPod and sets it in

@@ -177,7 +177,14 @@ parse_data (xmlNode *a_node, G_GNUC_UNUSED GError **error)
     GValue *value;
 
     str_val = (char *)xmlNodeGetContent(a_node);
+#if GLIB_CHECK_VERSION(2,12,0)
+    /* base64 support only after GLib 2.12 */
     raw_data = g_base64_decode (str_val, &len);
+#else
+#warning GLib > 2.12 required for g_base64_decode(). Working around this problem.
+    raw_data = g_strdup ("");
+    len = 0;
+#endif
     xmlFree (str_val);
     data_val = g_string_new_len ((char *)raw_data, len);
     g_free (raw_data);
