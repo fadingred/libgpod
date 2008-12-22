@@ -287,7 +287,6 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Shuffle (Silver)"),
 	N_("Shuffle (Pink)"),
 	N_("Shuffle (Blue)"),
-	N_("Shuffle (Lt Blue)"),
 	N_("Shuffle (Green)"),
 	N_("Shuffle (Orange)"),
 	N_("Shuffle (Purple)"),

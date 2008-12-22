@@ -1,5 +1,12 @@
 2008-12-22  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_device.c: I didn't mean to commit that hunk
+	from Neil's patch, adding a model name here with no
+	matching entry in the model enum would break building
+	a user visible list of known ipod models
+
+2008-12-22  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_device.c: add ipod shuffle info from Neil Campbell
 
 2008-12-22  Christophe Fergeau  <teuf@gnome.org>
