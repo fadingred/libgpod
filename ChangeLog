@@ -1,5 +1,9 @@
 2008-12-22  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/itdb_device.c: add ipod shuffle info from Neil Campbell
+
+2008-12-22  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/itdb_device.c: add serial number for yellow and green
 	16GB nano 4g.
 
