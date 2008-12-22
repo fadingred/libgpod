@@ -1,3 +1,8 @@
+2008-12-22  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: add serial number for yellow and green
+	16GB nano 4g.
+
 2008-12-18  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: add serial number for purple 16GB nano 4g,

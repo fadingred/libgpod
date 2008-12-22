@@ -653,6 +653,8 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "5B8", "B905" }, /* 16GB Blue Nano 4g */
     { "5BA", "B909" }, /* 16GB Purple Nano 4g */
     { "5BB", "B911" }, /* 16GB Orange Nano 4g */
+    { "5BC", "B913" }, /* 16GB Green Nano 4g */
+    { "5BD", "B915" }, /* 16GB Yellow Nano 4g */
     { "5BE", "B917" }, /* 16GB Red Nano 4g */
     { "5BF", "B918" }, /* 16GB Black Nano 4g */
     { NULL ,  NULL  }
