@@ -1,3 +1,7 @@
+2008-12-26  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* po/es.po: Update Spanish translation (Alejandro Lamas Daviña)
+
 2008-12-22  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: I didn't mean to commit that hunk

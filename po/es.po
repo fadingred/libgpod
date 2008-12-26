@@ -1,5 +1,5 @@
 # translation of libgpod.es.po to spanish
-# Alejandro Lamas Daviña <alejandro.lamas@ific.uv.es>, 2006, 2007.
+# Alejandro Lamas Daviña <alejandro.lamas@ific.uv.es>, 2006, 2007, 2008.
 # This file is distributed under the same license as the libgpod package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
 msgid ""
@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: libgpod\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-07 20:48-0500\n"
-"PO-Revision-Date: 2007-06-13 21:42+0200\n"
+"PO-Revision-Date: 2008-12-26 14:57+0100\n"
 "Last-Translator: Alejandro Lamas Daviña <alejandro.lamas@ific.uv.es>\n"
 "Language-Team: spanish <es_ES>\n"
 "MIME-Version: 1.0\n"
@@ -17,9 +17,9 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 
 #: ../src/db-artwork-parser.c:156
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected mhod string type: %d\n"
-msgstr "Tipo de cadena mhod3 no esperado: %d\n"
+msgstr "Tipo de cadena mhod no esperado: %d\n"
 
 #: ../src/db-artwork-parser.c:476
 #, c-format
@@ -41,17 +41,14 @@ msgstr ""
 "= %d)\n"
 
 #: ../src/db-artwork-parser.c:566
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find artwork entry (mhii id: %u) for track (dbid: %s).\n"
-msgstr ""
-"No se ha podido encontrar la pista correspondiente (dbid: %s) a la "
-"carátula.\n"
+msgstr "No se ha podido encontrar la carátula (mhii id: %u) correspondiente a la pista (dbid: %s) .\n"
 
 #: ../src/db-image-parser.c:91
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected image type in mhni: %d, offset: %d\n"
-msgstr ""
-"Tipo de imágen en mhni no esperado: tamaño: %ux%u (%d), desplazamiento: %d\n"
+msgstr "Tipo de imagen inesperado en mhni: %d, desplazamiento: %d\n"
 
 #: ../src/itdb_artwork.c:163
 #, c-format
@@ -70,13 +67,11 @@ msgid "Could not find on iPod: '%s'\n"
 msgstr "Fichero no encontrado en el iPod: '%s'\n"
 
 #: ../src/itdb_artwork.c:828
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unable to retrieve thumbnail (appears to be on iPod, but no image info "
 "available): filename: '%s'\n"
-msgstr ""
-"Imposible cargar el thumbnail (parece estar en el iPod, pero no hay "
-"información disponible de la imagen): tipo: %d, nombre de fichero: '%s'\n"
+msgstr "Imposible cargar la imagen de muestra (parece estar en el iPod, pero no hay información disponible de la imagen): nombre de fichero: '%s'\n"
 
 #: ../src/itdb_device.c:256
 msgid "Invalid"
@@ -167,173 +162,148 @@ msgid "Nano (Pink)"
 msgstr "Nano (Rosa)"
 
 #: ../src/itdb_device.c:278
-#, fuzzy
 msgid "Nano (Red)"
-msgstr "Nano (Azul)"
+msgstr "Nano (Rojo)"
 
 #: ../src/itdb_device.c:279
-#, fuzzy
 msgid "Nano (Yellow)"
-msgstr "Nano (Azul)"
+msgstr "Nano (Amarillo)"
 
 #: ../src/itdb_device.c:280
-#, fuzzy
 msgid "Nano (Purple)"
-msgstr "Nano (Azul)"
+msgstr "Nano (Púrpura)"
 
 #: ../src/itdb_device.c:281
-#, fuzzy
 msgid "Nano (Orange)"
-msgstr "Nano (Verde)"
+msgstr "Nano (Naranja)"
 
 #: ../src/itdb_device.c:282
-#, fuzzy
 msgid "iPhone (1)"
-msgstr "Móvil (1)"
+msgstr "iPhone (1)"
 
 #: ../src/itdb_device.c:283
-#, fuzzy
 msgid "Shuffle (Silver)"
-msgstr "Mini (Plata)"
+msgstr "Shuffle (Plata)"
 
 #: ../src/itdb_device.c:284
-#, fuzzy
 msgid "Shuffle (Pink)"
-msgstr "Shuffle"
+msgstr "Shuffle (Rosa)"
 
 #: ../src/itdb_device.c:285
-#, fuzzy
 msgid "Shuffle (Blue)"
-msgstr "Shuffle"
+msgstr "Shuffle (Azul)"
 
 #: ../src/itdb_device.c:286
-#, fuzzy
 msgid "Shuffle (Green)"
-msgstr "Shuffle"
+msgstr "Shuffle (Verde)"
 
 #: ../src/itdb_device.c:287
-#, fuzzy
 msgid "Shuffle (Orange)"
-msgstr "Shuffle"
+msgstr "Shuffle (Naranja)"
 
 #: ../src/itdb_device.c:288
-#, fuzzy
 msgid "Shuffle (Purple)"
-msgstr "Shuffle"
+msgstr "Shuffle (Púrpura)"
 
 #: ../src/itdb_device.c:289
-#, fuzzy
 msgid "Shuffle (Red)"
-msgstr "Shuffle"
+msgstr "Shuffle (Rojo)"
 
 #: ../src/itdb_device.c:290
-#, fuzzy
 msgid "Classic (Silver)"
-msgstr "Mini (Plata)"
+msgstr "Clásico (Plata)"
 
 #: ../src/itdb_device.c:291
-#, fuzzy
 msgid "Classic (Black)"
-msgstr "Nano (Negro)"
+msgstr "Clásico (Negro)"
 
 #: ../src/itdb_device.c:292
-#, fuzzy
 msgid "Touch (Black)"
-msgstr "Nano (Negro)"
+msgstr "Touch (Negro)"
 
 #: ../src/itdb_device.c:299
 msgid "Regular (1st Gen.)"
-msgstr ""
+msgstr "Normal (1ª generación)"
 
 #: ../src/itdb_device.c:300
 msgid "Regular (2nd Gen.)"
-msgstr ""
+msgstr "Normal (2ª generación)"
 
 #: ../src/itdb_device.c:301
 msgid "Regular (3rd Gen.)"
-msgstr ""
+msgstr "Normal (3ª generación)"
 
 #: ../src/itdb_device.c:302
 msgid "Regular (4th Gen.)"
-msgstr ""
+msgstr "Normal (4ª generación)"
 
 #: ../src/itdb_device.c:303
 msgid "Photo"
-msgstr ""
+msgstr "Foto"
 
 #: ../src/itdb_device.c:304
-#, fuzzy
 msgid "Mobile Phones"
-msgstr "Teléfono móvil"
+msgstr "Teléfonos móviles"
 
 #: ../src/itdb_device.c:305
-#, fuzzy
 msgid "Mini (1st Gen.)"
-msgstr "Mini (Verde)"
+msgstr "Mini (1ª generación)"
 
 #: ../src/itdb_device.c:306
-#, fuzzy
 msgid "Mini (2nd Gen.)"
-msgstr "Mini (Verde)"
+msgstr "Mini (2ª generación)"
 
 #: ../src/itdb_device.c:307
 msgid "Shuffle (1st Gen.)"
-msgstr ""
+msgstr "Shuffle (1ª generación)"
 
 #: ../src/itdb_device.c:308
 msgid "Shuffle (2nd Gen.)"
-msgstr ""
+msgstr "Suffle (2ª generación)"
 
 #: ../src/itdb_device.c:309
 msgid "Shuffle (3rd Gen.)"
-msgstr ""
+msgstr "Suffle (3ª generación)"
 
 #: ../src/itdb_device.c:310
-#, fuzzy
 msgid "Nano (1st Gen.)"
-msgstr "Nano (Verde)"
+msgstr "Nano (1ª generación)"
 
 #: ../src/itdb_device.c:311
-#, fuzzy
 msgid "Nano (2nd Gen.)"
-msgstr "Nano (Verde)"
+msgstr "Nano (2ª generación)"
 
 #: ../src/itdb_device.c:312
-#, fuzzy
 msgid "Nano Video (3rd Gen.)"
-msgstr "Nano (Verde)"
+msgstr "Nano Video (3ª generación)"
 
 #: ../src/itdb_device.c:313
-#, fuzzy
 msgid "Nano Video (4th Gen.)"
-msgstr "Nano (Verde)"
+msgstr "Nano Video (4ª generación)"
 
 #: ../src/itdb_device.c:314
-#, fuzzy
 msgid "Video (1st Gen.)"
-msgstr "Video (Blanco)"
+msgstr "Video (1ª generación)"
 
 #: ../src/itdb_device.c:315
-#, fuzzy
 msgid "Video (2nd Gen.)"
-msgstr "Video (Blanco)"
+msgstr "Video (2ª generación)"
 
 #: ../src/itdb_device.c:316 ../src/itdb_device.c:317
 msgid "Classic"
-msgstr ""
+msgstr "Clásico"
 
 #: ../src/itdb_device.c:318
 msgid "Touch"
-msgstr ""
+msgstr "Touch"
 
 #: ../src/itdb_device.c:319
-#, fuzzy
 msgid "iPhone"
-msgstr "Teléfono móvil"
+msgstr "iPhone"
 
 #: ../src/itdb_device.c:320 ../src/itdb_device.c:321
 msgid "Unused"
-msgstr ""
+msgstr "Sin usar"
 
 #: ../src/itdb_device.c:874
 #, c-format
@@ -379,8 +349,7 @@ msgstr ""
 #: ../src/itdb_itunesdb.c:1338
 #, c-format
 msgid "iTunesDB corrupt: no MHOD at offset %ld in file '%s'."
-msgstr ""
-"iTunesDB corrupta: no hay MHOD en el desplazamiento %ld del fichero '%s'."
+msgstr "iTunesDB corrupta: no hay MHOD en el desplazamiento %ld del fichero '%s'."
 
 #: ../src/itdb_itunesdb.c:1524
 #, c-format
@@ -399,8 +368,7 @@ msgstr ""
 #: ../src/itdb_itunesdb.c:1598
 #, c-format
 msgid "iTunesDB corrupt: no SLst at offset %ld in file '%s'."
-msgstr ""
-"iTunesDB corrupta: no hay SLst en el desplazamiento %ld del fichero '%s'."
+msgstr "iTunesDB corrupta: no hay SLst en el desplazamiento %ld del fichero '%s'."
 
 #: ../src/itdb_itunesdb.c:1611
 #, c-format
@@ -419,8 +387,7 @@ msgstr "iTunesDB corrupta: tamaño 0 para la zona %ld en el fichero '%s'."
 
 #: ../src/itdb_itunesdb.c:1704
 #, c-format
-msgid ""
-"iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
+msgid "iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
 msgstr ""
 "iTunesDB corrupta: no se ha encontrado la sección '%s' en la sección '%s' "
 "empezando en %ld."
@@ -456,8 +423,7 @@ msgstr "iTunesDB '%s' corrupta: se esperaba mhsd en %ld."
 #: ../src/itdb_itunesdb.c:1958
 #, c-format
 msgid "Number of MHODs in mhip at %ld inconsistent in file '%s'."
-msgstr ""
-"El número de MHODs en mhip en %ld no es consistente en el fichero '%s'."
+msgstr "El número de MHODs en mhip en %ld no es consistente en el fichero '%s'."
 
 #: ../src/itdb_itunesdb.c:1976
 #, c-format
@@ -467,8 +433,7 @@ msgstr "Itdb_Track ID '%d' no encontrada.\n"
 #: ../src/itdb_itunesdb.c:2146
 #, c-format
 msgid "Number of MHODs in mhyp at %ld inconsistent in file '%s'."
-msgstr ""
-"El número de MHODs en mhyp en %ld no es consistente en el fichero '%s'."
+msgstr "El número de MHODs en mhyp en %ld no es consistente en el fichero '%s'."
 
 #: ../src/itdb_itunesdb.c:2156
 msgid "Master-PL"
@@ -619,10 +584,8 @@ msgstr "No se ha podido acceder al fichero '%s' (%s)."
 
 #: ../src/itdb_itunesdb.c:6004
 #, c-format
-msgid ""
-"Destination file '%s' does not appear to be on the iPod mounted at '%s'."
-msgstr ""
-"El destino del fichero '%s' parece no existir en el iPod montado en '%s'"
+msgid "Destination file '%s' does not appear to be on the iPod mounted at '%s'."
+msgstr "El destino del fichero '%s' parece no existir en el iPod montado en '%s'"
 
 #: ../src/itdb_itunesdb.c:6212
 #, c-format
@@ -661,7 +624,7 @@ msgstr "Problema al crear el directorio iPod o el fichero: '%s'."
 #: ../src/itdb_photoalbum.c:111
 #, c-format
 msgid "Photos directory not found: '%s' (or similar)."
-msgstr "Directorio 'Photos' no encontrado: '%s' (o similar)."
+msgstr "Directorio 'de fotos' no encontrado: '%s' (o similar)."
 
 #: ../src/itdb_photoalbum.c:266 ../src/itdb_photoalbum.c:460
 msgid "Photo Library"
@@ -670,8 +633,7 @@ msgstr "Biblioteca de fotos"
 #: ../src/itdb_photoalbum.c:386
 #, c-format
 msgid "You need to specify the iPod model used before photos can be added."
-msgstr ""
-"Es necesario especificar el modelo del iPod antes de poder añadir fotos."
+msgstr "Es necesario especificar el modelo del iPod antes de poder añadir fotos."
 
 #: ../src/itdb_photoalbum.c:407
 #, c-format
@@ -698,10 +660,8 @@ msgstr ""
 
 #: ../src/itdb_photoalbum.c:468
 #, c-format
-msgid ""
-"Library compiled without gdk-pixbuf support. Picture support is disabled."
-msgstr ""
-"Biblioteca compilada sin soporte gdk-pixbuf. Soporte de imágenes desactivado."
+msgid "Library compiled without gdk-pixbuf support. Picture support is disabled."
+msgstr "Biblioteca compilada sin soporte gdk-pixbuf. Soporte de imágenes desactivado."
 
 #. New action!
 #: ../src/itdb_playlist.c:78
@@ -828,8 +788,7 @@ msgstr ""
 
 #: ../tests/test-photos.c:242
 #, c-format
-msgid ""
-"Error reading iPod photo database, will attempt to create a new database\n"
+msgid "Error reading iPod photo database, will attempt to create a new database\n"
 msgstr ""
 "Error al leer la base de datos de fotos del iPod, se intentará crear una "
 "nueva base de datos\n"
@@ -854,7 +813,7 @@ msgstr ""
 #: ../tests/test-photos.c:357
 #, c-format
 msgid "Warning: could not find photo with ID <%d>. Skipping...\n"
-msgstr "Aviso: no se puede encontrar la foto con ID <%d>. Ignorando...\n"
+msgstr "Aviso: no se ha podido encontrar la foto con ID <%d>. Ignorando...\n"
 
 #: ../tests/test-photos.c:403
 #, c-format
@@ -864,58 +823,35 @@ msgstr "Comando desconocido '%s'\n"
 #: ../tests/test-init-ipod.c:66
 #, c-format
 msgid "Error initialising iPod: %s\n"
-msgstr ""
+msgstr "Error al inicializar iPod: %s\n"
 
 #: ../tests/test-init-ipod.c:73
 #, c-format
 msgid "Error initialising iPod, unknown error\n"
-msgstr ""
+msgstr "Error al inicializar iPod, error desconocido\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:39
 #, c-format
 msgid "usage: %s <device> <mountpoint>\n"
-msgstr ""
+msgstr "uso: %s <dispositivo> <punto_de_montaje>\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:45
 #, c-format
 msgid "Couldn't read xml sysinfo from %s\n"
-msgstr ""
+msgstr "No se ha podido leer sysinfo xml de %s\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:56
 #, c-format
 msgid "Couldn't resolve Device directory path on %s"
-msgstr ""
+msgstr "No se ha podido resolver la ruta del directorio de dispositivo en %s"
 
 #: ../tools/read-sysinfoextended-sgutils.c:64
 #, c-format
 msgid "Couldn't resolve SysInfoExtended path on %s"
-msgstr ""
+msgstr "No se ha podido resolver la ruta SysInfoExtended en%s"
 
 #: ../tools/read-sysinfoextended-sgutils.c:74
 #, c-format
 msgid "Couldn't write SysInfoExtended to %s"
-msgstr ""
+msgstr "No se ha podido escribir SysInfoExtended a %s"
 
-#~ msgid "First Generation"
-#~ msgstr "Primera generación"
-
-#~ msgid "Second Generation"
-#~ msgstr "Segunda generación"
-
-#~ msgid "Third Generation"
-#~ msgstr "Tercera generación"
-
-#~ msgid "Fourth Generation"
-#~ msgstr "Cuarta generación"
-
-#~ msgid "Fifth Generation"
-#~ msgstr "Quinta generación"
-
-#~ msgid "Sixth Generation"
-#~ msgstr "Sexta generación"
-
-#~ msgid "Opening of '%s' for writing failed (%s)."
-#~ msgstr "No se ha podido abrir '%s' para su escritura (%s)."
-
-#~ msgid "Writing to '%s' failed (%s)."
-#~ msgstr "No se ha podido escribir '%s' (%s)."
