@@ -1,3 +1,9 @@
+2008-12-28  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/gtkpod.py:
+	Python: fix sha DeprecationWarning with python-2.6 (thanks to
+	Alex Ghitza)
+
 2008-12-26  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* po/es.po: Update Spanish translation (Alejandro Lamas Daviña)

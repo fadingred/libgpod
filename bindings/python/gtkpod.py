@@ -1,8 +1,16 @@
 """Read and write Gtkpod extended info files."""
 
-import sha
 import os
 import types
+
+# The hashlib module is only available in python >= 2.5,
+# while the sha module is deprecated in 2.6.
+try:
+    import hashlib
+    sha1 = hashlib.sha1
+except ImportError:
+    import sha
+    sha1 = sha.sha
 
 # This file is originally stolen from pypod-0.5.0
 # http://superduper.net/index.py?page=pypod
@@ -21,7 +29,7 @@ def sha1_hash(filename):
     import struct
     # only hash the first 16k
     hash_len = 4*4096
-    hash = sha.sha()
+    hash = sha1()
     size = os.path.getsize(filename)
     hash.update(struct.pack("<L", size))
     hash.update(open(filename).read(hash_len))
