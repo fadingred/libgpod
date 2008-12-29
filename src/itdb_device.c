@@ -643,16 +643,18 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "1P1", "B480" }, /* 4GB Silver Nano 4g */
     { "37K", "B657" }, /* 4GB Purple Nano 4g */
     { "37L", "B660" }, /* 4GB Orange Nano 4g */
-    { "3QS", "B732" }, /* 8GB Blue Nano 4g */
     { "2ME", "B598" }, /* 8GB Silver Nano 4g */
+    { "3QS", "B732" }, /* 8GB Blue Nano 4g */
     { "3QT", "B735" }, /* 8GB Pink Nano 4g */
-    { "3QW", "B742" }, /* 8GB Orange Nano 4g */
-    { "3QY", "B748" }, /* 8GB Yellow Nano 4g */
-    { "3QX", "B745" }, /* 8GB Green Nano 4g */
     { "3QU", "B739" }, /* 8GB Purple Nano 4g */
+    { "3QW", "B742" }, /* 8GB Orange Nano 4g */
+    { "3QX", "B745" }, /* 8GB Green Nano 4g */
+    { "3QY", "B748" }, /* 8GB Yellow Nano 4g */
     { "3RO", "B754" }, /* 8GB Black Nano 4g */
     { "3QZ", "B751" }, /* 8GB Red Nano 4g */
+    { "5B7", "B903" }, /* 16GB Silver Nano 4g */
     { "5B8", "B905" }, /* 16GB Blue Nano 4g */
+    { "5B9", "B907" }, /* 16GB Pink Nano 4g */
     { "5BA", "B909" }, /* 16GB Purple Nano 4g */
     { "5BB", "B911" }, /* 16GB Orange Nano 4g */
     { "5BC", "B913" }, /* 16GB Green Nano 4g */

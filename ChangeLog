@@ -1,3 +1,8 @@
+2008-12-29  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_device.c: add serial number for silver and pink
+	16GB nano 4g, the last missing ones :)
+
 2008-12-28  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* bindings/python/gtkpod.py:
