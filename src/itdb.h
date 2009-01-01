@@ -1608,6 +1608,7 @@ struct _Itdb_Track
   guint32 unk252;
   guint16 gapless_track_flag;
   guint16 gapless_album_flag;
+  guint16 album_id;
 
   /* This is for Cover Art support */
   struct _Itdb_Artwork *artwork;

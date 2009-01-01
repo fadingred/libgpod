@@ -1,3 +1,9 @@
+2009-01-01  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb.h: add album_id field to Itdb_Track. It's unused yet but
+	will be used later and adding it now will avoid ABI breakage later
+	;)
+
 2008-12-29  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_device.c: add serial number for silver and pink
