@@ -353,14 +353,13 @@ static const Itdb_ArtworkFormat ipod_nano_photo_info[] = {
     {  -1,  -1,  -1, -1}
 };
 
-
 static const Itdb_ArtworkFormat ipod_nano4g_cover_art_info[] = {
     {1055, 128, 128, THUMB_FORMAT_RGB565_LE},
-    {1068, 128, 128, THUMB_FORMAT_RGB565_BE},
-    {1068, 240, 240, THUMB_FORMAT_RGB565_BE},
+    {1068, 128, 128, THUMB_FORMAT_RGB565_LE},
+    {1071, 240, 240, THUMB_FORMAT_RGB565_LE},
     {1074,  50,  50, THUMB_FORMAT_RGB565_LE},
     {1078,  80,  80, THUMB_FORMAT_RGB565_LE},
-    {1084, 240, 240, THUMB_FORMAT_RGB565_BE},
+    {1084, 240, 240, THUMB_FORMAT_RGB565_LE},
     {  -1,  -1,  -1, -1}
 };
 
@@ -368,6 +367,10 @@ static const Itdb_ArtworkFormat ipod_nano4g_photo_info[] = {
     {1024, 320, 240, THUMB_FORMAT_RGB565_LE},
     {1066,  64,  64, THUMB_FORMAT_RGB565_LE},
     {1079,  80,  80, THUMB_FORMAT_RGB565_LE},
+    /*
+     * To be implemented, THUMB_FORMAT_JPEG 
+    {1081, 640, 480, THUMB_FORMAT_JPEG},
+    */
     {1083, 240, 320, THUMB_FORMAT_RGB565_LE},
     {  -1,  -1,  -1, -1}
 };

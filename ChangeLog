@@ -1,4 +1,9 @@
 2009-01-01  Christophe Fergeau  <teuf@gnome.org>
+	
+	* src/itdb_device.c: fix static artwork formats for the nano4g, C&P
+	is really a bad thing ;)
+
+2009-01-01  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb.h: add album_id field to Itdb_Track. It's unused yet but
 	will be used later and adding it now will avoid ABI breakage later
