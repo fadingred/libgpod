@@ -1,5 +1,10 @@
 2009-01-02  Christophe Fergeau  <teuf@gnome.org>
 
+	* src/Makefile.am: we need to link with -lm since ithumb-writer.c
+	uses round and ceil
+
+2009-01-02  Christophe Fergeau  <teuf@gnome.org>
+
 	* NEWS: update NEWS file, I probably forgot some things, feel free
 	to update it :)
 
