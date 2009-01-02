@@ -26,12 +26,6 @@ timestamps are in UTC.
 
 Thanks to all of our translators :)
 
-* add mapping from iPod serial numbers to iPod models
-
-The iPod serial number can be obtained programmatically, and its last 3 digits
-are characteristic of an iPod (type, generation, color, capacity). libgpod
-can now find out an iPod model using this serial number.
-
 * much more complete API doc
 
 Most (all ?) of the public API of libgpod is now documented with gtkdoc. Thanks
@@ -42,6 +36,19 @@ goes to Todd Zullinger.
 The API for artwork for developers using libgpod should be more
 straightforward, if things are missing, don't hesitate to get in touch
 with us ;)
+
+* extensive plist parser
+
+In libgpod 0.6.0, libgpod got a very basic parser for the SysInfoExtended file
+(which is a XML plist description). This parser was rewritten for this release
+to parse the whole file. This parser depends on libxml2 but its compilation
+will be disabled if libxml2 and its development headers can't be found.
+
+* add mapping from iPod serial numbers to iPod models
+
+The iPod serial number can be obtained programmatically, and its last 3 digits
+are characteristic of an iPod (type, generation, color, capacity). libgpod
+can now find out an iPod model using this serial number.
 
 * portability improvements to windows and macosx
 

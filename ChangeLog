@@ -1,5 +1,10 @@
 2009-01-02  Christophe Fergeau  <teuf@gnome.org>
 
+	* NEWS: more news, hope the packagers will notice the new
+	libxml2-devel dependency...
+
+2009-01-02  Christophe Fergeau  <teuf@gnome.org>
+
 	* src/Makefile.am: we need to link with -lm since ithumb-writer.c
 	uses round and ceil
 
