@@ -1,3 +1,64 @@
+Overview of changes in libgpod 0.7.0
+====================================
+
+* support for iPod Nano 4th generation
+
+This includes support for cover art.
+Please note that this release DO NOT support iPhones and iPod Touch
+with firmware 2.x
+
+* support for "sparse artwork" writing
+
+This lets us write more compact artwork files to the ipod, which in turn makes
+the UI more responsive (and saves disk space on the ipod).
+
+* jump table support
+
+These are the big letter that show up in the album/artist list when someone
+quickly scroll through them. Thanks a lot to Ian Stewart for implementing it.
+
+* improved timezone handling
+
+This should now work up to 5G iPods, for newer iPods, libgpod will assume 
+timestamps are in UTC.
+
+* translation updates
+
+Thanks to all of our translators :)
+
+* add mapping from iPod serial numbers to iPod models
+
+The iPod serial number can be obtained programmatically, and its last 3 digits
+are characteristic of an ipod (type, generation, color, capacity). libgpod
+can now finds out an iPod model using this serial number.
+
+* much more complete API doc
+
+Most (all ?) of the public API of libgpod is now documented with gtkdoc. Thanks
+goes to Todd Zullinger.
+
+* simplification of the cover art handling API
+
+The API for artwork for developers using libgpod should be more
+straightforward, if things are missing, don't hesitate to get in touch
+with us ;)
+
+* portability improvements to windows and macosx
+
+This is probably not perfect yet, but the goal is to improve it as much as
+possible so don't hesitate to send bug reports if some things are still not
+working. Thanks to the songbird project and Eric Lassauge
+
+* reworked handling of artwork formats
+
+libgpod can now automatically uses the artwork formats described in
+SysInfoExtended even if the ipod model is unknown, this should make it possible
+for libgpod to support artwork on newly released iPod models without the need
+to upgrade.
+
+* bug fixes and code cleanup all over the place
+
+
 Overview of changes in libgpod 0.6.0
 ====================================
 

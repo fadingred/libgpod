@@ -1,3 +1,8 @@
+2009-01-02  Christophe Fergeau  <teuf@gnome.org>
+
+	* NEWS: update NEWS file, I probably forgot some things, feel free
+	to update it :)
+
 2009-01-01  Christophe Fergeau  <teuf@gnome.org>
 	
 	* src/itdb_device.c: fix static artwork formats for the nano4g, C&P
