@@ -17,6 +17,11 @@ the UI more responsive (and saves disk space on the iPod).
 These are the big letters that show up in the album/artist list when someone
 quickly scrolls through them. Thanks a lot to Ian Stewart for implementing it.
 
+* chapter data support
+
+Chapter data allows large files (movies, audio books, podcasts) to be divided
+into smaller sections.  Thanks to Michael Tiffany for this feature.
+
 * improved timezone handling
 
 This should now work up to 5G iPods, for newer iPods, libgpod will assume 
@@ -28,8 +33,7 @@ Thanks to all of our translators :)
 
 * much more complete API doc
 
-Most (all ?) of the public API of libgpod is now documented with gtkdoc. Thanks
-goes to Todd Zullinger.
+All of the public API is now documented with gtk-doc.
 
 * simplification of the cover art handling API
 
@@ -54,7 +58,7 @@ can now find out an iPod model using this serial number.
 
 This is probably not perfect yet, but the goal is to improve it as much as
 possible so don't hesitate to send bug reports if some things are still not
-working. Thanks to the songbird project and Eric Lassauge
+working. Thanks to the songbird project and Éric Lassauge.
 
 * reworked handling of artwork formats
 
@@ -62,6 +66,11 @@ libgpod can now automatically use the artwork formats described in
 SysInfoExtended even if the iPod model is unknown, this should make it possible
 for libgpod to support artwork on newly released iPod models without the need
 to upgrade.
+
+* python bindings are more consistent with other python container objects
+
+This enables testing whether a key exists in an object (e.g. "'title' in track")
+as well as iterating over a Track or Photo object's keys, values, or items.
 
 * bug fixes and code cleanup all over the place
 
