@@ -1461,6 +1461,8 @@ typedef enum
  * @gapless_album_flag:         If set to 1, this track does not use
  *                              crossfading in iTunes.  (Added in dbversion
  *                              0x13)
+ * @album_id:                   The Album ID from the album list (currently
+ *                              unused by libgpod)
  * @artwork:                    An #Itdb_Artwork for cover art
  * @mhii_link:                  This is set to the id of the corresponding
  *                              ArtworkDB mhii, used for sparse artwork

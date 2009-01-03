@@ -126,6 +126,7 @@ information about an iPod track.
 @unk252: 
 @gapless_track_flag: 
 @gapless_album_flag: 
+@album_id: 
 @artwork: 
 @mhii_link: 
 @reserved_int1: 
