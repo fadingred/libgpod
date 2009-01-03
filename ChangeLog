@@ -1,5 +1,7 @@
 2009-01-02  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
+	* configure.ac: Bump version for 0.7.0rc2
+
 	* docs/reference/tmpl/track.sgml, src/itdb.h:
 	Document Itdb_Track->album_id
 
