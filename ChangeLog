@@ -1,3 +1,8 @@
+2009-01-02  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* bindings/python/ipod.py:
+	Make Track.get_coverart() return None if artwork is absent
+
 2009-01-02  Christophe Fergeau  <teuf@gnome.org>
 
 	* NEWS: more news, hope the packagers will notice the new

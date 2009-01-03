@@ -403,8 +403,10 @@ class Track:
                                                        pixbuf)
 
     def get_coverart(self):
-        return Photo(proxied_photo=self._track.artwork,
-                     ownerdb=self._track.itdb)
+        if gpod.itdb_track_has_thumbnails(self._track):
+            return Photo(proxied_photo=self._track.artwork,
+                         ownerdb=self._track.itdb)
+        return None
 
     def copy_to_ipod(self):
         """Copy the track to the iPod."""
