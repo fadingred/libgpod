@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gtkpod 0.52\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-07 20:48-0500\n"
-"PO-Revision-Date: 2007-01-15 23:46+0900\n"
-"Last-Translator: Jörg Schuler <jcsjcs at users.sourceforge.net>\n"
+"PO-Revision-Date: 2009-01-05 10:22+0100\n"
+"Last-Translator: Jonas Cleve <jonas_cleve@yahoo.de>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,9 +17,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: ../src/db-artwork-parser.c:156
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected mhod string type: %d\n"
-msgstr "Unerwarteter mhod3 Stringtyp: %d\n"
+msgstr "Unerwarteter mhod Stringtyp: %d\n"
 
 #: ../src/db-artwork-parser.c:476
 #, c-format
@@ -29,8 +29,7 @@ msgstr "Unerwarteter mhsd-Index: %d\n"
 #: ../src/db-artwork-parser.c:522
 #, c-format
 msgid "Could not find corresponding track (dbid: %s) for artwork entry.\n"
-msgstr ""
-"Konnte zugehöriges Musikstück (dbid: %s) für Artworkeintrag nicht finden.\n"
+msgstr "Konnte zugehöriges Musikstück (dbid: %s) für Artworkeintrag nicht finden.\n"
 
 #: ../src/db-artwork-parser.c:530
 #, c-format
@@ -38,22 +37,22 @@ msgid "iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)\n"
 msgstr "Artwork-Größen in iTunesDB und ArtworkDB inkonsistent (%d+%d != %d)\n"
 
 #: ../src/db-artwork-parser.c:566
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find artwork entry (mhii id: %u) for track (dbid: %s).\n"
-msgstr ""
-"Konnte zugehöriges Musikstück (dbid: %s) für Artworkeintrag nicht finden.\n"
+msgstr "Konnte Bildeintrag (mhii id: %u) für Track (dbid: %s) nicht finden.\n"
 
 #: ../src/db-image-parser.c:91
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected image type in mhni: %d, offset: %d\n"
-msgstr "Unerwarter Bildtyp in mhni: Größe: %ux%u (%d), Offset: %d\n"
+msgstr "Unerwarter Bildtyp in mhni: %d, Offset: %d\n"
 
 #: ../src/itdb_artwork.c:163
 #, c-format
 msgid "Could not access file '%s'."
 msgstr "Datei nicht auf Datei zugreifen: '%s'."
 
-#: ../src/itdb_artwork.c:181 ../src/itdb_artwork.c:241
+#: ../src/itdb_artwork.c:181
+#: ../src/itdb_artwork.c:241
 #: ../src/itdb_artwork.c:298
 #, c-format
 msgid "Artwork support not compiled into libgpod."
@@ -65,19 +64,16 @@ msgid "Could not find on iPod: '%s'\n"
 msgstr "Nicht auf dem iPod gefunden: '%s'\n"
 
 #: ../src/itdb_artwork.c:828
-#, fuzzy, c-format
-msgid ""
-"Unable to retrieve thumbnail (appears to be on iPod, but no image info "
-"available): filename: '%s'\n"
-msgstr ""
-"Thumbnail konnte nicht geladen werden. Der Thumbnail scheint auf dem iPod zu "
-"sein, aber die Bilddaten sind nicht verfügbar): Typ: %d, Dateiname: '%s'\n"
+#, c-format
+msgid "Unable to retrieve thumbnail (appears to be on iPod, but no image info available): filename: '%s'\n"
+msgstr "Thumbnail konnte nicht geladen werden (Thumbnail scheint auf dem iPod zu sein, aber die Bilddaten sind nicht verfügbar): Dateiname: '%s'\n"
 
 #: ../src/itdb_device.c:256
 msgid "Invalid"
 msgstr "Ungültig"
 
-#: ../src/itdb_device.c:257 ../src/itdb_device.c:298
+#: ../src/itdb_device.c:257
+#: ../src/itdb_device.c:298
 msgid "Unknown"
 msgstr "Unbekannt"
 
@@ -164,175 +160,152 @@ msgstr "Nano (pink)"
 
 # Nano (blau)
 #: ../src/itdb_device.c:278
-#, fuzzy
 msgid "Nano (Red)"
-msgstr "Nano (blau)"
+msgstr "Nano (rot)"
 
 # Nano (blau)
 #: ../src/itdb_device.c:279
-#, fuzzy
 msgid "Nano (Yellow)"
-msgstr "Nano (blau)"
+msgstr "Nano (geld)"
 
 # Nano (blau)
 #: ../src/itdb_device.c:280
-#, fuzzy
 msgid "Nano (Purple)"
-msgstr "Nano (blau)"
+msgstr "Nano (lila)"
 
 #: ../src/itdb_device.c:281
-#, fuzzy
 msgid "Nano (Orange)"
-msgstr "Nano (grün)"
+msgstr "Nano (orange)"
 
 #: ../src/itdb_device.c:282
-#, fuzzy
 msgid "iPhone (1)"
-msgstr "Mobiltelefon (1)"
+msgstr "iPhone (1)"
 
 #: ../src/itdb_device.c:283
-#, fuzzy
 msgid "Shuffle (Silver)"
-msgstr "Mini (silber)"
+msgstr "Shuffle (silber)"
 
 #: ../src/itdb_device.c:284
-#, fuzzy
 msgid "Shuffle (Pink)"
-msgstr "Shuffle"
+msgstr "Shuffle (pink)"
 
 #: ../src/itdb_device.c:285
-#, fuzzy
 msgid "Shuffle (Blue)"
-msgstr "Shuffle"
+msgstr "Shuffle (blau)"
 
 #: ../src/itdb_device.c:286
-#, fuzzy
 msgid "Shuffle (Green)"
-msgstr "Shuffle"
+msgstr "Shuffle (grün)"
 
 #: ../src/itdb_device.c:287
-#, fuzzy
 msgid "Shuffle (Orange)"
-msgstr "Shuffle"
+msgstr "Shuffle (orange)"
 
 #: ../src/itdb_device.c:288
-#, fuzzy
 msgid "Shuffle (Purple)"
-msgstr "Shuffle"
+msgstr "Shuffle (lila)"
 
 #: ../src/itdb_device.c:289
-#, fuzzy
 msgid "Shuffle (Red)"
-msgstr "Shuffle"
+msgstr "Shuffle (rot)"
 
 #: ../src/itdb_device.c:290
-#, fuzzy
 msgid "Classic (Silver)"
-msgstr "Mini (silber)"
+msgstr "Classic (silber)"
 
 #: ../src/itdb_device.c:291
-#, fuzzy
 msgid "Classic (Black)"
-msgstr "Nano (schwarz)"
+msgstr "Classic (schwarz)"
 
 #: ../src/itdb_device.c:292
-#, fuzzy
 msgid "Touch (Black)"
-msgstr "Nano (schwarz)"
+msgstr "Touch (schwarz)"
 
 #: ../src/itdb_device.c:299
 msgid "Regular (1st Gen.)"
-msgstr ""
+msgstr "Standard (1. Generation)"
 
 #: ../src/itdb_device.c:300
 msgid "Regular (2nd Gen.)"
-msgstr ""
+msgstr "Standard (2. Generation)"
 
 #: ../src/itdb_device.c:301
 msgid "Regular (3rd Gen.)"
-msgstr ""
+msgstr "Standard (3. Generation)"
 
 #: ../src/itdb_device.c:302
 msgid "Regular (4th Gen.)"
-msgstr ""
+msgstr "Standard (4. Generation)"
 
 #: ../src/itdb_device.c:303
 msgid "Photo"
-msgstr ""
+msgstr "Photo"
 
 #: ../src/itdb_device.c:304
-#, fuzzy
 msgid "Mobile Phones"
-msgstr "Mobiltelefon"
+msgstr "Mobiltelefone"
 
 #: ../src/itdb_device.c:305
-#, fuzzy
 msgid "Mini (1st Gen.)"
-msgstr "Mini (grün)"
+msgstr "Mini (1. Generation)"
 
 #: ../src/itdb_device.c:306
-#, fuzzy
 msgid "Mini (2nd Gen.)"
-msgstr "Mini (grün)"
+msgstr "Mini (2. Generation)"
 
 #: ../src/itdb_device.c:307
 msgid "Shuffle (1st Gen.)"
-msgstr ""
+msgstr "Shuffle (1. Generation)"
 
 #: ../src/itdb_device.c:308
 msgid "Shuffle (2nd Gen.)"
-msgstr ""
+msgstr "Shuffle (2. Generation)"
 
 #: ../src/itdb_device.c:309
 msgid "Shuffle (3rd Gen.)"
-msgstr ""
+msgstr "Shuffle (3. Generation)"
 
 #: ../src/itdb_device.c:310
-#, fuzzy
 msgid "Nano (1st Gen.)"
-msgstr "Nano (grün)"
+msgstr "Nano (1. Generation)"
 
 #: ../src/itdb_device.c:311
-#, fuzzy
 msgid "Nano (2nd Gen.)"
-msgstr "Nano (grün)"
+msgstr "Nano (2. Generation)"
 
 #: ../src/itdb_device.c:312
-#, fuzzy
 msgid "Nano Video (3rd Gen.)"
-msgstr "Nano (grün)"
+msgstr "Nano Vide (3. Generation)"
 
 #: ../src/itdb_device.c:313
-#, fuzzy
 msgid "Nano Video (4th Gen.)"
-msgstr "Nano (grün)"
+msgstr "Nano Video (4. Generation)"
 
 #: ../src/itdb_device.c:314
-#, fuzzy
 msgid "Video (1st Gen.)"
-msgstr "Video (weiß)"
+msgstr "Video (1. Generation)"
 
 #: ../src/itdb_device.c:315
-#, fuzzy
 msgid "Video (2nd Gen.)"
-msgstr "Video (weiß)"
+msgstr "Video (2. Generation)"
 
-#: ../src/itdb_device.c:316 ../src/itdb_device.c:317
+#: ../src/itdb_device.c:316
+#: ../src/itdb_device.c:317
 msgid "Classic"
-msgstr ""
+msgstr "Classic"
 
 #: ../src/itdb_device.c:318
 msgid "Touch"
-msgstr ""
+msgstr "Touch"
 
 #: ../src/itdb_device.c:319
-#, fuzzy
 msgid "iPhone"
-msgstr "Mobiltelefon"
+msgstr "iPhone"
 
-#: ../src/itdb_device.c:320 ../src/itdb_device.c:321
+#: ../src/itdb_device.c:320
+#: ../src/itdb_device.c:321
 msgid "Unused"
-msgstr ""
+msgstr "Nicht benutzt"
 
 #: ../src/itdb_device.c:874
 #, c-format
@@ -362,14 +335,12 @@ msgstr "Play Counts Datei ('%s'): Headerlänge kleiner als erwarted (%d<96)."
 #: ../src/itdb_itunesdb.c:944
 #, c-format
 msgid "Play Counts file ('%s'): entry length smaller than expected (%d<12)."
-msgstr ""
-"Play Counts Datei ('%s'): Länge der Einträge kleiner als erwartet (%d<12)."
+msgstr "Play Counts Datei ('%s'): Länge der Einträge kleiner als erwartet (%d<12)."
 
 #: ../src/itdb_itunesdb.c:1019
 #, c-format
 msgid "iTunesStats file ('%s'): entry length smaller than expected (%d<18)."
-msgstr ""
-"iTunesStats Datei ('%s'): Länge der Einträge kleiner als erwartet (%d<18)."
+msgstr "iTunesStats Datei ('%s'): Länge der Einträge kleiner als erwartet (%d<18)."
 
 #: ../src/itdb_itunesdb.c:1338
 #, c-format
@@ -377,20 +348,14 @@ msgid "iTunesDB corrupt: no MHOD at offset %ld in file '%s'."
 msgstr "iTunesDB beschädigt: kein MHOD bei Offset %ld in Datei '%s'."
 
 #: ../src/itdb_itunesdb.c:1524
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown smart rule action at %ld: %x. Trying to continue.\n"
-msgstr ""
-"Es wurde nicht wie erwarted ein 'SLst'-Hunk gefunden. Es wird trotzdem "
-"versucht, weiterzumachen.\n"
+msgstr "Unbekannte Aktion für Smart Playlist bei %ld: %x. Es wird trotzdem versucht, weiterzumachen.\n"
 
 #: ../src/itdb_itunesdb.c:1555
 #, c-format
-msgid ""
-"Length of smart playlist rule field (%d) not as expected. Trying to continue "
-"anyhow.\n"
-msgstr ""
-"Die Länge einer Regel (%d) einer intelligenten Wiedergabeliste weicht von "
-"der erwarteten Länge ab. Es wird versucht fortzufahren.\n"
+msgid "Length of smart playlist rule field (%d) not as expected. Trying to continue anyhow.\n"
+msgstr "Die Länge einer Regel (%d) einer intelligenten Wiedergabeliste weicht von der erwarteten Länge ab. Es wird versucht fortzufahren.\n"
 
 #: ../src/itdb_itunesdb.c:1598
 #, c-format
@@ -403,33 +368,23 @@ msgid ""
 "Encountered unknown MHOD type (%d) while parsing the iTunesDB. Ignoring.\n"
 "\n"
 msgstr ""
-"Unbekannter MHOD-Typ (%d) während des Parsens der iTunesDB gefunden. Es wird "
-"versucht fortzufahren.\n"
+"Unbekannter MHOD-Typ (%d) während des Parsens der iTunesDB gefunden. Es wird versucht fortzufahren.\n"
 "\n"
 
 #: ../src/itdb_itunesdb.c:1691
 #, c-format
 msgid "iTunesDB corrupt: hunk length 0 for hunk at %ld in file '%s'."
-msgstr ""
-"iTunesDB beschädigt: Hunklänge ist Null für den Hunk an Offset %ld in Datei "
-"'%s'."
+msgstr "iTunesDB beschädigt: Hunklänge ist Null für den Hunk an Offset %ld in Datei '%s'."
 
 #: ../src/itdb_itunesdb.c:1704
 #, c-format
-msgid ""
-"iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
-msgstr ""
-"iTunesDB beschädigt: kein '%s'-Eintrag in Sektion '%s' (startend bei %ld) "
-"gefunden."
+msgid "iTunesDB corrupt: no section '%s' found in section '%s' starting at %ld."
+msgstr "iTunesDB beschädigt: kein '%s'-Eintrag in Sektion '%s' (startend bei %ld) gefunden."
 
 #: ../src/itdb_itunesdb.c:1718
 #, c-format
-msgid ""
-"header length of '%s' smaller than expected (%d < %d) at offset %ld in file "
-"'%s'."
-msgstr ""
-"Header-Länge des Abschnitts '%s' ist kleiner als erwartet (%d < %d) an "
-"Offset %ld in Datei '%s'."
+msgid "header length of '%s' smaller than expected (%d < %d) at offset %ld in file '%s'."
+msgstr "Header-Länge des Abschnitts '%s' ist kleiner als erwartet (%d < %d) an Offset %ld in Datei '%s'."
 
 #: ../src/itdb_itunesdb.c:1803
 #, c-format
@@ -438,26 +393,18 @@ msgstr "Keine iTunesDB Datei: '%s' (kein mhdb-Header)."
 
 #: ../src/itdb_itunesdb.c:1820
 #, c-format
-msgid ""
-"iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). "
-"Aborting."
-msgstr ""
-"iTunesDB ('%s'): Headerlänge des mhsd-Hunks is kleiner als erwartet (%d<32). "
-"Breche ab."
+msgid "iTunesDB ('%s'): header length of mhsd hunk smaller than expected (%d<32). Aborting."
+msgstr "iTunesDB ('%s'): Headerlänge des mhsd-Hunks is kleiner als erwartet (%d<32). Breche ab."
 
 #: ../src/itdb_itunesdb.c:1841
 #, c-format
 msgid "iTunesDB '%s' corrupt: mhsd expected at %ld."
-msgstr ""
-"Die iTunesDB '%s' ist beschädigt: bei Offset %ld wird ein mhsd-Abschnitt "
-"erwartet."
+msgstr "Die iTunesDB '%s' ist beschädigt: bei Offset %ld wird ein mhsd-Abschnitt erwartet."
 
 #: ../src/itdb_itunesdb.c:1958
 #, c-format
 msgid "Number of MHODs in mhip at %ld inconsistent in file '%s'."
-msgstr ""
-"Anzahl der MHODs-Abschnitte in der mhip-Sektion an Offset %ld ist in der "
-"Datei '%s' nicht konsistent."
+msgstr "Anzahl der MHODs-Abschnitte in der mhip-Sektion an Offset %ld ist in der Datei '%s' nicht konsistent."
 
 #: ../src/itdb_itunesdb.c:1976
 #, c-format
@@ -467,9 +414,7 @@ msgstr "Itdb_Track ID '%d' nicht gefunden.\n"
 #: ../src/itdb_itunesdb.c:2146
 #, c-format
 msgid "Number of MHODs in mhyp at %ld inconsistent in file '%s'."
-msgstr ""
-"Anzahl der MHOD-Abschnitte in der mhyp-Sektion bei Offset %ld in der Datei '%"
-"s' ist inkonsistent."
+msgstr "Anzahl der MHOD-Abschnitte in der mhyp-Sektion bei Offset %ld in der Datei '%s' ist inkonsistent."
 
 #: ../src/itdb_itunesdb.c:2156
 msgid "Master-PL"
@@ -485,12 +430,8 @@ msgstr "Wiedergabeliste"
 
 #: ../src/itdb_itunesdb.c:2184
 #, c-format
-msgid ""
-"iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %"
-"ld in file '%s'."
-msgstr ""
-"Die iTunesDB ist beschädigt: die Anzahl der mhip-Sektionen im mhyp-Abschnit "
-"startend bei %ld in Datei '%s' ist inkonsistent."
+msgid "iTunesDB corrupt: number of mhip sections inconsistent in mhyp starting at %ld in file '%s'."
+msgstr "Die iTunesDB ist beschädigt: die Anzahl der mhip-Sektionen im mhyp-Abschnit startend bei %ld in Datei '%s' ist inkonsistent."
 
 #: ../src/itdb_itunesdb.c:2527
 msgid "OTG Playlist"
@@ -504,23 +445,17 @@ msgstr "Keine OTG (On-The-Go) Wiedergabelistendatei: '%s' (mhpo-Header fehlt)."
 #: ../src/itdb_itunesdb.c:2559
 #, c-format
 msgid "OTG playlist file ('%s'): header length smaller than expected (%d<20)."
-msgstr ""
-"OTG (On-The-Go) Wiedergabelistendatei ('%s'): Headerlänger kleiner als "
-"erwartet (%d<20)."
+msgstr "OTG (On-The-Go) Wiedergabelistendatei ('%s'): Headerlänger kleiner als erwartet (%d<20)."
 
 #: ../src/itdb_itunesdb.c:2571
-#, fuzzy, c-format
+#, c-format
 msgid "OTG playlist file ('%s'): entry length smaller than expected (%d<4)."
-msgstr ""
-"OTG (On-The-Go) Wiedergabelistendatei ('%s'): Länge der Einträge kleiner als "
-"erwartet (%d<4)."
+msgstr "OTG (On-The-Go) Wiedergabelistendatei ('%s'): Länge der Einträge ist kleiner als erwartet (%d<4)."
 
 #: ../src/itdb_itunesdb.c:2606
 #, c-format
 msgid "OTG playlist file '%s': reference to non-existent track (%d)."
-msgstr ""
-"OTG (On-The-Go) Wiedergabelistendateii '%s' bezieht sich auf ein nicht "
-"existierendes Stück (%d)."
+msgstr "OTG (On-The-Go) Wiedergabelistendateii '%s' bezieht sich auf ein nicht existierendes Stück (%d)."
 
 #: ../src/itdb_itunesdb.c:2651
 #, c-format
@@ -529,57 +464,38 @@ msgstr "OTG-Wiedergabeliste %d"
 
 #. this should not be -- issue warning
 #: ../src/itdb_itunesdb.c:2719
-msgid ""
-"iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to "
-"continue.\n"
-msgstr ""
-"Die iTunesDB ist beschädigt: Anzahl der Stücke (mhit-Hunks) ist nicht "
-"konsistent. Versuche fortzufahren.\n"
+msgid "iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to continue.\n"
+msgstr "Die iTunesDB ist beschädigt: Anzahl der Stücke (mhit-Hunks) ist nicht konsistent. Versuche fortzufahren.\n"
 
 #. this should not be -- issue warning
 #: ../src/itdb_itunesdb.c:2782
-msgid ""
-"iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. "
-"Trying to continue.\n"
-msgstr ""
-"iTunesDB möglicherweise beschädigt: Anzahl der Wiedergabelisten (mhyp-Hunks) "
-"ist nicht konsistent. Versuche fortzufahren.\n"
+msgid "iTunesDB possibly corrupt: number of playlists (mhyp hunks) inconsistent. Trying to continue.\n"
+msgstr "iTunesDB möglicherweise beschädigt: Anzahl der Wiedergabelisten (mhyp-Hunks) ist nicht konsistent. Versuche fortzufahren.\n"
 
 #: ../src/itdb_itunesdb.c:2829
 #, c-format
-msgid ""
-"iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section "
-"found)"
-msgstr ""
-"Die iTunesDB '%s' ist beschädigt: die Trackliste konnte nicht gefunden "
-"werden (kein mhsd-Abschnitt des Typs 1 gefunden)."
+msgid "iTunesDB '%s' corrupt: Could not find tracklist (no mhsd type 1 section found)"
+msgstr "Die iTunesDB '%s' ist beschädigt: die Trackliste konnte nicht gefunden werden (kein mhsd-Abschnitt des Typs 1 gefunden)."
 
 #: ../src/itdb_itunesdb.c:2858
 #, c-format
-msgid ""
-"iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 "
-"sections found)"
-msgstr ""
-"Die iTunesDB '%s' ist beschädigt: die Playlisten konnten nicht gefunden "
-"werden (keine mhsd-Abschnitte des Typs 2 oder 3 gefunden)."
+msgid "iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 sections found)"
+msgstr "Die iTunesDB '%s' ist beschädigt: die Playlisten konnten nicht gefunden werden (keine mhsd-Abschnitte des Typs 2 oder 3 gefunden)."
 
 #: ../src/itdb_itunesdb.c:2880
 #, c-format
 msgid "iTunes directory not found: '%s' (or similar)."
-msgstr ""
-"Das 'iTunes'-Verzeichnis konnte nicht gefunden werden: '%s' (oder ähnlich)."
+msgstr "Das 'iTunes'-Verzeichnis konnte nicht gefunden werden: '%s' (oder ähnlich)."
 
 #: ../src/itdb_itunesdb.c:2897
 #, c-format
 msgid "Music directory not found: '%s' (or similar)."
-msgstr ""
-"Das 'Music'-Verzeichnis konnte nicht gefunden werden: '%s' (oder ähnlich)."
+msgstr "Das 'Music'-Verzeichnis konnte nicht gefunden werden: '%s' (oder ähnlich)."
 
 #: ../src/itdb_itunesdb.c:2915
 #, c-format
 msgid "Control directory not found: '%s' (or similar)."
-msgstr ""
-"Das 'Control'-Verzeichnis konnte nicht gefunden werden: '%s' (oder ähnlich)."
+msgstr "Das 'Control'-Verzeichnis konnte nicht gefunden werden: '%s' (oder ähnlich)."
 
 #: ../src/itdb_itunesdb.c:3036
 #, c-format
@@ -596,15 +512,17 @@ msgstr "Pfad nicht gefunden: '%s' (oder ähnlich)."
 msgid "Error renaming '%s' to '%s' (%s)."
 msgstr "Fehler beim Umbenennen von '%s' nach '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:5633 ../src/itdb_itunesdb.c:5650
+#: ../src/itdb_itunesdb.c:5633
+#: ../src/itdb_itunesdb.c:5650
 #, c-format
 msgid "Error removing '%s' (%s)."
 msgstr "Fehler beim Entfernen von '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:5812 ../src/itdb_itunesdb.c:5985
-#, fuzzy, c-format
+#: ../src/itdb_itunesdb.c:5812
+#: ../src/itdb_itunesdb.c:5985
+#, c-format
 msgid "Mountpoint not set."
-msgstr "Mountpoint wurde nicht gesetzt.\n"
+msgstr "Mountpoint wurde nicht gesetzt."
 
 #: ../src/itdb_itunesdb.c:5852
 #, c-format
@@ -617,15 +535,14 @@ msgid "Path not found: '%s'."
 msgstr "Pfad nicht gefunden: '%s'."
 
 #: ../src/itdb_itunesdb.c:5994
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' could not be accessed (%s)."
-msgstr "Datei nicht auf Datei zugreifen: '%s'."
+msgstr "Auf Datei '%s' konnte nicht zugegriffen werden (%s)."
 
 #: ../src/itdb_itunesdb.c:6004
 #, c-format
-msgid ""
-"Destination file '%s' does not appear to be on the iPod mounted at '%s'."
-msgstr ""
+msgid "Destination file '%s' does not appear to be on the iPod mounted at '%s'."
+msgstr "Zieldatei '%s' scheint nicht auf dem iPod zu sein, welcher bei '%s' eingebunden ist."
 
 #: ../src/itdb_itunesdb.c:6212
 #, c-format
@@ -647,7 +564,8 @@ msgstr "Fehler beim Lesen aus '%s' (%s)."
 msgid "Error while writing to '%s' (%s)."
 msgstr "Fehler beim Schreiben in die Datei '%s' (%s)."
 
-#: ../src/itdb_itunesdb.c:6268 ../src/itdb_itunesdb.c:6278
+#: ../src/itdb_itunesdb.c:6268
+#: ../src/itdb_itunesdb.c:6278
 #, c-format
 msgid "Error when closing '%s' (%s)."
 msgstr "Fehler beim Schließen der Datei '%s' (%s)."
@@ -659,36 +577,27 @@ msgstr "iPod"
 #: ../src/itdb_itunesdb.c:7024
 #, c-format
 msgid "Problem creating iPod directory or file: '%s'."
-msgstr ""
-"Problem beim Erstellen eines Verzeichnisses oder einer Datei auf dem iPod: '%"
-"s'."
+msgstr "Problem beim Erstellen eines Verzeichnisses oder einer Datei auf dem iPod: '%s'."
 
 #: ../src/itdb_photoalbum.c:111
 #, c-format
 msgid "Photos directory not found: '%s' (or similar)."
-msgstr ""
-"Der Pfad zum Fotoverzeichnis konnte nicht gefunden werden: '%s' (oder "
-"ähnlich)."
+msgstr "Der Pfad zum Fotoverzeichnis konnte nicht gefunden werden: '%s' (oder ähnlich)."
 
-#: ../src/itdb_photoalbum.c:266 ../src/itdb_photoalbum.c:460
+#: ../src/itdb_photoalbum.c:266
+#: ../src/itdb_photoalbum.c:460
 msgid "Photo Library"
 msgstr "Fotoarchiv"
 
 #: ../src/itdb_photoalbum.c:386
 #, c-format
 msgid "You need to specify the iPod model used before photos can be added."
-msgstr ""
-"Siem müssen das iPod-Model angeben, bevor Fotos hinzugefügt werden können."
+msgstr "Siem müssen das iPod-Model angeben, bevor Fotos hinzugefügt werden können."
 
 #: ../src/itdb_photoalbum.c:407
 #, c-format
-msgid ""
-"Your iPod does not seem to support photos. Maybe you need to specify the "
-"correct iPod model number? It is currently set to 'x%s' (%s/%s)."
-msgstr ""
-"Ihr iPod scheint Fotos nicht zu unterstützen. Eventuell müssen Sie auch nur "
-"das korrekte iPod-Model angeben. Zur Zeit haben Sie folgendes Modell "
-"eingestellt: 'x%s' (%s/%s)."
+msgid "Your iPod does not seem to support photos. Maybe you need to specify the correct iPod model number? It is currently set to 'x%s' (%s/%s)."
+msgstr "Ihr iPod scheint Fotos nicht zu unterstützen. Eventuell müssen Sie auch nur das korrekte iPod-Model angeben. Zur Zeit haben Sie folgendes Modell eingestellt: 'x%s' (%s/%s)."
 
 #: ../src/itdb_photoalbum.c:419
 #, c-format
@@ -697,27 +606,19 @@ msgstr "Konnte nicht auf die Datei '%s' zugreifen. Foto nicht hinzugefügt."
 
 #: ../src/itdb_photoalbum.c:448
 #, c-format
-msgid ""
-"Unexpected error in itdb_photodb_add_photo_internal() while adding photo, "
-"please report."
-msgstr ""
-"Unerwarteter Fehler in itdb_photodb_add_photo_internal() während des "
-"Hinzufügens eines Fotos. Bitter teilen Sie uns diesen Vorgang mit."
+msgid "Unexpected error in itdb_photodb_add_photo_internal() while adding photo, please report."
+msgstr "Unerwarteter Fehler in itdb_photodb_add_photo_internal() während des Hinzufügens eines Fotos. Bitter teilen Sie uns diesen Vorgang mit."
 
 #: ../src/itdb_photoalbum.c:468
 #, c-format
-msgid ""
-"Library compiled without gdk-pixbuf support. Picture support is disabled."
-msgstr ""
-"Die Bibliothek wurde ohne gdk-pixbuf-Unterstützung kompiliert. Fotos werden "
-"daher nicht unterstützt."
+msgid "Library compiled without gdk-pixbuf support. Picture support is disabled."
+msgstr "Die Bibliothek wurde ohne gdk-pixbuf-Unterstützung kompiliert. Fotos werden daher nicht unterstützt."
 
 #. New action!
 #: ../src/itdb_playlist.c:78
 #, c-format
 msgid "Unknown action (%d) in smart playlist will be ignored.\n"
-msgstr ""
-"Unbekannte Aktion (%d) in intelligenter Wiedergabeliste wird ignoriert.\n"
+msgstr "Unbekannte Aktion (%d) in intelligenter Wiedergabeliste wird ignoriert.\n"
 
 #: ../src/itdb_thumb.c:326
 #, c-format
@@ -734,14 +635,11 @@ msgstr "Mountpoint wurde nicht gesetzt.\n"
 msgid ""
 "Usage to add photos:\n"
 "  %s add <mountpoint> <albumname> [<filename(s)>]\n"
-"  <albumname> should be set to 'NULL' to add photos to the master photo "
-"album\n"
-"  (Photo Library) only. If you don't specify any filenames an empty album "
-"will\n"
+"  <albumname> should be set to 'NULL' to add photos to the master photo album\n"
+"  (Photo Library) only. If you don't specify any filenames an empty album will\n"
 "  be created.\n"
 msgstr ""
 "Syntax, um Fotos hinzuzufügen:\n"
-"\n"
 "  %s add <Mountpoint> <Name des Albums> [<Dateiname(n)>]\n"
 "  <Name des Albums> sollte als 'NULL' angegeben, um Fotos zum nur Haupalbum\n"
 "  (Fotoarchiv) hinzuzufügen. Wenn keine Dateinamen angegeben werden, wird\n"
@@ -766,7 +664,7 @@ msgstr ""
 "  %s list <mountpoint>\n"
 
 #: ../tests/test-photos.c:44
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Usage to remove photo IDs from Photo Library:\n"
 "  %s remove <mountpoint> <albumname> [<ID(s)>]\n"
@@ -777,8 +675,7 @@ msgid ""
 msgstr ""
 "Syntax, um Fotos aus dem Fotoarchiv zu entfernen:\n"
 "  %s remove <Mountpoint> <Name des Albums> [<ID(s)>]\n"
-"  <Name des Albums> sollte als 'Null' angegeben werden, um Fotos "
-"vollständig\n"
+"  <Name des Albums> sollte als 'Null' angegeben werden, um Fotos vollständig\n"
 "  vom iPod zu entfernen. Wenn keine IDs angegeben werden, wird stattdessen\n"
 "  das bezeichnete Fotoalbum entfernt.\n"
 "  Vorsicht: IDs können sich verändern, wenn die Datenbank geschrieben wird.\n"
@@ -798,20 +695,24 @@ msgstr "Fehler beim Erstellen von '%s' (mkdir).\n"
 msgid "Error: '%s' is not a directory\n"
 msgstr "Fehler: '%s' ist kein Verzeichnis\n"
 
-#: ../tests/test-photos.c:143 ../tests/test-photos.c:177
+#: ../tests/test-photos.c:143
+#: ../tests/test-photos.c:177
 #: ../tests/test-photos.c:306
 #, c-format
 msgid "Error reading iPod photo database (%s).\n"
 msgstr "Fehler beim Lesen des iPod Fotobarchivs (%s).\n"
 
-#: ../tests/test-photos.c:149 ../tests/test-photos.c:183
+#: ../tests/test-photos.c:149
+#: ../tests/test-photos.c:183
 #: ../tests/test-photos.c:313
 #, c-format
 msgid "Error reading iPod photo database.\n"
 msgstr "Fehler beim Lesen der iPod Fotodatenbank.\n"
 
-#: ../tests/test-photos.c:167 ../tests/test-photos.c:226
-#: ../tests/test-photos.c:296 ../tests/test-photos.c:379
+#: ../tests/test-photos.c:167
+#: ../tests/test-photos.c:226
+#: ../tests/test-photos.c:296
+#: ../tests/test-photos.c:379
 #, c-format
 msgid "Insufficient number of command line arguments.\n"
 msgstr "Unzureichende Anzahl von Kommandozeilenargumenten.\n"
@@ -836,11 +737,8 @@ msgstr ""
 
 #: ../tests/test-photos.c:242
 #, c-format
-msgid ""
-"Error reading iPod photo database, will attempt to create a new database\n"
-msgstr ""
-"Fehler beim Lesen der iPod Fotodatenbank. Es wird versucht, eine neue "
-"Datenbank zu erstellen.\n"
+msgid "Error reading iPod photo database, will attempt to create a new database\n"
+msgstr "Fehler beim Lesen der iPod Fotodatenbank. Es wird versucht, eine neue Datenbank zu erstellen.\n"
 
 #: ../tests/test-photos.c:267
 #, c-format
@@ -855,16 +753,12 @@ msgstr "Gewünschtes Album '%s' nicht gefunden. Breche ab.\n"
 #: ../tests/test-photos.c:336
 #, c-format
 msgid "Cannot remove Photo Library playlist. Aborting.\n"
-msgstr ""
-"Es ist nicht möglich, die 'Fotoarchiv'-Wiedergabeliste zu entfernen. Breche "
-"ab.\n"
+msgstr "Es ist nicht möglich, die 'Fotoarchiv'-Wiedergabeliste zu entfernen. Breche ab.\n"
 
 #: ../tests/test-photos.c:357
 #, c-format
 msgid "Warning: could not find photo with ID <%d>. Skipping...\n"
-msgstr ""
-"Warnung: das Foto mit der ID <%d> konnte nicht gefunden werden. Ich mache "
-"mit dem nächsten Foto weiter...\n"
+msgstr "Warnung: das Foto mit der ID <%d> konnte nicht gefunden werden. Ich mache mit dem nächsten Foto weiter...\n"
 
 #: ../tests/test-photos.c:403
 #, c-format
@@ -874,78 +768,67 @@ msgstr "Unbekanntes Kommando: '%s'\n"
 #: ../tests/test-init-ipod.c:66
 #, c-format
 msgid "Error initialising iPod: %s\n"
-msgstr ""
+msgstr "Konnte iPod nicht initialisieren: %s\n"
 
 #: ../tests/test-init-ipod.c:73
 #, c-format
 msgid "Error initialising iPod, unknown error\n"
-msgstr ""
+msgstr "Konnte iPod nicht initialisieren: unbekannte Fehler\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:39
 #, c-format
 msgid "usage: %s <device> <mountpoint>\n"
-msgstr ""
+msgstr "Benutzung: %s <Gerät> <Mountpoint>\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:45
 #, c-format
 msgid "Couldn't read xml sysinfo from %s\n"
-msgstr ""
+msgstr "Konnte xml SysInfoExtended nicht von %s lesen\n"
 
 #: ../tools/read-sysinfoextended-sgutils.c:56
 #, c-format
 msgid "Couldn't resolve Device directory path on %s"
-msgstr ""
+msgstr "Konnte den Device Ordnerpfad auf %s nicht auflösen"
 
 #: ../tools/read-sysinfoextended-sgutils.c:64
 #, c-format
 msgid "Couldn't resolve SysInfoExtended path on %s"
-msgstr ""
+msgstr "Konnte SysInfoExtended-Pfad auf %s nicht auflösen"
 
 #: ../tools/read-sysinfoextended-sgutils.c:74
 #, c-format
 msgid "Couldn't write SysInfoExtended to %s"
-msgstr ""
+msgstr "Konnte SysInfoExtended nicht nach %s schreiben"
 
 #~ msgid "First Generation"
 #~ msgstr "Erste Generation"
-
 #~ msgid "Second Generation"
 #~ msgstr "Zweite Generation"
-
 #~ msgid "Third Generation"
 #~ msgstr "Dritte Generation"
-
 #~ msgid "Fourth Generation"
 #~ msgstr "Vierte Generation"
-
 #~ msgid "Fifth Generation"
 #~ msgstr "Fünfte Generation"
-
 #~ msgid "Sixth Generation"
 #~ msgstr "Sechste Generation"
-
 #~ msgid "Opening of '%s' for writing failed (%s)."
 #~ msgstr "Öffnen der Datei '%s' zum Schreiben ist fehlgeschlagen (%s)."
-
 #~ msgid "Writing to '%s' failed (%s)."
 #~ msgstr "Schreiben in die Datei '%s' ist fehlgeschlagen (%s)."
-
 #~ msgid "Cannot write mhod of type %d\n"
 #~ msgstr "Schreiben eines mhod-Hunks vom Typ %d ist nicht unterstützt.\n"
-
 #~ msgid "Error reading iPod photo database"
 #~ msgstr "Fehler beim Lesen des iPod Fotoarchivs"
-
 #~ msgid "Writing to '%s' failed."
 #~ msgstr "Fehler beim Schreiben in die Datei '%s'."
-
 #~ msgid "Database in memory corrupt (track pointer == NULL). Aborting export."
 #~ msgstr ""
 #~ "Datenbank im Speicher beschädigt (Zeiger auf Stück == NULL). Der Export "
 #~ "wird abgebrochen."
-
 #~ msgid ""
 #~ "Database in memory corrupt (playlist pointer == NULL). Aborting export."
 #~ msgstr ""
 #~ "Datenbank im Speicher beschädigt (Zeiger auf Wiedergabeliste == NULL). "
 #~ "Der Export wird abgebrochen."
+
