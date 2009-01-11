@@ -1,3 +1,11 @@
+2009-01-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* src/itdb_itunesdb.c (itdb_rename_files): remove the
+	  "iTunesStats" file used by Shuffles instead of the "Play Counts"
+	  file after writing the iTunesSD -- otherwise the playcounts are
+	  never reset. Thanks to Peter Maydell for pointing this
+	  out. Fixes tracker item #2481322.
+
 2009-01-06  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* po/zh_CN.po: Add simple Chinese translation (Tan Zhixin)

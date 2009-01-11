@@ -5582,11 +5582,13 @@ gboolean itdb_rename_files (const gchar *mp, GError **error)
     const gchar *db_plc_o[] = {"Play Counts", NULL};
     const gchar *db_otg[] = {"OTGPlaylistInfo", NULL};
     const gchar *db_shu[] = {"iTunesShuffle", NULL};
+    const gchar *db_ist[] = {"iTunesStats", NULL};
     gchar *itunesdir;
     gchar *plcname_o;
     gchar *plcname_n;
     gchar *otgname;
     gchar *shuname;
+    gchar *istname;
     gboolean result = TRUE;
 
     g_return_val_if_fail (mp, FALSE);
@@ -5604,6 +5606,7 @@ gboolean itdb_rename_files (const gchar *mp, GError **error)
 					 "Play Counts.bak", NULL);
     otgname = itdb_resolve_path (itunesdir, db_otg);
     shuname = itdb_resolve_path (itunesdir, db_shu);
+    istname = itdb_resolve_path (itunesdir, db_ist);
 
     /* rename "Play Counts" to "Play Counts.bak" */
     if (plcname_o)
@@ -5654,10 +5657,28 @@ gboolean itdb_rename_files (const gchar *mp, GError **error)
 	}
     }
 
+    /* remove some Shuffle files */
+    if (istname)
+    {
+	if (unlink (istname) == -1)
+	{
+	    if (error && !*error)
+	    {   /* don't overwrite previous error */
+	    g_set_error (error,
+			 G_FILE_ERROR,
+			 g_file_error_from_errno (errno),
+			 _("Error removing '%s' (%s)."),
+			 istname, g_strerror (errno));
+	    }
+	    result = FALSE;
+	}
+    }
+
     g_free (plcname_o);
     g_free (plcname_n);
     g_free (otgname);
     g_free (shuname);
+    g_free (istname);
     g_free (itunesdir);
 
     return result;
