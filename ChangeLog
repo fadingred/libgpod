@@ -1,3 +1,8 @@
+2009-01-13  Christophe Fergeau  <teuf at gnome.org>
+
+	* itdb_sysinfo_extended_parser.c: use a gint instead of a gchar as a
+	loop index since we are comparing against >= 0
+
 2009-01-11  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* src/itdb_itunesdb.c (itdb_rename_files): remove the

@@ -409,7 +409,7 @@ static void set_back_color (Itdb_ArtworkFormat *img_spec, GHashTable *dict)
 {
     char *back_color_str;
     guint back_color;
-    gchar i;
+    gint i;
 
     memset (img_spec->back_color, 0, sizeof (img_spec->back_color));;
     back_color_str = get_string (dict, "BackColor");
