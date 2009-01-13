@@ -67,15 +67,15 @@ to work) fine.
 
 * Compiling for 64bit systems
 
-The current automake/autobuild setup doesn't set the correct
+The current autoconf/automake setup doesn't set the correct
 installation path on 64bit systems. To work around this issue and to
 get the libraries installed in the correct locations you need to
-pecify a couple extra parameters to autoge .sh (or configure). If your
+specify a couple extra parameters to autogen.sh (or configure). If your
 installation prefix is '/opt/gnome' use the following:
 
-./autogen.sh --prefix=/opt/gnome --enable-libsuffix=64 --libdir=/opt/gnome/lib6
+./autogen.sh --prefix=/opt/gnome --enable-libsuffix=64 --libdir=/opt/gnome/lib64
 
-If you use a diferent prefix, replace '/opt/gnome' accordingly.
+If you use a different prefix, replace '/opt/gnome' accordingly.
 
 Added on 2007/1/15: Note that I don't have any problems on my Debian
 4.1.1-13 system and won't have to do any of this.

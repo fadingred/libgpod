@@ -1,3 +1,7 @@
+2009-01-13  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* TROUBLESHOOTING: Minor grammatical fixes
+
 2009-01-13  Christophe Fergeau  <teuf at gnome.org>
 
 	* itdb_sysinfo_extended_parser.c: use a gint instead of a gchar as a
