@@ -1,5 +1,8 @@
 2009-01-13  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
+	* README.SysInfo, TROUBLESHOOTING: Add some notes on the hal
+	callout
+
 	* TROUBLESHOOTING: Minor grammatical fixes
 
 2009-01-13  Christophe Fergeau  <teuf at gnome.org>

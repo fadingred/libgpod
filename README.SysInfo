@@ -3,21 +3,32 @@ additional configuration step to correctly modify the iPod content. libgpod
 needs to know the so-called iPod "firewire id", otherwise the iPod won't 
 recognize what libgpod wrote to it and will behave as if it's empty.
 
-There are two ways to set up the iPod to make libgpod able to find its firewire
-id.
+There are several ways to set up an iPod so libgpod can find its firewire id.
 
-The 1st one is mostly automated. First, make sure you have libsgutils installed
-before running configure/autogen.sh. If you built libgpod without it, install 
-it and run configure/make/make install. You should now have an 
-ipod-read-sysinfo-extended tool available. Run it with the iPod device path 
-(eg /dev/sda) and the iPod mount point (eg /mnt/ipod) as arguments. This may 
-require root privileges. ipod-read-sysinfo-extended will read an XML
-file from the iPod and write it as 
-/mnt/ipod/iPod_Control/Device/SysInfoExtended. See 
-http://ipodlinux.org/Device_Information for more details about the method used.
-Having that file is enough for libgpod to figure out the iPod firewire id.
+The preferred method is automatic. Make sure you have hal and libsgutils
+installed before running configure/autogen.sh. If you built libgpod without
+them, run configure/make/make install after you install them.
 
-The 2nd method requires more manual intervention. First, you need to get your
+A hal callout and .fdi file will be built and installed. This will query an iPod
+when it is plugged in and save the SysInfoExtended file in the proper place.
+This should be entirely automatic. If you have trouble with this, see the
+TROUBLESHOOTING file for some hints.
+
+If you build with libsgutils but without hal, the next best method is mostly
+automatic. You should have an ipod-read-sysinfo-extended tool available. Run it
+with the iPod device path and the iPod mount point /mnt/ipod) as arguments. For
+example:
+
+    $ ipod-read-sysinfo-extended /dev/sda /mnt/ipod
+
+This may require root privileges. It reads an XML file from the iPod and writes
+it as /mnt/ipod/iPod_Control/Device/SysInfoExtended. More details on this method
+can be found at http://ipodlinux.org/Device_Information.
+
+Having the SysInfoExtended file created by ipod-read-sysinfo-extended or the hal
+callout is enough for libgpod to figure out the iPod firewire id.
+
+The last method requires more manual intervention. First, you need to get your
 firewire id manually. To do that, run "sudo lsusb -v | grep -i Serial" (without
 the "") with your iPod plugged in, this should print a 16 character long string
 like 00A1234567891231. For an iPod Touch, this number will be much longer than

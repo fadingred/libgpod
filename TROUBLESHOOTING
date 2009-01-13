@@ -95,3 +95,21 @@ python-gtk2-dev (and python-gobject-dev, if using python-gtk2-dev >= 2.10)
 
 ------------------------------------------------------------
 
+* The hal callout doesn't run automatically to setup SysInfoExtended
+
+If you have hal and libsgutils installed before running autogen.sh or configure,
+a hal callout and .fdi file will be built and installed. This will query an iPod
+when it is plugged in and save the SysInfoExtended file in the proper place.
+This should be completely automatic. However, for this to work, the callout must
+be installed in hal's callout path. $libdir/hal/scripts is the most portable
+location (hal's $libdir can be found using pkg-config). If you are building
+libgpod from source with the default $prefix (/usr/local), you need to take care
+to install the callout and .fdi file in the proper locations. The easiest way to
+do this at the moment is by passing the locations to the make command. For
+example:
+
+    $ ./configure && make
+    ...
+    $ make haldir="$(pkg-config --variable libdir hal)/hal/scripts" \
+           fdidir="$(pkg-config --variable prefix hal)/share/hal/fdi" \
+           install
