@@ -1,3 +1,8 @@
+2009-01-14  Jorg Schuler <jcsjcs at users.sourceforge.net>
+
+	* po/ro.po: updated Romanian translation. Thanks to Alex
+          Eftimie.
+
 2009-01-13  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* README.SysInfo, TROUBLESHOOTING: Add some notes on the hal
