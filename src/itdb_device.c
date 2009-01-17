@@ -186,7 +186,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     /* First generation with "cover flow" */
     {"B029",  80, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_1, 50},
     {"B147",  80, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_1, 50},
-    {"B155", 160, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_1, 50},
+    {"B145", 160, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_1, 50},
     {"B150", 160, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_1, 50},
 
     /* iPod Classic G2 */
@@ -632,10 +632,10 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "V96", "A450" },
     { "WUC", "A450" },
     { "W9G", "A664" }, /* 30GB iPod Video U2 5.5g */
-    { "Y5N", "B029" },
-    { "YMV", "B147" },
-    { "YMU", "B155" },
-    { "YMX", "B150" },
+    { "Y5N", "B029" }, /* Silver Classic 80GB */
+    { "YMV", "B147" }, /* Black Classic 80GB */
+    { "YMU", "B145" }, /* Silver Classic 160GB */
+    { "YMX", "B150" }, /* Black Classic 160GB */
     { "VR0", "A501" },
     { "WH8", "A712" },
     { "2C5", "B562" }, /* Silver Classic 120GB */
