@@ -1,3 +1,7 @@
+2009-01-18  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* src/db-artwork-parser.c: Quiet artwork mhii_link warning
+
 2009-01-17  Christophe Fergeau  <teuf at gnome.org>
 
 	* src/itdb_device.c: Silver iPod Classic 160GB is B145, not B155
