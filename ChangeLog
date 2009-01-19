@@ -1,5 +1,7 @@
 2009-01-18  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
+	* configure.ac: Bump version for 0.7.0 final
+
 	* src/db-artwork-parser.c: Quiet artwork mhii_link warning
 
 2009-01-17  Christophe Fergeau  <teuf at gnome.org>
