@@ -3651,7 +3651,9 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->unk252);
   put16lint (cts, track->gapless_track_flag);
   put16lint (cts, track->gapless_album_flag);
-  put32_n0 (cts, 23);
+  put32_n0 (cts, 22);
+  put16lint (cts, 0);
+  put16lint (cts, track->album_id);
   put32lint (cts, track->mhii_link); /* Needed on fat nanos/ipod classic to get art
 				      * in the right sidepane (mhii_link) */
   put32_n0 (cts, 8); /* padding */
@@ -4350,6 +4352,89 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
   }
 }
 
+static void mk_mhia (gpointer key, gpointer value, gpointer user_data)
+{
+  FExport *fexp;
+  WContents *cts;
+  Itdb_Track *track;
+  MHODData mhod;
+  guint mhod_num;
+  gulong mhia_seek;
+
+  track = (Itdb_Track *)key;
+  g_return_if_fail (track != NULL);
+
+  fexp = (FExport *)user_data;
+  g_return_if_fail (fexp);
+  g_return_if_fail (fexp->wcontents);
+  cts = fexp->wcontents;
+  mhia_seek = cts->pos;
+
+  put_header (cts, "mhia");        		/* header                   */
+  put32lint (cts, 92);             		/* size of header           */
+  put32lint (cts, -1);             		/* total size -> later */
+  put32lint (cts, 2);		   		/* number of children mhods */
+  put16lint (cts, 0);		  		/* unknown */
+  put16lint (cts, GPOINTER_TO_UINT (value));   	/* album id */
+  put32lint (cts, 0);		   		/* unknown */
+  put32lint (cts, 0);		   		/* unknown */
+  put32lint (cts, 2);		   		/* unknown */
+  put32_n0 (cts, 15); 				/* padding */
+
+  mhod.valid = TRUE;
+  mhod_num = 0;
+  if (track->album && *track->album) {
+      mhod.type = MHOD_ID_ALBUM_ALBUM;
+      mhod.data.string = track->album;
+      mk_mhod (fexp, &mhod);
+      ++mhod_num;
+  }
+
+  if (track->albumartist && *track->albumartist) {
+      mhod.type = MHOD_ID_ALBUM_ARTIST;
+      mhod.data.string = track->albumartist;
+      mk_mhod (fexp, &mhod);
+      ++mhod_num;
+  } else if (track->artist && *track->artist) {
+      mhod.type = MHOD_ID_ALBUM_ARTIST;
+      mhod.data.string = track->artist;
+      mk_mhod (fexp, &mhod);
+      ++mhod_num;
+  }
+
+  if (track->sort_albumartist && *track->sort_albumartist) {
+      mhod.type = MHOD_ID_ALBUM_SORT_ARTIST;
+      mhod.data.string = track->sort_albumartist;
+      mk_mhod (fexp, &mhod);
+      ++mhod_num;
+  } else if (track->sort_artist && *track->sort_artist) {
+      mhod.type = MHOD_ID_ALBUM_SORT_ARTIST;
+      mhod.data.string = track->sort_artist;
+      mk_mhod (fexp, &mhod);
+      ++mhod_num;
+  }
+  fix_mhit (cts, mhia_seek, mhod_num);
+}
+
+static void mk_mhla (FExport *fexp)
+{
+  WContents *cts;
+
+  g_return_if_fail (fexp);
+  g_return_if_fail (fexp->wcontents);
+  g_return_if_fail (fexp->albums);
+
+  cts = fexp->wcontents;
+
+  put_header (cts, "mhla");        /* header                   */
+  put32lint (cts, 92);             /* size of header           */
+  /* albums on iPod (including main!) */
+  put32lint (cts, g_hash_table_size (fexp->albums));
+  put32_n0 (cts, 20);               /* dummy space              */
+  g_hash_table_foreach (fexp->albums, mk_mhia, fexp);
+  g_hash_table_destroy (fexp->albums);
+  fexp->albums = NULL;
+}
 
 /* Write out the mhlp header. Size will be written later */
 static void mk_mhlp (FExport *fexp)
@@ -4998,6 +5083,22 @@ static gboolean write_mhsd_playlists (FExport *fexp, guint32 mhsd_type)
     return TRUE;
 }
 
+static gboolean write_mhsd_albums (FExport *fexp)
+{
+    gulong mhsd_seek;
+    WContents *cts;
+
+    g_return_val_if_fail (fexp, FALSE);
+    g_return_val_if_fail (fexp->itdb, FALSE);
+    g_return_val_if_fail (fexp->wcontents, FALSE);
+
+    cts = fexp->wcontents;
+    mhsd_seek = cts->pos;      	/* get position of mhsd header */
+    mk_mhsd (fexp, 4); 		/* write header */
+    mk_mhla (fexp);
+    fix_header (cts, mhsd_seek);
+    return TRUE;
+}
 
 /* create a WContents structure */
 static WContents *wcontents_new (const gchar *filename)
@@ -5040,14 +5141,41 @@ static void wcontents_free (WContents *cts)
 }
 
 
+static guint itdb_track_hash (gconstpointer v)
+{
+  Itdb_Track *track = (Itdb_Track *)v;
+  if (track->album != NULL) {
+    return g_str_hash (track->album);
+  } else if (track->artist != NULL) {
+    return g_str_hash (track->artist);;
+  }
+  g_assert_not_reached ();
+}
+
+static gboolean itdb_track_equal (gconstpointer v1, gconstpointer v2)
+{
+  Itdb_Track *track1 = (Itdb_Track *)v1;
+  Itdb_Track *track2 = (Itdb_Track *)v2;
+
+  if ((track1->albumartist != NULL) && (track2->albumartist != NULL)) {
+      return (g_str_equal (track1->album, track2->album)
+	      && g_str_equal (track1->albumartist, track2->albumartist));
+  } else {
+      return (g_str_equal (track1->album, track2->album)
+	      && g_str_equal (track1->artist, track2->artist));
+  }
+}
+
 /* - reassign the iPod IDs
    - make sure the itdb->tracks are in the same order as the mpl
+   - assign album IDs to write the MHLA
 */
 static void prepare_itdb_for_write (FExport *fexp)
 {
     GList *gl;
     Itdb_iTunesDB *itdb;
     Itdb_Playlist *mpl;
+    guint album_id = 1;
 
     g_return_if_fail (fexp);
     itdb = fexp->itdb;
@@ -5076,15 +5204,36 @@ static void prepare_itdb_for_write (FExport *fexp)
 
     fexp->next_id = FIRST_IPOD_ID;
 
+    g_assert (fexp->albums == NULL);
+    fexp->albums = g_hash_table_new (itdb_track_hash, itdb_track_equal);
+
     /* assign unique IDs and create sort keys */
     for (gl=itdb->tracks; gl; gl=gl->next)
     {
 	Itdb_Track *track = gl->data;
+	guint id;
+
 	g_return_if_fail (track);
 	track->id = fexp->next_id++;
+
+	if ((track->album == NULL) && (track->artist == NULL)) {
+	    /* unknow album name and artist, this entry isn't interesting to
+	     * build the list of all albums on the ipod
+	     */
+	    continue;
+	}
+	/* album ids are used when writing the mhla header */
+	id = GPOINTER_TO_UINT (g_hash_table_lookup (fexp->albums, track));
+	if (id != 0) {
+	    track->album_id = id;
+	} else {	
+	    g_hash_table_insert (fexp->albums, track,
+				 GUINT_TO_POINTER (album_id));
+	    track->album_id = album_id;
+	    album_id++;
+	}
     }
 }
-
 
 static gboolean write_db_checksum (FExport *fexp, GError **error)
 {
@@ -5181,7 +5330,7 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
     }
 #endif
 
-    mk_mhbd (fexp, 3);   /* three mhsds */
+    mk_mhbd (fexp, 4);   /* four mhsds */
     /* write tracklist */
     if (write_mhsd_tracks (fexp))
     {   /* write special podcast version mhsd */
@@ -5189,12 +5338,14 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 	{   /* write standard playlist mhsd */
 	    if (write_mhsd_playlists (fexp, 2))
 	    {
-		fix_header (cts, mhbd_seek);
+		if (write_mhsd_albums (fexp)) {
+		    fix_header (cts, mhbd_seek);
 
-		/* Set checksum (ipods require it starting from iPod Classic 
-		 * and fat Nanos)
-		 */
-		write_db_checksum (fexp, &fexp->error);
+		    /* Set checksum (ipods require it starting from
+		     * iPod Classic and fat Nanos)
+		     */
+		    write_db_checksum (fexp, &fexp->error);
+		}
 	    }
 	}
     }
@@ -5209,6 +5360,9 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 	result = FALSE;
     }
     wcontents_free (cts);
+    if (fexp->albums != NULL) {
+	g_hash_table_destroy (fexp->albums);
+    }
     g_free (fexp);
     if (result == TRUE)
     {

@@ -120,6 +120,7 @@ typedef struct
     Itdb_iTunesDB *itdb;
     WContents *wcontents;
     guint32 next_id;     /* next free ID to use       */
+    GHashTable *albums;  /* used to build the MHLA    */
     GError *error;       /* where to report errors to */
 } FExport;
 
