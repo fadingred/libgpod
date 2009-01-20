@@ -219,7 +219,10 @@ enum MHOD_ID {
   MHOD_ID_SPLRULES = 51, /* rules for smart playlist     */
   MHOD_ID_LIBPLAYLISTINDEX = 52,  /* Library Playlist Index */
   MHOD_ID_LIBPLAYLISTJUMPTABLE=53,
-  MHOD_ID_PLAYLIST = 100
+  MHOD_ID_PLAYLIST = 100,
+  MHOD_ID_ALBUM_ALBUM = 200, /* MHODs for the MHIAs */
+  MHOD_ID_ALBUM_ARTIST = 201,
+  MHOD_ID_ALBUM_SORT_ARTIST = 202
 };
 
 
@@ -1660,6 +1663,9 @@ static gchar *get_mhod_string (FImport *fimp, glong seek, guint32 *ml, gint32 *m
     case MHOD_ID_SORT_ALBUMARTIST:
     case MHOD_ID_SORT_COMPOSER:
     case MHOD_ID_SORT_TVSHOW:
+    case MHOD_ID_ALBUM_ALBUM:
+    case MHOD_ID_ALBUM_ARTIST:
+    case MHOD_ID_ALBUM_SORT_ARTIST:
 	mhoddata = get_mhod (fimp, seek, ml);
 	if ((*ml != -1) && mhoddata.valid)
 	    return mhoddata.data.string;
@@ -2132,6 +2138,9 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	  case MHOD_ID_SORT_ALBUMARTIST:
 	  case MHOD_ID_SORT_COMPOSER:
 	  case MHOD_ID_SORT_TVSHOW:
+	  case MHOD_ID_ALBUM_ALBUM:
+	  case MHOD_ID_ALBUM_ARTIST:
+	  case MHOD_ID_ALBUM_SORT_ARTIST:
 	  case MHOD_ID_LIBPLAYLISTJUMPTABLE:
 	      /* these are not expected here */
 	      break;
@@ -2449,6 +2458,9 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	  case MHOD_ID_LIBPLAYLISTJUMPTABLE:
 	  case MHOD_ID_PLAYLIST:
 	  case MHOD_ID_CHAPTERDATA:
+	  case MHOD_ID_ALBUM_ALBUM:
+	  case MHOD_ID_ALBUM_ARTIST:
+	  case MHOD_ID_ALBUM_SORT_ARTIST:
 	      g_free (entry_utf8);
 	      break;
 	  }
@@ -3981,6 +3993,9 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
   case MHOD_ID_SORT_ALBUMARTIST:
   case MHOD_ID_SORT_COMPOSER:
   case MHOD_ID_SORT_TVSHOW:
+  case MHOD_ID_ALBUM_ALBUM:
+  case MHOD_ID_ALBUM_ARTIST:
+  case MHOD_ID_ALBUM_SORT_ARTIST:
       g_return_if_fail (mhod->data.string);
       /* normal iTunesDBs seem to take utf16 strings), endian-inversed
 	 iTunesDBs seem to take utf8 strings */

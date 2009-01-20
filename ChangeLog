@@ -1,3 +1,8 @@
+2009-01-20  Christophe Fergeau  <teuf at gnome.org>
+
+	* src/itdb_itunesdb.c: add new enum value for MHOD types found as
+	children of the MHLA header (list of albums)
+
 2009-01-18  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* configure.ac: Bump version to 0.7.1SVN for further development
