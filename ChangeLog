@@ -1,5 +1,13 @@
 2009-01-21  Christophe Fergeau  <teuf at gnome.org>
 
+	* src/itdb_device.c:
+	* src/itdb_device.h:
+	* src/itdb_itunesdb.c: move checksumming function from
+	itdb_itunesdb.c to itdb_device.c to make it easier to support
+	different checksumming methods depending on the ipod model
+
+2009-01-21  Christophe Fergeau  <teuf at gnome.org>
+
 	* src/db-itunes-parser.h: add tons of new fields to struct MhbdHeader 
 
 2009-01-20  Christophe Fergeau  <teuf at gnome.org>

@@ -74,6 +74,13 @@ enum _ItdbThumbFormat
     THUMB_FORMAT_EXPERIMENTAL_BE,
 };
 
+typedef enum _ItdbChecksumType ItdbChecksumType;
+enum _ItdbChecksumType {
+    ITDB_CHECKSUM_NONE		= 0,
+    ITDB_CHECKSUM_HASH58	= 1,
+    ITDB_CHECKSUM_HASH72	= 2
+};
+
 /**
  * Itdb_Device:
  * @mountpoint:         The mountpoint of the iPod
@@ -159,6 +166,12 @@ G_GNUC_INTERNAL void itdb_device_autodetect_endianess (Itdb_Device *device);
 G_GNUC_INTERNAL guint64 itdb_device_get_firewire_id (const Itdb_Device *device);
 G_GNUC_INTERNAL gboolean itdb_device_supports_sparse_artwork (const Itdb_Device *device);
 G_GNUC_INTERNAL gboolean itdb_device_get_storage_info (Itdb_Device *device, guint64 *capacity, guint64 *free);
+G_GNUC_INTERNAL ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device);
+G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device,
+						     unsigned char *itdb_data,
+						     gsize itdb_len,
+						     GError **error);
+
 G_END_DECLS
 
 #endif

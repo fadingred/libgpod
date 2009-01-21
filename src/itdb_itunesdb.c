@@ -3500,8 +3500,7 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put16lint (cts, 2);   /* always seems to be 2 */
   put16_n0  (cts, 7);  /* unknown */
   /* 0x30 */
-  put16lint (cts, 1);   /* ? but iPod Classic/fat Nanos won't display any song
-			 * if it's not 1 */
+  put16lint (cts, itdb_device_get_checksum_type (fexp->itdb->device));
   put16_n0  (cts, 10);  /* unknown */
   /* 0x46 */
   put16lint (cts, 0);   /* langauge */
@@ -5235,49 +5234,6 @@ static void prepare_itdb_for_write (FExport *fexp)
     }
 }
 
-static gboolean write_db_checksum (FExport *fexp, GError **error)
-{
-    guint64 fwid;
-    guchar backup18[8];
-    guchar backup32[20];
-    unsigned char *itdb_data;
-    unsigned char *checksum;
-    gsize len;
-    
-    fwid = itdb_device_get_firewire_id (fexp->itdb->device);
-    if ((fwid == 0) && (itdb_device_requires_checksum (fexp->itdb->device))) {
-	g_set_error (error, 0, -1, "Couldn't find the iPod firewire ID");
-	return FALSE;
-    }
-
-    if (fexp->wcontents->pos < 0x6c) {
-	g_set_error (error, 0, -1, "iTunesDB file too small to write checksum");
-	return FALSE;
-    }
-    itdb_data = (unsigned char *)fexp->wcontents->contents;
-
-    memcpy (backup18, itdb_data+0x18, sizeof (backup18));
-    memcpy (backup32, itdb_data+0x32, sizeof (backup32));
-
-    /* Those fields must be zero'ed out for the sha1 calculation */
-    memset(itdb_data+0x18, 0, 8);
-    memset(itdb_data+0x32, 0, 20);
-    memset(itdb_data+0x58, 0, 20);
-
-    checksum = itdb_compute_hash (fwid, itdb_data, fexp->wcontents->pos, &len);
-    if (checksum == NULL) {
-	g_set_error (error, 0, -1, "Failed to compute checksum");
-	return FALSE;
-    }
-    memcpy (itdb_data+0x58, checksum, len);    
-    g_free (checksum);
-
-    memcpy (itdb_data+0x18, backup18, sizeof (backup18));
-    memcpy (itdb_data+0x32, backup32, sizeof (backup32));
-
-    return TRUE;
-}
-
 /**
  * itdb_write_file:
  * @itdb:       the #Itdb_iTunesDB to save
@@ -5344,7 +5300,10 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 		    /* Set checksum (ipods require it starting from
 		     * iPod Classic and fat Nanos)
 		     */
-		    write_db_checksum (fexp, &fexp->error);
+		    itdb_device_write_checksum (itdb->device,
+						(unsigned char *)fexp->wcontents->contents,
+						fexp->wcontents->pos,
+						&fexp->error);
 		}
 	    }
 	}
