@@ -1797,12 +1797,6 @@ G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device,
     g_assert_not_reached ();
 }
 
-
-G_GNUC_INTERNAL gboolean itdb_device_requires_checksum (Itdb_Device *device) 
-{
-	return (itdb_device_get_checksum_type (device) != ITDB_CHECKSUM_NONE);
-}
-
 #ifdef WIN32
 #include <windows.h>
 #else

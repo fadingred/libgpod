@@ -1,6 +1,12 @@
 2009-01-21  Christophe Fergeau  <teuf at gnome.org>
 
 	* src/itdb_device.c:
+	* src/itdb_private.h: get rid of itdb_device_requires_checksum
+	which is now unused
+
+2009-01-21  Christophe Fergeau  <teuf at gnome.org>
+
+	* src/itdb_device.c:
 	* src/itdb_device.h:
 	* src/itdb_itunesdb.c: move checksumming function from
 	itdb_itunesdb.c to itdb_device.c to make it easier to support
