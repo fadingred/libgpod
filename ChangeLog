@@ -1,3 +1,7 @@
+2009-01-21  Christophe Fergeau  <teuf at gnome.org>
+
+	* src/db-itunes-parser.h: add tons of new fields to struct MhbdHeader 
+
 2009-01-20  Christophe Fergeau  <teuf at gnome.org>
 
 	* src/itdb_itunesdb.c: generate list of albums and write it in a

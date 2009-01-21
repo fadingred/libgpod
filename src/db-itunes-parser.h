@@ -76,16 +76,29 @@ typedef struct _MhodHeaderSmartPlaylistRuleNonString MhodHeaderSmartPlaylistRule
 typedef struct _MhodHeaderSmartPlaylistRule MhodHeaderSmartPlaylistRule;
 
 struct _MhbdHeader {
-	unsigned char header_id[4];
-	gint32 header_len;
-	gint32 total_len;
-	gint32 unknown1;
-	gint32 version;
-	gint32 num_children;
-	gint64 db_id;
-	gint32 unknown2;
-	unsigned char padding[];
-};
+	gchar   header_id[4];
+	guint32 header_len;
+	guint32 total_len;
+	guint32 unknown1;
+	guint32 version;
+	guint32 num_children;
+	guint64 db_id;
+	guint16 unknown2;
+	guint32 unknown3;
+	guint64 unknown4;
+	guint16 unknown5;
+	guint16 hashing_scheme;
+	guchar  unknown6[20];
+	gchar   language_id[2];
+	guint64 db_persistent_id;
+	guint32 unknown7;
+	guint32 unknown8;
+	guchar  hash58[20];
+	gint32  timezone_offset;
+	guint16 unknown9;
+	guchar  hash72[46];
+	guchar  padding[];
+} __attribute__((__packed__));
 
 enum MhsdIndexType {
 	MHSD_TRACK_LIST = 1,
