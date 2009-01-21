@@ -1,5 +1,12 @@
 2009-01-21  Christophe Fergeau  <teuf at gnome.org>
 
+	* src/itdb_device.c: set the hashing scheme in
+	itdb_device_write_checksum instead of doing it in itdb_itunesdb,
+	allows more flexibility if we ever add different checksumming
+	methods
+
+2009-01-21  Christophe Fergeau  <teuf at gnome.org>
+
 	* src/itdb_device.c:
 	* src/itdb_private.h: get rid of itdb_device_requires_checksum
 	which is now unused

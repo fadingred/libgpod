@@ -3500,7 +3500,9 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put16lint (cts, 2);   /* always seems to be 2 */
   put16_n0  (cts, 7);  /* unknown */
   /* 0x30 */
-  put16lint (cts, itdb_device_get_checksum_type (fexp->itdb->device));
+  put16lint (cts, 0);   /* set hashing scheme to 0 for now, will be set
+			 * to the appropriate value in
+			 * itdb_device_write_checksum */
   put16_n0  (cts, 10);  /* unknown */
   /* 0x46 */
   put16lint (cts, 0);   /* langauge */

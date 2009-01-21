@@ -1765,6 +1765,8 @@ static gboolean itdb_device_write_hash58 (Itdb_Device *device,
     memset(&header->unknown6, 0, sizeof (header->unknown6));
     memset(&header->hash58, 0, sizeof (header->hash58));
 
+    header->hashing_scheme = GUINT16_FROM_LE (ITDB_CHECKSUM_HASH58);
+
     checksum = itdb_compute_hash (fwid, itdb_data, itdb_len, &len);
     if (checksum == NULL) {
 	g_set_error (error, 0, -1, "Failed to compute checksum");
