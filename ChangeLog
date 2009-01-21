@@ -1,6 +1,9 @@
 2009-01-21  Christophe Fergeau  <teuf at gnome.org>
 
-	* src/itdb_device.h:
+	* src/itdb_device.c: fix itdb_device_new prototype
+
+2009-01-21  Christophe Fergeau  <teuf at gnome.org>
+
 	* src/itdb_device.c: itdb_device_get_checksum_type can be static
 
 2009-01-21  Christophe Fergeau  <teuf at gnome.org>

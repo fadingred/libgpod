@@ -695,7 +695,7 @@ static void itdb_device_reset_sysinfo (Itdb_Device *device)
  *
  * Since: 0.4.0
  */
-Itdb_Device *itdb_device_new ()
+Itdb_Device *itdb_device_new (void)
 {
     Itdb_Device *dev;
 
