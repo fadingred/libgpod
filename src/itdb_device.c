@@ -1740,9 +1740,7 @@ static gboolean itdb_device_write_hash58 (Itdb_Device *device,
     gsize len;
     MhbdHeader *header;
    
-    if (itdb_device_get_checksum_type (device) != ITDB_CHECKSUM_HASH58) {
-        return TRUE;
-    }	
+    g_assert (itdb_device_get_checksum_type (device) == ITDB_CHECKSUM_HASH58);
 
     fwid = itdb_device_get_firewire_id (device);
     if (fwid == 0) {

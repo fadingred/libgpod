@@ -1,5 +1,11 @@
 2009-01-21  Christophe Fergeau  <teuf at gnome.org>
 
+	* src/itdb_device.c: itdb_device_write_hash58 should only be called
+	on devices supporting this hash type, it's a programming error to
+	call it with something else
+
+2009-01-21  Christophe Fergeau  <teuf at gnome.org>
+
 	* src/itdb_device.c: set the hashing scheme in
 	itdb_device_write_checksum instead of doing it in itdb_itunesdb,
 	allows more flexibility if we ever add different checksumming
