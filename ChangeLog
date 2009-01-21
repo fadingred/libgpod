@@ -1,5 +1,10 @@
 2009-01-21  Christophe Fergeau  <teuf at gnome.org>
 
+	* src/itdb_device.h:
+	* src/itdb_device.c: itdb_device_get_checksum_type can be static
+
+2009-01-21  Christophe Fergeau  <teuf at gnome.org>
+
 	* src/itdb_device.c: itdb_device_write_hash58 should only be called
 	on devices supporting this hash type, it's a programming error to
 	call it with something else

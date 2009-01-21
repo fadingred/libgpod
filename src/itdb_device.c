@@ -1684,7 +1684,7 @@ guint64 itdb_device_get_firewire_id (const Itdb_Device *device)
     return g_ascii_strtoull (fwid, NULL, 16);
 }
 
-G_GNUC_INTERNAL ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
+static ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
 {
     const Itdb_IpodInfo *info;
 
