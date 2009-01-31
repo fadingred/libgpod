@@ -1,5 +1,13 @@
 2009-01-31  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
+	* Makefile.am, configure.ac, tools/Makefile.am,	TROUBLESHOOTING:
+	Improve the default hal callout path. The search path hal uses
+	for its callouts differs on various platforms. The new path
+	should work on more systems out of the box. The fdi file now
+	also defaults to a path more likely to work by default.
+
+2009-01-31  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
 	* bindings/python/Makefile.am, configure.ac:
 	Only use PYGOBJECT_{CFLAGS,LIBS} in bindings/python.  Thanks
 	to Frank Lichtenheld (fixes Debian bug #452829).

@@ -18,10 +18,10 @@ libgpod_callout_SOURCES =		\
 libgpod_callout_CFLAGS=$(LIBGPOD_CFLAGS) $(SGUTILS_CFLAGS) -I$(top_srcdir)/src
 libgpod_callout_LDADD=$(LIBGPOD_LIBS) $(SGUTILS_LIBS) $(top_builddir)/src/libgpod.la
 
-fdidir = $(datadir)/hal/fdi/policy/20thirdparty
+fdidir = $(HALFDIDIR)/policy/20thirdparty
 fdi_DATA = 20-libgpod-sysinfo-extended.fdi
 
-EXTRA_DIST = $(fdi_DATA) 
+EXTRA_DIST = $(fdi_DATA)
 
 endif
 

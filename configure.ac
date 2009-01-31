@@ -117,11 +117,19 @@ dnl ***********************************************************************
 AC_ARG_WITH(hal, AC_HELP_STRING([--without-hal],
         [Disable HAL support]))
 
+hal_callouts_dir="`$PKG_CONFIG --variable libdir hal`/hal/scripts"
 AC_ARG_WITH(hal_callouts_dir, AC_HELP_STRING([--with-hal-callouts-dir=DIR],
-	[Directory where HAL expects its callout scripts to be located]), , 
-	with_hal_callouts_dir="${expanded_libdir}/hal")
+	[Directory where HAL expects its callout scripts to be located]),,
+	with_hal_callouts_dir="$hal_callouts_dir")
 HALCALLOUTSDIR="$with_hal_callouts_dir"
 AC_SUBST(HALCALLOUTSDIR)
+
+hal_fdi_dir="`$PKG_CONFIG --variable prefix hal`/share/hal/fdi"
+AC_ARG_WITH(hal_fdi_dir, AC_HELP_STRING([--with-hal-fdi-dir=DIR],
+	[Directory where HAL expects its fdi files to be located]),,
+	with_hal_fdi_dir="$hal_fdi_dir")
+HALFDIDIR="$with_hal_fdi_dir"
+AC_SUBST(HALFDIDIR)
 
 if test "x$with_hal" != "xno"; then
   PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6, enable_hal=yes, enable_hal=no)
