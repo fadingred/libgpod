@@ -59,24 +59,6 @@ AC_PROG_INTLTOOL([0.21])
 PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.8.0 gobject-2.0)
 
 dnl **************************************************
-dnl * expand $libdir 
-dnl * by default, it looks like ${prefix}/lib
-dnl * we want to expand prefix
-dnl **************************************************
-expanded_libdir=`(
-    case $prefix in 
-        NONE) prefix=$ac_default_prefix ;; 
-        *) ;; 
-    esac
-    case $exec_prefix in 
-        NONE) exec_prefix=$prefix ;; 
-        *) ;; 
-    esac
-    eval echo $libdir
-)`
-
-
-dnl **************************************************
 dnl we've copied gchecksum from glib 2.16. Only use the
 dnl copy if the version of glib on the system does not
 dnl provide it.

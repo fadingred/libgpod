@@ -1,5 +1,11 @@
 2009-01-31  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
+	* configure.ac: Remove unused expanded_libdir definition. This
+	was only used when setting the hal callout dir, and is no
+	longer needed.
+
+2009-01-31  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
 	* Makefile.am, configure.ac, tools/Makefile.am,	TROUBLESHOOTING:
 	Improve the default hal callout path. The search path hal uses
 	for its callouts differs on various platforms. The new path
