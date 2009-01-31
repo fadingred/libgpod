@@ -40,9 +40,9 @@ gpod_PYTHON =  __init__.py gtkpod.py ipod.py
 nodist_gpod_PYTHON = gpod.py
 gpod_LTLIBRARIES = _gpod.la
 nodist__gpod_la_SOURCES = gpod_wrap.c
-_gpod_la_CPPFLAGS = $(PYTHON_INCLUDES) $(LIBGPOD_CFLAGS) $(INCLUDES)
+_gpod_la_CPPFLAGS = $(PYTHON_INCLUDES) $(LIBGPOD_CFLAGS) $(PYGOBJECT_CFLAGS) $(INCLUDES)
 _gpod_la_LDFLAGS = -module -avoid-version
-_gpod_la_LIBADD = $(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la
+_gpod_la_LIBADD = $(LIBGPOD_LIBS) $(PYGOBJECT_LIBS) $(top_builddir)/src/libgpod.la
 
 gpod_doc.i: $(srcdir)/gpod_doc.i.in $(srcdir)/gtkdoc-to-swig.xsl
 	cat $< > $@

@@ -212,12 +212,12 @@ if test x$enable_pygobject != xno; then
 fi
 if test x"$have_pygobject" = xyes; then
    AC_DEFINE_UNQUOTED(HAVE_PYGOBJECT, 1)
-   LIBGPOD_CFLAGS="$LIBGPOD_CFLAGS $PYGOBJECT_CFLAGS"
-   LIBGPOD_LIBS="$LIBGPOD_LIBS $PYGOBJECT_LIBS"
 else
    have_pygobject=no
 fi
 AM_CONDITIONAL(HAVE_PYGOBJECT, test x"$have_pygobject" = xyes)
+AC_SUBST(PYGOBJECT_CFLAGS)
+AC_SUBST(PYGOBJECT_LIBS)
 
 dnl **************************************************
 dnl * internationalization support
