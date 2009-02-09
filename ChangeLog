@@ -1,3 +1,9 @@
+2009-02-09  Christophe Fergeau  <teuf@gnome.org>
+
+	* src/itdb_itunesdb.c: fix crash when generating the album list
+	when a track has a NULL album. Thanks to Peter and Todd for
+	reporting that bug and pinpointing what was wrong.
+
 2009-01-31  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* README.SysInfo: Add info on determining FirewireGUID on

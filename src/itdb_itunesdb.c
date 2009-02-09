@@ -5158,12 +5158,17 @@ static gboolean itdb_track_equal (gconstpointer v1, gconstpointer v2)
   Itdb_Track *track1 = (Itdb_Track *)v1;
   Itdb_Track *track2 = (Itdb_Track *)v2;
 
+  g_assert (track1->album != NULL);
+  g_assert (track2->album != NULL);
+
   if ((track1->albumartist != NULL) && (track2->albumartist != NULL)) {
       return (g_str_equal (track1->album, track2->album)
 	      && g_str_equal (track1->albumartist, track2->albumartist));
-  } else {
+  } else if ((track1->artist != NULL) && (track2->artist != NULL)) {
       return (g_str_equal (track1->album, track2->album)
 	      && g_str_equal (track1->artist, track2->artist));
+  } else {
+      return (g_str_equal (track1->album, track2->album));
   }
 }
 
@@ -5217,7 +5222,7 @@ static void prepare_itdb_for_write (FExport *fexp)
 	g_return_if_fail (track);
 	track->id = fexp->next_id++;
 
-	if ((track->album == NULL) && (track->artist == NULL)) {
+	if (track->album == NULL) {	
 	    /* unknow album name and artist, this entry isn't interesting to
 	     * build the list of all albums on the ipod
 	     */
