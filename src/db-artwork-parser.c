@@ -43,22 +43,6 @@
 
 typedef int (*ParseListItem)(DBParseContext *ctx, GError *error);
 
-static Itdb_Track *
-get_song_by_dbid (Itdb_iTunesDB *db, guint64 id)
-{
-	GList *it;
-
-	for (it = db->tracks; it != NULL; it = it->next) {
-		Itdb_Track *song;
-
-		song = (Itdb_Track*)it->data;
-		if (song->dbid == id) {
-			return song;
-		}
-	}
-	return NULL;
-}
-
 
 static int
 parse_mhif (DBParseContext *ctx, GError *error)
@@ -483,6 +467,30 @@ parse_mhsd (DBParseContext *ctx, GError **error)
 }
 
 
+/* Compares the two guint64 values being pointed to and returns TRUE if
+ * they are equal. It can be passed to g_hash_table_new() as the
+ *  key_equal_func parameter, when using pointers to guint64 as keys
+ * in a GHashTable.
+ */
+static gboolean
+guint64_equal (gconstpointer v1, gconstpointer v2)
+{
+    guint64 i1 = *(const guint64*)v1;
+    guint64 i2 = *(const guint64*)v2;
+    return i1 == i2;
+}
+
+/* Converts a pointer to a guint64 to a hash value. It can be passed to
+ * g_hash_table_new() as the hash_func parameter, when using pointers
+ * to guint64 values as keys in a GHashTable.
+ */
+static guint
+guint64_hash(gconstpointer v)
+{
+    guint64 i = *(const guint64*)v;
+    return i ^ (i >> 32);
+}
+
 /* Apple introduced a new way to associate artwork. The former way
  * used the dbid to link each artwork (mhii) back to the track. The
  * new way uses the mhii id to link from each track to the mhii. Above
@@ -491,12 +499,22 @@ static int
 mhfd_associate_itunesdb_artwork (DBParseContext *ctx)
 {
     GHashTable *mhii_id_hash;
+    GHashTable *song_dbid_hash;
     Itdb_iTunesDB *itdb;
     GList *gl;
 
     g_return_val_if_fail (ctx && ctx->artwork, -1);
     itdb = db_get_itunesdb (ctx->db);
     g_return_val_if_fail (itdb, -1);
+
+    /* make a hash linking the dbid with the songs for faster
+       lookup */
+    song_dbid_hash = g_hash_table_new (guint64_hash, guint64_equal);
+
+    for (gl = itdb->tracks; gl != NULL; gl = gl->next) {
+	Itdb_Track *song = (Itdb_Track*)gl->data;
+	g_hash_table_insert (song_dbid_hash, &song->dbid, song);
+    }
 
     /* make a hash linking the mhii with the artwork for faster
        lookup */
@@ -515,7 +533,7 @@ mhfd_associate_itunesdb_artwork (DBParseContext *ctx)
 
 	/* add Artwork to track indicated by the dbid for backward
 	   compatibility */
-	track = get_song_by_dbid (itdb, artwork->dbid);
+	track = g_hash_table_lookup (song_dbid_hash, &artwork->dbid);
 	if (track == NULL)
 	{
 	    gchar *strval = g_strdup_printf("%" G_GINT64_FORMAT, artwork->dbid);
@@ -576,6 +594,7 @@ mhfd_associate_itunesdb_artwork (DBParseContext *ctx)
 	}
     }
     g_hash_table_destroy (mhii_id_hash);
+    g_hash_table_destroy (song_dbid_hash);
     /* The actual ItdbArtwork data was freed through the GHashTable
        value_destroy_func */
     g_list_free (*ctx->artwork);

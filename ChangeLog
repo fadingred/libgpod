@@ -1,3 +1,8 @@
+2009-02-28  Javier Kohen <jkohen@users.sourceforge.net>
+
+	* src/db-artwork-parser: replace linear look-up of songs with
+	local hashtable.
+
 2009-02-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* src/itdb_itunesdb.c: fix crash when generating the album list
