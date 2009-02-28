@@ -286,6 +286,13 @@ struct _MHODData
 
 typedef struct _MHODData MHODData;
 
+struct _PosEntry {
+    guint32 trackid;
+    gint32 track_pos;
+};
+
+typedef struct _PosEntry PosEntry;
+
 /* Declarations */
 static gboolean itdb_create_directories (Itdb_Device *device, GError **error);
 
@@ -1861,31 +1868,34 @@ static glong find_mhsd (FContents *cts, guint32 type)
 }
 
 
-
-static gint pos_comp (gpointer a, gpointer b);
-static gint pos_comp (gpointer a, gpointer b)
+static gint pos_comp (gconstpointer a, gconstpointer b)
 {
-    return (GPOINTER_TO_UINT(a) - GPOINTER_TO_UINT(b));
+    const PosEntry *pa = (const PosEntry*)a;
+    const PosEntry *pb = (const PosEntry*)b;
+
+    if (pa->track_pos < pb->track_pos)
+	return -1;
+    else if (pa->track_pos > pb->track_pos)
+        return 1;
+    else
+	return 0;
 }
 
 
 /* Read and process the mhip at @seek. Return a pointer to the next
    possible mhip. */
 /* Return value: -1 if no mhip is present at @seek */
-static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
-		       glong mhip_seek)
+static glong get_mhip (FImport *fimp, glong mhip_seek)
 {
     gboolean first_entry = TRUE;
     FContents *cts;
     guint32 mhip_hlen, mhip_len, mhod_num, mhod_seek;
-    Itdb_Track *tr;
-    gint32 i, pos=-1;
+    gint32 i;
     gint32 mhod_type;
     guint32 trackid;
 
 
     g_return_val_if_fail (fimp, -1);
-    g_return_val_if_fail (plitem, -1);
 
     cts = fimp->fcontents;
 
@@ -1934,23 +1944,12 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	    MHODData mhod;
 	    mhod = get_mhod (fimp, mhod_seek, &mhod_len);
 	    CHECK_ERROR (fimp, -1);
-	    pos = -1;
 	    if (mhod.valid && first_entry)
 	    {
-		/* The posids don't have to be in numeric order, but our
-		   database depends on the playlist members being sorted
-		   according to the order they appear in the
-		   playlist. Therefore we need to find out at which
-		   position to insert the track */
-		fimp->pos_glist = g_list_insert_sorted (
-		    fimp->pos_glist,
-		    GUINT_TO_POINTER(mhod.data.track_pos),
-		    (GCompareFunc)pos_comp);
-		pos = g_list_index (
-		    fimp->pos_glist,
-		    GUINT_TO_POINTER(mhod.data.track_pos));
-		/* for speedup: pos==-1 is appending at the end */
-		if (pos == fimp->pos_len)   pos = -1;
+		PosEntry *entry = g_new(PosEntry, 1);
+		entry->trackid = trackid;
+		entry->track_pos = mhod.data.track_pos;
+		fimp->pos_glist = g_list_prepend (fimp->pos_glist, entry);
 		/* don't call this section more than once (it never
 		   should happen except in the case of corrupted
 		   iTunesDBs...) */
@@ -1967,20 +1966,6 @@ static glong get_mhip (FImport *fimp, Itdb_Playlist *plitem,
 	    }
 	}
 	mhod_seek += mhod_len;
-    }
-
-    tr = itdb_track_id_tree_by_id (fimp->idtree, trackid);
-    if (tr)
-    {
-	itdb_playlist_add_track (plitem, tr, pos);
-	++fimp->pos_len;
-    }
-    else
-    {
-	if (plitem->podcastflag == ITDB_PL_FLAG_NORM)
-	{
-	g_warning (_("Itdb_Track ID '%d' not found.\n"), trackid);
-	}
     }
 
     /* Up to iTunesd V4.7 or so the mhip_len was set incorrectly
@@ -2007,6 +1992,8 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   guint32 header_len;
   Itdb_Playlist *plitem = NULL;
   FContents *cts;
+  GList *gl;
+  gint32 pos_len = 0;
 
 #if ITUNESDB_DEBUG
   fprintf(stderr, "mhyp seek: %x\n", (int)mhyp_seek);
@@ -2014,7 +2001,6 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   g_return_val_if_fail (fimp, -1);
   g_return_val_if_fail (fimp->idtree, -1);
   g_return_val_if_fail (fimp->pos_glist == NULL, -1);
-  g_return_val_if_fail (fimp->pos_len == 0, -1);
 
   cts = fimp->fcontents;
 
@@ -2184,7 +2170,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   i=0; /* tracks read */
   for (i=0; i < mhipnum; ++i)
   {
-      mhip_seek = get_mhip (fimp, plitem, mhip_seek);
+      mhip_seek = get_mhip (fimp, mhip_seek);
       if (mhip_seek == -1)
       {
 	  g_set_error (&fimp->error,
@@ -2196,10 +2182,28 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
       }
   }	  
 
+  fimp->pos_glist = g_list_sort (fimp->pos_glist, pos_comp);
+  for (gl = fimp->pos_glist; gl; gl = g_list_next (gl))
+  {
+      PosEntry* entry = (PosEntry*)gl->data;
+      Itdb_Track *tr = itdb_track_id_tree_by_id (fimp->idtree, entry->trackid);
+      if (tr)
+      {
+	  itdb_playlist_add_track (plitem, tr, pos_len);
+	  ++pos_len;
+      }
+      else
+      {
+	  if (plitem->podcastflag == ITDB_PL_FLAG_NORM)
+	  {
+	      g_warning (_("Itdb_Track ID '%d' not found.\n"), entry->trackid);
+	  }
+      }
+      g_free(entry);
+  }
 
   g_list_free (fimp->pos_glist);
   fimp->pos_glist = NULL;
-  fimp->pos_len = 0;
   return nextseek;
 }
 

@@ -1,5 +1,17 @@
 2009-02-28  Javier Kohen <jkohen@users.sourceforge.net>
 
+	* src/itdb_itunesdb.c:
+	* src/itdb_private.h: avoid linked list scans in get_playlist/get_mhip.
+
+	Replaced code that scanned the linked list twice on each
+	insertion (once for sorting, once for finding the previous
+	insert position) by a single sort and scan at the end.
+	        
+	As a side-effect removed dependency of get_mhip on Itdb
+	structures (easier to unittest, etc.).
+
+2009-02-28  Javier Kohen <jkohen@users.sourceforge.net>
+
 	* src/db-artwork-parser: replace linear look-up of songs with
 	local hashtable.
 
