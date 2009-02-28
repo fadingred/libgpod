@@ -1,3 +1,10 @@
+2009-02-28  Christophe Fergeau <cfergeau@mandriva.com>
+
+	* src/itdb_itunesdb.c: Set field at offset 0x70 in the mhbd to 2
+	        
+	If this field isn't set to 2, iTunes thinks databases written 
+	to the iPhone are corrupted
+
 2009-02-28  Javier Kohen <jkohen@users.sourceforge.net>
 
 	* src/itdb_itunesdb.c:

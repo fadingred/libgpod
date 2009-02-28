@@ -3516,7 +3516,10 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put32lint (cts, 0);   /* unknown: seen: 0x4d for nano 3G */
   put32_n0 (cts, 5);    /* 20 bytes hash */
   put32lint (cts, 0);   /* timezone offset in seconds */
-  put32_n0 (cts, 19);   /* dummy space */
+  put16lint (cts, 2);   /* without it, iTunes thinks iPhone databases
+			   are corrupted */
+  put16lint (cts, 0);
+  put32_n0 (cts, 18);   /* dummy space */
 }
 
 /* Fill in the length of a standard header */
