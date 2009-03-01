@@ -435,6 +435,7 @@ static const Itdb_ArtworkFormat ipod_classic_1_cover_art_info[] = {
     /* officially 55x55 -- verify! */
     {1061,  56,  56, THUMB_FORMAT_RGB565_LE},
     {1055, 128, 128, THUMB_FORMAT_RGB565_LE},
+    {1068, 128, 128, THUMB_FORMAT_RGB565_LE},
     {1060, 320, 320, THUMB_FORMAT_RGB565_LE},
     {  -1,  -1,  -1, -1}
 };
@@ -451,7 +452,7 @@ static const Itdb_ArtworkFormat ipod_classic_1_photo_info[] = {
 static const Itdb_ArtworkFormat ipod_classic_1_chapter_image_info[] = {
     /*  These are the same as for the iPod video... -- labeled by the iPod as
         "chapter images" */
-    {1028, 100, 100, THUMB_FORMAT_RGB565_LE},
+    {1055, 128, 128, THUMB_FORMAT_RGB565_LE},
     {1029, 200, 200, THUMB_FORMAT_RGB565_LE},
     {  -1,  -1,  -1, -1}
 };

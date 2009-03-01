@@ -1,3 +1,7 @@
+2009-03-01  Christophe Fergeau <cfergeau@mandriva.com>
+
+	* src/itdb_device.c: fix nano3g/ipod classic artwork information
+
 2009-02-28  Christophe Fergeau <cfergeau@mandriva.com>
 
 	* src/itdb_itunesdb.c: Set field at offset 0x70 in the mhbd to 2
