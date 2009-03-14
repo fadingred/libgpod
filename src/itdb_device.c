@@ -1694,7 +1694,8 @@ static void itdb_device_set_timezone_info (Itdb_Device *device)
  *
  * Returns the Firewire ID for @device, this is useful to calculate the 
  * iTunesDB checksum which is expected by newer iPod models
- * (iPod classic/fat nanos)
+ * (iPod classic/fat nanos) and is needed on iPod plugged through USB contrary
+ * to what the name implies.
  *
  * Returns: the guint64 firewire id, or 0 if we don't know it
  *
@@ -1702,14 +1703,20 @@ static void itdb_device_set_timezone_info (Itdb_Device *device)
  */
 guint64 itdb_device_get_firewire_id (const Itdb_Device *device)
 {
-    gchar *fwid;
+    const gchar *fwid = NULL;
 
-    g_assert (device->sysinfo != NULL);
+    if (device->sysinfo_extended != NULL) {
+	fwid = itdb_sysinfo_properties_get_firewire_id (device->sysinfo_extended);
+    }
+    if (fwid == NULL) {
+	    fwid = (const gchar *)g_hash_table_lookup (device->sysinfo,
+			                               "FirewireGuid");
+    }
 
-    fwid = g_hash_table_lookup (device->sysinfo, "FirewireGuid");
     if (fwid == NULL) {
 	return 0;
     }
+
     return g_ascii_strtoull (fwid, NULL, 16);
 }
 
