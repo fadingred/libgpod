@@ -639,3 +639,11 @@ itdb_sysinfo_properties_supports_sparse_artwork (const SysInfoIpodProperties *pr
 
     return props->supports_sparse_artwork;
 }
+
+gboolean
+itdb_sysinfo_properties_supports_podcast (const SysInfoIpodProperties *props)
+{
+    g_return_val_if_fail (props != NULL, FALSE);
+
+    return props->podcasts_supported;
+}

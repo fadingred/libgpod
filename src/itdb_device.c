@@ -1941,3 +1941,52 @@ GQuark itdb_device_error_quark (void)
     }
     return quark;
 }
+
+/**
+ * itdb_device_supports_podcast:
+ * @device: an #Itdb_Device
+ *
+ * Indicates whether @device can play podcasts or not.
+ *
+ * Returns: true if @device can play podcasts.
+ *
+ * Since: 0.7.2
+ */
+gboolean
+itdb_device_supports_podcast (const Itdb_Device *device)
+{
+    if (device->sysinfo_extended != NULL) {
+    	return itdb_sysinfo_properties_supports_podcast (device->sysinfo_extended);
+    } else {
+	const Itdb_IpodInfo *info;
+
+	info = itdb_device_get_ipod_info (device);
+	switch (info->ipod_generation) {
+	    case ITDB_IPOD_GENERATION_UNKNOWN:
+	    case ITDB_IPOD_GENERATION_FIRST:
+	    case ITDB_IPOD_GENERATION_SECOND:
+	    case ITDB_IPOD_GENERATION_THIRD:
+	    case ITDB_IPOD_GENERATION_MOBILE:
+		return FALSE;
+	    case ITDB_IPOD_GENERATION_FOURTH:
+	    case ITDB_IPOD_GENERATION_PHOTO:
+	    case ITDB_IPOD_GENERATION_MINI_1:
+	    case ITDB_IPOD_GENERATION_MINI_2:
+	    case ITDB_IPOD_GENERATION_NANO_1:
+	    case ITDB_IPOD_GENERATION_NANO_2:
+	    case ITDB_IPOD_GENERATION_NANO_3:
+	    case ITDB_IPOD_GENERATION_NANO_4:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_1:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_2:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_3:
+	    case ITDB_IPOD_GENERATION_VIDEO_1:
+	    case ITDB_IPOD_GENERATION_VIDEO_2:
+	    case ITDB_IPOD_GENERATION_CLASSIC_1:
+	    case ITDB_IPOD_GENERATION_CLASSIC_2:
+	    case ITDB_IPOD_GENERATION_TOUCH_1:
+	    case ITDB_IPOD_GENERATION_IPHONE_1:
+		return TRUE;
+	}
+	g_return_val_if_reached (FALSE);
+    }
+}

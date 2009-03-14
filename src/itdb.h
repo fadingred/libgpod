@@ -1750,6 +1750,7 @@ const Itdb_IpodInfo *itdb_info_get_ipod_info_table (void);
 gboolean itdb_device_supports_artwork (const Itdb_Device *device);
 gboolean itdb_device_supports_video (const Itdb_Device *device);
 gboolean itdb_device_supports_photo (const Itdb_Device *device);
+gboolean itdb_device_supports_podcast (const Itdb_Device *device);
 const gchar *itdb_info_get_ipod_model_name_string (Itdb_IpodModel model);
 const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generation);
 
