@@ -1,5 +1,12 @@
 2009-03-14  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* src/itdb.h
+	* src/itdb_device.c
+	* src/itdb_device.h: add itdb_device_supports_chapter_image method
+	to test if an iPod support chapter images or not.
+
+2009-03-14  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* src/itdb_device.c: factorize some code in legacy artwork
 	handling
 

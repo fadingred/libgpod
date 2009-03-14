@@ -1113,6 +1113,19 @@ GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
     g_return_val_if_reached (NULL);
 }
 
+GList *itdb_device_get_chapter_image_formats (const Itdb_Device *device)
+{
+    g_return_val_if_fail (device != NULL, NULL);
+
+    if (device->sysinfo_extended == NULL) {
+        return itdb_device_get_artwork_formats_fallback (device,
+							 ARTWORK_TYPE_CHAPTER_IMAGE);
+    } else {
+        return g_list_copy ((GList *)itdb_sysinfo_properties_get_chapter_image_formats (device->sysinfo_extended));
+    }
+    g_return_val_if_reached (NULL);
+}
+
 G_GNUC_INTERNAL gboolean 
 itdb_device_supports_sparse_artwork (const Itdb_Device *device)
 {
@@ -1475,6 +1488,27 @@ gboolean itdb_device_supports_photo (const Itdb_Device *device)
         return FALSE;
     }
     formats = itdb_device_get_photo_formats (device);
+    g_list_free (formats);
+    return (formats != NULL);
+}
+
+/**
+ * itdb_device_supports_chapter_images:
+ * @device: an #Itdb_Device
+ *
+ * Indicates whether @device can display chapter images or not.
+ *
+ * Return value: true if @device can display chapter images.
+ *
+ * Since: 0.7.2
+ */
+gboolean itdb_device_supports_chapter_image (const Itdb_Device *device)
+{
+    GList *formats;
+    if (device == NULL) {
+        return FALSE;
+    }
+    formats = itdb_device_get_chapter_image_formats (device);
     g_list_free (formats);
     return (formats != NULL);
 }
