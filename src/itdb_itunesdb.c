@@ -306,6 +306,41 @@ GQuark itdb_file_error_quark (void)
 }
 
 
+static guint16 raw_get16lint (FContents *cts, glong seek);
+static guint32 raw_get24lint (FContents *cts, glong seek);
+static guint32 raw_get32lint (FContents *cts, glong seek);
+static guint64 raw_get64lint (FContents *cts, glong seek);
+static float raw_get32lfloat (FContents *cts, glong seek);
+static guint16 raw_get16bint (FContents *cts, glong seek);
+static guint32 raw_get24bint (FContents *cts, glong seek);
+static guint32 raw_get32bint (FContents *cts, glong seek);
+static guint64 raw_get64bint (FContents *cts, glong seek);
+static float raw_get32bfloat (FContents *cts, glong seek);
+
+static const ByteReader LITTLE_ENDIAN_READER =
+{
+    raw_get16lint, raw_get24lint, raw_get32lint, raw_get64lint, raw_get32lfloat
+};
+static const ByteReader BIG_ENDIAN_READER =
+{
+    raw_get16bint, raw_get24bint, raw_get32bint, raw_get64bint, raw_get32bfloat
+};
+
+static void fcontents_set_reversed(FContents *cts, gboolean reversed)
+{
+    cts->reversed = reversed;
+    if (!reversed)
+    {
+	memcpy(&cts->le_reader, &LITTLE_ENDIAN_READER, sizeof (ByteReader));
+	memcpy(&cts->be_reader, &BIG_ENDIAN_READER, sizeof (ByteReader));
+    }
+    else
+    {
+	memcpy(&cts->le_reader, &BIG_ENDIAN_READER, sizeof (ByteReader));
+	memcpy(&cts->be_reader, &LITTLE_ENDIAN_READER, sizeof (ByteReader));
+    }
+}
+
 /* Read the contents of @filename and return a FContents
    struct. Returns NULL in case of error and @error is set
    accordingly */
@@ -316,7 +351,7 @@ static FContents *fcontents_read (const gchar *fname, GError **error)
     g_return_val_if_fail (fname, NULL);
 
     cts = g_new0 (FContents, 1);
-    cts->reversed = FALSE;
+    fcontents_set_reversed (cts, FALSE);
 
     if (g_file_get_contents (fname, &cts->contents, &cts->length, error))
     {
@@ -544,7 +579,7 @@ static gboolean check_header_seek (FContents *cts, const gchar *data,
 
 /* Returns the 1-byte number stored at position @seek. On error the
  * GError in @cts is set. */
-static guint8 get8int (FContents *cts, glong seek)
+static inline guint8 get8int (FContents *cts, glong seek)
 {
     guint8 n=0;
 
@@ -568,7 +603,7 @@ static guint16 raw_get16lint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 2))
     {
-	g_return_val_if_fail (cts->contents, 0);
+/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 2);
 	n = GUINT16_FROM_LE (n);
     }
@@ -583,7 +618,7 @@ static guint32 raw_get24lint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 3))
     {
-	g_return_val_if_fail (cts->contents, 0);
+/*	g_return_val_if_fail (cts->contents, 0);*/
 	n = ((guint32)get8int (cts, seek+0)) +
 	    (((guint32)get8int (cts, seek+1)) >> 8) +
 	    (((guint32)get8int (cts, seek+2)) >> 16);
@@ -599,7 +634,7 @@ static guint32 raw_get32lint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 4))
     {
-	g_return_val_if_fail (cts->contents, 0);
+/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 4);
 	n = GUINT32_FROM_LE (n);
     }
@@ -631,7 +666,7 @@ static guint64 raw_get64lint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 8))
     {
-	g_return_val_if_fail (cts->contents, 0);
+/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 8);
 	n = GUINT64_FROM_LE (n);
     }
@@ -651,7 +686,7 @@ static guint16 raw_get16bint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 2))
     {
-	g_return_val_if_fail (cts->contents, 0);
+/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 2);
 	n = GUINT16_FROM_BE (n);
     }
@@ -666,7 +701,7 @@ static guint32 raw_get24bint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 3))
     {
-	g_return_val_if_fail (cts->contents, 0);
+/*	g_return_val_if_fail (cts->contents, 0);*/
 	n = ((guint32)get8int (cts, seek+2)) +
 	    (((guint32)get8int (cts, seek+1)) >> 8) +
 	    (((guint32)get8int (cts, seek+0)) >> 16);
@@ -682,7 +717,7 @@ static guint32 raw_get32bint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 4))
     {
-	g_return_val_if_fail (cts->contents, 0);
+/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 4);
 	n = GUINT32_FROM_BE (n);
     }
@@ -713,7 +748,7 @@ static guint64 raw_get64bint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 8))
     {
-	g_return_val_if_fail (cts->contents, 0);
+/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 8);
 	n = GUINT64_FROM_BE (n);
     }
@@ -722,107 +757,75 @@ static guint64 raw_get64bint (FContents *cts, glong seek)
 
 
 /* ------------------------------------------------------------
-   Reversed Endian Sensitive (little endian)
+   Little Endian
    ------------------------------------------------------------ */
 
-/* The following functions take into consideration the state of
- * cts->reversed and call either raw_getnnlint or raw_getnnbint */
-static guint16 get16lint (FContents *cts, glong seek)
+static inline guint16 get16lint (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get16lint (cts, seek);
-    else
-	return raw_get16bint (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->le_reader.get16int (cts, seek);
 }
 
-static guint32 get24lint (FContents *cts, glong seek)
+static inline guint32 get24lint (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get24lint (cts, seek);
-    else
-	return raw_get24bint (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->le_reader.get24int (cts, seek);
 }
 #if 0
-static guint32 get24bint (FContents *cts, glong seek)
+static inline guint32 get24bint (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get24bint (cts, seek);
-    else
-	return raw_get24lint (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->be_reader.get24int (cts, seek);
 }
 #endif
-static guint32 get32lint (FContents *cts, glong seek)
+static inline guint32 get32lint (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get32lint (cts, seek);
-    else
-	return raw_get32bint (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->le_reader.get32int (cts, seek);
 }
 
-static float get32lfloat (FContents *cts, glong seek)
+static inline float get32lfloat (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get32lfloat (cts, seek);
-    else
-	return raw_get32bfloat (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->le_reader.get32float (cts, seek);
 }
 
-static guint64 get64lint (FContents *cts, glong seek)
+static inline guint64 get64lint (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get64lint (cts, seek);
-    else
-	return raw_get64bint (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->le_reader.get64int (cts, seek);
 }
 
 
 
 /* ------------------------------------------------------------
-   Reversed Endian Sensitive (big endian)
+   Big Endian
    ------------------------------------------------------------ */
 
-static guint16 get16bint (FContents *cts, glong seek)
+static inline guint16 get16bint (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get16bint (cts, seek);
-    else
-	return raw_get16lint (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->be_reader.get16int (cts, seek);
 }
 
-static guint32 get32bint (FContents *cts, glong seek)
+static inline guint32 get32bint (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get32bint (cts, seek);
-    else
-	return raw_get32lint (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->be_reader.get32int (cts, seek);
 }
 
 #if 0
-static float get32bfloat (FContents *cts, glong seek)
+static inline float get32bfloat (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get32bfloat (cts, seek);
-    else
-	return raw_get32lfloat (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->be_reader.get32float (cts, seek);
 }
 #endif
 
-static guint64 get64bint (FContents *cts, glong seek)
+static inline guint64 get64bint (FContents *cts, glong seek)
 {
-    g_return_val_if_fail (cts, 0);
-    if (!cts->reversed)
-	return raw_get64bint (cts, seek);
-    else
-	return raw_get64lint (cts, seek);
+/*    g_return_val_if_fail (cts, 0);*/
+    return cts->be_reader.get64int (cts, seek);
 }
 
 
@@ -908,7 +911,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	    g_propagate_error (&fimp->error, cts->error);
 	    return FALSE;
 	}
-	cts->reversed = TRUE;
+	fcontents_set_reversed (cts, TRUE);
 	if (!check_header_seek (cts, "mhdp", 0))
 	{
 	    if (cts->error)
@@ -1804,7 +1807,7 @@ static glong find_mhsd (FContents *cts, guint32 type)
 
     if (!check_header_seek (cts, "mhbd", 0))
     {
-	cts->reversed = TRUE;
+	fcontents_set_reversed (cts, TRUE);
 	if (cts->error) return 0;
 	if (!check_header_seek (cts, "mhbd", 0))
 	{
@@ -2549,7 +2552,7 @@ static gboolean process_OTG_file (FImport *fimp, FContents *cts,
 	    g_propagate_error (&fimp->error, cts->error);
 	    return FALSE;
 	}
-	cts->reversed = TRUE;
+	fcontents_set_reversed (cts, TRUE);
 	if (!check_header_seek (cts, "mhpo", 0))
 	{
 	    /* cts->error can't be set as already checked above */

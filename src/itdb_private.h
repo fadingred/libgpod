@@ -51,18 +51,30 @@ enum ItdbPlFlag { /* types for playlist->podcastflag */
 };
 
 
-/* keeps the contents of one disk file (read) */
+struct FContents_;
+
 typedef struct
+{
+    guint16 (* get16int) (struct FContents_ *cts, glong seek);
+    guint32 (* get24int) (struct FContents_ *cts, glong seek);
+    guint32 (* get32int) (struct FContents_ *cts, glong seek);
+    guint64 (* get64int) (struct FContents_ *cts, glong seek);
+    float (* get32float) (struct FContents_ *cts, glong seek);
+} ByteReader;
+
+/* keeps the contents of one disk file (read) */
+typedef struct FContents_
 {
     gchar *filename;
     gchar *contents;
     /* indicate that endian order is reversed as in the case of the
        iTunesDBs for mobile phones */
     gboolean reversed;
+    ByteReader le_reader;
+    ByteReader be_reader;
     gsize length;
     GError *error;
 } FContents;
-
 
 /* struct used to hold all necessary information when importing a
    Itdb_iTunesDB */
