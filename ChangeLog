@@ -1,5 +1,10 @@
 2009-03-14  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* src/itdb_device.c: factorize some code in legacy artwork
+	handling
+
+2009-03-14  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* src/itdb.h:
 	* src/itdb_device.c:
 	* src/itdb_sysinfo_extended_parser.c:

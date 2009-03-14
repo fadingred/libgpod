@@ -1026,9 +1026,8 @@ itdb_device_get_ipod_info (const Itdb_Device *device)
 
 
 /* Return supported artwork formats supported by this iPod */
-static const Itdb_ArtworkFormat *
-itdb_device_get_artwork_formats (const Itdb_Device *device, 
-                                 enum ArtworkType type)
+static const ArtworkCapabilities *
+itdb_device_get_artwork_capabilities (const Itdb_Device *device)
 {
     const Itdb_IpodInfo *info;
     const ArtworkCapabilities *caps;
@@ -1045,35 +1044,47 @@ itdb_device_get_artwork_formats (const Itdb_Device *device,
         }
         caps++;
     }
-    switch (type) {
-        case ARTWORK_TYPE_COVER_ART:
-            return caps->cover_art_formats;
-        case ARTWORK_TYPE_PHOTO:
-            return caps->photo_formats;
-        case ARTWORK_TYPE_CHAPTER_IMAGE:
-            return caps->chapter_image_formats;
-    }
 
-    g_return_val_if_reached (NULL);
+    if (caps->generation == ITDB_IPOD_GENERATION_UNKNOWN) {
+	return NULL;
+    }
+ 
+    return caps;
 }
 
 static GList *
-itdb_device_get_photo_formats_fallback (const Itdb_Device *device)
+itdb_device_get_artwork_formats_fallback (const Itdb_Device *device, 
+					  enum ArtworkType type)
 {
-    const Itdb_ArtworkFormat *formats;
+    const ArtworkCapabilities *caps;
+    const Itdb_ArtworkFormat *formats = NULL;
     const Itdb_ArtworkFormat *it;
-    GList *photo_formats = NULL;
+    GList *artwork_formats = NULL;
 
-    formats = itdb_device_get_artwork_formats (device, ARTWORK_TYPE_PHOTO);
+    caps = itdb_device_get_artwork_capabilities (device);
+    if (caps == NULL) {
+	return NULL;
+    }
+    switch (type) {
+	case ARTWORK_TYPE_COVER_ART:
+	    formats = caps->cover_art_formats;
+	    break;
+	case ARTWORK_TYPE_PHOTO:
+	    formats = caps->photo_formats;
+	    break;
+	case ARTWORK_TYPE_CHAPTER_IMAGE:
+	    formats = caps->chapter_image_formats;
+	    break;
+    }
     if (formats == NULL) {
         return NULL;
     }
 
     for (it = formats; it->format_id != -1; it++) {
-        photo_formats = g_list_prepend (photo_formats, (gpointer)it);
+        artwork_formats = g_list_prepend (artwork_formats, (gpointer)it);
     }
 
-    return photo_formats;
+    return artwork_formats;
 }
 
 GList *itdb_device_get_photo_formats (const Itdb_Device *device)
@@ -1081,30 +1092,12 @@ GList *itdb_device_get_photo_formats (const Itdb_Device *device)
     g_return_val_if_fail (device != NULL, NULL);
 
     if (device->sysinfo_extended == NULL) {
-        return itdb_device_get_photo_formats_fallback (device);
+        return itdb_device_get_artwork_formats_fallback (device,
+							 ARTWORK_TYPE_PHOTO);
     } else {
         return g_list_copy ((GList *)itdb_sysinfo_properties_get_photo_formats (device->sysinfo_extended));
     }
     g_return_val_if_reached (NULL);
-}
-
-static GList *
-itdb_device_get_cover_art_formats_fallback (const Itdb_Device *device)
-{
-    const Itdb_ArtworkFormat *formats;
-    const Itdb_ArtworkFormat *it;
-    GList *cover_art_formats = NULL;
-
-    formats = itdb_device_get_artwork_formats (device, ARTWORK_TYPE_COVER_ART);
-    if (formats == NULL) {
-        return NULL;
-    }
-
-    for (it = formats; it->format_id != -1; it++) {
-        cover_art_formats = g_list_prepend (cover_art_formats, (gpointer)it);
-    }
-
-    return cover_art_formats;
 }
 
 GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
@@ -1112,7 +1105,8 @@ GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
     g_return_val_if_fail (device != NULL, NULL);
 
     if (device->sysinfo_extended == NULL) {
-        return itdb_device_get_cover_art_formats_fallback (device);
+        return itdb_device_get_artwork_formats_fallback (device,
+							 ARTWORK_TYPE_COVER_ART);
     } else {
         return g_list_copy ((GList *)itdb_sysinfo_properties_get_cover_art_formats (device->sysinfo_extended));
     }
