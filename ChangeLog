@@ -1,5 +1,33 @@
 2009-03-21  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	Patch from: Andrew W. Nosenko  <andrew.nosenko@toatech.com>
+
+	Avoid using of the global variable 'timezone' in favor of struct
+	tm.tm_gmtoff (if available).
+
+	* src/itdb_device.c (get_local_timezone): Use struct tm.tm_gmtoff
+	if available (through localtime_r() or localtime(), depending on
+	the localtime_r() existence) if available and fallback to the
+	'timezone' or _timezone global variables if struct tm.tm_gmtoff
+	field is not available.
+
+	* configure.ac: Check for existence of localtime_r() function and
+	struct tm.tm_gmtoff field.
+
+	Avoid using of the global variable 'timezone' in favor of struct
+	tm.tm_gmtoff (if available).
+
+	* src/itdb_device.c (get_local_timezone): Use struct tm.tm_gmtoff
+	if available (through localtime_r() or localtime(), depending on
+	the localtime_r() existence) if available and fallback to the
+	'timezone' or _timezone global variables if struct tm.tm_gmtoff
+	field is not available.
+
+	* configure.ac: Check for existence of localtime_r() function and
+	struct tm.tm_gmtoff field.
+
+2009-03-21  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	Patch from: Jorg Schuller
 
 	* src/itdb_itunesdb.c: simplify pos_comp, make get_playlist more

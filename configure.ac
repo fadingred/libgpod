@@ -40,6 +40,7 @@ AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS")
 AM_MAINTAINER_MODE
 
 AC_GNU_SOURCE
+AC_DEFINE([_BSD_SOURCE], 1, [BSD Functions])
 AC_PROG_CC
 AM_PROG_CC_C_O
 
@@ -56,6 +57,8 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_INTLTOOL([0.21])
 
+AC_CHECK_FUNCS([localtime_r])
+AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[#include <time.h>])
 PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.8.0 gobject-2.0)
 
 dnl **************************************************

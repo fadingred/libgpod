@@ -1620,9 +1620,40 @@ static gboolean raw_timezone_to_utc_shift_5g (gint16 raw_timezone,
 
 static gint get_local_timezone (void)
 {
-#ifdef __CYGWIN__
+#ifdef HAVE_STRUCT_TM_TM_GMTOFF
+    /*
+     * http://www.gnu.org/software/libc/manual/html_node/Time-Zone-Functions.html
+     *
+     * Variable: long int timezone
+     *
+     * This contains the difference between UTC and the latest local
+     * standard time, in seconds west of UTC. For example, in the
+     * U.S. Eastern time zone, the value is 5*60*60. Unlike the
+     * tm_gmtoff member of the broken-down time structure, this value is
+     * not adjusted for daylight saving, and its sign is reversed. In
+     * GNU programs it is better to use tm_gmtoff, since it contains the
+     * correct offset even when it is not the latest one.
+     */
+    time_t t = time(NULL);
+    glong seconds_east_utc;
+#   ifdef HAVE_LOCALTIME_R
+    {
+        struct tm tmb;
+        tzset ();
+        localtime_r(&t, &tmb);
+        seconds_east_utc = tmb.tm_gmtoff;
+    }
+#   else /* !HAVE_LOCALTIME_R */
+    {
+        struct tm* tp;
+        tp = localtime(&t);
+        seconds_east_utc = tp->tm_gmtoff;
+    }
+#   endif /* !HAVE_LOCALTIME_R */
+    return seconds_east_utc * -1; /* mimic the old behaviour when global variable 'timezone' from the 'time.h' header was returned */
+#elif __CYGWIN__   /* !HAVE_STRUCT_TM_TM_GMTOFF */
     return (gint) _timezone; /* global variable defined by time.h, see man tzset */
-#else
+#else /* !HAVE_STRUCT_TM_TM_GMTOFF && !__CYGWIN__ */
     return timezone; /* global variable defined by time.h, see man tzset */
 #endif
 }
