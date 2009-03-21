@@ -1853,17 +1853,13 @@ static glong find_mhsd (FContents *cts, guint32 type)
 }
 
 
+/* sort in reverse order */
 static gint pos_comp (gconstpointer a, gconstpointer b)
 {
     const PosEntry *pa = (const PosEntry*)a;
     const PosEntry *pb = (const PosEntry*)b;
 
-    if (pa->track_pos < pb->track_pos)
-	return -1;
-    else if (pa->track_pos > pb->track_pos)
-        return 1;
-    else
-	return 0;
+    return pb->track_pos - pa->track_pos;
 }
 
 
@@ -1978,7 +1974,6 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
   Itdb_Playlist *plitem = NULL;
   FContents *cts;
   GList *gl;
-  gint32 pos_len = 0;
 
 #if ITUNESDB_DEBUG
   fprintf(stderr, "mhyp seek: %x\n", (int)mhyp_seek);
@@ -2167,6 +2162,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
       }
   }	  
 
+  /* sort in reverse order */
   fimp->pos_glist = g_list_sort (fimp->pos_glist, pos_comp);
   for (gl = fimp->pos_glist; gl; gl = g_list_next (gl))
   {
@@ -2174,8 +2170,8 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
       Itdb_Track *tr = itdb_track_id_tree_by_id (fimp->idtree, entry->trackid);
       if (tr)
       {
-	  itdb_playlist_add_track (plitem, tr, pos_len);
-	  ++pos_len;
+	  /* preprend because we sorted in reverse order */
+	  itdb_playlist_add_track (plitem, tr, 0);
       }
       else
       {

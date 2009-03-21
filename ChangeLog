@@ -1,5 +1,12 @@
 2009-03-21  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	Patch from: Jorg Schuller
+
+	* src/itdb_itunesdb.c: simplify pos_comp, make get_playlist more
+	efficient
+
+2009-03-21  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* src/itdb_itunesdb.c: remove commented out code
 	(g_return_val_if_fail)
 
