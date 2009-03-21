@@ -603,7 +603,6 @@ static guint16 raw_get16lint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 2))
     {
-/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 2);
 	n = GUINT16_FROM_LE (n);
     }
@@ -618,7 +617,6 @@ static guint32 raw_get24lint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 3))
     {
-/*	g_return_val_if_fail (cts->contents, 0);*/
 	n = ((guint32)get8int (cts, seek+0)) +
 	    (((guint32)get8int (cts, seek+1)) >> 8) +
 	    (((guint32)get8int (cts, seek+2)) >> 16);
@@ -634,7 +632,6 @@ static guint32 raw_get32lint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 4))
     {
-/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 4);
 	n = GUINT32_FROM_LE (n);
     }
@@ -666,7 +663,6 @@ static guint64 raw_get64lint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 8))
     {
-/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 8);
 	n = GUINT64_FROM_LE (n);
     }
@@ -686,7 +682,6 @@ static guint16 raw_get16bint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 2))
     {
-/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 2);
 	n = GUINT16_FROM_BE (n);
     }
@@ -701,7 +696,6 @@ static guint32 raw_get24bint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 3))
     {
-/*	g_return_val_if_fail (cts->contents, 0);*/
 	n = ((guint32)get8int (cts, seek+2)) +
 	    (((guint32)get8int (cts, seek+1)) >> 8) +
 	    (((guint32)get8int (cts, seek+0)) >> 16);
@@ -717,7 +711,6 @@ static guint32 raw_get32bint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 4))
     {
-/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 4);
 	n = GUINT32_FROM_BE (n);
     }
@@ -748,7 +741,6 @@ static guint64 raw_get64bint (FContents *cts, glong seek)
 
     if (check_seek (cts, seek, 8))
     {
-/*	g_return_val_if_fail (cts->contents, 0);*/
 	memcpy (&n, &cts->contents[seek], 8);
 	n = GUINT64_FROM_BE (n);
     }
@@ -762,37 +754,31 @@ static guint64 raw_get64bint (FContents *cts, glong seek)
 
 static inline guint16 get16lint (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->le_reader.get16int (cts, seek);
 }
 
 static inline guint32 get24lint (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->le_reader.get24int (cts, seek);
 }
 #if 0
 static inline guint32 get24bint (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->be_reader.get24int (cts, seek);
 }
 #endif
 static inline guint32 get32lint (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->le_reader.get32int (cts, seek);
 }
 
 static inline float get32lfloat (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->le_reader.get32float (cts, seek);
 }
 
 static inline guint64 get64lint (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->le_reader.get64int (cts, seek);
 }
 
@@ -804,27 +790,23 @@ static inline guint64 get64lint (FContents *cts, glong seek)
 
 static inline guint16 get16bint (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->be_reader.get16int (cts, seek);
 }
 
 static inline guint32 get32bint (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->be_reader.get32int (cts, seek);
 }
 
 #if 0
 static inline float get32bfloat (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->be_reader.get32float (cts, seek);
 }
 #endif
 
 static inline guint64 get64bint (FContents *cts, glong seek)
 {
-/*    g_return_val_if_fail (cts, 0);*/
     return cts->be_reader.get64int (cts, seek);
 }
 

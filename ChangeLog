@@ -1,3 +1,8 @@
+2009-03-21  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* src/itdb_itunesdb.c: remove commented out code
+	(g_return_val_if_fail)
+
 2009-03-14  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* src/itdb_device.c: directly read firewire ID from SysInfoExtended
