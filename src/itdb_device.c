@@ -735,6 +735,12 @@ void itdb_device_free (Itdb_Device *device)
  * Sets the mountpoint of @device to @mp and update the cached device 
  * information (in particular, re-read the SysInfo file)
  *
+ * <warning><para>Calling this function invalidates all the artwork in the
+ * #Itdb_iTunesDB database using this #Itdb_Device. Trying to access this
+ * artwork will result in memory corruption. It's recommended to use
+ * itdb_set_mountpoint() instead which will clean the invalidated artwork
+ * for you.</para></warning>.
+ *
  * Since: 0.4.0
  */
 void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp)
@@ -800,6 +806,12 @@ static void itdb_device_read_sysinfo_extended (Itdb_Device *device)
  *
  * Reads the SysInfo file and stores information in device->sysinfo for
  * later use.
+ *
+ * <warning><para>Calling this function invalidates all the artwork in the
+ * #Itdb_iTunesDB database using this #Itdb_Device. Trying to access this
+ * artwork will result in memory corruption. Directly calling this function
+ * shouldn't ever be needed and it will be deprecated
+ * soon.</para></warning>.
  *
  * Returns: TRUE if file could be read, FALSE otherwise 
  *
@@ -1333,7 +1345,8 @@ itdb_device_autodetect_endianess (Itdb_Device *device)
  * itdb_info_get_ipod_info_table:
  *
  * Return a pointer to the start of valid iPod model descriptions,
- * which is an array of #Itdb_IpodInfo entries.
+ * which is an array of #Itdb_IpodInfo entries. This can be useful if you
+ * want to build a list of all iPod models known to the current libgpod.
  *
  * Returns: a pointer to the array of #Itdb_IpodInfo entries.
  *

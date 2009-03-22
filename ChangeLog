@@ -1,3 +1,13 @@
+2009-03-22  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* src/itdb_device.c: add warning about itdb_set_mountpoint use,
+	describe model_number parameter of itdb_init_ipod
+	* src/itdb_itunesdb.c: add warning about itdb_device_read_sysinfo
+	and itdb_device_set_mountpoint use, explain when
+	itdb_device_get_ipod_info_table can be useful.
+	* doc/reference/libgpod-sections.txt: move around a few functions
+	(mainly itdb_init_ipod and itdb_device_*_sysinfo_*)
+
 2009-03-21  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	Patch from: Andrew W. Nosenko  <andrew.nosenko@toatech.com>

@@ -5844,6 +5844,10 @@ void itdb_filename_ipod2fs (gchar *ipod_file)
  * available /iPod_Control/Music/F.. dirs. It doesn't attempt to parse
  * an iPod database that may be present on the iPod at @mp.
  *
+ * <note><para>Calling this function removes the artwork in the
+ * #Itdb_iTunesDB database using this #Itdb_Device which was read from the
+ * iPod.</para></note>.
+ *
  * Since: 0.1.3
  */
 void itdb_set_mountpoint (Itdb_iTunesDB *itdb, const gchar *mp)
@@ -6785,7 +6789,7 @@ time_t itdb_time_host_to_mac (time_t time)
 /**
  * itdb_init_ipod:
  * @mountpoint:   the iPod mountpoint
- * @model_number: the iPod model number
+ * @model_number: the iPod model number, can be NULL
  * @ipod_name:    the name to give to the iPod. Will be displayed in
  *                gtkpod or itunes
  * @error:        return location for a #GError or NULL
@@ -6794,6 +6798,12 @@ time_t itdb_time_host_to_mac (time_t time)
  * create a blank database, complete with master playlist and device
  * information as well as the directory structure required for the
  * type of iPod.
+ * @model_number is used to tell libgpod about the exact iPod
+ * model, which is needed for proper artwork writing. @model_number can be
+ * found from the table returned by itdb_device_get_ipod_info_table (for
+ * example). On recent distros with iPods released
+ * in the last few years (starting with the iPod Color), it should be fine
+ * to pass in a NULL @model_number while still getting artwork writing.
  * 
  * Returns: TRUE when successful, FALSE if a failure has occurred.
  *

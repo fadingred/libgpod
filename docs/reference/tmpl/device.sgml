@@ -55,69 +55,6 @@ These functions are for reading and setting information about the iPod.
 @mp: 
 
 
-<!-- ##### FUNCTION itdb_device_read_sysinfo ##### -->
-<para>
-
-</para>
-
-@device: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_device_get_sysinfo ##### -->
-<para>
-
-</para>
-
-@device: 
-@field: 
-@Returns: 
-
-
-<!-- ##### FUNCTION itdb_device_set_sysinfo ##### -->
-<para>
-
-</para>
-
-@device: 
-@field: 
-@value: 
-
-
-<!-- ##### FUNCTION itdb_device_write_sysinfo ##### -->
-<para>
-
-</para>
-
-@device: 
-@error: 
-@Returns: 
-
-
-<!-- ##### STRUCT Itdb_IpodInfo ##### -->
-<para>
-
-</para>
-
-@model_number: 
-@capacity: 
-@ipod_model: 
-@ipod_generation: 
-@musicdirs: 
-@reserved_int1: 
-@reserved_int2: 
-@reserved1: 
-@reserved2: 
-
-<!-- ##### FUNCTION itdb_device_get_ipod_info ##### -->
-<para>
-
-</para>
-
-@device: 
-@Returns: 
-
-
 <!-- ##### FUNCTION itdb_device_supports_artwork ##### -->
 <para>
 
@@ -137,6 +74,30 @@ These functions are for reading and setting information about the iPod.
 
 
 <!-- ##### FUNCTION itdb_device_supports_video ##### -->
+<para>
+
+</para>
+
+@device: 
+@Returns: 
+
+
+<!-- ##### STRUCT Itdb_IpodInfo ##### -->
+<para>
+
+</para>
+
+@model_number: 
+@capacity: 
+@ipod_model: 
+@ipod_generation: 
+@musicdirs: 
+@reserved_int1: 
+@reserved_int2: 
+@reserved1: 
+@reserved2: 
+
+<!-- ##### FUNCTION itdb_device_get_ipod_info ##### -->
 <para>
 
 </para>
@@ -242,18 +203,6 @@ These functions are for reading and setting information about the iPod.
 @Returns: 
 
 
-<!-- ##### FUNCTION itdb_init_ipod ##### -->
-<para>
-
-</para>
-
-@mountpoint: 
-@model_number: 
-@ipod_name: 
-@error: 
-@Returns: 
-
-
 <!-- ##### STRUCT Itdb_ArtworkFormat ##### -->
 <para>
 
@@ -273,4 +222,43 @@ These functions are for reading and setting information about the iPod.
 @color_adjustment: 
 @gamma: 
 @associated_format: 
+
+<!-- ##### FUNCTION itdb_device_read_sysinfo ##### -->
+<para>
+
+</para>
+
+@device: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_device_get_sysinfo ##### -->
+<para>
+
+</para>
+
+@device: 
+@field: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_device_set_sysinfo ##### -->
+<para>
+
+</para>
+
+@device: 
+@field: 
+@value: 
+
+
+<!-- ##### FUNCTION itdb_device_write_sysinfo ##### -->
+<para>
+
+</para>
+
+@device: 
+@error: 
+@Returns: 
+
 
