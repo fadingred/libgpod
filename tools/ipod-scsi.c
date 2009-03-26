@@ -38,9 +38,6 @@
 
 #include <glib.h>
 
-#include "itdb.h"
-
-
 extern void sync_time (const char *device, time_t current_time);
 extern char *read_sysinfo_extended (const char *device);
 /* do_sg_inquiry and read_sysinfo_extended were heavily
