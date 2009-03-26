@@ -28,7 +28,7 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 
-extern void sync_time (const char *device, time_t current_time, gint timezone);
+extern void sync_time (const char *dev, struct tm *tm);
 
 int
 main (int argc, char **argv)
@@ -38,11 +38,7 @@ main (int argc, char **argv)
 	return 1;
     }
 
-    if (argc < 3) {
-        sync_time (argv[1], time (NULL), 0);
-    } else {
-        sync_time (argv[1], time (NULL), atoi (argv[2]));
-    }
+    sync_time (argv[1], NULL);
 
     return 0;
 }
