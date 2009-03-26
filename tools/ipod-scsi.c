@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <scsi/sg_cmds.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #include <glib.h>
 
@@ -120,6 +121,17 @@ static void do_sg_write_buffer (const char *device, void *buffer, size_t len)
     close(fd);
 }
 
+static long get_local_timezone (void)
+{
+    tzset();
+#ifdef __CYGWIN__
+    return (gint) _timezone; /* global variable defined by time.h, see man tzset */
+#else
+    return timezone; /* global variable defined by time.h, see man tzset */
+#endif
+}
+
+
 G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time, gint timezone)
 {
     struct iPodTime {
@@ -133,6 +145,9 @@ G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time, gint ti
     } __attribute__((__packed__));
     struct iPodTime ipod_time;
     GDate *date;
+
+    /* the ipod expects a local time, not UTC */
+    current_time -= get_local_timezone ();
 
     date = g_date_new ();
     g_date_set_time_t (date, current_time);
