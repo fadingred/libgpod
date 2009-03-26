@@ -108,6 +108,7 @@ read_sysinfo_extended (const char *device)
 static void do_sg_write_buffer (const char *device, void *buffer, size_t len)
 {
     int fd;
+    guint i;
 
     fd = open (device, O_RDWR);
     if (fd < 0) {
@@ -115,6 +116,11 @@ static void do_sg_write_buffer (const char *device, void *buffer, size_t len)
 	return;
     }
 
+    g_print ("    Data Payload: ");
+    for (i = 0; i < len; i++) {
+	g_print ("%02x ", *((guchar *)buffer+i));
+    }
+    g_print ("\n");
     if (sg_ll_write_buffer (fd, 1, 0, 0x0c0000, buffer, len, 1, 1) != 0) {
 	g_print ("Error sending data\n");
     }
