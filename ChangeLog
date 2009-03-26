@@ -1,3 +1,9 @@
+2009-03-26  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* tools/ipod-scsi.c:
+	* tools/ipod-time-sync.c: add ipod time sync support using
+	information from the rockbox project. It's still preliminary.
+
 2009-03-22  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* src/itdb_device.c: add warning about itdb_set_mountpoint use,

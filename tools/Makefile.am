@@ -1,6 +1,7 @@
 if HAVE_SGUTILS
 
-bin_PROGRAMS=ipod-read-sysinfo-extended ipod-time-sync
+bin_PROGRAMS=ipod-read-sysinfo-extended
+noinst_PROGRAMS=ipod-time-sync
 
 ipod_read_sysinfo_extended_SOURCES =	\
 	read-sysinfoextended-sgutils.c	\
