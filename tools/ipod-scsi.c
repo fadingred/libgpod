@@ -146,7 +146,10 @@ G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time, gint ti
 
     ipod_time.year = GUINT16_TO_BE (1900+tm->tm_year);
     ipod_time.days = GUINT16_TO_BE (tm->tm_yday);
-    ipod_time.timezone = timezone;
+    /* the timezone value is the shift east of UTC in 15 min chunks
+     * so eg. UTC+2 is 2*4 = 8
+     */
+    ipod_time.timezone = tm->tm_gmtoff / 900;
     ipod_time.hour = tm->tm_hour;
     ipod_time.minute = tm->tm_min;
     ipod_time.second = tm->tm_sec;
