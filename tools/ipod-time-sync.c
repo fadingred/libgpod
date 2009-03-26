@@ -23,20 +23,26 @@
 #include <config.h>
 #endif
 
+#include <stdlib.h>
+
 #include <glib.h>
 #include <glib/gi18n.h>
 
-extern void sync_time (const char *device, time_t current_time);
+extern void sync_time (const char *device, time_t current_time, gint timezone);
 
 int
 main (int argc, char **argv)
 {
     if (argc < 2) {
-        g_print (_("usage: %s <device>\n"), g_basename (argv[0]));
+        g_print (_("usage: %s <device> [timezone]\n"), g_basename (argv[0]));
 	return 1;
     }
 
-    sync_time (argv[1], time (NULL));
+    if (argc < 3) {
+        sync_time (argv[1], time (NULL), 0);
+    } else {
+        sync_time (argv[1], time (NULL), atoi (argv[2]));
+    }
 
     return 0;
 }

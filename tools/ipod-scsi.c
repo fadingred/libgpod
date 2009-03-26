@@ -38,7 +38,7 @@
 
 #include <glib.h>
 
-extern void sync_time (const char *device, time_t current_time);
+extern void sync_time (const char *device, time_t current_time, gint timezone);
 extern char *read_sysinfo_extended (const char *device);
 /* do_sg_inquiry and read_sysinfo_extended were heavily
  * inspired from libipoddevice
@@ -120,7 +120,7 @@ static void do_sg_write_buffer (const char *device, void *buffer, size_t len)
     close(fd);
 }
 
-G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time)
+G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time, gint timezone)
 {
     struct iPodTime {
 	guint16 year;
@@ -138,7 +138,7 @@ G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time)
     g_date_set_time_t (date, current_time);
     ipod_time.year = GUINT16_TO_BE (g_date_get_year (date));
     ipod_time.days = GUINT16_TO_BE (g_date_get_day_of_year (date)-1);
-    ipod_time.timezone = 4; /* FIXME: figure out all the values */
+    ipod_time.timezone = timezone;
     ipod_time.hour = current_time/3600 % 24;
     ipod_time.minute = current_time/60 % 60;
     ipod_time.second = current_time % 60;
