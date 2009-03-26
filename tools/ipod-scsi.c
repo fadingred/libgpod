@@ -127,17 +127,6 @@ static void do_sg_write_buffer (const char *device, void *buffer, size_t len)
     close(fd);
 }
 
-static long get_local_timezone (void)
-{
-    tzset();
-#ifdef __CYGWIN__
-    return (gint) _timezone; /* global variable defined by time.h, see man tzset */
-#else
-    return timezone; /* global variable defined by time.h, see man tzset */
-#endif
-}
-
-
 G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time, gint timezone)
 {
     struct iPodTime {
@@ -150,21 +139,17 @@ G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time, gint ti
 	guchar padding[4];
     } __attribute__((__packed__));
     struct iPodTime ipod_time;
-    GDate *date;
+    struct tm *tm;
 
-    /* the ipod expects a local time, not UTC */
-    current_time -= get_local_timezone ();
+    tm = localtime (&current_time);
 
-    date = g_date_new ();
-    g_date_set_time_t (date, current_time);
-    ipod_time.year = GUINT16_TO_BE (g_date_get_year (date));
-    ipod_time.days = GUINT16_TO_BE (g_date_get_day_of_year (date)-1);
+    ipod_time.year = GUINT16_TO_BE (1900+tm->tm_year);
+    ipod_time.days = GUINT16_TO_BE (tm->tm_yday);
     ipod_time.timezone = timezone;
-    ipod_time.hour = current_time/3600 % 24;
-    ipod_time.minute = current_time/60 % 60;
-    ipod_time.second = current_time % 60;
+    ipod_time.hour = tm->tm_hour;
+    ipod_time.minute = tm->tm_min;
+    ipod_time.second = tm->tm_sec,
     memset (ipod_time.padding, 0, sizeof (ipod_time.padding));
-    g_date_free (date);
 
     do_sg_write_buffer (device, &ipod_time, sizeof (ipod_time));
 }
