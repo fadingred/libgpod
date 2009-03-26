@@ -41,6 +41,7 @@
 #include "itdb.h"
 
 
+extern void sync_time (const char *device, time_t current_time);
 extern char *read_sysinfo_extended (const char *device);
 /* do_sg_inquiry and read_sysinfo_extended were heavily
  * inspired from libipoddevice
@@ -106,4 +107,46 @@ read_sysinfo_extended (const char *device)
     return g_string_free (xml_sysinfo, FALSE);
 }
 
+static void do_sg_write_buffer (const char *device, void *buffer, size_t len)
+{
+    int fd;
 
+    fd = open (device, O_RDWR);
+    if (fd < 0) {
+	g_warning ("Couldn't open device %s", device);
+	return;
+    }
+
+    if (sg_ll_write_buffer (fd, 1, 0, 0x0c0000, buffer, len, 1, 1) != 0) {
+	g_print ("Error sending data\n");
+    }
+    close(fd);
+}
+
+G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time)
+{
+    struct iPodTime {
+	guint16 year;
+	guint16 days;
+	guchar timezone;
+	guchar hour;
+	guchar minute;
+	guchar second;
+	guchar padding[4];
+    } __attribute__((__packed__));
+    struct iPodTime ipod_time;
+    GDate *date;
+
+    date = g_date_new ();
+    g_date_set_time_t (date, current_time);
+    ipod_time.year = GUINT16_TO_BE (g_date_get_year (date));
+    ipod_time.days = GUINT16_TO_BE (g_date_get_day_of_year (date)-1);
+    ipod_time.timezone = 4; /* FIXME: figure out all the values */
+    ipod_time.hour = current_time/3600 % 24;
+    ipod_time.minute = current_time/60 % 60;
+    ipod_time.second = current_time % 60;
+    memset (ipod_time.padding, 0, sizeof (ipod_time.padding));
+    g_date_free (date);
+
+    do_sg_write_buffer (device, &ipod_time, sizeof (ipod_time));
+}
