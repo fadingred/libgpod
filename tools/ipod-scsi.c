@@ -136,7 +136,8 @@ G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time, gint ti
 	guchar hour;
 	guchar minute;
 	guchar second;
-	guchar padding[4];
+	guchar dst;
+	guchar padding[3];
     } __attribute__((__packed__));
     struct iPodTime ipod_time;
     struct tm *tm;
@@ -148,7 +149,12 @@ G_GNUC_INTERNAL void sync_time (const char *device, time_t current_time, gint ti
     ipod_time.timezone = timezone;
     ipod_time.hour = tm->tm_hour;
     ipod_time.minute = tm->tm_min;
-    ipod_time.second = tm->tm_sec,
+    ipod_time.second = tm->tm_sec;
+    if (tm->tm_isdst) {
+	ipod_time.dst = 1;
+    } else {
+	ipod_time.dst = 0;
+    }
     memset (ipod_time.padding, 0, sizeof (ipod_time.padding));
 
     do_sg_write_buffer (device, &ipod_time, sizeof (ipod_time));
