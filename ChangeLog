@@ -1,3 +1,8 @@
+2009-03-29  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* src/itdb_device.c: don't call tzset even when calling localtime_r
+	since we aren't interested in its side effects.
+
 2009-03-26  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* tools/ipod-scsi.c:

@@ -1652,7 +1652,6 @@ static gint get_local_timezone (void)
 #   ifdef HAVE_LOCALTIME_R
     {
         struct tm tmb;
-        tzset ();
         localtime_r(&t, &tmb);
         seconds_east_utc = tmb.tm_gmtoff;
     }
