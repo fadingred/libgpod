@@ -1,5 +1,16 @@
 2009-04-03  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
+	* po/de.po
+	  po/es.po
+	  po/fr.po
+	  po/he.po
+	  po/it.po
+	  po/ja.po
+	  po/libgpod.pot
+	  po/ro.po
+	  po/sv.po
+	  po/zh_CN.po: Update po files
+
 	* po/POTFILES.in: Add tools/ipod-time-sync.c
 
 2009-03-29  Christophe Fergeau  <cfergeau@mandriva.com>
