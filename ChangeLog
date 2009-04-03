@@ -1,5 +1,11 @@
 2009-04-03  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
+	* docs/reference/libgpod-sections.txt
+	  docs/reference/tmpl/device.sgml
+	  src/itdb_device.c: Update documenation.  Add new
+	itdb_device_supports_{chapter_image,podcast} functions and
+	mark some other additions as private.
+
 	* po/de.po
 	  po/es.po
 	  po/fr.po

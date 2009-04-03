@@ -1506,7 +1506,7 @@ gboolean itdb_device_supports_photo (const Itdb_Device *device)
 }
 
 /**
- * itdb_device_supports_chapter_images:
+ * itdb_device_supports_chapter_image:
  * @device: an #Itdb_Device
  *
  * Indicates whether @device can display chapter images or not.

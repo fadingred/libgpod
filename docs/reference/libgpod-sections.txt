@@ -179,7 +179,9 @@ itdb_device_new
 itdb_device_free
 itdb_device_set_mountpoint
 itdb_device_supports_artwork
+itdb_device_supports_chapter_image
 itdb_device_supports_photo
+itdb_device_supports_podcast
 itdb_device_supports_video
 Itdb_IpodInfo
 itdb_device_get_ipod_info
@@ -240,6 +242,7 @@ itdb_photodb_photoalbum_remove
 <SUBSECTION Private>
 DEBUG_ARTWORK
 G_GNUC_INTERNAL
+FContents_
 dump_mhif
 dump_mhia
 dump_mhni
@@ -250,6 +253,11 @@ dump_mhl
 dump_mhsd
 dump_mhfd
 dump_mhba
+get16int
+get24int
+get32float
+get32int
+get64int
 MHeader
 MhlHeader
 MhbdHeader
@@ -292,6 +300,7 @@ ItdbDeviceError
 itdb_device_error_quark
 DbType
 Itdb_DB
+ItdbChecksumType
 ItdbThumbDataType
 
 GChecksum
