@@ -1,3 +1,7 @@
+2009-04-03  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* po/POTFILES.in: Add tools/ipod-time-sync.c
+
 2009-03-29  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* src/itdb_device.c: don't call tzset even when calling localtime_r
