@@ -1,3 +1,7 @@
+2009-04-04  Todd Zullinger  <tmzullinger at users.sourceforge.net>
+
+	* configure.ac: Bump version and soname for 0.7.2rc1
+
 2009-04-03  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* docs/reference/libgpod-sections.txt
