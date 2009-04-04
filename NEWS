@@ -1,13 +1,23 @@
+Overview of changes in libgpod 0.7.2
+====================================
+
 * Performance work (thanks a lot to Javier Kohen for his patches)
+
 * Add itdb_device_supports_podcast and itdb_device_supports_chapter_image
-methods
+  methods
+
 * Fix static iPod Classic/Nano 3G artwork formats
+
 * Change installation directory for the HAL callout in the hope that it
-will work out of the box on more systems
+  will work out of the box on more systems
+
 * BSD portability fixes (courtesy of Andrew Nosenko)
+
 * Write MHLA (list of albums) headers to iTunesDB
+
 * Small improvements for iPhone support though iPhone 3G are still
-unsupported because we can't checksum the iPhone iTunesDB.
+  unsupported because we can't checksum the iPhone iTunesDB.
+
 
 Overview of changes in libgpod 0.7.0
 ====================================
