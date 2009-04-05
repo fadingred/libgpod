@@ -1,5 +1,12 @@
 2009-04-05  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	Patch from: Javier Kohen:
+
+	* src/itdb_itunesdb.c: rename playcount_get_next to
+	playcount_take_next which is a more descriptive name
+
+2009-04-05  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	Patch from: Erik Hovland
 
 	* src/itdb_thumb.c: don't shadow itdb_thumb_to_pixbuf_at_size

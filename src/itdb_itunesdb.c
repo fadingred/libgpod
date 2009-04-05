@@ -855,7 +855,7 @@ static gunichar2 *fixup_big_utf16 (gunichar2 *utf16_string)
 /* get next playcount, that is the first entry of GList
  * playcounts. This entry is removed from the list. You must free the
  * return value after use */
-static struct playcount *playcount_get_next (FImport *fimp)
+static struct playcount *playcount_take_next (FImport *fimp)
 {
     struct playcount *playcount;
     g_return_val_if_fail (fimp, NULL);
@@ -874,7 +874,7 @@ static void playcounts_free (FImport *fimp)
 
     g_return_if_fail (fimp);
 
-    while ((playcount=playcount_get_next (fimp))) g_free (playcount);
+    while ((playcount=playcount_take_next (fimp))) g_free (playcount);
 }
 
 
@@ -2473,7 +2473,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       seek += zip;
   }
 
-  playcount = playcount_get_next (fimp);
+  playcount = playcount_take_next (fimp);
   if (playcount)
   {
       if (playcount->rating != NO_PLAYCOUNT)
