@@ -1,3 +1,10 @@
+2009-04-05  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	Patch from: Erik Hovland
+
+	* src/itdb_thumb.c: don't shadow itdb_thumb_to_pixbuf_at_size
+	parameter with a local variable.
+
 2009-04-04  Todd Zullinger  <tmzullinger at users.sourceforge.net>
 
 	* configure.ac: Bump version and soname for 0.7.2rc1

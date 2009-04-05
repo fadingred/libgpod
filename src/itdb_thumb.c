@@ -440,7 +440,7 @@ gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
     case ITDB_THUMB_TYPE_IPOD:
         {
 	    Itdb_Thumb_Ipod *thumb_ipod = (Itdb_Thumb_Ipod *)thumb;
-	    const GList *thumb;
+	    const GList *it;
 	    Itdb_Thumb_Ipod_Item *chosen;
 	    gint w=width;
 	    gint h=height;
@@ -456,10 +456,10 @@ gpointer itdb_thumb_to_pixbuf_at_size (Itdb_Device *device, Itdb_Thumb *thumb,
 		return NULL;
 	    }
 	    chosen = NULL;
-	    for (thumb = itdb_thumb_ipod_get_thumbs (thumb_ipod);
-		 thumb != NULL;
-		 thumb = thumb->next) {
-		Itdb_Thumb_Ipod_Item *item = (Itdb_Thumb_Ipod_Item*)thumb->data;
+	    for (it = itdb_thumb_ipod_get_thumbs (thumb_ipod);
+		 it != NULL;
+		 it = it->next) {
+		Itdb_Thumb_Ipod_Item *item = (Itdb_Thumb_Ipod_Item*)it->data;
 		if (chosen == NULL)
 		{   /* make sure we select *something* */
 		    chosen = item;
