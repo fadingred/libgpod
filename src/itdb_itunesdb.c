@@ -881,6 +881,7 @@ static void playcounts_free (FImport *fimp)
 /* called by init_playcounts */
 static gboolean playcounts_read (FImport *fimp, FContents *cts)
 {
+    GList* playcounts = NULL;
     guint32 header_length, entry_length, entry_num, i=0;
 
     g_return_val_if_fail (fimp, FALSE);
@@ -952,7 +953,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 	check_seek (cts, seek, entry_length);
 	CHECK_ERROR (fimp, FALSE);	
 
-	fimp->playcounts = g_list_append (fimp->playcounts, playcount);
+	playcounts = g_list_prepend (playcounts, playcount);
 	playcount->playcount = get32lint (cts, seek);	
 	mac_time = get32lint (cts, seek+4);
 	playcount->time_played = device_time_mac_to_time_t (fimp->itdb->device, mac_time);
@@ -983,6 +984,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 
 	}
     }
+    fimp->playcounts = g_list_reverse(playcounts);
     return TRUE;
 }
 
@@ -990,6 +992,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 /* called by init_playcounts */
 static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 {
+    GList* playcounts;
     guint32 entry_num, i=0;
     glong seek;
 
@@ -1016,7 +1019,7 @@ static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 	    return FALSE;
 	}
 
-	fimp->playcounts = g_list_append (fimp->playcounts, playcount);
+	playcounts = g_list_prepend (playcounts, playcount);
 	/* NOTE:
 	 *
 	 * The iPod (firmware 1.3, 2.0, ...?) doesn't seem to use the
@@ -1041,6 +1044,7 @@ static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 
 	seek += entry_length;
     }
+    fimp->playcounts = g_list_reverse(playcounts);
     return TRUE;
 }
 
