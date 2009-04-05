@@ -1136,6 +1136,7 @@ static void itdb_free_fimp (FImport *fimp)
     {
 	if (fimp->fcontents)  fcontents_free (fimp->fcontents);
 	g_list_free (fimp->pos_glist);
+	g_list_free (fimp->tracks);
 	playcounts_free (fimp);
 	g_free (fimp);
     }
@@ -2507,7 +2508,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 
       g_free (playcount);
   }
-  itdb_track_add (fimp->itdb, track, -1);
+  fimp->tracks = g_list_prepend(fimp->tracks, track);
   return seek;
 }
 
@@ -2674,6 +2675,7 @@ static gboolean read_OTG_playlists (FImport *fimp)
 static gboolean parse_tracks (FImport *fimp, glong mhsd_seek)
 {
     FContents *cts;
+    GList* gl;
     glong mhlt_seek, seek;
     guint32 nr_tracks, i;
 
@@ -2720,6 +2722,10 @@ static gboolean parse_tracks (FImport *fimp, glong mhsd_seek)
 	    g_warning (_("iTunesDB corrupt: number of tracks (mhit hunks) inconsistent. Trying to continue.\n"));
 	    break;
 	}
+    }
+    for (gl=fimp->tracks; gl; gl=g_list_next(gl)) {
+	Itdb_Track *track = (Itdb_Track *)gl->data;
+	itdb_track_add (fimp->itdb, track, 0);
     }
     return TRUE;
 }

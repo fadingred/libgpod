@@ -2,6 +2,13 @@
 
 	Patch from: Javier Kohen:
 
+	* src/itdb_itunesdb.c: avoid O(N^2) behaviour in main tracklist
+	parsing.
+
+2009-04-05  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	Patch from: Javier Kohen:
+
 	* src/itdb_itunesdb.c: avoid O(N^2) behaviour in playcount reading
 
 2009-04-05  Christophe Fergeau  <cfergeau@mandriva.com>

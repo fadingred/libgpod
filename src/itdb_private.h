@@ -83,6 +83,7 @@ typedef struct
     Itdb_iTunesDB *itdb;
     FContents *fcontents;
     GList *pos_glist;    /* temporary list to store position indicators */
+    GList *tracks;       /* temporary list to store tracks */
     GList *playcounts;   /* contents of Play Counts file */
     GTree *idtree;       /* temporary tree with track id tree */
     GError *error;       /* where to report errors to */
