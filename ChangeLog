@@ -1,5 +1,7 @@
 2009-04-15  Todd Zullinger  <tmz@pobox.com>
 
+	* configure.ac: Bump version to 0.7.3SVN for further development
+
 	* configure.ac: Bump version for 0.7.2 final
 
 2009-04-05  Christophe Fergeau  <cfergeau@mandriva.com>
