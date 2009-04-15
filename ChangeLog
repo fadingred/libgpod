@@ -1,3 +1,7 @@
+2009-04-15  Todd Zullinger  <tmz@pobox.com>
+
+	* configure.ac: Bump version for 0.7.2 final
+
 2009-04-05  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* configure.ac: time for a rc2 since we had forgotten a few
