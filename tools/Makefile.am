@@ -1,7 +1,6 @@
 if HAVE_SGUTILS
 
 bin_PROGRAMS=ipod-read-sysinfo-extended
-noinst_PROGRAMS=ipod-time-sync
 
 ipod_read_sysinfo_extended_SOURCES =	\
 	read-sysinfoextended-sgutils.c	\
@@ -12,6 +11,7 @@ ipod_read_sysinfo_extended_LDADD=$(LIBGPOD_LIBS) $(SGUTILS_LIBS) $(top_builddir)
 if HAVE_HAL
 haldir = $(HALCALLOUTSDIR)
 hal_PROGRAMS = libgpod-callout
+noinst_PROGRAMS=ipod-time-sync
 
 libgpod_callout_SOURCES =		\
 	hal-callout.c 		\
