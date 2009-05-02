@@ -416,6 +416,7 @@ static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 	LibHalContext *ctx;
 	const char *udi;
 	const char *serial_number;
+	const char *firmware_version;
 	char *icon_name;
 	const Itdb_IpodInfo *info;
 	char *model_name;
@@ -468,6 +469,15 @@ static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 						   serial_number,
 						   NULL);
 	}
+
+	firmware_version = itdb_sysinfo_properties_get_firmware_version (props);
+	if (firmware_version != NULL) {
+		libhal_device_set_property_string (ctx, udi,
+						   LIBGPOD_HAL_NS"ipod.firmware_version",
+						   firmware_version,
+						   NULL);
+	}
+
 	libhal_device_set_property_bool (ctx, udi,
 				         LIBGPOD_HAL_NS"ipod.images.album_art_supported",
 					 (itdb_sysinfo_properties_get_cover_art_formats (props) != NULL),

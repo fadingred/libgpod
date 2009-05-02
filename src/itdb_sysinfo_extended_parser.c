@@ -651,7 +651,7 @@ itdb_sysinfo_properties_get_chapter_image_formats (const SysInfoIpodProperties *
  * Returns: TRUE if the iPod supports sparse artwork, FALSE if it does not
  * or if @props doesn't contain any information about sparse artwork
  */
-G_GNUC_INTERNAL gboolean
+gboolean
 itdb_sysinfo_properties_supports_sparse_artwork (const SysInfoIpodProperties *props)
 {
     g_return_val_if_fail (props != NULL, FALSE);
@@ -665,4 +665,12 @@ itdb_sysinfo_properties_supports_podcast (const SysInfoIpodProperties *props)
     g_return_val_if_fail (props != NULL, FALSE);
 
     return props->podcasts_supported;
+}
+
+const char *
+itdb_sysinfo_properties_get_firmware_version (const SysInfoIpodProperties *props)
+{
+    g_return_val_if_fail (props != NULL, NULL);
+
+    return props->visible_build_id;
 }
