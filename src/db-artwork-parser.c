@@ -733,9 +733,6 @@ ipod_parse_artwork_db (Itdb_iTunesDB *itdb)
 	return 0;
 
  error:
-	if (ctx != NULL) {
-		db_parse_context_destroy (ctx);
-	}
 	return -1;
 }
 

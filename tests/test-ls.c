@@ -155,15 +155,6 @@ main (int argc, char *argv[])
 	    display_playlist (playlist, "");
       }
 
-      if (error)
-      {
-	  if (error->message) {
-	      g_print ("%s\n", error->message);
-	  }
-	  g_error_free (error);
-	  error = NULL;
-      }
-
       display_recently_played (itdb);
   }
 

@@ -459,7 +459,7 @@ gchar * itdb_resolve_path (const gchar *root,
 	    continue;
 	}
       
-	new_good_path = dir_file ? g_build_filename(good_path,dir_file,NULL) : NULL;
+	new_good_path = g_build_filename(good_path,dir_file,NULL);
 	g_free(good_path);
 	good_path= new_good_path;
 	/* This is the matching entry, so we can stop searching */

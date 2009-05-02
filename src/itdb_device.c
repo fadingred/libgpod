@@ -990,7 +990,7 @@ void itdb_device_set_sysinfo (Itdb_Device *device,
     g_return_if_fail (device->sysinfo);
     g_return_if_fail (field);
 
-    if (field)
+    if (value)
     {
 	g_hash_table_insert (device->sysinfo,
 			     g_strdup (field), g_strdup (value));

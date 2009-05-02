@@ -2,6 +2,19 @@
 
 	Patch from: Erik Hovland <erik@hovland.org>
 
+	Remove or rework any dead code.
+
+	* src/db-artwork-parser.c: ctx is guaranteed to be null. So the
+	conditional never executes.
+	* src/itdb_device.c: fix logic error which would cause the else 
+	clause to never be executed.
+	* src/itdb_itunesdb.c: dir_file is already guaranteed to be non-null.
+	* tests/test-ls.c: error cannot be true.
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	Patch from: Erik Hovland <erik@hovland.org>
+
 	Make sure pointers are valid when necessary.
 
 	* src/itdb_itunesdb.c: m53 might be null. Check before dereferencing
