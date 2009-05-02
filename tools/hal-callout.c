@@ -43,6 +43,57 @@
 #include <itdb_device.h>
 extern char *read_sysinfo_extended (const char *device);
 
+struct _ProductionInfo {
+	gchar *factory_id;
+	guint production_year;
+	guint production_week;
+	guint production_index;
+	char *model_id;
+};
+typedef struct _ProductionInfo ProductionInfo;
+
+static void 
+production_info_free (ProductionInfo *info)
+{
+	g_return_if_fail (info != NULL);
+	g_free (info->factory_id);
+	g_free (info->model_id);
+	g_free (info);
+}
+
+static ProductionInfo *
+parse_serial_number (const char *serial_number)
+{
+	ProductionInfo *info;
+	char int_str[4];
+
+	if (serial_number == NULL) {
+		return NULL;
+	}
+	if (strlen (serial_number) < 11) {
+		return NULL;
+	}
+	info = g_new0 (ProductionInfo, 1);
+	info->factory_id = g_strndup (serial_number, 2);
+	serial_number += 2;
+
+	strncpy (int_str, serial_number, 1);
+	serial_number += 1;
+	info->production_year = 2000 + g_ascii_strtoull (int_str, NULL, 10);
+
+	strncpy (int_str, serial_number, 2);
+	serial_number += 2;
+	info->production_week = g_ascii_strtoull (int_str, NULL, 10);
+
+	strncpy (int_str, serial_number, 3);
+	serial_number += 3;
+	info->production_index = g_ascii_strtoull (int_str, NULL, 36);
+
+	info->model_id = g_strdup (serial_number);
+
+	return info;
+}
+
 static char *
 get_model_name (const Itdb_IpodInfo *info)
 {
@@ -370,6 +421,7 @@ static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 	char *model_name;
 	char *color_name;
 	double generation;
+	ProductionInfo *prod_info;
 
         ctx = hal_ipod_initialize ();
         if (ctx == NULL) {
@@ -455,6 +507,39 @@ static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 		g_free (color_name);
 	}
 
+	if (serial_number != NULL) {
+		prod_info = parse_serial_number (serial_number);
+		if (prod_info != NULL) {
+			if (prod_info->factory_id != NULL) {
+				libhal_device_set_property_string (ctx, udi,
+								   LIBGPOD_HAL_NS"ipod.production.factory_id",
+								   prod_info->factory_id,
+								   NULL);
+
+			}
+			if (prod_info->production_year != 0) {
+				libhal_device_set_property_int (ctx, udi, 
+			        			        LIBGPOD_HAL_NS"ipod.production.year",
+							       	prod_info->production_year,
+							       	NULL);
+
+			}
+			if (prod_info->production_week != 0) {
+				libhal_device_set_property_int (ctx, udi, 
+								LIBGPOD_HAL_NS"ipod.production.week",
+								prod_info->production_week,
+							       	NULL);
+
+			}
+			if (prod_info->production_index != 0) {
+				libhal_device_set_property_int (ctx, udi, 
+								LIBGPOD_HAL_NS"ipod.production.number",
+								prod_info->production_index,
+							       	NULL);
+			}
+		}
+		production_info_free (prod_info);
+	}
         libhal_ctx_free (ctx);
 
 	return TRUE;
