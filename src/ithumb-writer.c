@@ -46,6 +46,8 @@
 #include <math.h>
 #include <fcntl.h>
 
+#include <glib/gstdio.h>
+
 /* Maximum size for .ithmb files. Reduced from 500 MB to 256 MB after
    reports of slow iPod interface behavior */
 #define ITHUMB_MAX_SIZE (256L*1000L*1000L)

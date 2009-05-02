@@ -1,5 +1,9 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* src/ithumb-writer.c: readd needed include
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	Patch from: Erik Hovland <erik@hovland.org>
 
 	* src/db-artwork-writer.c: remove useless assignment of mhba
