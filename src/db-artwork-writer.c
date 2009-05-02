@@ -669,7 +669,6 @@ write_mhba (Itdb_PhotoAlbum *album, iPodBuffer *buffer)
 	    return -1;
 	}
 	total_bytes += bytes_written;
-	mhba = ipod_buffer_get_pointer (buffer);
 
 	for (it = album->members; it != NULL; it = it->next) {
 	        Itdb_Artwork *photo = it->data;

@@ -2,6 +2,12 @@
 
 	Patch from: Erik Hovland <erik@hovland.org>
 
+	* src/db-artwork-writer.c: remove useless assignment of mhba
+	
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	Patch from: Erik Hovland <erik@hovland.org>
+
 	* src/itdb_itunesdb.c: don't access out of 'db' bounds when
 	building the pathname in an error case
 
