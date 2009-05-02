@@ -171,6 +171,8 @@ G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device,
 						     unsigned char *itdb_data,
 						     gsize itdb_len,
 						     GError **error);
+const Itdb_IpodInfo *
+itdb_ipod_info_from_serial (const char *serial);
 
 G_END_DECLS
 

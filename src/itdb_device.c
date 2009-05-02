@@ -679,7 +679,6 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
 };
 
 static const Itdb_IpodInfo *get_ipod_info_from_model_number (const char *model_number);
-static const Itdb_IpodInfo *get_ipod_info_from_serial (const char *serial);
 static void itdb_device_set_timezone_info (Itdb_Device *device);
 
 /* Reset or create the SysInfo hash table */
@@ -1023,7 +1022,7 @@ itdb_device_get_ipod_info (const Itdb_Device *device)
         const char *serial;
 
         serial = itdb_sysinfo_properties_get_serial_number (device->sysinfo_extended);
-        info = get_ipod_info_from_serial (serial);
+        info = itdb_ipod_info_from_serial (serial);
         if (info != NULL) {
             return info;
         }
@@ -2029,8 +2028,8 @@ get_ipod_info_from_model_number (const char *model_number)
     return g_hash_table_lookup (model_table->model_number_hash, model_number);
 }
 
-static const Itdb_IpodInfo *
-get_ipod_info_from_serial (const char *serial)
+const Itdb_IpodInfo *
+itdb_ipod_info_from_serial (const char *serial)
 {
     struct IpodModelTable *model_table;
     glong len;
