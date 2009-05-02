@@ -3035,7 +3035,7 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
     }
     else
     {
-	gchar *str = g_build_filename (mp, db[0], db[1], db[2], db[3], NULL);
+	gchar *str = g_build_filename (mp, itunes_dir, db[0], NULL);
 	g_set_error (error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_NOTFOUND,
