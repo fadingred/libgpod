@@ -13,10 +13,13 @@ haldir = $(HALCALLOUTSDIR)
 hal_PROGRAMS = libgpod-callout
 noinst_PROGRAMS=ipod-time-sync
 
-libgpod_callout_SOURCES =		\
-	hal-callout.c 		\
+libgpod_callout_SOURCES =					\
+	hal-callout.c 						\
+	$(top_srcdir)/src/itdb_sysinfo_extended_parser.c 	\
+	$(top_srcdir)/src/itdb_plist.c		 		\
 	ipod-scsi.c
 libgpod_callout_CFLAGS=$(LIBGPOD_CFLAGS) $(HAL_CFLAGS) $(SGUTILS_CFLAGS) -I$(top_srcdir)/src
+#libgpod_callout_LDADD=$(LIBGPOD_LIBS) $(HAL_LIBS) $(SGUTILS_LIBS) 
 libgpod_callout_LDADD=$(top_builddir)/src/libgpod.la $(LIBGPOD_LIBS) $(HAL_LIBS) $(SGUTILS_LIBS) 
 
 ipod_time_sync_SOURCES =	\

@@ -1,5 +1,11 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* tools/Makefile.am:
+	* tools/hal-callout.c: populate hal ipod device tree with
+	extended ipod information
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* src/itdb_device.c:
 	* src/itdb_device.h: add itdb_ipod_info_from_serial function
 
