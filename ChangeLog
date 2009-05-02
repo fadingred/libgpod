@@ -1,5 +1,9 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* src/itdb_device.c: add model information for silver shuffle 4G
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* docs/reference/tmp
 	* src/itdb.h
 	* src/itdb_device.c: Add shuffle 4g information
