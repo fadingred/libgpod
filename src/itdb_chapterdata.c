@@ -30,8 +30,6 @@
 #include <config.h>
 
 #include "itdb_device.h"
-#include "itdb_private.h"
-#include "itdb_endianness.h"
 #include <stdio.h>
 #include <string.h>
 #include <glib/gi18n-lib.h>

@@ -31,8 +31,6 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <glib/gi18n-lib.h>
 
-#include "itdb_thumb.h"
-
 static void usage (int argc, char **argv)
 {
 /*    gchar *name = argv[0];*/

@@ -30,7 +30,6 @@
 
 #include "itdb_private.h"
 #include "itdb_device.h"
-#include "itdb_thumb.h"
 #include <string.h>
 
 /**

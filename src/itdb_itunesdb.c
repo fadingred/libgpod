@@ -110,7 +110,6 @@
 #include "db-artwork-parser.h"
 #include "itdb_device.h"
 #include "itdb_private.h"
-#include "itdb_sha1.h"
 
 #include <errno.h>
 #include <fcntl.h>

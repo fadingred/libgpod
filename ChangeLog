@@ -1,5 +1,17 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	Patch from: Erik Hovland <erik@hovland.org>
+
+	* src/db-image-parser.c:
+	* src/itdb_chapterdata.c:
+	* src/itdb_itunesdb.c:
+	* src/itdb_track.c:
+	* src/ithumb-writer.c:
+	* tests/test-fw-id.c:
+	* tests/test-photos.c: remove unused includes
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* src/itdb_device.c: add model information for silver shuffle 4G
 
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>

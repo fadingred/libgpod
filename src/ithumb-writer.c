@@ -36,7 +36,6 @@
 #include "pixmaps.h"
 
 #include <errno.h>
-#include <locale.h>
 #include <string.h>
 
 #ifdef HAVE_UNISTD_H
@@ -46,8 +45,6 @@
 #include <sys/stat.h>
 #include <math.h>
 #include <fcntl.h>
-
-#include <glib/gstdio.h>
 
 /* Maximum size for .ithmb files. Reduced from 500 MB to 256 MB after
    reports of slow iPod interface behavior */

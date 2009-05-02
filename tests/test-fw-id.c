@@ -34,7 +34,6 @@
 #include <glib-object.h>
 
 #include "itdb.h"
-#include "itdb_device.h"
 
 int
 main (int argc, char *argv[])

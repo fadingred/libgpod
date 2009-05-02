@@ -31,7 +31,6 @@
 
 #include "itdb_device.h"
 #include "itdb_endianness.h"
-#include "db-artwork-parser.h"
 #include "db-image-parser.h"
 #include <glib/gi18n-lib.h>
 
