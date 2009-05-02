@@ -1,5 +1,9 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* tools/hal-callout.c: set ipod.images.formats in hal
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* tools/hal-callout.c: parse ipod production info and insert it
 	in hal
 

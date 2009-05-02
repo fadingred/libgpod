@@ -94,6 +94,60 @@ parse_serial_number (const char *serial_number)
 	return info;
 }
 
+enum ArtworkType {
+	UNKNOWN,
+	PHOTO,
+	ALBUM,
+	CHAPTER
+};
+
+static char *
+get_format_string (const Itdb_ArtworkFormat *format, enum ArtworkType type)
+{
+	const char *format_name;
+	const char *artwork_type;
+
+	g_return_val_if_fail (format != NULL, NULL);
+	switch (format->format) {
+            case THUMB_FORMAT_UYVY_BE:
+		    format_name = "iyuv";
+		    break;
+            case THUMB_FORMAT_RGB565_BE:
+		    format_name = "rgb565_be";
+		    break;		 
+	    case THUMB_FORMAT_RGB565_LE:
+		    format_name = "rgb565";
+		    break;
+	    case THUMB_FORMAT_I420_LE:
+		    format_name = "iyuv420";
+		    break;
+	    default:
+		    g_return_val_if_reached (NULL);
+	}
+
+	switch (type) {
+            case UNKNOWN:
+		    artwork_type = "unknown";
+		    break;
+            case PHOTO:
+	            artwork_type = "photo";
+		    break;
+	    case ALBUM:
+		    artwork_type = "album";
+		    break;
+	    case CHAPTER:
+		    artwork_type = "chapter";
+		    break;
+	    default:
+		    g_return_val_if_reached (NULL);
+	}
+
+	return g_strdup_printf ("corr_id=%u,width=%u,height=%u,rotation=%u,pixel_format=%s,image_type=%s",
+  		                format->format_id, 
+				format->width, format->height, 
+			        format->rotation, format_name, artwork_type);
+}
+
 static char *
 get_model_name (const Itdb_IpodInfo *info)
 {
@@ -384,7 +438,7 @@ hal_ipod_initialize(void)
 	DBusConnection *dbus_connection;
 
 	hal_context = libhal_ctx_new();
-if(hal_context == NULL) {
+	if(hal_context == NULL) {
 		return NULL;
 	}
 
@@ -410,6 +464,53 @@ if(hal_context == NULL) {
 }
 
 #define LIBGPOD_HAL_NS "org.libgpod."
+
+static void set_format_info (LibHalContext *ctx, const char *udi,
+                             const char *hal_propname,
+                             const GList *formats,
+                             enum ArtworkType type)
+{
+        const GList *it;
+
+        libhal_device_set_property_bool (ctx, udi,
+                                         hal_propname, (formats != NULL),
+                                         NULL);
+        for (it = formats; it != NULL; it = it->next) {
+                char *format_str;
+
+                format_str = get_format_string (it->data, type);
+                libhal_device_property_strlist_append (ctx, udi,
+                                                       LIBGPOD_HAL_NS"ipod.images.formats",
+                                                       format_str, 
+                                                       NULL);
+                g_free (format_str);
+        }
+}
+
+static void hal_set_artwork_information (const SysInfoIpodProperties *props,
+                                         LibHalContext *ctx,
+                                         const char *udi)
+{
+        const GList *formats;
+
+        /* Cover art */
+        formats = itdb_sysinfo_properties_get_cover_art_formats (props);
+        set_format_info (ctx, udi, 
+                         LIBGPOD_HAL_NS"ipod.images.album_art_supported",
+                         formats, ALBUM);
+
+        /* Photos */
+        formats = itdb_sysinfo_properties_get_photo_formats (props);
+        set_format_info (ctx, udi,
+                         LIBGPOD_HAL_NS"ipod.images.photos_supported",
+                         formats, PHOTO);
+
+        /* Chapter images */
+        formats = itdb_sysinfo_properties_get_chapter_image_formats (props);
+        set_format_info (ctx, udi, 
+                         LIBGPOD_HAL_NS"ipod.images.chapter_images_supported",
+                         formats, CHAPTER);
+}
 
 static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 {
@@ -478,18 +579,7 @@ static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 						   NULL);
 	}
 
-	libhal_device_set_property_bool (ctx, udi,
-				         LIBGPOD_HAL_NS"ipod.images.album_art_supported",
-					 (itdb_sysinfo_properties_get_cover_art_formats (props) != NULL),
-					 NULL);
-	libhal_device_set_property_bool (ctx, udi,
-			   	         LIBGPOD_HAL_NS"ipod.images.photos_supported",
-					 (itdb_sysinfo_properties_get_photo_formats (props) != NULL),
-					 NULL);
-	libhal_device_set_property_bool (ctx, udi,
-			   	         LIBGPOD_HAL_NS"ipod.images.chapter_images_supported",
-					 (itdb_sysinfo_properties_get_chapter_image_formats (props) != NULL),
-					 NULL);
+	hal_set_artwork_information (props, ctx, udi);
 
 	model_name = get_model_name (info);
 	if (model_name != NULL) {
