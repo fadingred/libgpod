@@ -1106,6 +1106,15 @@ itdb_device_get_artwork_formats_fallback (const Itdb_Device *device,
     return artwork_formats;
 }
 
+/**
+ * itdb_device_get_photo_formats:
+ * @device: an #Itdb_Device
+ *
+ * Returns: a #GList of #Itdb_ArtworkFormat describing the photo formats 
+ * supported by the iPod associated with @device. The returned list must
+ * be freed with g_list_free() when no longer needed.
+ *
+ **/
 GList *itdb_device_get_photo_formats (const Itdb_Device *device)
 {
     g_return_val_if_fail (device != NULL, NULL);
@@ -1119,6 +1128,15 @@ GList *itdb_device_get_photo_formats (const Itdb_Device *device)
     g_return_val_if_reached (NULL);
 }
 
+/**
+ * itdb_device_get_cover_art_formats:
+ * @device: an #Itdb_Device
+ *
+ * Returns: a #GList of #Itdb_ArtworkFormat describing the cover art formats 
+ * supported by the iPod associated with @device. The returned list must
+ * freed with g_list_free() when no longer needed.
+ *
+ **/
 GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
 {
     g_return_val_if_fail (device != NULL, NULL);
@@ -1132,6 +1150,15 @@ GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
     g_return_val_if_reached (NULL);
 }
 
+/**
+ * itdb_device_get_chapter_image_formats:
+ * @device: an #Itdb_Device
+ *
+ * Returns: a #GList of #Itdb_ArtworkFormat describing the chapter image 
+ * formats supported by the iPod associated with @device. The returned list
+ * must be freed with g_list_free() when no lonber needed.
+ *
+ **/
 GList *itdb_device_get_chapter_image_formats (const Itdb_Device *device)
 {
     g_return_val_if_fail (device != NULL, NULL);
