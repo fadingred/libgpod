@@ -43,6 +43,170 @@
 #include <itdb_device.h>
 extern char *read_sysinfo_extended (const char *device);
 
+static char *
+get_model_name (const Itdb_IpodInfo *info)
+{
+	if (info == NULL) {
+		return NULL;
+	}
+	switch (info->ipod_generation) {
+	case ITDB_IPOD_GENERATION_UNKNOWN:
+		return g_strdup ("unknown");
+	case ITDB_IPOD_GENERATION_FIRST:
+	case ITDB_IPOD_GENERATION_SECOND:
+	case ITDB_IPOD_GENERATION_THIRD:
+	case ITDB_IPOD_GENERATION_FOURTH:
+		return g_strdup ("grayscale");
+	case ITDB_IPOD_GENERATION_PHOTO:
+		return g_strdup ("color");
+	case ITDB_IPOD_GENERATION_MINI_1:
+	case ITDB_IPOD_GENERATION_MINI_2:
+		return g_strdup ("mini");
+	case ITDB_IPOD_GENERATION_SHUFFLE_1:
+	case ITDB_IPOD_GENERATION_SHUFFLE_2:
+	case ITDB_IPOD_GENERATION_SHUFFLE_3:
+	case ITDB_IPOD_GENERATION_SHUFFLE_4:
+		return g_strdup ("shuffle");
+	case ITDB_IPOD_GENERATION_NANO_1:
+	case ITDB_IPOD_GENERATION_NANO_2:
+	case ITDB_IPOD_GENERATION_NANO_3:
+	case ITDB_IPOD_GENERATION_NANO_4:
+		return g_strdup ("nano");
+	case ITDB_IPOD_GENERATION_VIDEO_1:
+	case ITDB_IPOD_GENERATION_VIDEO_2:
+		return g_strdup ("video");
+	case ITDB_IPOD_GENERATION_CLASSIC_1:
+	case ITDB_IPOD_GENERATION_CLASSIC_2:
+		return g_strdup ("classic");
+	case ITDB_IPOD_GENERATION_TOUCH_1:
+		return g_strdup ("touch");
+	case ITDB_IPOD_GENERATION_IPHONE_1:
+		return g_strdup ("phone");
+	case ITDB_IPOD_GENERATION_MOBILE:
+		return g_strdup ("rokr");
+	}
+
+	g_assert_not_reached ();
+}
+
+static double
+get_generation (const Itdb_IpodInfo *info)
+{
+	if (info == NULL) {
+		return 0.0;
+	}
+	switch (info->ipod_generation) {
+	case ITDB_IPOD_GENERATION_UNKNOWN:
+		return 0.0;
+	case ITDB_IPOD_GENERATION_FIRST:
+		return 1.0;
+	case ITDB_IPOD_GENERATION_SECOND:
+		return 2.0;
+	case ITDB_IPOD_GENERATION_THIRD:
+		return 3.0;
+	case ITDB_IPOD_GENERATION_FOURTH:
+		return 4.0;
+	case ITDB_IPOD_GENERATION_PHOTO:
+		return 4.0;
+	case ITDB_IPOD_GENERATION_MINI_1:
+		return 1.0;
+	case ITDB_IPOD_GENERATION_MINI_2:
+		return 2.0;
+	case ITDB_IPOD_GENERATION_SHUFFLE_1:
+		return 1.0;
+	case ITDB_IPOD_GENERATION_SHUFFLE_2:
+		return 2.0;
+	case ITDB_IPOD_GENERATION_SHUFFLE_3:
+		return 3.0;
+	case ITDB_IPOD_GENERATION_SHUFFLE_4:
+		return 4.0;
+	case ITDB_IPOD_GENERATION_NANO_1:
+		return 1.0;
+	case ITDB_IPOD_GENERATION_NANO_2:
+		return 2.0;
+	case ITDB_IPOD_GENERATION_NANO_3:
+		return 3.0;
+	case ITDB_IPOD_GENERATION_NANO_4:
+		return 4.0;
+	case ITDB_IPOD_GENERATION_VIDEO_1:
+		return 5.0;
+	case ITDB_IPOD_GENERATION_VIDEO_2:
+		return 5.5;
+	case ITDB_IPOD_GENERATION_CLASSIC_1:
+		return 6.0;
+	case ITDB_IPOD_GENERATION_CLASSIC_2:
+		return 6.5;
+	case ITDB_IPOD_GENERATION_TOUCH_1:
+		return 1.0;
+	case ITDB_IPOD_GENERATION_IPHONE_1:
+		return 1.0;
+	case ITDB_IPOD_GENERATION_MOBILE:
+		return 1.0;
+	}
+
+	g_assert_not_reached ();
+}
+static char *
+get_color_name (const Itdb_IpodInfo *info)
+{
+	if (info == NULL) {
+		return NULL;
+	}	
+	switch (info->ipod_model) {
+	case ITDB_IPOD_MODEL_INVALID:
+	case ITDB_IPOD_MODEL_UNKNOWN:
+		return NULL;
+	case ITDB_IPOD_MODEL_COLOR:
+	case ITDB_IPOD_MODEL_COLOR_U2:
+	case ITDB_IPOD_MODEL_REGULAR:
+	case ITDB_IPOD_MODEL_REGULAR_U2:
+	case ITDB_IPOD_MODEL_NANO_WHITE:
+	case ITDB_IPOD_MODEL_VIDEO_WHITE:
+	case ITDB_IPOD_MODEL_SHUFFLE:
+	case ITDB_IPOD_MODEL_MOBILE_1:
+		return g_strdup ("white");
+	case ITDB_IPOD_MODEL_MINI:
+	case ITDB_IPOD_MODEL_NANO_SILVER:
+	case ITDB_IPOD_MODEL_SHUFFLE_SILVER:
+	case ITDB_IPOD_MODEL_CLASSIC_SILVER:
+		return g_strdup ("silver");
+	case ITDB_IPOD_MODEL_VIDEO_U2:
+	case ITDB_IPOD_MODEL_NANO_BLACK:
+	case ITDB_IPOD_MODEL_VIDEO_BLACK:
+	case ITDB_IPOD_MODEL_CLASSIC_BLACK:
+	case ITDB_IPOD_MODEL_SHUFFLE_BLACK:
+	case ITDB_IPOD_MODEL_TOUCH_BLACK:
+	case ITDB_IPOD_MODEL_IPHONE_1:
+		return g_strdup ("black");
+	case ITDB_IPOD_MODEL_MINI_PINK:
+	case ITDB_IPOD_MODEL_NANO_PINK:
+	case ITDB_IPOD_MODEL_SHUFFLE_PINK:
+		return g_strdup ("pink");
+	case ITDB_IPOD_MODEL_MINI_GREEN:
+	case ITDB_IPOD_MODEL_NANO_GREEN:
+	case ITDB_IPOD_MODEL_SHUFFLE_GREEN:
+		return g_strdup ("green");
+	case ITDB_IPOD_MODEL_MINI_GOLD:
+		return g_strdup ("gold");
+	case ITDB_IPOD_MODEL_NANO_BLUE:
+	case ITDB_IPOD_MODEL_MINI_BLUE:
+	case ITDB_IPOD_MODEL_SHUFFLE_BLUE:
+		return g_strdup ("blue");
+	case ITDB_IPOD_MODEL_SHUFFLE_RED:
+	case ITDB_IPOD_MODEL_NANO_RED:
+		return g_strdup ("red");
+	case ITDB_IPOD_MODEL_SHUFFLE_ORANGE:
+	case ITDB_IPOD_MODEL_NANO_ORANGE:
+		return g_strdup ("orange");
+	case ITDB_IPOD_MODEL_SHUFFLE_PURPLE:
+	case ITDB_IPOD_MODEL_NANO_PURPLE:
+		return g_strdup ("purple");
+	case ITDB_IPOD_MODEL_NANO_YELLOW:
+		return g_strdup ("yellow");
+	}
+
+	g_assert_not_reached ();
+}
 
 static char *
 get_icon_name (const Itdb_IpodInfo *info)
@@ -157,7 +321,7 @@ get_icon_name (const Itdb_IpodInfo *info)
 		return g_strdup ("multimedia-player-apple-ipod");
 	}
 
-	return g_strdup ("multimedia-player-apple-ipod");
+	g_assert_not_reached ();
 }
 
 /* taken from libipoddevice proper */
@@ -203,6 +367,9 @@ static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 	const char *serial_number;
 	char *icon_name;
 	const Itdb_IpodInfo *info;
+	char *model_name;
+	char *color_name;
+	double generation;
 
         ctx = hal_ipod_initialize ();
         if (ctx == NULL) {
@@ -261,6 +428,33 @@ static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 			   	         LIBGPOD_HAL_NS"ipod.images.chapter_images_supported",
 					 (itdb_sysinfo_properties_get_chapter_image_formats (props) != NULL),
 					 NULL);
+
+	model_name = get_model_name (info);
+	if (model_name != NULL) {
+		libhal_device_set_property_string (ctx, udi,
+						   LIBGPOD_HAL_NS"ipod.model.device_class",
+						   model_name,
+						   NULL);
+		g_free (model_name);
+	}
+
+	generation = get_generation (info);
+	if (generation != 0.0) {
+		libhal_device_set_property_double (ctx, udi,
+						   LIBGPOD_HAL_NS"ipod.model.generation",
+						   generation,
+						   NULL);
+	}
+
+	color_name = get_color_name (info);
+	if (color_name != NULL) {
+		libhal_device_set_property_string (ctx, udi,
+						   LIBGPOD_HAL_NS"ipod.model.shell_color",
+						   color_name,
+						   NULL);
+		g_free (color_name);
+	}
+
         libhal_ctx_free (ctx);
 
 	return TRUE;

@@ -1,5 +1,10 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* tools/hal-callout.c: set ipod model, ipod color and ipod
+	generation properties
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* tools/Makefile.am:
 	* tools/hal-callout.c: populate hal ipod device tree with
 	extended ipod information
