@@ -1,3 +1,10 @@
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+	
+	Patch from: Eric Lassauge
+
+	* tools/Makefile.am: don't try to compile ipod-time-sync when HAL
+	is disabled
+
 2009-04-15  Todd Zullinger  <tmz@pobox.com>
 
 	* configure.ac: Bump version to 0.7.3SVN for further development
