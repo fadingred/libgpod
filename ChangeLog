@@ -1,4 +1,14 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* docs/reference/tmp
+	* src/itdb.h
+	* src/itdb_device.c: Add shuffle 4g information
+
+	For now, there is no model specific information. The new enum members
+	were added to the end to keep the ABI compatible. It's unknown at
+	this time if the new shuffles need some kind of hash.
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 	
 	Patch from: Eric Lassauge
 

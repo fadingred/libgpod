@@ -297,6 +297,7 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Classic (Silver)"),
 	N_("Classic (Black)"),
 	N_("Touch (Black)"),
+	N_("Shuffle (Black)"),
 	NULL
 };
 
@@ -324,6 +325,7 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Classic"),
 	N_("Touch"),
         N_("iPhone"),
+	N_("Shuffle (4th Gen.)"),
 	N_("Unused"),
 	N_("Unused"),
 	NULL
@@ -1165,6 +1167,7 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
             case ITDB_IPOD_GENERATION_SHUFFLE_1:
             case ITDB_IPOD_GENERATION_SHUFFLE_2:
             case ITDB_IPOD_GENERATION_SHUFFLE_3:
+            case ITDB_IPOD_GENERATION_SHUFFLE_4:
             case ITDB_IPOD_GENERATION_NANO_1:
             case ITDB_IPOD_GENERATION_NANO_2:
             case ITDB_IPOD_GENERATION_VIDEO_1:
@@ -1467,6 +1470,7 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
         case ITDB_IPOD_GENERATION_SHUFFLE_1:
         case ITDB_IPOD_GENERATION_SHUFFLE_2:
         case ITDB_IPOD_GENERATION_SHUFFLE_3:
+        case ITDB_IPOD_GENERATION_SHUFFLE_4:
         case ITDB_IPOD_GENERATION_NANO_1:
         case ITDB_IPOD_GENERATION_NANO_2:
             return FALSE;
@@ -1797,6 +1801,7 @@ static ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device
     case ITDB_IPOD_GENERATION_SHUFFLE_1:
     case ITDB_IPOD_GENERATION_SHUFFLE_2:
     case ITDB_IPOD_GENERATION_SHUFFLE_3:
+    case ITDB_IPOD_GENERATION_SHUFFLE_4:
     case ITDB_IPOD_GENERATION_NANO_1:
     case ITDB_IPOD_GENERATION_NANO_2:
     case ITDB_IPOD_GENERATION_VIDEO_1:
@@ -2057,6 +2062,7 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_SHUFFLE_1:
 	    case ITDB_IPOD_GENERATION_SHUFFLE_2:
 	    case ITDB_IPOD_GENERATION_SHUFFLE_3:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_4:
 	    case ITDB_IPOD_GENERATION_VIDEO_1:
 	    case ITDB_IPOD_GENERATION_VIDEO_2:
 	    case ITDB_IPOD_GENERATION_CLASSIC_1:

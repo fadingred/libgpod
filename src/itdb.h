@@ -106,6 +106,7 @@ typedef struct _Itdb_Chapterdata Itdb_Chapterdata;
  * @ITDB_IPOD_GENERATION_SHUFFLE_1: First Generation iPod Shuffle
  * @ITDB_IPOD_GENERATION_SHUFFLE_2: Second Generation iPod Shuffle
  * @ITDB_IPOD_GENERATION_SHUFFLE_3: Third Generation iPod Shuffle
+ * @ITDB_IPOD_GENERATION_SHUFFLE_4: Third Generation iPod Shuffle
  * @ITDB_IPOD_GENERATION_NANO_1:    First Generation iPod Nano
  * @ITDB_IPOD_GENERATION_NANO_2:    Second Generation iPod Nano
  * @ITDB_IPOD_GENERATION_NANO_3:    Third Generation iPod Nano
@@ -147,6 +148,7 @@ typedef enum {
     ITDB_IPOD_GENERATION_CLASSIC_2,
     ITDB_IPOD_GENERATION_TOUCH_1,
     ITDB_IPOD_GENERATION_IPHONE_1,
+    ITDB_IPOD_GENERATION_SHUFFLE_4,
 } Itdb_IpodGeneration;
 
 /**
@@ -179,6 +181,7 @@ typedef enum {
  * @ITDB_IPOD_MODEL_NANO_ORANGE:    iPod Nano (Orange)
  * @ITDB_IPOD_MODEL_IPHONE_1:       iPhone
  * @ITDB_IPOD_MODEL_SHUFFLE_SILVER: iPod Shuffle (Silver)
+ * @ITDB_IPOD_MODEL_SHUFFLE_BLACK:  iPod Shuffle (Black)
  * @ITDB_IPOD_MODEL_SHUFFLE_PINK:   iPod Shuffle (Pink)
  * @ITDB_IPOD_MODEL_SHUFFLE_BLUE:   iPod Shuffle (Blue)
  * @ITDB_IPOD_MODEL_SHUFFLE_GREEN:  iPod Shuffle (Green)
@@ -231,6 +234,7 @@ typedef enum {
     ITDB_IPOD_MODEL_CLASSIC_SILVER,
     ITDB_IPOD_MODEL_CLASSIC_BLACK,
     ITDB_IPOD_MODEL_TOUCH_BLACK,
+    ITDB_IPOD_MODEL_SHUFFLE_BLACK
 } Itdb_IpodModel;
 
 /**
