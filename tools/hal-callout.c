@@ -512,10 +512,10 @@ static void hal_set_artwork_information (const SysInfoIpodProperties *props,
                          formats, CHAPTER);
 }
 
-static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
+static gboolean hal_ipod_set_properties (LibHalContext *ctx, 
+					 const char *udi,
+					 const SysInfoIpodProperties *props)
 {
-	LibHalContext *ctx;
-	const char *udi;
 	const char *serial_number;
 	const char *firmware_version;
 	char *icon_name;
@@ -525,14 +525,6 @@ static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 	double generation;
 	ProductionInfo *prod_info;
 
-        ctx = hal_ipod_initialize ();
-        if (ctx == NULL) {
-                return FALSE;
-        }
-	udi = g_getenv ("UDI");
-	if (udi == NULL) {
-		return FALSE;
-	}
         libhal_device_set_property_int (ctx, udi, 
 			                LIBGPOD_HAL_NS"version", 1, NULL);
 
@@ -640,10 +632,47 @@ static gboolean hal_ipod_set_properties (const SysInfoIpodProperties *props)
 		}
 		production_info_free (prod_info);
 	}
-        libhal_ctx_free (ctx);
 
 	return TRUE;
 }
+
+static gboolean hal_mounted_ipod_set_properties (LibHalContext *ctx,
+						 const char *udi,
+						 const char *ipod_mountpoint)
+{
+        Itdb_iTunesDB *itdb;
+        Itdb_Playlist *mpl;
+        char *control_path;
+
+        itdb = itdb_parse (ipod_mountpoint, NULL);
+        if (itdb == NULL) {
+               return FALSE;
+        }
+        control_path = itdb_get_control_dir (ipod_mountpoint);
+        if (control_path != NULL) {
+	   	if (strlen (control_path) >= strlen (ipod_mountpoint)) {
+			libhal_device_set_property_string (ctx, udi,
+					LIBGPOD_HAL_NS"ipod.model.control_path",
+					control_path + strlen (ipod_mountpoint),
+					NULL);
+			g_free (control_path);
+		}
+        }
+
+        mpl = itdb_playlist_mpl (itdb);
+        if (mpl == NULL) {
+                return FALSE;
+        }
+	if (mpl->name != NULL) {
+	    libhal_device_set_property_string (ctx, udi, "info.desktop.name",
+					       mpl->name, NULL);
+	}
+
+        libhal_device_set_property_string (ctx, udi, "info.product",
+                                           mpl->name, NULL);
+        return FALSE;
+}
+
 
 static char *mount_ipod (const char *dev_path)
 {
@@ -699,11 +728,14 @@ static gboolean write_sysinfo_extended (const char *mountpoint,
         return result;
 }
 
+
 int main (int argc, char **argv)
 {
         char *ipod_mountpoint;
         char *xml;
 	SysInfoIpodProperties *props;
+        LibHalContext *ctx; 
+        const char *udi;
 
 	g_type_init ();
 
@@ -712,18 +744,40 @@ int main (int argc, char **argv)
                 return -1;
         }
 
-	props = itdb_sysinfo_extended_parse_from_xml (xml, NULL);
-	hal_ipod_set_properties (props);
-	itdb_sysinfo_properties_free (props);
+        props = itdb_sysinfo_extended_parse_from_xml (xml, NULL);
 
+        ctx = hal_ipod_initialize ();
+        if (ctx == NULL) {
+                itdb_sysinfo_properties_free (props);
+                return FALSE;
+        }
+        udi = g_getenv ("UDI");
+        if (udi == NULL) {
+                libhal_ctx_free (ctx);
+                itdb_sysinfo_properties_free (props);
+                return FALSE;
+        }
+
+        hal_ipod_set_properties (ctx, udi, props);
+        itdb_sysinfo_properties_free (props);
 
         ipod_mountpoint = mount_ipod (g_getenv ("HAL_PROP_BLOCK_DEVICE"));
         if (ipod_mountpoint == NULL) {
                 g_free (xml);
+                libhal_ctx_free (ctx);
                 return -1;
         }
         write_sysinfo_extended (ipod_mountpoint, xml); 
         g_free (xml);
+
+        /* hal_mounted_ipod_set_properties will call itdb_parse on the ipod
+         * which we just mounted, which will create an ItdbDevice
+         * containing most of what 'dev' had above. For now, I'm leaving
+         * this kind of duplication since I want the hal information to be
+         * added even if for some reason we don't manage to mount the ipod
+         */
+        hal_mounted_ipod_set_properties (ctx, udi, ipod_mountpoint);
+        libhal_ctx_free (ctx);
 
         umount (ipod_mountpoint);
         g_rmdir (ipod_mountpoint);

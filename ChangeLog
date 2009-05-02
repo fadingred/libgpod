@@ -1,5 +1,10 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* tools/hal-callout.c: mount ipod to collect more ipod
+	properties
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* tools/hal-callout.c: set ipod.images.formats in hal
 
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
