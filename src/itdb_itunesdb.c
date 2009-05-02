@@ -4317,6 +4317,7 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
 	      lastsortkey = sortkey; 
 	    }
 	    mhod53index++;
+	    g_assert (m53 != NULL);
 	    m53->count++;
 	  }
       }

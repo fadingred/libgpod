@@ -1,5 +1,20 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	Patch from: Erik Hovland <erik@hovland.org>
+
+	Make sure pointers are valid when necessary.
+
+	* src/itdb_itunesdb.c: m53 might be null. Check before dereferencing
+	to count.
+	* src/ithumb-writer.c: Since there is an assert for
+	artwork->thunmbnail->data_type, we have to check artwork->thumbnail 
+	before. Not after. So do an assert on that pointer too.
+	* tests/test-sysinfo-extended-parsing.c: If props is null both 
+	itdb_sysinfo_properties_dump and itdb_sysinfo_properties_free 
+	will segfault. Better to just return.
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* src/ithumb-writer.c: readd needed include
 
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>

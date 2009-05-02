@@ -14,6 +14,7 @@ int main (int argc, char **argv)
     props = itdb_sysinfo_extended_parse (argv[1], &error);
     if (props == NULL) {
         g_print ("Couldn't parse %s: %s\n", argv[1], error->message);
+        return(2);
     }
     itdb_sysinfo_properties_dump (props);
     itdb_sysinfo_properties_free (props);

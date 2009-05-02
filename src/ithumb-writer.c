@@ -1125,21 +1125,19 @@ write_thumbnail (iThumbWriter *writer,
                  Itdb_Artwork *artwork, 
                  Itdb_Thumb_Ipod *thumb_ipod)
 {
+        g_assert (artwork->thumbnail);
         g_assert (artwork->thumbnail->data_type != ITDB_THUMB_TYPE_IPOD);
 
-	if (artwork->thumbnail)
-	{
-	    /* check if new thumbnail file has to be started */
-	    if (ithumb_writer_update (writer)) {
-                Itdb_Thumb_Ipod_Item *item;
-                item = ithumb_writer_write_thumbnail (writer, 
-                                                      artwork->thumbnail);
-                if (item != NULL) {
-                    itdb_thumb_ipod_add (thumb_ipod, item);
-                }
-
+	/* check if new thumbnail file has to be started */
+	if (ithumb_writer_update (writer)) {
+            Itdb_Thumb_Ipod_Item *item;
+            item = ithumb_writer_write_thumbnail (writer, 
+                                                  artwork->thumbnail);
+            if (item != NULL) {
+                itdb_thumb_ipod_add (thumb_ipod, item);
             }
-	}
+
+        }
 }
 
 
