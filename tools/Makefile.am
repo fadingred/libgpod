@@ -16,8 +16,8 @@ noinst_PROGRAMS=ipod-time-sync
 libgpod_callout_SOURCES =		\
 	hal-callout.c 		\
 	ipod-scsi.c
-libgpod_callout_CFLAGS=$(LIBGPOD_CFLAGS) $(SGUTILS_CFLAGS) -I$(top_srcdir)/src
-libgpod_callout_LDADD=$(LIBGPOD_LIBS) $(SGUTILS_LIBS) $(top_builddir)/src/libgpod.la
+libgpod_callout_CFLAGS=$(LIBGPOD_CFLAGS) $(HAL_CFLAGS) $(SGUTILS_CFLAGS) -I$(top_srcdir)/src
+libgpod_callout_LDADD=$(top_builddir)/src/libgpod.la $(LIBGPOD_LIBS) $(HAL_LIBS) $(SGUTILS_LIBS) 
 
 ipod_time_sync_SOURCES =	\
 	ipod-time-sync.c	\

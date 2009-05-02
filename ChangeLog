@@ -1,5 +1,9 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* tools/Makefile.am: use hal flags when compiling the HAL callout
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* src/itdb_device.c: add API doc to the cover art functions
 
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
