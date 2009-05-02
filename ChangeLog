@@ -1,5 +1,11 @@
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* src/itdb_sysinfo_extended_parser.c:
+	* src/itdb_sysinfo_extended_parser.h: add functions to parse
+	SysInfoExtended from memory
+
+2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* tools/Makefile.am: use hal flags when compiling the HAL callout
 
 2009-05-02  Christophe Fergeau  <cfergeau@mandriva.com>

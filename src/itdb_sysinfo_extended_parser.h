@@ -42,6 +42,10 @@ SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename,
                                                     GError **error);
 
 G_GNUC_INTERNAL
+SysInfoIpodProperties *itdb_sysinfo_extended_parse_from_xml (const char *xml,
+							     GError **error);
+
+G_GNUC_INTERNAL
 void itdb_sysinfo_properties_free (SysInfoIpodProperties *props);
 
 G_GNUC_INTERNAL const char *

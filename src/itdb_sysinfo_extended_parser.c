@@ -532,6 +532,25 @@ SysInfoIpodProperties *itdb_sysinfo_extended_parse (const char *filename,
     return props;
 }
 
+SysInfoIpodProperties *itdb_sysinfo_extended_parse_from_xml (const char *xml,
+							     GError **error)
+{
+    GValue *parsed_doc;
+    SysInfoIpodProperties *props;
+
+    g_return_val_if_fail (xml != NULL, NULL);
+
+    parsed_doc = itdb_plist_parse_from_memory (xml, strlen (xml), error);
+    if (parsed_doc == NULL) {
+        return NULL;
+    }
+    props = g_value_to_ipod_properties (parsed_doc);
+    g_value_unset (parsed_doc);
+    g_free (parsed_doc);
+
+    return props;
+}
+
 /**
  * itdb_sysinfo_properties_get_serial_number:
  * @props: a #SysInfoIpodProperties structure
