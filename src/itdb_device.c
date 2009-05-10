@@ -1697,11 +1697,11 @@ static gint get_local_timezone (void)
         seconds_east_utc = tp->tm_gmtoff;
     }
 #   endif /* !HAVE_LOCALTIME_R */
-    return seconds_east_utc * -1; /* mimic the old behaviour when global variable 'timezone' from the 'time.h' header was returned */
+    return seconds_east_utc; /* mimic the old behaviour when global variable 'timezone' from the 'time.h' header was returned */
 #elif __CYGWIN__   /* !HAVE_STRUCT_TM_TM_GMTOFF */
-    return (gint) _timezone; /* global variable defined by time.h, see man tzset */
+    return (gint) _timezone * -1; /* global variable defined by time.h, see man tzset */
 #else /* !HAVE_STRUCT_TM_TM_GMTOFF && !__CYGWIN__ */
-    return timezone; /* global variable defined by time.h, see man tzset */
+    return timezone * -1; /* global variable defined by time.h, see man tzset */
 #endif
 }
 
