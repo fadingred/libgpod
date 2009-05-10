@@ -1,5 +1,10 @@
 2009-05-10  Christophe Fergeau  <cfergeau@mandriva.com>
 
+	* tests/get-timezone.c: call g_type_init to avoid tons of glib
+	warnings when reading the SysInfoExtended file.
+
+2009-05-10  Christophe Fergeau  <cfergeau@mandriva.com>
+
 	* src/itdb_device.c: seems the logic in get_local_timezone was
 	inverted, negate the calculated offset before returning it to be
 	consistant with the values we calculate from iPod data

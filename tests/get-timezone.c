@@ -12,7 +12,7 @@
  * shift, ie my local time is UTC+2. DST won't be shown if not active.
  *
  */
-
+#include <glib-object.h>
 #include <errno.h>
 #include <stdio.h>
 #include <itdb.h>
@@ -22,6 +22,8 @@ int main (int argc, char **argv)
 {
     char *mountpoint;
     Itdb_Device *device;
+
+    g_type_init();
 
     if (argc >= 2) {
         mountpoint = argv[1];
