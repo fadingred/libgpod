@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, Christophe Fergeau  <teuf@gnome.org>
+/* Copyright (c) 2007, 2010 Christophe Fergeau  <teuf@gnome.org>
  * Part of the libgpod project.
  * 
  * URL: http://www.gtkpod.org/
@@ -23,13 +23,14 @@
  * This product is not supported/written/published by Apple!
  *
  */
+#include "config.h"
+
+#include "backends.h"
 
 #include <errno.h>
 #include <glib.h>
 #include <glib/gstdio.h>
-#include <glib-object.h>
 
-#include <libhal.h>
 #ifndef __USE_BSD
   #define __USE_BSD /* for mkdtemp */
 #endif
@@ -97,60 +98,6 @@ parse_serial_number (const char *serial_number)
 	info->model_id = g_strdup (serial_number);
 
 	return info;
-}
-
-enum ArtworkType {
-	UNKNOWN,
-	PHOTO,
-	ALBUM,
-	CHAPTER
-};
-
-static char *
-get_format_string (const Itdb_ArtworkFormat *format, enum ArtworkType type)
-{
-	const char *format_name;
-	const char *artwork_type;
-
-	g_return_val_if_fail (format != NULL, NULL);
-	switch (format->format) {
-            case THUMB_FORMAT_UYVY_BE:
-		    format_name = "iyuv";
-		    break;
-            case THUMB_FORMAT_RGB565_BE:
-		    format_name = "rgb565_be";
-		    break;		 
-	    case THUMB_FORMAT_RGB565_LE:
-		    format_name = "rgb565";
-		    break;
-	    case THUMB_FORMAT_I420_LE:
-		    format_name = "iyuv420";
-		    break;
-	    default:
-		    g_return_val_if_reached (NULL);
-	}
-
-	switch (type) {
-            case UNKNOWN:
-		    artwork_type = "unknown";
-		    break;
-            case PHOTO:
-	            artwork_type = "photo";
-		    break;
-	    case ALBUM:
-		    artwork_type = "album";
-		    break;
-	    case CHAPTER:
-		    artwork_type = "chapter";
-		    break;
-	    default:
-		    g_return_val_if_reached (NULL);
-	}
-
-	return g_strdup_printf ("corr_id=%u,width=%u,height=%u,rotation=%u,pixel_format=%s,image_type=%s",
-  		                format->format_id, 
-				format->width, format->height, 
-			        format->rotation, format_name, artwork_type);
 }
 
 static char *
@@ -273,6 +220,7 @@ get_generation (const Itdb_IpodInfo *info)
 
 	g_assert_not_reached ();
 }
+
 static char *
 get_color_name (const Itdb_IpodInfo *info)
 {
@@ -464,92 +412,26 @@ get_icon_name (const Itdb_IpodInfo *info)
 	g_assert_not_reached ();
 }
 
-/* taken from libipoddevice proper */
-static LibHalContext *
-hal_ipod_initialize(void)
-{
-	LibHalContext *hal_context;
-	DBusError error;
-	DBusConnection *dbus_connection;
-
-	hal_context = libhal_ctx_new();
-	if(hal_context == NULL) {
-		return NULL;
-	}
-
-	dbus_error_init(&error);
-	dbus_connection = dbus_bus_get(DBUS_BUS_SYSTEM, &error);
-	if (dbus_error_is_set(&error)) {
-		dbus_error_free(&error);
-		libhal_ctx_free(hal_context);
-		return NULL;
-	}
-
-	libhal_ctx_set_dbus_connection(hal_context, dbus_connection);
-
-	if(!libhal_ctx_init(hal_context, &error)) {
-		if (dbus_error_is_set(&error)) {
-			dbus_error_free(&error);
-		}
-		libhal_ctx_free(hal_context);
-		return NULL;
-	}
-
-	return hal_context;
-}
-
-#define LIBGPOD_HAL_NS "org.libgpod."
-
-static void set_format_info (LibHalContext *ctx, const char *udi,
-                             const char *hal_propname,
-                             const GList *formats,
-                             enum ArtworkType type)
-{
-        const GList *it;
-
-        libhal_device_set_property_bool (ctx, udi,
-                                         hal_propname, (formats != NULL),
-                                         NULL);
-        for (it = formats; it != NULL; it = it->next) {
-                char *format_str;
-
-                format_str = get_format_string (it->data, type);
-                libhal_device_property_strlist_append (ctx, udi,
-                                                       LIBGPOD_HAL_NS"ipod.images.formats",
-                                                       format_str, 
-                                                       NULL);
-                g_free (format_str);
-        }
-}
-
-static void hal_set_artwork_information (const SysInfoIpodProperties *props,
-                                         LibHalContext *ctx,
-                                         const char *udi)
+static void set_artwork_information (const SysInfoIpodProperties *props,
+				     ItdbBackend *backend)
 {
         const GList *formats;
 
         /* Cover art */
         formats = itdb_sysinfo_properties_get_cover_art_formats (props);
-        set_format_info (ctx, udi, 
-                         LIBGPOD_HAL_NS"ipod.images.album_art_supported",
-                         formats, ALBUM);
+        backend->set_artwork_formats (backend, ALBUM, formats);
 
         /* Photos */
         formats = itdb_sysinfo_properties_get_photo_formats (props);
-        set_format_info (ctx, udi,
-                         LIBGPOD_HAL_NS"ipod.images.photos_supported",
-                         formats, PHOTO);
+        backend->set_artwork_formats (backend, PHOTO, formats);
 
         /* Chapter images */
         formats = itdb_sysinfo_properties_get_chapter_image_formats (props);
-        set_format_info (ctx, udi, 
-                         LIBGPOD_HAL_NS"ipod.images.chapter_images_supported",
-                         formats, CHAPTER);
+        backend->set_artwork_formats (backend, CHAPTER, formats);
 }
 
-static gboolean hal_ipod_set_properties (LibHalContext *ctx, 
-					 const char *udi,
-					 const SysInfoIpodProperties *props)
+static gboolean ipod_set_properties (ItdbBackend *backend,
+				     const SysInfoIpodProperties *props)
 {
 	const char *serial_number;
 	const char *firmware_version;
@@ -560,77 +442,54 @@ static gboolean hal_ipod_set_properties (LibHalContext *ctx,
 	double generation;
 	ProductionInfo *prod_info;
 
-        libhal_device_set_property_int (ctx, udi, 
-			                LIBGPOD_HAL_NS"version", 1, NULL);
+	backend->set_version (backend, 1);
 
 	serial_number = itdb_sysinfo_properties_get_serial_number (props);
 
 	info = itdb_ipod_info_from_serial (serial_number);
 
 	if ((info == NULL) || (info->ipod_generation == ITDB_IPOD_GENERATION_UNKNOWN)) {
-		libhal_device_set_property_bool (ctx, udi,
-				                 LIBGPOD_HAL_NS"ipod.is_unknown", 
-						 TRUE, NULL);
+		backend->set_is_unknown (backend, TRUE);
 		return TRUE;
 	} else {
-		libhal_device_set_property_bool (ctx, udi,
-				                 LIBGPOD_HAL_NS"ipod.is_unknown", 
-						 FALSE, NULL);
+		backend->set_is_unknown (backend, FALSE);
 	}
 
 	icon_name = get_icon_name (info);
-	libhal_device_set_property_string (ctx, udi, "info.desktop.icon",
-					   icon_name, NULL);
+	backend->set_icon_name (backend, icon_name);
 	g_free (icon_name);
 
 	if (itdb_sysinfo_properties_get_firewire_id (props) != NULL) {
 		const char *fwid;
 		fwid = itdb_sysinfo_properties_get_firewire_id (props);
-		libhal_device_set_property_string (ctx, udi,
-		  	  	     		   LIBGPOD_HAL_NS"ipod.firewire_id",
-						   fwid, NULL);
+		backend->set_firewire_id (backend, fwid);
 	}
 
 	if (serial_number != NULL) {
-		libhal_device_set_property_string (ctx, udi,
-						   LIBGPOD_HAL_NS"ipod.serial_number",
-						   serial_number,
-						   NULL);
+		backend->set_serial_number (backend, serial_number);
 	}
 
 	firmware_version = itdb_sysinfo_properties_get_firmware_version (props);
 	if (firmware_version != NULL) {
-		libhal_device_set_property_string (ctx, udi,
-						   LIBGPOD_HAL_NS"ipod.firmware_version",
-						   firmware_version,
-						   NULL);
+		backend->set_firmware_version (backend, firmware_version);
 	}
 
-	hal_set_artwork_information (props, ctx, udi);
+	set_artwork_information (props, backend);
 
 	model_name = get_model_name (info);
 	if (model_name != NULL) {
-		libhal_device_set_property_string (ctx, udi,
-						   LIBGPOD_HAL_NS"ipod.model.device_class",
-						   model_name,
-						   NULL);
+		backend->set_model_name (backend, model_name);
 		g_free (model_name);
 	}
 
 	generation = get_generation (info);
 	if (generation != 0.0) {
-		libhal_device_set_property_double (ctx, udi,
-						   LIBGPOD_HAL_NS"ipod.model.generation",
-						   generation,
-						   NULL);
+		backend->set_generation (backend, generation);
 	}
 
 	color_name = get_color_name (info);
 	if (color_name != NULL) {
-		libhal_device_set_property_string (ctx, udi,
-						   LIBGPOD_HAL_NS"ipod.model.shell_color",
-						   color_name,
-						   NULL);
+		backend->set_color (backend, color_name);
 		g_free (color_name);
 	}
 
@@ -638,31 +497,23 @@ static gboolean hal_ipod_set_properties (LibHalContext *ctx,
 		prod_info = parse_serial_number (serial_number);
 		if (prod_info != NULL) {
 			if (prod_info->factory_id != NULL) {
-				libhal_device_set_property_string (ctx, udi,
-								   LIBGPOD_HAL_NS"ipod.production.factory_id",
-								   prod_info->factory_id,
-								   NULL);
+				backend->set_factory_id (backend,
+							prod_info->factory_id);
 
 			}
 			if (prod_info->production_year != 0) {
-				libhal_device_set_property_int (ctx, udi, 
-			        			        LIBGPOD_HAL_NS"ipod.production.year",
-							       	prod_info->production_year,
-							       	NULL);
+				backend->set_production_year (backend,
+							      prod_info->production_year);
 
 			}
 			if (prod_info->production_week != 0) {
-				libhal_device_set_property_int (ctx, udi, 
-								LIBGPOD_HAL_NS"ipod.production.week",
-								prod_info->production_week,
-							       	NULL);
+				backend->set_production_week (backend,
+							      prod_info->production_week);
 
 			}
 			if (prod_info->production_index != 0) {
-				libhal_device_set_property_int (ctx, udi, 
-								LIBGPOD_HAL_NS"ipod.production.number",
-								prod_info->production_index,
-							       	NULL);
+				backend->set_production_index (backend,
+							       prod_info->production_index);
 			}
 		}
 		production_info_free (prod_info);
@@ -671,9 +522,8 @@ static gboolean hal_ipod_set_properties (LibHalContext *ctx,
 	return TRUE;
 }
 
-static gboolean hal_mounted_ipod_set_properties (LibHalContext *ctx,
-						 const char *udi,
-						 const char *ipod_mountpoint)
+static gboolean mounted_ipod_set_properties (ItdbBackend *backend,
+					     const char *ipod_mountpoint)
 {
         Itdb_iTunesDB *itdb;
         Itdb_Playlist *mpl;
@@ -686,10 +536,8 @@ static gboolean hal_mounted_ipod_set_properties (LibHalContext *ctx,
         control_path = itdb_get_control_dir (ipod_mountpoint);
         if (control_path != NULL) {
 	   	if (strlen (control_path) >= strlen (ipod_mountpoint)) {
-			libhal_device_set_property_string (ctx, udi,
-					LIBGPOD_HAL_NS"ipod.model.control_path",
-					control_path + strlen (ipod_mountpoint),
-					NULL);
+			backend->set_control_path (backend,
+						  control_path + strlen (ipod_mountpoint));
 			g_free (control_path);
 		}
         }
@@ -699,27 +547,19 @@ static gboolean hal_mounted_ipod_set_properties (LibHalContext *ctx,
                 return FALSE;
         }
 	if (mpl->name != NULL) {
-	    libhal_device_set_property_string (ctx, udi, "info.desktop.name",
-					       mpl->name, NULL);
+	    backend->set_name (backend, mpl->name);
 	}
 
-        libhal_device_set_property_string (ctx, udi, "info.product",
-                                           mpl->name, NULL);
         return FALSE;
 }
 
 
-static char *mount_ipod (const char *dev_path)
+static char *mount_ipod (const char *dev_path, const char *fstype)
 {
         char *filename;
         char *tmpname;
-        const char *fstype;
         int result;
 
-        fstype = g_getenv ("HAL_PROP_VOLUME_FSTYPE");
-        if (fstype == NULL) {
-                return NULL;
-        }
         filename = g_build_filename (g_get_tmp_dir (), "ipodXXXXXX", NULL);
         if (filename == NULL) {
                 return NULL;
@@ -762,134 +602,67 @@ static gboolean write_sysinfo_extended (const char *mountpoint,
 
         return result;
 }
-#ifdef HAVE_LIBUSB
-static gboolean hal_get_ipod_usb_position (LibHalContext *ctx, const char *udi,
-                                           int *usb_bus_number, int *usb_device_number)
+
+
+static char *get_info_from_usb (usb_bus_number, usb_device_number)
 {
-	char *parent_udi;
-	char *subsystem;
-	gboolean found_ids;
-	DBusError error;
-
-
-	parent_udi = NULL;
-	subsystem = NULL;
-	found_ids = FALSE;
-	dbus_error_init (&error);
-	while (TRUE) {
-		parent_udi = libhal_device_get_property_string (ctx, udi,
-				"info.parent", &error);
-		if (parent_udi == NULL || dbus_error_is_set (&error))
-			goto end;
-		udi = parent_udi;
-		subsystem = libhal_device_get_property_string (ctx, udi,
-							       "linux.subsystem",
-							       &error);
-		if (subsystem == NULL || dbus_error_is_set (&error)) {
-			dbus_error_free (&error);
-			dbus_error_init (&error);
-			continue;
-		}
-		if (strcmp (subsystem, "usb") == 0) {
-			*usb_bus_number = libhal_device_get_property_int (ctx, udi,
-									  "usb.bus_number", &error);
-			if (dbus_error_is_set (&error)) {
-				goto end;
-			}
-			*usb_device_number = libhal_device_get_property_int (ctx, udi,
-									     "usb.linux.device_number", &error);
-			if (dbus_error_is_set (&error)) {
-				goto end;
-			}
-			found_ids = TRUE;
-			goto end;
-		}
-	}
-
-end:
-	libhal_free_string (parent_udi);
-	libhal_free_string (subsystem);
-	if (dbus_error_is_set (&error)) {
-	    g_print ("Error: %s\n", error.message);
-	    dbus_error_free (&error);
-	}
-
-	return found_ids;
-}
+#ifdef HAVE_LIBUSB
+        return read_sysinfo_extended_from_usb (usb_bus_number,
+                                               usb_device_number);
+#else
+	return NULL;
 #endif
+}
 
-int main (int argc, char **argv)
+static char *get_info_from_sg (const char *dev)
+{
+#ifdef HAVE_SGUTILS
+	return read_sysinfo_extended (dev);
+#else
+	return NULL;
+#endif
+}
+
+int itdb_callout_set_ipod_properties (ItdbBackend *backend, const char *dev,
+                                      gint usb_bus_number,
+                                      gint usb_device_number,
+				      const char *fstype)
 {
 	char *ipod_mountpoint = NULL;
 	char *xml = NULL;
 	SysInfoIpodProperties *props;
-	LibHalContext *ctx; 
-	const char *udi;
 
-	g_type_init ();
-	g_print ("huho\n");
-
-	ctx = hal_ipod_initialize ();
-	if (ctx == NULL) {
-		g_print ("Failed to init hal\n");
-		return FALSE;
+	if (usb_bus_number != 0) {
+		xml = get_info_from_usb (usb_bus_number, usb_device_number);
+        }
+        if (xml == NULL) {
+		xml = get_info_from_sg (dev);
 	}
-	udi = g_getenv ("UDI");
-	if (udi == NULL) {
-		g_print ("Failed to get UDI\n");
-		libhal_ctx_free (ctx);
-		return FALSE;
-	}
-
-	xml = NULL;
-
-#ifdef HAVE_LIBUSB
-{
-	gboolean found_ipod;
-	gint usb_bus_number = 0;
-	gint usb_device_number = 0;
-
-	found_ipod = hal_get_ipod_usb_position (ctx, udi, &usb_bus_number,
-						&usb_device_number);
-	if (found_ipod) {
-		xml = read_sysinfo_extended_from_usb (usb_bus_number,
-						      usb_device_number);
-	}
-}
-#endif
-
-#ifdef HAVE_SGUTILS
-	if (xml == NULL) {
-		xml = read_sysinfo_extended (g_getenv ("HAL_PROP_BLOCK_DEVICE"));
-	}
-#endif
 
         if (xml == NULL) {
-                libhal_ctx_free (ctx);
                 return -1;
         }
         props = itdb_sysinfo_extended_parse_from_xml (xml, NULL);
 
-        hal_ipod_set_properties (ctx, udi, props);
+        ipod_set_properties (backend, props);
         itdb_sysinfo_properties_free (props);
 
-        ipod_mountpoint = mount_ipod (g_getenv ("HAL_PROP_BLOCK_DEVICE"));
+        ipod_mountpoint = mount_ipod (dev, fstype);
         if (ipod_mountpoint == NULL) {
                 g_free (xml);
-                libhal_ctx_free (ctx);
+                backend->destroy (backend);
                 return -1;
         }
         write_sysinfo_extended (ipod_mountpoint, xml); 
         g_free (xml);
 
-        /* hal_mounted_ipod_set_properties will call itdb_parse on the ipod
+        /* mounted_ipod_set_properties will call itdb_parse on the ipod
          * which we just mounted, which will create an ItdbDevice
          * containing most of what 'dev' had above. For now, I'm leaving
          * this kind of duplication since I want the hal information to be
          * added even if for some reason we don't manage to mount the ipod
          */
-        hal_mounted_ipod_set_properties (ctx, udi, ipod_mountpoint);
-        libhal_ctx_free (ctx);
+        mounted_ipod_set_properties (backend, ipod_mountpoint);
 
         umount (ipod_mountpoint);
         g_rmdir (ipod_mountpoint);

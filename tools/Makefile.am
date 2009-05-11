@@ -22,7 +22,8 @@ if HAVE_HAL
 haldir = $(HALCALLOUTSDIR)
 hal_PROGRAMS = libgpod-callout
 libgpod_callout_SOURCES =					\
-	hal-callout.c 						\
+	generic-callout.c 					\
+	hal-backend.c						\
 	$(top_srcdir)/src/itdb_sysinfo_extended_parser.c 	\
 	$(top_srcdir)/src/itdb_plist.c
 
