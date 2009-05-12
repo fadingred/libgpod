@@ -1,0 +1,1 @@
+ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_FS_USAGE}=="filesystem", ATTRS{idVendor}=="05ac", ENV{ID_MODEL}=="iPod", IMPORT{program}="@udevdir@/ipod-set-info $tempnode $attr{busnum} $attr{devnum}"
