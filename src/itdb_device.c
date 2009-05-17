@@ -146,6 +146,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     /* Shuffle / Eigth Generation */
     /* Bar, button-less, speaking */
     {"B867", 4,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C164", 4,  ITDB_IPOD_MODEL_SHUFFLE_BLACK,  ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
 
     /* Nano / Fifth Generation (first nano generation) */
     /* Buttons are integrated into the "touch wheel". */
@@ -675,6 +676,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "5BE", "B917" }, /* 16GB Red Nano 4g */
     { "5BF", "B918" }, /* 16GB Black Nano 4g */
     { "4NZ", "B867" }, /* 4GB Silver Shuffle 4g */
+    { "891", "C164" }, /* 4GB Black Shuffle 4g */
     { NULL ,  NULL  }
 };
 

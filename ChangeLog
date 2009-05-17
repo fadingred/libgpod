@@ -1,3 +1,7 @@
+2009-05-17  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* src/itdb_device.c: add info for black Shuffle 4G
+
 2009-05-10  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* tests/get-timezone.c: call g_type_init to avoid tons of glib
