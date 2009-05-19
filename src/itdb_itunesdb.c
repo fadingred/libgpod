@@ -991,7 +991,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 /* called by init_playcounts */
 static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 {
-    GList* playcounts;
+    GList* playcounts = NULL;
     guint32 entry_num, i=0;
     glong seek;
 

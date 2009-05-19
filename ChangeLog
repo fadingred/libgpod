@@ -1,3 +1,8 @@
+2009-05-19  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* src/itdb_itunesdb.c: make sure playcounts is initialized before it's
+	used
+
 2009-05-17  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* src/itdb_device.c: add info for black Shuffle 4G
