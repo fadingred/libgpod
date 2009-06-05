@@ -29,9 +29,10 @@
 */
 #include <config.h>
 
-#include <itdb.h> 
-#include <itdb_device.h>
-#include <itdb_private.h>
+#include "itdb.h"
+#include "itdb_device.h"
+#include "itdb_private.h"
+#include "itdb_tzinfo_data.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -162,6 +163,13 @@ static gboolean raw_timezone_to_utc_shift_5g (gint16 raw_timezone,
     return TRUE;
 }
 
+static gboolean raw_timezone_to_utc_shift_6g (gint16 raw_timezone,
+                                              gint *utc_shift)
+{
+    *utc_shift = 0;
+    return TRUE;
+}
+
 static gint get_local_timezone (void)
 {
 #ifdef HAVE_STRUCT_TM_TM_GMTOFF
@@ -213,6 +221,8 @@ G_GNUC_INTERNAL void itdb_device_set_timezone_info (Itdb_Device *device)
     struct stat stat_buf;
     int status;
     char *prefs_path;
+    guint offset;
+    gboolean (*raw_timezone_converter) (gint16 raw_timezone, gint *utc_shift);
 
     device->timezone_shift = get_local_timezone ();
 
@@ -228,34 +238,33 @@ G_GNUC_INTERNAL void itdb_device_set_timezone_info (Itdb_Device *device)
 	return;
     }
     switch (stat_buf.st_size) {
-	case 2892:
-  	    result = itdb_device_read_raw_timezone (prefs_path, 0xb10, 
-			    			    &raw_timezone);
-	    g_free (prefs_path);
-	    if (!result) {
-                return;
-	    }
-	    result = raw_timezone_to_utc_shift_4g (raw_timezone, &timezone);
+	case 2892: /* seen on iPod 4g */
+	    offset = 0xb10;
+	    raw_timezone_converter = raw_timezone_to_utc_shift_4g;
 	    break;
-	case 2924:
-            result = itdb_device_read_raw_timezone (prefs_path, 0xb22, 
-			                            &raw_timezone);
-	    g_free (prefs_path);
-	    if (!result) {
-                return;
-	    }
-	    result = raw_timezone_to_utc_shift_5g (raw_timezone, &timezone);
+	case 2924: /* seen on iPod video */
+	    offset = 0xb22;
+	    raw_timezone_converter = raw_timezone_to_utc_shift_5g;
 	    break;
-	case 2952:
-	    /* ipod classic, not implemented yet */
-	case 2960:
-	    /* nano 4g, same as ipod classic */
+	case 2952: /* seen on nano 3g and iPod classic */
+	case 2960: /* seen on nano 4g */
+	    offset = 0xb70;
+	    raw_timezone_converter = raw_timezone_to_utc_shift_6g;
+	    break;
 	default:
 	    /* We don't know how to get the timezone of this ipod model,
 	     * assume the computer timezone and the ipod timezone match
 	     */
 	    return; 
     }
+
+    result = itdb_device_read_raw_timezone (prefs_path, offset, 
+					    &raw_timezone);
+    g_free (prefs_path);
+    if (!result) {
+	return;
+    }
+    result = raw_timezone_converter (raw_timezone, &timezone);
 
     if ((timezone < -12*3600) || (timezone > 12 * 3600)) {
         return;
