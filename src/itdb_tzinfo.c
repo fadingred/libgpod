@@ -265,6 +265,9 @@ G_GNUC_INTERNAL void itdb_device_set_timezone_info (Itdb_Device *device)
 	return;
     }
     result = raw_timezone_converter (raw_timezone, &timezone);
+    if (!result) {
+	return;
+    }
 
     if ((timezone < -12*3600) || (timezone > 12 * 3600)) {
         return;
