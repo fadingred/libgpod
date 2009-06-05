@@ -166,6 +166,17 @@ static gboolean raw_timezone_to_utc_shift_5g (gint16 raw_timezone,
 static gboolean raw_timezone_to_utc_shift_6g (gint16 raw_timezone,
                                               gint *utc_shift)
 {
+    const ItdbTimezone *it;
+
+    for (it = timezones; it->city_name != NULL; it++) {
+	if (it->city_index == raw_timezone) {
+	    break;
+	}
+    }
+    if (it->city_name == NULL) {
+	return FALSE;
+    }
+    g_print ("timezone: %s\n", it->tz_name);
     *utc_shift = 0;
     return TRUE;
 }
