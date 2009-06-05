@@ -35,6 +35,7 @@
 #include "itdb_tzinfo_data.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 #include <glib/gstdio.h>
@@ -42,6 +43,9 @@
 #ifdef __CYGWIN__
     extern __IMPORT long _timezone;
 #endif
+
+static gboolean parse_tzdata (const char *tzname, time_t start, time_t end,
+			      int *offset, gboolean *has_dst, int *dst_offset);
 
 G_GNUC_INTERNAL time_t device_time_mac_to_time_t (Itdb_Device *device, guint64 mactime)
 {
@@ -163,22 +167,31 @@ static gboolean raw_timezone_to_utc_shift_5g (gint16 raw_timezone,
     return TRUE;
 }
 
-static gboolean raw_timezone_to_utc_shift_6g (gint16 raw_timezone,
+static gboolean raw_timezone_to_utc_shift_6g (gint16 city_id,
                                               gint *utc_shift)
 {
     const ItdbTimezone *it;
 
     for (it = timezones; it->city_name != NULL; it++) {
-	if (it->city_index == raw_timezone) {
-	    break;
+	if (it->city_index == city_id) {
+	    int offset;
+	    gboolean unused1;
+	    int unused2;
+	    gboolean got_tzinfo;
+	    g_print ("timezone: %s\n", it->tz_name);
+	    got_tzinfo = parse_tzdata (it->tz_name, time (NULL), time (NULL),
+				       &offset, &unused1, &unused2);
+	    if (!got_tzinfo) {
+		return FALSE;
+	    }
+	    *utc_shift = offset*60;
+
+	    return TRUE;
 	}
     }
-    if (it->city_name == NULL) {
-	return FALSE;
-    }
-    g_print ("timezone: %s\n", it->tz_name);
-    *utc_shift = 0;
-    return TRUE;
+
+    /* unknown city ID */
+    return FALSE;
 }
 
 static gint get_local_timezone (void)
@@ -285,4 +298,123 @@ G_GNUC_INTERNAL void itdb_device_set_timezone_info (Itdb_Device *device)
     }
 
     device->timezone_shift = timezone;
+}
+
+/*
+ * The following function was copied from libgweather/gweather-timezone.c
+ *
+ * Copyright 2008, Red Hat, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * libgweather uses it for a different purpose than libgpod's, namely
+ * finding if a given world location uses DST (not 'now' but at some point
+ * during the year) and getting the offset. 
+ * libgpod only needs to know the offset from UTC, and if start == end when
+ * calling this function, this is exactly what we get!
+ */
+#define ZONEINFO_DIR "/usr/share/zoneinfo"
+
+#define TZ_MAGIC "TZif"
+#define TZ_HEADER_SIZE 44
+#define TZ_TIMECNT_OFFSET 32
+#define TZ_TRANSITIONS_OFFSET 44
+
+#define TZ_TTINFO_SIZE 6
+#define TZ_TTINFO_GMTOFF_OFFSET 0
+#define TZ_TTINFO_ISDST_OFFSET 4
+
+static gboolean
+parse_tzdata (const char *tzname, time_t start, time_t end,
+	      int *offset, gboolean *has_dst, int *dst_offset)
+{
+    char *filename, *contents;
+    gsize length;
+    int timecnt, transitions_size, ttinfo_map_size;
+    int initial_transition = -1, second_transition = -1;
+    gint32 *transitions;
+    char *ttinfo_map, *ttinfos;
+    gint32 initial_offset, second_offset;
+    char initial_isdst, second_isdst;
+    int i;
+
+    filename = g_build_filename (ZONEINFO_DIR, tzname, NULL);
+    if (!g_file_get_contents (filename, &contents, &length, NULL)) {
+	g_free (filename);
+	return FALSE;
+    }
+    g_free (filename);
+
+    if (length < TZ_HEADER_SIZE ||
+	strncmp (contents, TZ_MAGIC, strlen (TZ_MAGIC)) != 0) {
+	g_free (contents);
+	return FALSE;
+    }
+
+    timecnt = GUINT32_FROM_BE (*(guint32 *)(contents + TZ_TIMECNT_OFFSET));
+    transitions = (void *)(contents + TZ_TRANSITIONS_OFFSET);
+    transitions_size = timecnt * sizeof (*transitions);
+    ttinfo_map = (void *)(contents + TZ_TRANSITIONS_OFFSET + transitions_size);
+    ttinfo_map_size = timecnt;
+    ttinfos = (void *)(ttinfo_map + ttinfo_map_size);
+
+    /* @transitions is an array of @timecnt time_t values. We need to
+     * find the transition into the current offset, which is the last
+     * transition before @start. If the following transition is before
+     * @end, then note that one too, since it presumably means we're
+     * doing DST.
+     */
+    for (i = 1; i < timecnt && initial_transition == -1; i++) {
+	if (GINT32_FROM_BE (transitions[i]) > start) {
+	    initial_transition = ttinfo_map[i - 1];
+	    if (GINT32_FROM_BE (transitions[i]) < end)
+		second_transition = ttinfo_map[i];
+	}
+    }
+    if (initial_transition == -1) {
+	if (timecnt)
+	    initial_transition = ttinfo_map[timecnt - 1];
+	else
+	    initial_transition = 0;
+    }
+
+    /* Copy the data out of the corresponding ttinfo structs */
+    initial_offset = *(gint32 *)(ttinfos +
+				 initial_transition * TZ_TTINFO_SIZE +
+				 TZ_TTINFO_GMTOFF_OFFSET);
+    initial_offset = GINT32_FROM_BE (initial_offset);
+    initial_isdst = *(ttinfos +
+		      initial_transition * TZ_TTINFO_SIZE +
+		      TZ_TTINFO_ISDST_OFFSET);
+
+    if (second_transition != -1) {
+	second_offset = *(gint32 *)(ttinfos +
+				    second_transition * TZ_TTINFO_SIZE +
+				    TZ_TTINFO_GMTOFF_OFFSET);
+	second_offset = GINT32_FROM_BE (second_offset);
+	second_isdst = *(ttinfos +
+			 second_transition * TZ_TTINFO_SIZE +
+			 TZ_TTINFO_ISDST_OFFSET);
+
+	*has_dst = (initial_isdst != second_isdst);
+    } else
+	*has_dst = FALSE;
+
+    if (!*has_dst)
+	*offset = initial_offset / 60;
+    else {
+	if (initial_isdst) {
+	    *offset = second_offset / 60;
+	    *dst_offset = initial_offset / 60;
+	} else {
+	    *offset = initial_offset / 60;
+	    *dst_offset = second_offset / 60;
+	}
+    }
+
+    g_free (contents);
+    return TRUE;
 }

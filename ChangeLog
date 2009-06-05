@@ -1,3 +1,13 @@
+2009-06-05  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* src/Makefile.am:
+	* src/itdb_device.c:
+	* src/itdb_tzinfo.c:
+	* src/itdb_tzinfo_data: move timezone related functions in their
+	own file, adds mapping from city names (present in the iPod
+	Preferences file) to timezone shift to be able to interpret
+	accurately timestamps from iPod Classic and similiar models.
+
 2009-05-19  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* src/itdb_itunesdb.c: make sure playcounts is initialized before it's
