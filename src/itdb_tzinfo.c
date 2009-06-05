@@ -248,6 +248,8 @@ G_GNUC_INTERNAL void itdb_device_set_timezone_info (Itdb_Device *device)
 	    break;
 	case 2952:
 	    /* ipod classic, not implemented yet */
+	case 2960:
+	    /* nano 4g, same as ipod classic */
 	default:
 	    /* We don't know how to get the timezone of this ipod model,
 	     * assume the computer timezone and the ipod timezone match
