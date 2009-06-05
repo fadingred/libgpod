@@ -171,6 +171,8 @@ G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device,
 						     unsigned char *itdb_data,
 						     gsize itdb_len,
 						     GError **error);
+G_GNUC_INTERNAL void itdb_device_set_timezone_info (Itdb_Device *device);
+
 const Itdb_IpodInfo *
 itdb_ipod_info_from_serial (const char *serial);
 

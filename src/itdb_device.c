@@ -41,15 +41,10 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <time.h>
-#ifdef __CYGWIN__
-    extern __IMPORT long _timezone;
-#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #include <glib/gi18n-lib.h>
-#include <glib/gstdio.h>
 
 static const Itdb_IpodInfo ipod_info_table [] = {
     /* Handle idiots who hose their iPod file system, or lucky people
@@ -681,7 +676,6 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
 };
 
 static const Itdb_IpodInfo *get_ipod_info_from_model_number (const char *model_number);
-static void itdb_device_set_timezone_info (Itdb_Device *device);
 
 /* Reset or create the SysInfo hash table */
 static void itdb_device_reset_sysinfo (Itdb_Device *device)
@@ -761,22 +755,6 @@ void itdb_device_set_mountpoint (Itdb_Device *device, const gchar *mp)
 	itdb_device_read_sysinfo (device);
         itdb_device_set_timezone_info (device);
     }
-}
-
-
-G_GNUC_INTERNAL time_t device_time_mac_to_time_t (Itdb_Device *device, guint64 mactime)
-{
-    g_return_val_if_fail (device, 0);
-    if (mactime != 0)  return (time_t)(mactime - 2082844800 - device->timezone_shift);
-    else               return (time_t)mactime;
-}
-
-G_GNUC_INTERNAL guint64 device_time_time_t_to_mac (Itdb_Device *device, time_t timet)
-{
-    g_return_val_if_fail (device, 0);
-    if (timet != 0)
-	return ((guint64)timet) + 2082844800 + device->timezone_shift;
-    else return 0;
 }
 
 static void itdb_device_read_sysinfo_extended (Itdb_Device *device)
@@ -1561,211 +1539,6 @@ gboolean itdb_device_supports_chapter_image (const Itdb_Device *device)
     formats = itdb_device_get_chapter_image_formats (device);
     g_list_free (formats);
     return (formats != NULL);
-}
-
-static char *
-get_preferences_path (const Itdb_Device *device)
-{
-
-    const gchar *p_preferences[] = {"Preferences", NULL};
-    char *dev_path;
-    char *prefs_filename;
-
-    if (device->mountpoint == NULL) {
-        return NULL;
-    }
-
-    dev_path = itdb_get_device_dir (device->mountpoint);
-
-    if (dev_path == NULL) {
-        return NULL;
-    }
-
-    prefs_filename = itdb_resolve_path (dev_path, p_preferences);
-    g_free (dev_path);
-
-    return prefs_filename;
-}
-
-static gboolean itdb_device_read_raw_timezone (const char *prefs_path,
-                                               glong offset,
-                                               gint16 *timezone)
-{
-    FILE *f;
-    int result;
-
-    if (timezone == NULL) {
-        return FALSE;
-    }
-
-    f = fopen (prefs_path, "r");
-    if (f == NULL) {
-        return FALSE;
-    }
-
-    result = fseek (f, offset, SEEK_SET);
-    if (result != 0) {
-        fclose (f);
-        return FALSE;
-    }
-
-    result = fread (timezone, sizeof (*timezone), 1, f);
-    if (result != 1) {
-        fclose (f);
-        return FALSE;
-    }
-
-    fclose (f);
-
-    *timezone = GINT16_FROM_LE (*timezone);
-
-    return TRUE;
-}
-
-static gboolean raw_timezone_to_utc_shift_4g (gint16 raw_timezone,
-                                              gint *utc_shift)
-{
-    const int GMT_OFFSET = 0x19;
-
-    if (utc_shift == NULL) {
-        return FALSE;
-    }
-
-    if ((raw_timezone < 0) || (raw_timezone > (2*12) << 1)) {
-        /* invalid timezone */
-        return FALSE;
-    }
-
-    raw_timezone -= GMT_OFFSET;
-
-    *utc_shift = (raw_timezone >> 1) * 3600;
-    if (raw_timezone & 1) {
-        /* Adjust for DST */
-        *utc_shift += 3600;
-    }
-
-    return TRUE;
-}
-
-static gboolean raw_timezone_to_utc_shift_5g (gint16 raw_timezone,
-                                              gint *utc_shift)
-{
-    const int TZ_SHIFT = 8;
-
-    if (utc_shift == NULL) {
-        return FALSE;
-    }
-    /* The iPod stores the timezone information as a number of minutes
-     * from Tokyo timezone which increases when going eastward (ie
-     * going from Tokyo to LA and then to Europe).
-     * The calculation below shifts the origin so that 0 corresponds
-     * to UTC-12 and the max is 24*60 and corresponds to UTC+12
-     * Finally, we substract 12*60 to that value to get a signed number
-     * giving the timezone relative to UTC.
-     */
-    *utc_shift = raw_timezone*60 - TZ_SHIFT*3600;
-
-    return TRUE;
-}
-
-static gint get_local_timezone (void)
-{
-#ifdef HAVE_STRUCT_TM_TM_GMTOFF
-    /*
-     * http://www.gnu.org/software/libc/manual/html_node/Time-Zone-Functions.html
-     *
-     * Variable: long int timezone
-     *
-     * This contains the difference between UTC and the latest local
-     * standard time, in seconds west of UTC. For example, in the
-     * U.S. Eastern time zone, the value is 5*60*60. Unlike the
-     * tm_gmtoff member of the broken-down time structure, this value is
-     * not adjusted for daylight saving, and its sign is reversed. In
-     * GNU programs it is better to use tm_gmtoff, since it contains the
-     * correct offset even when it is not the latest one.
-     */
-    time_t t = time(NULL);
-    glong seconds_east_utc;
-#   ifdef HAVE_LOCALTIME_R
-    {
-        struct tm tmb;
-        localtime_r(&t, &tmb);
-        seconds_east_utc = tmb.tm_gmtoff;
-    }
-#   else /* !HAVE_LOCALTIME_R */
-    {
-        struct tm* tp;
-        tp = localtime(&t);
-        seconds_east_utc = tp->tm_gmtoff;
-    }
-#   endif /* !HAVE_LOCALTIME_R */
-    return seconds_east_utc; /* mimic the old behaviour when global variable 'timezone' from the 'time.h' header was returned */
-#elif __CYGWIN__   /* !HAVE_STRUCT_TM_TM_GMTOFF */
-    return (gint) _timezone * -1; /* global variable defined by time.h, see man tzset */
-#else /* !HAVE_STRUCT_TM_TM_GMTOFF && !__CYGWIN__ */
-    return timezone * -1; /* global variable defined by time.h, see man tzset */
-#endif
-}
-
-/* This function reads the timezone information from the iPod and sets it in
- * the Itdb_Device structure. If an error occurs, the function returns silently
- * and the timezone shift is set to 0
- */
-static void itdb_device_set_timezone_info (Itdb_Device *device)
-{
-    gint16 raw_timezone;
-    gint timezone = 0;
-    gboolean result;
-    struct stat stat_buf;
-    int status;
-    char *prefs_path;
-
-    device->timezone_shift = get_local_timezone ();
-
-    prefs_path = get_preferences_path (device);
-
-    if (!prefs_path) {
-	return;
-    }
-
-    status = g_stat (prefs_path, &stat_buf);
-    if (status != 0) {
-	g_free (prefs_path);
-	return;
-    }
-    switch (stat_buf.st_size) {
-	case 2892:
-  	    result = itdb_device_read_raw_timezone (prefs_path, 0xb10, 
-			    			    &raw_timezone);
-	    g_free (prefs_path);
-	    if (!result) {
-                return;
-	    }
-	    result = raw_timezone_to_utc_shift_4g (raw_timezone, &timezone);
-	    break;
-	case 2924:
-            result = itdb_device_read_raw_timezone (prefs_path, 0xb22, 
-			                            &raw_timezone);
-	    g_free (prefs_path);
-	    if (!result) {
-                return;
-	    }
-	    result = raw_timezone_to_utc_shift_5g (raw_timezone, &timezone);
-	    break;
-	case 2952:
-	    /* ipod classic, not implemented yet */
-	default:
-	    /* We don't know how to get the timezone of this ipod model,
-	     * assume the computer timezone and the ipod timezone match
-	     */
-	    return; 
-    }
-
-    if ((timezone < -12*3600) || (timezone > 12 * 3600)) {
-        return;
-    }
-
-    device->timezone_shift = timezone;
 }
 
 /**
