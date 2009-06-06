@@ -5,6 +5,7 @@ AC_CONFIG_MACRO_DIR(m4)
 
 AM_CONFIG_HEADER(config.h)
 
+
 # Making releases:
 #   LIBGPOD_MICRO_VERSION += 1;
 #   LIBGPOD_SO_VERSION - see comments
@@ -286,8 +287,12 @@ AC_SUBST(LDFLAGS)
 AC_SUBST(LIBGPOD_CFLAGS)
 AC_SUBST(LIBGPOD_LIBS)
 
-AC_OUTPUT([
+SHAVE_INIT([], [enable])
+
+AC_CONFIG_FILES([
 Makefile
+shave
+shave-libtool
 bindings/Makefile
 bindings/python/gpod.i
 bindings/python/Makefile
@@ -303,6 +308,7 @@ tools/Makefile
 tests/Makefile
 libgpod-1.0.pc
 ])
+AC_OUTPUT
 
 echo "
 Configuration for $PACKAGE $VERSION :

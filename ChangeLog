@@ -1,3 +1,12 @@
+2009-06-06  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* configure.ac:
+	* m4/shave.m4:
+	* shave.in:
+	* shave-libtool.in: add 'shave' to make compilation logs much less
+	verbose (this will be superseded by the similar feature provided by
+	automake 1.11)
+
 2009-06-05  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* src/Makefile.am:
