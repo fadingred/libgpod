@@ -1,3 +1,8 @@
+2009-06-23  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* src/Makefile.am: add missing header file to list of headers, fixes
+	make distcheck. Patch by "skemper"
+
 2009-06-06  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* configure.ac:

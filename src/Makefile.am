@@ -45,6 +45,7 @@ noinst_HEADERS = 		\
 	itdb_sha1.h 		\
 	itdb_sysinfo_extended_parser.h \
 	itdb_thumb.h		\
+	itdb_tzinfo_data.h 	\
 	pixmaps.h		\
 	sha1.h
 
