@@ -130,7 +130,25 @@ if test "x$with_hal" != "xno"; then
 fi
 AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal" = xyes)
 
+dnl ***********************************************************************
+dnl * libiphone is optional, but is required for iPhone/iPod Touch support
+dnl ***********************************************************************
+AC_ARG_WITH(libiphone, AC_HELP_STRING([--without-libiphone],
+        [Disable iPhone/iPod Touch support]))
 
+if test "x$with_libiphone" != "xno"; then
+  PKG_CHECK_MODULES(LIBIPHONE, libiphone-1.0 >= 0.9.1, enable_libiphone=yes, enable_libiphone=no)
+  if test "x$enable_libiphone" != "xyes" -a "x$with_libiphone" = "xyes"; then
+      AC_MSG_ERROR([iPhone/iPod Touch support explicitly requested but libiphone couldn't be found])
+  fi
+
+  if test "x$enable_libiphone" = "xyes"; then
+        AC_DEFINE(HAVE_LIBIPHONE, 1, [Define if you have libiphone support])
+        AC_SUBST(LIBIPHONE_CFLAGS)
+	AC_SUBST(LIBIPHONE_LIBS)
+  fi
+fi
+AM_CONDITIONAL(HAVE_LIBIPHONE, test x"$enable_libiphone" = xyes)
 
 dnl **************************************************
 dnl * TagLib is only used by test-rebuild-db 
@@ -312,14 +330,15 @@ echo "
 Configuration for $PACKAGE $VERSION :
 --------------------------------
 
- Host System Type .....: $host
- Install path .........: $prefix
- Preprocessor .........: $CC $CPPFLAGS
- Compiler .............: $CC $CFLAGS $LIBGPOD_CFLAGS
- Linker ...............: $CC $LDFLAGS $LIBS $LIBGPOD_LIBS
- Artwork support ......: $have_gdkpixbuf
- Python bindings ......: $with_python
- PyGObject support ....: $have_pygobject
+ Host System Type .........: $host
+ Install path .............: $prefix
+ Preprocessor .............: $CC $CPPFLAGS
+ Compiler .................: $CC $CFLAGS $LIBGPOD_CFLAGS
+ Linker ...................: $CC $LDFLAGS $LIBS $LIBGPOD_LIBS
+ Artwork support ..........: $have_gdkpixbuf
+ Python bindings ..........: $with_python
+ PyGObject support ........: $have_pygobject
+ iPhone/iPod Touch support.: $enable_libiphone
 
  Now type 'make' to build $PACKAGE $VERSION,
  and then 'make install' for installation.
