@@ -41,7 +41,12 @@
 #include <sys/mount.h>
 #include <itdb.h>
 #include <itdb_device.h>
+#ifdef HAVE_SGUTILS
 extern char *read_sysinfo_extended (const char *device);
+#endif
+#ifdef HAVE_LIBIPHONE
+extern char *read_sysinfo_extended_by_uuid (const char *uuid);
+#endif
 
 struct _ProductionInfo {
 	gchar *factory_id;
@@ -750,19 +755,43 @@ static gboolean write_sysinfo_extended (const char *mountpoint,
 
 int main (int argc, char **argv)
 {
-        char *ipod_mountpoint;
-        char *xml;
+	char *ipod_mountpoint = NULL;
+	char *xml = NULL;
 	SysInfoIpodProperties *props;
-        LibHalContext *ctx; 
-        const char *udi;
+	LibHalContext *ctx; 
+	const char *udi;
+#ifdef HAVE_LIBIPHONE
+	char *caps = NULL;
+#endif
 
 	g_type_init ();
 
-        xml = read_sysinfo_extended (g_getenv ("HAL_PROP_BLOCK_DEVICE"));
+#ifdef HAVE_LIBIPHONE
+        caps = (char *)g_getenv ("HAL_PROP_INFO_CAPABILITIES");
+        if (caps == NULL) {
+                return -1;
+        }
+        else
+        {
+                /* iPhone/iPod Touch devices with custom usb protocol */
+                if (strstr (caps, "afc") != NULL) {
+                        xml = read_sysinfo_extended_by_uuid(g_getenv ("HAL_PROP_USB_SERIAL"));
+                }
+                else /* regular usb mass storage ipod */
+                {
+#endif
+#ifdef HAVE_SGUTILS
+                        xml = read_sysinfo_extended (g_getenv ("HAL_PROP_BLOCK_DEVICE"));
+#else
+                        return -1;
+#endif
+#ifdef HAVE_LIBIPHONE
+                }
+        }
+#endif
         if (xml == NULL) {
                 return -1;
         }
-
         props = itdb_sysinfo_extended_parse_from_xml (xml, NULL);
 
         ctx = hal_ipod_initialize ();
