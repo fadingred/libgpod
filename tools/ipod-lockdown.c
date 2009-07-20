@@ -76,6 +76,12 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	plist_add_sub_string_el(value, str);
 	free(str);
 
+	plist_add_sub_key_el(value, "FireWireGUID");
+	plist_add_sub_string_el(value, uuid);
+
+	plist_add_sub_key_el(value, "UniqueDeviceID");
+	plist_add_sub_string_el(value, uuid);
+
 	plist_to_xml(value, &xml, &xml_length);
 
 	ptr = NULL;
