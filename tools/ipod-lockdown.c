@@ -64,11 +64,13 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	plist_add_sub_key_el(value, "SerialNumber");
 	plist_get_string_val(ptr, &str);
 	plist_add_sub_string_el(value, str);
+	free(str);
 
 	ptr = plist_get_dict_el_from_key(global, "BuildVersion");
 	plist_add_sub_key_el(value, "BuildID");
 	plist_get_string_val(ptr, &str);
 	plist_add_sub_string_el(value, str);
+	free(str);
 
 	plist_to_xml(value, &xml, &xml_length);
 

@@ -796,11 +796,13 @@ int main (int argc, char **argv)
 
         ctx = hal_ipod_initialize ();
         if (ctx == NULL) {
+		g_free (xml);
                 itdb_sysinfo_properties_free (props);
                 return FALSE;
         }
         udi = g_getenv ("UDI");
         if (udi == NULL) {
+		g_free (xml);
                 libhal_ctx_free (ctx);
                 itdb_sysinfo_properties_free (props);
                 return FALSE;
