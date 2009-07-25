@@ -24,11 +24,14 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <glib.h>
+#include <libxml/xmlmemory.h>
 
 #include <libiphone/libiphone.h>
 #include <libiphone/lockdown.h>
+
 
 extern char *read_sysinfo_extended_by_uuid (const char *uuid);
 
@@ -39,6 +42,7 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	iphone_device_t device = NULL;
 	iphone_error_t ret = IPHONE_E_UNKNOWN_ERROR;
 	char *xml = NULL; char *str = NULL;
+	char *gxml;
 	uint32_t xml_length = 0;
 	plist_t value = NULL;
 	plist_t global = NULL;
@@ -85,5 +89,15 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	lockdownd_client_free(client);
 	iphone_device_free(device);
 
-	return xml;
+	/* Jump through hoops since libxml will say to free mem it allocated
+	 * with xmlFree while memory freed with g_free has to be allocated
+	 * by glib.
+	 */
+	if (xml != NULL) {
+		gxml = g_strdup(xml);
+		xmlFree(xml);
+	} else {
+		gxml = NULL;
+	}
+	return gxml;
 }
