@@ -234,19 +234,22 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"B917",  16, ITDB_IPOD_MODEL_NANO_RED,       ITDB_IPOD_GENERATION_NANO_4, 14},
     {"B918",  16, ITDB_IPOD_MODEL_NANO_BLACK,     ITDB_IPOD_GENERATION_NANO_4, 14},
 
-    /* iPod touch G1 */
-    /* With touch screen */
-    {"A623",   8, ITDB_IPOD_MODEL_TOUCH_BLACK,    ITDB_IPOD_GENERATION_TOUCH_1, 14},
-    {"A627",  16, ITDB_IPOD_MODEL_TOUCH_BLACK,    ITDB_IPOD_GENERATION_TOUCH_1, 28},
+    /* iPod Touch */
+    {"A623",   8, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
+    {"A627",  16, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
 
-    /* iPhone G1 */
-    /* We used to not have a model number for the iPhone so we had that
-     * dummy "iPhone1" model number, we now keep it here for backward
-     * compatibility reasons
-     */
-    {"A501",  4, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 14},
-    {"A712",  8, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 14},
-    {"iPhone1", -1, ITDB_IPOD_MODEL_IPHONE_1, ITDB_IPOD_GENERATION_IPHONE_1, 14},
+    /* iPhone, iPhone 3G and iPhone 3GS */
+    {"A501",   4, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 50},
+    {"A712",   8, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 50},
+    {"B384",  16, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 50},
+    {"B500",  16, ITDB_IPOD_MODEL_IPHONE_WHITE,   ITDB_IPOD_GENERATION_IPHONE_2, 50},
+    {"B048",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_2, 50},
+    {"B496",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_2, 50},
+    {"C131",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
+
+    /* iPhone G2 aka iPhone 3G (yeah, confusing ;) */
+    {"B500",  16, ITDB_IPOD_MODEL_IPHONE_WHITE,       ITDB_IPOD_GENERATION_IPHONE_2, 14},
+    {"B048",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,       ITDB_IPOD_GENERATION_IPHONE_2, 14},
 
     /* No known model number -- create a Device/SysInfo file with
      * one entry, e.g.:
@@ -296,8 +299,10 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Shuffle (Red)"),
 	N_("Classic (Silver)"),
 	N_("Classic (Black)"),
-	N_("Touch (Black)"),
+	N_("Touch (Silver)"),
 	N_("Shuffle (Black)"),
+	N_("iPhone (White)"),
+	N_("iPhone (Black)"),
 	NULL
 };
 
@@ -324,8 +329,11 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Classic"),
 	N_("Classic"),
 	N_("Touch"),
-        N_("iPhone"),
+	N_("iPhone"),
 	N_("Shuffle (4th Gen.)"),
+	N_("Touch (2nd Gen.)"),
+	N_("iPhone 3G"),
+	N_("iPhone 3GS"),
 	N_("Unused"),
 	N_("Unused"),
 	NULL
@@ -484,7 +492,10 @@ static const ArtworkCapabilities ipod_artwork_capabilities[] = {
     { ITDB_IPOD_GENERATION_CLASSIC_1, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_CLASSIC_2, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_TOUCH_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_TOUCH_2, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_IPHONE_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_IPHONE_2, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_IPHONE_3, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_MOBILE, ipod_mobile_1_cover_art_info, NULL, NULL },
     { ITDB_IPOD_GENERATION_UNKNOWN, NULL, NULL, NULL }
 };
@@ -672,6 +683,11 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "5BF", "B918" }, /* 16GB Black Nano 4g */
     { "4NZ", "B867" }, /* 4GB Silver Shuffle 4g */
     { "891", "C164" }, /* 4GB Black Shuffle 4g */
+    { "W4T", "A627" }, /* 16GB Silver iPod Touch */
+    { "WH8", "A712" }, /* 8GB Silver iPhone */
+    { "0KH", "B384" }, /* 16GB Silver iPhone */
+    { "Y7K", "B496" }, /* 16GB Black iPhone 3G */
+    { "3NP", "C131" }, /* 16GB Black iPhone 3GS */
     { NULL ,  NULL  }
 };
 
@@ -1191,6 +1207,9 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
             case ITDB_IPOD_GENERATION_CLASSIC_2:
             case ITDB_IPOD_GENERATION_TOUCH_1:
             case ITDB_IPOD_GENERATION_IPHONE_1:
+            case ITDB_IPOD_GENERATION_TOUCH_2:
+            case ITDB_IPOD_GENERATION_IPHONE_2:
+            case ITDB_IPOD_GENERATION_IPHONE_3:
                 supports_sparse_artwork = TRUE;
                 break;
         }
@@ -1491,8 +1510,11 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
         case ITDB_IPOD_GENERATION_VIDEO_2:
         case ITDB_IPOD_GENERATION_CLASSIC_1:
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
-        case ITDB_IPOD_GENERATION_TOUCH_1:
-        case ITDB_IPOD_GENERATION_IPHONE_1:
+	case ITDB_IPOD_GENERATION_TOUCH_1:
+	case ITDB_IPOD_GENERATION_IPHONE_1:
+	case ITDB_IPOD_GENERATION_TOUCH_2:
+	case ITDB_IPOD_GENERATION_IPHONE_2:
+	case ITDB_IPOD_GENERATION_IPHONE_3:
             return TRUE;
     }
     g_return_val_if_reached (FALSE);
@@ -1591,9 +1613,14 @@ static ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device
     case ITDB_IPOD_GENERATION_CLASSIC_2:
     case ITDB_IPOD_GENERATION_NANO_3:
     case ITDB_IPOD_GENERATION_NANO_4:
-    case ITDB_IPOD_GENERATION_TOUCH_1:
-    case ITDB_IPOD_GENERATION_IPHONE_1:
       return ITDB_CHECKSUM_HASH58;
+
+    case ITDB_IPOD_GENERATION_TOUCH_1:
+    case ITDB_IPOD_GENERATION_TOUCH_2:
+    case ITDB_IPOD_GENERATION_IPHONE_1:
+    case ITDB_IPOD_GENERATION_IPHONE_2:
+    case ITDB_IPOD_GENERATION_IPHONE_3:
+        return ITDB_CHECKSUM_HASH72;
 
     case ITDB_IPOD_GENERATION_UNKNOWN:
     case ITDB_IPOD_GENERATION_FIRST:
@@ -1875,6 +1902,9 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_CLASSIC_2:
 	    case ITDB_IPOD_GENERATION_TOUCH_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
+	    case ITDB_IPOD_GENERATION_TOUCH_2:
+	    case ITDB_IPOD_GENERATION_IPHONE_2:
+	    case ITDB_IPOD_GENERATION_IPHONE_3:
 		return TRUE;
 	}
 	g_return_val_if_reached (FALSE);

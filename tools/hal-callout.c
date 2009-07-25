@@ -184,8 +184,11 @@ get_model_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
 		return g_strdup ("classic");
 	case ITDB_IPOD_GENERATION_TOUCH_1:
+	case ITDB_IPOD_GENERATION_TOUCH_2:
 		return g_strdup ("touch");
 	case ITDB_IPOD_GENERATION_IPHONE_1:
+	case ITDB_IPOD_GENERATION_IPHONE_2:
+	case ITDB_IPOD_GENERATION_IPHONE_3:
 		return g_strdup ("phone");
 	case ITDB_IPOD_GENERATION_MOBILE:
 		return g_strdup ("rokr");
@@ -243,8 +246,14 @@ get_generation (const Itdb_IpodInfo *info)
 		return 6.5;
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 		return 1.0;
+	case ITDB_IPOD_GENERATION_TOUCH_2:
+		return 2.0;
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 		return 1.0;
+	case ITDB_IPOD_GENERATION_IPHONE_2:
+		return 2.0;
+	case ITDB_IPOD_GENERATION_IPHONE_3:
+		return 3.0;
 	case ITDB_IPOD_GENERATION_MOBILE:
 		return 1.0;
 	}
@@ -269,19 +278,21 @@ get_color_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_MODEL_VIDEO_WHITE:
 	case ITDB_IPOD_MODEL_SHUFFLE:
 	case ITDB_IPOD_MODEL_MOBILE_1:
+	case ITDB_IPOD_MODEL_IPHONE_WHITE:
 		return g_strdup ("white");
 	case ITDB_IPOD_MODEL_MINI:
 	case ITDB_IPOD_MODEL_NANO_SILVER:
 	case ITDB_IPOD_MODEL_SHUFFLE_SILVER:
 	case ITDB_IPOD_MODEL_CLASSIC_SILVER:
+	case ITDB_IPOD_MODEL_TOUCH_SILVER:
+	case ITDB_IPOD_MODEL_IPHONE_1:
 		return g_strdup ("silver");
 	case ITDB_IPOD_MODEL_VIDEO_U2:
 	case ITDB_IPOD_MODEL_NANO_BLACK:
 	case ITDB_IPOD_MODEL_VIDEO_BLACK:
 	case ITDB_IPOD_MODEL_CLASSIC_BLACK:
 	case ITDB_IPOD_MODEL_SHUFFLE_BLACK:
-	case ITDB_IPOD_MODEL_TOUCH_BLACK:
-	case ITDB_IPOD_MODEL_IPHONE_1:
+	case ITDB_IPOD_MODEL_IPHONE_BLACK:
 		return g_strdup ("black");
 	case ITDB_IPOD_MODEL_MINI_PINK:
 	case ITDB_IPOD_MODEL_NANO_PINK:
@@ -421,7 +432,15 @@ get_icon_name (const Itdb_IpodInfo *info)
 		}
 
 	case ITDB_IPOD_GENERATION_TOUCH_1:
+		return g_strdup ("multimedia-player-apple-ipod-touch");
+	case ITDB_IPOD_GENERATION_TOUCH_2:
+		return g_strdup ("multimedia-player-apple-ipod-touch-2g");
 	case ITDB_IPOD_GENERATION_IPHONE_1:
+		return g_strdup ("phone-apple-iphone");
+	case ITDB_IPOD_GENERATION_IPHONE_2:
+		return g_strdup ("phone-apple-iphone-3g");
+	case ITDB_IPOD_GENERATION_IPHONE_3:
+		return g_strdup ("phone-apple-iphone-3gs");
 	case ITDB_IPOD_GENERATION_MOBILE:
 		return g_strdup ("multimedia-player-apple-ipod");
 	}

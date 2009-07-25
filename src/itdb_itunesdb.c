@@ -7002,11 +7002,9 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	devicefile = TRUE;
 	break;
     case ITDB_IPOD_MODEL_IPHONE_1:
-	podpath = g_strdup ("iTunes_Control");
-	calconnotes = FALSE;
-	devicefile = TRUE;
-	break;
-    case ITDB_IPOD_MODEL_TOUCH_BLACK:
+    case ITDB_IPOD_MODEL_TOUCH_SILVER:
+    case ITDB_IPOD_MODEL_IPHONE_WHITE:
+    case ITDB_IPOD_MODEL_IPHONE_BLACK:
 	podpath = g_strdup ("iTunes_Control");
 	calconnotes = FALSE;
 	devicefile = TRUE;
