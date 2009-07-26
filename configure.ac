@@ -93,6 +93,26 @@ fi
 AC_SUBST(SGUTILS_LIBS)
 AM_CONDITIONAL(HAVE_SGUTILS, test x"$have_sgutils" = xyes)
 
+dnl **************************************************
+dnl * zlib is neeeded for handling compressed iTunesCDB files
+dnl **************************************************
+AC_CHECK_LIB(z, inflate,
+             [Z_LIBS="-lz"; have_zlib=yes],
+             have_zlib=no)
+if test "x$have_zlib" != xyes; then
+    AC_CHECK_LIB(zlib, inflate,
+                 [Z_LIBS="-lzlib"; have_zlib=yes],
+                 have_zlib=no)
+fi
+if test x"$have_zlib" = xyes; then
+   AH_TEMPLATE([HAVE_ZLIB], [Whether zlib is installed, it's used for compressed iTunesCDB])
+   AC_DEFINE_UNQUOTED(HAVE_ZLIB, 1)
+else
+   AC_MSG_ERROR([couldn't find zlib, please install zlib development headers])
+fi
+AC_SUBST(Z_LIBS)
+AM_CONDITIONAL(HAVE_ZLIB, test x"$have_zlib" = xyes)
+
 dnl ***********************************************************************
 dnl * HAL is optional, but is required if you want things to "just work"
 dnl * when a recent iPod is plugged in

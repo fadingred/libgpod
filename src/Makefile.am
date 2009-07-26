@@ -50,7 +50,7 @@ noinst_HEADERS = 		\
 	sha1.h
 
 INCLUDES=$(LIBGPOD_CFLAGS)
-LIBS=$(LIBGPOD_LIBS) -lm -lz
+LIBS=$(LIBGPOD_LIBS) $(Z_LIBS) -lm
 
 uninstall-hook:
 	-rmdir --ignore-fail-on-non-empty $(DESTDIR)$(libgpodincludedir)
