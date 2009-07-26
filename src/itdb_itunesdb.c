@@ -3001,21 +3001,9 @@ itdb_parse_internal (Itdb_iTunesDB *itdb, GError **error)
 Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 {
     gchar *filename;
-    gchar *itunes_dir;
     Itdb_iTunesDB *itdb = NULL;
-    const gchar *db[] = {"iTunesDB", NULL};
 
-
-    itunes_dir = itdb_get_itunes_dir (mp);
-
-    if (!itunes_dir)
-    {
-	error_no_itunes_dir (mp, error);
-	return NULL;
-    }
-
-    filename = itdb_resolve_path (itunes_dir, db);
-
+    filename = itdb_get_itunesdb_path (mp);
     if (filename)
     {
 	itdb = itdb_new ();
@@ -3061,15 +3049,13 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
     }
     else
     {
-	gchar *str = g_build_filename (mp, itunes_dir, db[0], NULL);
 	g_set_error (error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_NOTFOUND,
 		     _("File not found: '%s'."),
-		     str);
-	g_free (str);
+		     filename);
     }
-    g_free (itunes_dir);
+    g_free (filename);
     return itdb;
 }
 
