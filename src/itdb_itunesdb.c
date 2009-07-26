@@ -123,6 +123,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <zlib.h>
 
 #define ITUNESDB_DEBUG 0
 #define ITUNESDB_MHIT_DEBUG 0
@@ -2798,6 +2799,133 @@ static gboolean parse_playlists (FImport *fimp, glong mhsd_seek)
     return TRUE;
 }
 
+#define CHUNK 16384
+
+static int zlib_inflate(gchar *outbuf, gchar *zdata, gsize compressed_size, gsize *uncompressed_size)
+{
+    int ret;
+    guint32 inpos = 0;
+    guint32 outpos = 0;
+    unsigned have;
+    z_stream strm;
+    unsigned char out[CHUNK];
+
+    /* allocate inflate state */
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+    strm.avail_in = 0;
+    strm.next_in = Z_NULL;
+    ret = inflateInit(&strm);
+    if (ret != Z_OK)
+        return ret;
+
+    *uncompressed_size = 0;
+
+    /* decompress until deflate stream ends or end of file */
+    do {
+        strm.avail_in = CHUNK;
+	if (inpos+strm.avail_in > compressed_size) {
+	    strm.avail_in = compressed_size - inpos;
+	}
+        strm.next_in = (unsigned char*)zdata+inpos;
+	inpos+=strm.avail_in;
+
+        /* run inflate() on input until output buffer not full */
+        do {
+            strm.avail_out = CHUNK;
+            if (outbuf)  {
+                strm.next_out = (unsigned char*)(outbuf + outpos);
+            } else {
+                strm.next_out = out;
+            }
+            ret = inflate(&strm, Z_NO_FLUSH);
+            g_assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
+            switch (ret) {
+            case Z_NEED_DICT:
+                ret = Z_DATA_ERROR;     /* and fall through */
+            case Z_DATA_ERROR:
+            case Z_MEM_ERROR:
+                (void)inflateEnd(&strm);
+                return ret;
+            }
+            have = CHUNK - strm.avail_out;
+	    *uncompressed_size += have;
+	    if (outbuf) {
+		outpos += have;
+	    }
+        } while (strm.avail_out == 0);
+
+        /* done when inflate() says it's done */
+    } while (ret != Z_STREAM_END);
+
+    /* clean up and return */
+    (void)inflateEnd(&strm);
+    return ret == Z_STREAM_END ? Z_OK : Z_DATA_ERROR;
+}
+
+static gboolean check_decompress_fimp (FImport *fimp)
+{
+    FContents *cts;
+
+    g_return_val_if_fail (fimp, FALSE);
+    g_return_val_if_fail (fimp->itdb, FALSE);
+    g_return_val_if_fail (fimp->fcontents, FALSE);
+    g_return_val_if_fail (fimp->fcontents->filename, FALSE);
+
+    cts = fimp->fcontents;
+
+    if (!check_header_seek (cts, "mhbd", 0))
+    {
+	fcontents_set_reversed (cts, TRUE);
+	if (cts->error) return 0;
+	if (!check_header_seek (cts, "mhbd", 0))
+	{
+	    if (!cts->error)
+	    {   /* set error */
+		g_set_error (&cts->error,
+			     ITDB_FILE_ERROR,
+			     ITDB_FILE_ERROR_CORRUPT,
+			     _("Not a iTunesDB: '%s' (missing mhdb header)."),
+			     cts->filename);
+	    }
+	    return FALSE;
+	}
+    }
+
+    /* only proceed with decompression if it's a compressed file */
+    if ((*(guint32*)(cts->contents+12) == 2) && (*(guint32*)(cts->contents+16) >= 0x28)) {
+	/* get some values */
+	guint32 headerSize = *(guint32*)(cts->contents+4);
+	guint32 cSize = *(guint32*)(cts->contents+8);
+	size_t uSize = 0;
+
+	if (zlib_inflate(NULL, cts->contents+headerSize, cSize-headerSize, &uSize) == 0) {
+	    gchar *new_contents;
+	    printf("allocating %"G_GSIZE_FORMAT"\n", uSize+headerSize);
+	    new_contents = (gchar*)g_malloc(uSize+headerSize);
+	    memcpy(new_contents, cts->contents, headerSize);
+	    printf("decompressing\n");
+	    if (zlib_inflate(new_contents+headerSize, cts->contents+headerSize, cSize-headerSize, &uSize) == 0) {
+		/* update FContents structure */
+		g_free(cts->contents);
+		cts->contents = new_contents;
+		cts->length = uSize+headerSize;
+		printf("uncompressed size: %"G_GSIZE_FORMAT"\n", cts->length);
+	    }
+	} else {
+		g_set_error (&fimp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_CORRUPT,
+		     _("iTunesCDB '%s' could not be decompressed"),
+		     cts->filename);
+		return FALSE;
+	}
+    }
+
+    return TRUE;
+}
+
 static gboolean parse_fimp (FImport *fimp)
 {
     glong seek=0;
@@ -2808,6 +2936,8 @@ static gboolean parse_fimp (FImport *fimp)
     g_return_val_if_fail (fimp->itdb, FALSE);
     g_return_val_if_fail (fimp->fcontents, FALSE);
     g_return_val_if_fail (fimp->fcontents->filename, FALSE);
+
+    check_decompress_fimp(fimp);
 
     cts = fimp->fcontents;
 
@@ -5301,6 +5431,63 @@ static void prepare_itdb_for_write (FExport *fexp)
     }
 }
 
+static int zlib_deflate(gchar *outbuf, gchar *data, guint32 uncompressed_size, guint32 *compressed_size)
+{
+    int ret, flush;
+    guint32 inpos = 0;
+    guint32 outpos = 0;
+    unsigned have;
+    z_stream strm;
+    unsigned char out[CHUNK];
+
+    /* allocate deflate state */
+    strm.zalloc = Z_NULL;
+    strm.zfree = Z_NULL;
+    strm.opaque = Z_NULL;
+    ret = deflateInit(&strm, 1);
+    if (ret != Z_OK)
+        return ret;
+
+    *compressed_size = 0;
+
+    /* compress until end of data */
+    do {
+        strm.avail_in = CHUNK;
+	if (inpos+strm.avail_in > uncompressed_size) {
+	    strm.avail_in = uncompressed_size - inpos;
+	}
+	flush = (inpos+strm.avail_in == uncompressed_size) ? Z_FINISH : Z_NO_FLUSH;
+        strm.next_in = (unsigned char*)data+inpos;
+	inpos+=strm.avail_in;
+
+        /* run deflate() on input until output buffer not full, finish
+           compression if all of source has been read in */
+        do {
+            strm.avail_out = CHUNK;
+	    if (outbuf) {
+		strm.next_out = (unsigned char*)outbuf + outpos;
+	    } else {
+		strm.next_out = out;
+	    }
+            ret = deflate(&strm, flush);    /* no bad return value */
+            g_assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
+            have = CHUNK - strm.avail_out;
+	    *compressed_size += have;
+	    if (outbuf) {
+		outpos += have;
+	    }
+        } while (strm.avail_out == 0);
+        g_assert(strm.avail_in == 0);     /* all input will be used */
+
+        /* done when last data in file processed */
+    } while (flush != Z_FINISH);
+    g_assert(ret == Z_STREAM_END);        /* stream will be complete */
+
+    /* clean up and return */
+    (void)deflateEnd(&strm);
+    return Z_OK;
+}
+
 /**
  * itdb_write_file:
  * @itdb:       the #Itdb_iTunesDB to save
@@ -5349,7 +5536,7 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
      * to its final value to write properly on nano video/ipod classics
      */
     if (itdb_device_supports_artwork (itdb->device)) {
-		ipod_write_artwork_db (itdb);
+        ipod_write_artwork_db (itdb);
     }
 #endif
 
@@ -5363,18 +5550,20 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 	    {
 		if (write_mhsd_albums (fexp)) {
 		    fix_header (cts, mhbd_seek);
-
-		    /* Set checksum (ipods require it starting from
-		     * iPod Classic and fat Nanos)
-		     */
-		    itdb_device_write_checksum (itdb->device,
-						(unsigned char *)fexp->wcontents->contents,
-						fexp->wcontents->pos,
-						&fexp->error);
+		    if (maybe_compress_itdb (fexp)) {
+			/* Set checksum (ipods require it starting from
+			 * iPod Classic and fat Nanos)
+			 */
+			itdb_device_write_checksum (itdb->device,
+						    (unsigned char *)fexp->wcontents->contents,
+						    fexp->wcontents->pos,
+						    &fexp->error);
+		    }
 		}
 	    }
 	}
     }
+
     if (!fexp->error)
     {
 	if (!wcontents_write (cts))
@@ -5442,7 +5631,11 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 	return FALSE;
     }
 
-    itunes_filename = g_build_filename (itunes_path, "iTunesDB", NULL);
+    if (itdb->version >= 0x28) {
+	itunes_filename = g_build_filename (itunes_path, "iTunesCDB", NULL);
+    } else {
+	itunes_filename = g_build_filename (itunes_path, "iTunesDB", NULL);
+    }
 
     result = itdb_write_file (itdb, itunes_filename, error);
 
@@ -6736,7 +6929,10 @@ gchar *itdb_get_itunesdb_path (const gchar *mountpoint)
 
     if (itunes_dir)
     {
-	path = itdb_get_path (itunes_dir, "iTunesDB");
+	path = itdb_get_path (itunes_dir, "iTunesCDB");
+	if (!path) {
+	    path = itdb_get_path (itunes_dir, "iTunesDB");
+	}
 	g_free (itunes_dir);
     }
 
