@@ -1777,6 +1777,7 @@ gboolean itdb_device_supports_photo (const Itdb_Device *device);
 gboolean itdb_device_supports_podcast (const Itdb_Device *device);
 const gchar *itdb_info_get_ipod_model_name_string (Itdb_IpodModel model);
 const gchar *itdb_info_get_ipod_generation_string (Itdb_IpodGeneration generation);
+gchar *itdb_device_get_uuid(const Itdb_Device *device);
 
 /* track functions */
 Itdb_Track *itdb_track_new (void);

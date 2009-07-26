@@ -2020,3 +2020,8 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	g_return_val_if_reached (FALSE);
     }
 }
+
+gchar *itdb_device_get_uuid(const Itdb_Device *device)
+{
+    return g_hash_table_lookup (device->sysinfo, "FirewireGuid");
+}
