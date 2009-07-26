@@ -5431,61 +5431,49 @@ static void prepare_itdb_for_write (FExport *fexp)
     }
 }
 
-static int zlib_deflate(gchar *outbuf, gchar *data, guint32 uncompressed_size, guint32 *compressed_size)
+static gboolean maybe_compress_itdb (FExport *fexp)
 {
-    int ret, flush;
-    guint32 inpos = 0;
-    guint32 outpos = 0;
-    unsigned have;
-    z_stream strm;
-    unsigned char out[CHUNK];
+    Itdb_iTunesDB *itdb;
+    WContents *cts;
 
-    /* allocate deflate state */
-    strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-    strm.opaque = Z_NULL;
-    ret = deflateInit(&strm, 1);
-    if (ret != Z_OK)
-        return ret;
+    itdb = fexp->itdb;
+    cts = fexp->wcontents;
 
-    *compressed_size = 0;
+    if (itdb->version < 0x28) {
+	guint32 header_len;
+	uLongf compressed_len;
+	guint32 uncompressed_len;
+	gchar *new_contents;
+	int status;
 
-    /* compress until end of data */
-    do {
-        strm.avail_in = CHUNK;
-	if (inpos+strm.avail_in > uncompressed_size) {
-	    strm.avail_in = uncompressed_size - inpos;
+	printf("target DB needs compression\n");
+
+	header_len = *(guint32*)(cts->contents+4);
+	uncompressed_len = *(guint32*)(cts->contents+8) - header_len;
+	compressed_len = compressBound (uncompressed_len);
+
+	new_contents = g_malloc (header_len + compressed_len);
+	memcpy (new_contents, cts->contents, header_len);
+	status = compress2 ((guchar*)new_contents + header_len, &compressed_len,
+			    (guchar*)cts->contents + header_len, uncompressed_len, 1);
+	if (status != Z_OK) {
+	    g_free (new_contents);
+	    g_set_error (&fexp->error,
+			 ITDB_FILE_ERROR,
+			 ITDB_FILE_ERROR_ITDB_CORRUPT,
+			 _("Error compressing iTunesCDB file!\n"));
+	    return FALSE;
 	}
-	flush = (inpos+strm.avail_in == uncompressed_size) ? Z_FINISH : Z_NO_FLUSH;
-        strm.next_in = (unsigned char*)data+inpos;
-	inpos+=strm.avail_in;
 
-        /* run deflate() on input until output buffer not full, finish
-           compression if all of source has been read in */
-        do {
-            strm.avail_out = CHUNK;
-	    if (outbuf) {
-		strm.next_out = (unsigned char*)outbuf + outpos;
-	    } else {
-		strm.next_out = out;
-	    }
-            ret = deflate(&strm, flush);    /* no bad return value */
-            g_assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
-            have = CHUNK - strm.avail_out;
-	    *compressed_size += have;
-	    if (outbuf) {
-		outpos += have;
-	    }
-        } while (strm.avail_out == 0);
-        g_assert(strm.avail_in == 0);     /* all input will be used */
+	g_free(cts->contents);
+	/* update mhbd size */
+	*(guint32*)(new_contents+8) = compressed_len + header_len;
+	cts->contents = new_contents;
+	cts->pos = compressed_len + header_len;
+	printf("compressed size: %ld\n", cts->pos);
+    }
 
-        /* done when last data in file processed */
-    } while (flush != Z_FINISH);
-    g_assert(ret == Z_STREAM_END);        /* stream will be complete */
-
-    /* clean up and return */
-    (void)deflateEnd(&strm);
-    return Z_OK;
+    return TRUE;
 }
 
 /**
