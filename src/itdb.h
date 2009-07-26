@@ -957,8 +957,19 @@ struct _Itdb_iTunesDB
     Itdb_Device *device;
     guint32 version;
     guint64 id;
+    guint16 unk_0x22;
+    guint64 id_0x24;
+    guint16 lang;
+    guint64 pid;
+    gint32 unk_0x50;
+    gint32 unk_0x54;
+    gint16 audio_language;
+    gint16 subtitle_language;
+    gint16 unk_0xa4;
+    gint16 unk_0xa6;
+    gint32 unk_0xa8;
     /* reserved for future use */
-    gint32 reserved_int1;
+    gint32 tzoffset;
     gint32 reserved_int2;
     gpointer reserved1;
     gpointer reserved2;

@@ -2822,9 +2822,33 @@ static gboolean parse_fimp (FImport *fimp)
     mhsd_3 = find_mhsd (cts, 3);
     CHECK_ERROR (fimp, FALSE);
 
-    fimp->itdb->version = get32lint (cts, seek+16);
+    fimp->itdb->version = get32lint (cts, seek+0x10);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->id = get64lint (cts, seek+24);
+    fimp->itdb->id = get64lint (cts, seek+0x18);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->unk_0x22 = get16lint (cts, seek+0x22);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->id_0x24 = get64lint (cts, seek+0x24);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->lang = get16lint (cts, seek+0x46);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->pid = get64lint (cts, seek+0x48);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->unk_0x50 = get32lint (cts, seek+0x50);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->unk_0x54 = get32lint (cts, seek+0x54);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->tzoffset = get32lint (cts, seek+0x6c);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->audio_language = get16lint (cts, seek+0xA0);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->subtitle_language = get16lint (cts, seek+0xA2);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->unk_0xa4 = get16lint (cts, seek+0xA4);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->unk_0xa6 = get16lint (cts, seek+0xA6);
+    CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->unk_0xa8 = get32lint (cts, seek+0xA8);
     CHECK_ERROR (fimp, FALSE);
 
     if (mhsd_1 == -1)
@@ -3466,7 +3490,11 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put_header (cts, "mhbd");
   put32lint (cts, 188); /* header size */
   put32lint (cts, -1);  /* size of whole mhdb -- fill in later */
-  put32lint (cts, 1);   /* ? */
+  if (fexp->itdb->version >= 0x28) {
+    put32lint (cts, 2);
+  } else {
+    put32lint (cts, 1);
+  }
   /* Version number: 0x01: iTunes 2
                      0x02: iTunes 3
 		     0x09: iTunes 4.2
@@ -3486,30 +3514,43 @@ static void mk_mhbd (FExport *fexp, guint32 children)
     Be aware that newer ipods won't work if the library version number is too 
     old
   */
-  fexp->itdb->version = 0x19;
+  if (fexp->itdb->version >= 0x28) {
+      /* keep previous version number */
+  } else {
+      fexp->itdb->version = 0x19;
+  }
   put32lint (cts, fexp->itdb->version);
   put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
   /* 0x20 */
   put16lint (cts, 2);   /* always seems to be 2 */
-  put16_n0  (cts, 7);  /* unknown */
+  /* 0x22 */
+  put16lint (cts, fexp->itdb->unk_0x22);  /* unknown */
+  put64lint (cts, fexp->itdb->id_0x24); /* unkown id */
+  put32lint (cts, 0);  /* unknown */
   /* 0x30 */
   put16lint (cts, 0);   /* set hashing scheme to 0 for now, will be set
 			 * to the appropriate value in
 			 * itdb_device_write_checksum */
   put16_n0  (cts, 10);  /* unknown */
   /* 0x46 */
-  put16lint (cts, 0);   /* langauge */
-  put64lint (cts, 0);   /* library persistent ID */
+  put16lint (cts, fexp->itdb->lang);   /* language (e.g. 'de' for German) */
+  put64lint (cts, fexp->itdb->pid);   /* library persistent ID */
   /* 0x50 */
-  put32lint (cts, 0);   /* unknown: seen: 0x05 for nano 3G */
-  put32lint (cts, 0);   /* unknown: seen: 0x4d for nano 3G */
+  put32lint (cts, fexp->itdb->unk_0x50);  /* unknown: seen: 0x05 for nano 3G */
+  put32lint (cts, fexp->itdb->unk_0x54);  /* unknown: seen: 0x4d for nano 3G */
   put32_n0 (cts, 5);    /* 20 bytes hash */
-  put32lint (cts, 0);   /* timezone offset in seconds */
+  put32lint (cts, fexp->itdb->tzoffset);   /* timezone offset in seconds */
   put16lint (cts, 2);   /* without it, iTunes thinks iPhone databases
 			   are corrupted */
   put16lint (cts, 0);
-  put32_n0 (cts, 18);   /* dummy space */
+  put32_n0 (cts, 11);   /* new hash */
+  put16lint (cts, fexp->itdb->audio_language); /* audio_language */
+  put16lint (cts, fexp->itdb->subtitle_language); /* subtitle_language */
+  put16lint (cts, fexp->itdb->unk_0xa4); /* unknown */
+  put16lint (cts, fexp->itdb->unk_0xa6); /* unknown */
+  put32lint (cts, fexp->itdb->unk_0xa8); /* unknown */
+  put32_n0 (cts, 4); /* dummy space */
 }
 
 /* Fill in the length of a standard header */
@@ -3560,13 +3601,20 @@ static void mk_mhlt (FExport *fexp, guint32 num)
 static void mk_mhit (WContents *cts, Itdb_Track *track)
 {
   guint32 mac_time;
+  guint32 headersize;
   g_return_if_fail (cts);
   g_return_if_fail (track);
 
   put_header (cts, "mhit");
-  put32lint (cts, 0x184);/* header size */
+  if (track->itdb->version >= 0x23) { /* maybe earlier versions, too */
+    headersize = 0x248;
+  } else {
+    headersize = 0x184;
+  }
+  put32lint (cts, headersize);/* header size */
   put32lint (cts, -1);   /* size of whole mhit -- fill in later */
   put32lint (cts, -1);   /* nr of mhods in this mhit -- later   */
+  /* +0x10 */
   put32lint (cts, track->id); /* track index number */
 
   put32lint (cts, track->visible);
@@ -3575,31 +3623,37 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put8int (cts, track->type2);
   put8int   (cts, track->compilation);
   put8int   (cts, track->rating);
+  /* +0x20 */
   mac_time = device_time_time_t_to_mac (track->itdb->device, track->time_modified);
   put32lint (cts, mac_time); /* timestamp               */
   put32lint (cts, track->size);    /* filesize                   */
   put32lint (cts, track->tracklen);/* length of track in ms      */
   put32lint (cts, track->track_nr);/* track number               */
+  /* +0x30 */
   put32lint (cts, track->tracks);  /* number of tracks           */
   put32lint (cts, track->year);    /* the year                   */
   put32lint (cts, track->bitrate); /* bitrate                    */
   put32lint (cts, (((guint32)track->samplerate)<<16) |
 	     ((guint32)track->samplerate_low));
+  /* +0x40 */
   put32lint (cts, track->volume);  /* volume adjust              */
   put32lint (cts, track->starttime);
   put32lint (cts, track->stoptime);
   put32lint (cts, track->soundcheck);
+  /* +0x50 */
   put32lint (cts, track->playcount);/* playcount                 */
-  track->playcount2 = track->playcount;
-  put32lint (cts, track->playcount2);
+  /* track->playcount2 = track->playcount; */
+  put32lint (cts, track->playcount2); /* playcount2, keep original value */
   mac_time = device_time_time_t_to_mac (track->itdb->device, track->time_played);
   put32lint (cts, mac_time); /* last time played       */
   put32lint (cts, track->cd_nr);   /* CD number                  */
+  /* +0x60 */
   put32lint (cts, track->cds);     /* number of CDs              */
   put32lint (cts, track->drm_userid);
   mac_time = device_time_time_t_to_mac (track->itdb->device, track->time_added);
   put32lint (cts, mac_time); /* timestamp            */
   put32lint (cts, track->bookmark_time);
+  /* +0x70 */
   put64lint (cts, track->dbid);
   if (track->checked)   put8int (cts, 1);
   else                  put8int (cts, 0);
@@ -3607,17 +3661,20 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put16lint (cts, track->BPM);
   put16lint (cts, track->artwork_count);
   put16lint (cts, track->unk126);
+  /* +0x80 */
   put32lint (cts, track->artwork_size);
   put32lint (cts, track->unk132);
   put32lfloat (cts, track->samplerate2);
   mac_time = device_time_time_t_to_mac (track->itdb->device, track->time_released);
   put32lint (cts, mac_time);
+  /* +0x90 */
   put16lint (cts, track->unk144);
   put16lint (cts, track->explicit_flag);
   put32lint (cts, track->unk148);
   put32lint (cts, track->unk152);
   /* since iTunesDB version 0x0c */
   put32lint (cts, track->skipcount);
+  /* +0xA0 */
   mac_time = device_time_time_t_to_mac (track->itdb->device, track->last_skipped);
   put32lint (cts, mac_time);
   put8int (cts, track->has_artwork);
@@ -3625,6 +3682,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put8int (cts, track->remember_playback_position);
   put8int (cts, track->flag4);
   put64lint (cts, track->dbid2);
+  /* +0xB0 */
   put8int (cts, track->lyrics_flag);
   put8int (cts, track->movie_flag);
   put8int (cts, track->mark_unplayed);
@@ -3635,26 +3693,53 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->unk196);
   put32lint (cts, track->postgap);
   put32lint (cts, track->unk204);
+  /* +0xD0 */
   put32lint (cts, track->mediatype);
   put32lint (cts, track->season_nr);
   put32lint (cts, track->episode_nr);
   put32lint (cts, track->unk220);
+  /* +0xE0 */
   put32lint (cts, track->unk224);
   put32lint (cts, track->unk228);
   put32lint (cts, track->unk232);
   put32lint (cts, track->unk236);
+  /* +0xF0 */
   put32lint (cts, track->unk240);
   put32lint (cts, track->unk244);
   put32lint (cts, track->gapless_data);
   put32lint (cts, track->unk252);
+  /* +0x100 */
   put16lint (cts, track->gapless_track_flag);
   put16lint (cts, track->gapless_album_flag);
-  put32_n0 (cts, 22);
-  put16lint (cts, 0);
-  put16lint (cts, track->album_id);
-  put32lint (cts, track->mhii_link); /* Needed on fat nanos/ipod classic to get art
+  put32_n0 (cts, 7);
+  /* +0x120 */
+  if (headersize == 0x184) {
+    /* TODO: check if these offset are correct!!! */
+    put32_n0 (cts, 15);
+    put32lint (cts, track->album_id);
+    put32lint (cts, track->mhii_link); /* Needed on fat nanos/ipod classic to get art
 				      * in the right sidepane (mhii_link) */
-  put32_n0 (cts, 8); /* padding */
+    put32_n0 (cts, 8); /* padding */
+  } else {
+    put32lint (cts, track->album_id);
+    put64lint (cts, track->itdb->id_0x24); /* same as mhbd+0x24, purpose unknown */
+    put32lint (cts, track->size); /* seems to be filesize again */
+    /* +0x130 */
+    put32lint (cts, 0);
+    put64lint (cts, 0x808080808080LL);  /* what the heck is this?! */
+    put32lint (cts, 0);
+    /* +0x140 */
+    put32_n0 (cts, 10);
+    put32lint (cts, 1);  /* unknown */
+    put32lint (cts, 0);
+    /* +0x170 */
+    put32_n0 (cts, 28);
+    /* +0x1E0 */
+    put32_n0 (cts, 5);
+    /* +0x1F4 */
+    put32lint (cts, 0); /* FIXME: this is another ID for something, composer?! */
+    put32_n0 (cts, 20); /* padding */
+  }
 }
 
 
@@ -4014,7 +4099,8 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
 	  /* end of header, start of data */
 	  put32lint (cts, 1);         /* string type UTF16          */
 	  put32lint (cts, sizeof (gunichar2)*len);     /* size of string             */
-	  put32_n0 (cts, 2);          /* unknown                    */
+	  put32lint (cts, 1);         /* unknown, but is set to 1 */
+	  put32lint (cts, 0);
 	  put_data (cts, (gchar *)entry_utf16, sizeof (gunichar2)*len);/* the string */
 	  g_free (entry_utf16);
       }
