@@ -410,7 +410,7 @@ static const Itdb_ArtworkFormat ipod_touch_1_cover_art_info[] = {
     {3003,  64,  64, THUMB_FORMAT_REC_RGB555_LE},
     {3005, 320, 320, THUMB_FORMAT_RGB555_LE},
     {3006,  56,  56, THUMB_FORMAT_RGB555_LE,  8192}, /*pad data to  8192 bytes */
-    {3007,  88,  88, THUMB_FORMAT_RGB555_LE, 16364}, /*pad data to 16384 bytes */
+    {3007,  88,  88, THUMB_FORMAT_RGB555_LE, 16384}, /*pad data to 16384 bytes */
     {  -1,  -1,  -1, -1}
 };
 
