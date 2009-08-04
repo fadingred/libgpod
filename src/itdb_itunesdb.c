@@ -3143,7 +3143,7 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 	    gboolean success;
 
 	    itdb_set_mountpoint (itdb, mp);
-	    itdb->filename = filename;
+	    itdb->filename = g_strdup (filename);
 	    success = itdb_parse_internal (itdb, error);
 	    if (success)
 	    {
