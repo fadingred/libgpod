@@ -689,8 +689,6 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "YMV", "B147" }, /* Black Classic 80GB */
     { "YMU", "B145" }, /* Silver Classic 160GB */
     { "YMX", "B150" }, /* Black Classic 160GB */
-    { "VR0", "A501" },
-    { "WH8", "A712" },
     { "2C5", "B562" }, /* Silver Classic 120GB */
     { "2C7", "B565" }, /* Black Classic 120GB */
     { "9ZS", "C293" }, /* Silver Classic 160GB (2009) */
@@ -738,6 +736,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "7SJ", "C086" }, /* 8GB Silver iPod Touch (3rd gen) */
     { "6K4", "C011" }, /* 64GB Silver iPod Touch (3rd gen) */
 
+    { "VR0", "A501" }, /* 4GB Silver iPhone 1st gen */
     { "WH8", "A712" }, /* 8GB Silver iPhone */
     { "0KH", "B384" }, /* 16GB Silver iPhone */
     { "Y7K", "B496" }, /* 16GB Black iPhone 3G */
