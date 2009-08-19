@@ -1,3 +1,8 @@
+2009-08-19  Christophe Fergeau  <cfergeau@mandriva.com>
+
+	* configure.ac: use automake 1.11 AM_SILENT_RULES feature (if
+	available) instead of using shave
+
 2009-08-01  Jorg Schuler <jcsjcs at users.sourceforge.net>
 
 	* po/de.po: updated German catalog. Thanks to Kai-Ove Pietsch.

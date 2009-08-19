@@ -287,12 +287,10 @@ AC_SUBST(LDFLAGS)
 AC_SUBST(LIBGPOD_CFLAGS)
 AC_SUBST(LIBGPOD_LIBS)
 
-SHAVE_INIT([], [enable])
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_CONFIG_FILES([
 Makefile
-shave
-shave-libtool
 bindings/Makefile
 bindings/python/gpod.i
 bindings/python/Makefile
