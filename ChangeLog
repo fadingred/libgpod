@@ -1,3 +1,15 @@
+2009-08-19  Todd Zullinger  <tmz@pobox.com>
+
+	* gnome-autogen.sh: Sync gnome-autogen.sh for automake-1.11
+	support
+
+	The gnome-autogen.sh script comes from the gnome-common
+	module[1].  The only difference here is that we removed the
+	-Wno-portability option from the call to automake, as we want
+	to see these portability warnings.
+
+	[1] http://git.gnome.org/cgit/gnome-common/tree/macros2/gnome-autogen.sh
+
 2009-08-19  Christophe Fergeau  <cfergeau@mandriva.com>
 
 	* configure.ac: use automake 1.11 AM_SILENT_RULES feature (if
