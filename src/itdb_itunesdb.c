@@ -3490,11 +3490,8 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put_header (cts, "mhbd");
   put32lint (cts, 188); /* header size */
   put32lint (cts, -1);  /* size of whole mhdb -- fill in later */
-  if (fexp->itdb->version >= 0x28) {
-    put32lint (cts, 2);
-  } else {
-    put32lint (cts, 1);
-  }
+  put32lint (cts, 2); /* 2 on iPhone 3.0, 1 on iPod Color */
+
   /* Version number: 0x01: iTunes 2
                      0x02: iTunes 3
 		     0x09: iTunes 4.2
@@ -3511,19 +3508,16 @@ static void mk_mhbd (FExport *fexp, guint32 children)
                      0x14 = iTunes 7.1
                      0x15 = iTunes 7.2
                      0x19 = iTunes 7.4
+                     0x28 = iTunes 8.2.1
     Be aware that newer ipods won't work if the library version number is too 
     old
   */
-  if (fexp->itdb->version >= 0x28) {
-      /* keep previous version number */
-  } else {
-      fexp->itdb->version = 0x19;
-  }
+  fexp->itdb->version = 0x28;
   put32lint (cts, fexp->itdb->version);
   put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
   /* 0x20 */
-  put16lint (cts, 2);   /* always seems to be 2 */
+  put16lint (cts, 2);   /* always seems to be 2, 0x01 on iPod Color */
   /* 0x22 */
   put16lint (cts, fexp->itdb->unk_0x22);  /* unknown */
   put64lint (cts, fexp->itdb->id_0x24); /* unkown id */
@@ -3538,13 +3532,17 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put64lint (cts, fexp->itdb->pid);   /* library persistent ID */
   /* 0x50 */
   put32lint (cts, fexp->itdb->unk_0x50);  /* unknown: seen: 0x05 for nano 3G */
+  					  /* seen: 0x01 for iPod Color       */
   put32lint (cts, fexp->itdb->unk_0x54);  /* unknown: seen: 0x4d for nano 3G */
+  					  /* seen: 0x0f for iPod Color       */
   put32_n0 (cts, 5);    /* 20 bytes hash */
   put32lint (cts, fexp->itdb->tzoffset);   /* timezone offset in seconds */
+  /* 0x70 */
   put16lint (cts, 2);   /* without it, iTunes thinks iPhone databases
-			   are corrupted */
+			   are corrupted, 0 on iPod Color */
   put16lint (cts, 0);
   put32_n0 (cts, 11);   /* new hash */
+  /* 0xa0 */
   put16lint (cts, fexp->itdb->audio_language); /* audio_language */
   put16lint (cts, fexp->itdb->subtitle_language); /* subtitle_language */
   put16lint (cts, fexp->itdb->unk_0xa4); /* unknown */
@@ -3601,17 +3599,11 @@ static void mk_mhlt (FExport *fexp, guint32 num)
 static void mk_mhit (WContents *cts, Itdb_Track *track)
 {
   guint32 mac_time;
-  guint32 headersize;
   g_return_if_fail (cts);
   g_return_if_fail (track);
 
   put_header (cts, "mhit");
-  if (track->itdb->version >= 0x23) { /* maybe earlier versions, too */
-    headersize = 0x248;
-  } else {
-    headersize = 0x184;
-  }
-  put32lint (cts, headersize);/* header size */
+  put32lint (cts, 0x248);/* header size */
   put32lint (cts, -1);   /* size of whole mhit -- fill in later */
   put32lint (cts, -1);   /* nr of mhods in this mhit -- later   */
   /* +0x10 */
@@ -3713,33 +3705,29 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put16lint (cts, track->gapless_album_flag);
   put32_n0 (cts, 7);
   /* +0x120 */
-  if (headersize == 0x184) {
-    /* TODO: check if these offset are correct!!! */
-    put32_n0 (cts, 15);
-    put32lint (cts, track->album_id);
-    put32lint (cts, track->mhii_link); /* Needed on fat nanos/ipod classic to get art
-				      * in the right sidepane (mhii_link) */
-    put32_n0 (cts, 8); /* padding */
-  } else {
-    put32lint (cts, track->album_id);
-    put64lint (cts, track->itdb->id_0x24); /* same as mhbd+0x24, purpose unknown */
-    put32lint (cts, track->size); /* seems to be filesize again */
-    /* +0x130 */
-    put32lint (cts, 0);
-    put64lint (cts, 0x808080808080LL);  /* what the heck is this?! */
-    put32lint (cts, 0);
-    /* +0x140 */
-    put32_n0 (cts, 10);
-    put32lint (cts, 1);  /* unknown */
-    put32lint (cts, 0);
-    /* +0x170 */
-    put32_n0 (cts, 28);
-    /* +0x1E0 */
-    put32_n0 (cts, 5);
-    /* +0x1F4 */
-    put32lint (cts, 0); /* FIXME: this is another ID for something, composer?! */
-    put32_n0 (cts, 20); /* padding */
-  }
+  put32lint (cts, track->album_id);
+  put64lint (cts, track->itdb->id_0x24); /* same as mhbd+0x24, purpose unknown */
+  put32lint (cts, track->size); /* seems to be filesize again */
+  /* +0x130 */
+  put32lint (cts, 0);
+  put64lint (cts, 0x808080808080LL);  /* what the heck is this?! */
+  put32lint (cts, 0);
+  /* +0x140 */
+  put32_n0 (cts, 8);
+  /* +0x160 */
+  /* mhii_link is needed on fat nanos/ipod classic to get artwork 
+   * in the right sidepane. This matches mhii::song_id in the ArtworkDB */
+  put32lint (cts, track->mhii_link); 
+  put32lint (cts, 0);
+  put32lint (cts, 1);  /* unknown */
+  put32lint (cts, 0);
+  /* +0x170 */
+  put32_n0 (cts, 28);
+  /* +0x1E0 */
+  put32_n0 (cts, 5);
+  /* +0x1F4 */
+  put32lint (cts, 0); /* FIXME: this is another ID for something, composer?! */
+  put32_n0 (cts, 20); /* padding */
 }
 
 
