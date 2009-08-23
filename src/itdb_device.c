@@ -1167,6 +1167,46 @@ GList *itdb_device_get_chapter_image_formats (const Itdb_Device *device)
     g_return_val_if_reached (NULL);
 }
 
+
+G_GNUC_INTERNAL gboolean
+itdb_device_supports_compressed_itunesdb (const Itdb_Device *device)
+{
+    const Itdb_IpodInfo *info;
+    info = itdb_device_get_ipod_info (device);
+    switch (info->ipod_generation) {
+	case ITDB_IPOD_GENERATION_UNKNOWN:
+	case ITDB_IPOD_GENERATION_FIRST:
+	case ITDB_IPOD_GENERATION_SECOND:
+	case ITDB_IPOD_GENERATION_THIRD:
+	case ITDB_IPOD_GENERATION_FOURTH:
+	case ITDB_IPOD_GENERATION_PHOTO:
+	case ITDB_IPOD_GENERATION_MOBILE:
+	case ITDB_IPOD_GENERATION_MINI_1:
+	case ITDB_IPOD_GENERATION_MINI_2:
+	case ITDB_IPOD_GENERATION_SHUFFLE_1:
+	case ITDB_IPOD_GENERATION_SHUFFLE_2:
+	case ITDB_IPOD_GENERATION_SHUFFLE_3:
+	case ITDB_IPOD_GENERATION_SHUFFLE_4:
+	case ITDB_IPOD_GENERATION_NANO_1:
+	case ITDB_IPOD_GENERATION_NANO_2:
+	case ITDB_IPOD_GENERATION_VIDEO_1:
+	case ITDB_IPOD_GENERATION_VIDEO_2:
+	case ITDB_IPOD_GENERATION_NANO_3:
+	case ITDB_IPOD_GENERATION_NANO_4:
+	case ITDB_IPOD_GENERATION_CLASSIC_1:
+	case ITDB_IPOD_GENERATION_CLASSIC_2:
+	    return FALSE;
+	case ITDB_IPOD_GENERATION_TOUCH_1:
+	case ITDB_IPOD_GENERATION_IPHONE_1:
+	case ITDB_IPOD_GENERATION_TOUCH_2:
+	case ITDB_IPOD_GENERATION_IPHONE_2:
+	case ITDB_IPOD_GENERATION_IPHONE_3:
+	    /* FIXME: needs to check firmware version */
+	    return TRUE;
+    }
+    return FALSE;
+}
+
 G_GNUC_INTERNAL gboolean 
 itdb_device_supports_sparse_artwork (const Itdb_Device *device)
 {
