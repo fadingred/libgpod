@@ -155,8 +155,8 @@ gboolean itdb_zlib_check_compress_fexp (FExport *fexp)
 
     g_print("target DB needs compression\n");
 
-    header_len = *(guint32*)(cts->contents+4);
-    uncompressed_len = *(guint32*)(cts->contents+8) - header_len;
+    header_len = GUINT32_FROM_LE (*(guint32*)(cts->contents+4));
+    uncompressed_len = GUINT32_FROM_LE(*(guint32*)(cts->contents+8)) - header_len;
     compressed_len = compressBound (uncompressed_len);
 
     new_contents = g_malloc (header_len + compressed_len);
@@ -174,7 +174,7 @@ gboolean itdb_zlib_check_compress_fexp (FExport *fexp)
 
     g_free(cts->contents);
     /* update mhbd size */
-    *(guint32*)(new_contents+8) = compressed_len + header_len;
+    *(guint32*)(new_contents+8) = GUINT32_TO_LE (compressed_len + header_len);
     cts->contents = new_contents;
     cts->pos = compressed_len + header_len;
     g_print("compressed size: %ld\n", cts->pos);
