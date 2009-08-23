@@ -102,6 +102,9 @@ static int zlib_inflate(gchar *outbuf, gchar *zdata, gsize compressed_size, gsiz
 gboolean itdb_zlib_check_decompress_fimp (FImport *fimp)
 {
     FContents *cts;
+    guint32 headerSize;
+    guint32 cSize;
+    size_t uSize;
 
     g_return_val_if_fail (fimp, FALSE);
     g_return_val_if_fail (fimp->itdb, FALSE);
@@ -110,34 +113,30 @@ gboolean itdb_zlib_check_decompress_fimp (FImport *fimp)
 
     cts = fimp->fcontents;
 
-    /* only proceed with decompression if it's a compressed file */
-    if ((*(guint32*)(cts->contents+12) == 2) && (*(guint32*)(cts->contents+16) >= 0x28)) {
-	/* get some values */
-	guint32 headerSize = *(guint32*)(cts->contents+4);
-	guint32 cSize = *(guint32*)(cts->contents+8);
-	size_t uSize = 0;
+    cSize = *(guint32*)(cts->contents+8);
+    headerSize = *(guint32*)(cts->contents+4);
+    uSize = 0;
 
-	if (zlib_inflate(NULL, cts->contents+headerSize, cSize-headerSize, &uSize) == 0) {
-	    gchar *new_contents;
-	    g_print("allocating %"G_GSIZE_FORMAT"\n", uSize+headerSize);
-	    new_contents = (gchar*)g_malloc(uSize+headerSize);
-	    memcpy(new_contents, cts->contents, headerSize);
-	    g_print("decompressing\n");
-	    if (zlib_inflate(new_contents+headerSize, cts->contents+headerSize, cSize-headerSize, &uSize) == 0) {
-		/* update FContents structure */
-		g_free(cts->contents);
-		cts->contents = new_contents;
-		cts->length = uSize+headerSize;
-		g_print("uncompressed size: %"G_GSIZE_FORMAT"\n", cts->length);
-	    }
-	} else {
-		g_set_error (&fimp->error,
+    if (zlib_inflate(NULL, cts->contents+headerSize, cSize-headerSize, &uSize) == 0) {
+	gchar *new_contents;
+	g_print("allocating %"G_GSIZE_FORMAT"\n", uSize+headerSize);
+	new_contents = (gchar*)g_malloc(uSize+headerSize);
+	memcpy(new_contents, cts->contents, headerSize);
+	g_print("decompressing\n");
+	if (zlib_inflate(new_contents+headerSize, cts->contents+headerSize, cSize-headerSize, &uSize) == 0) {
+	    /* update FContents structure */
+	    g_free(cts->contents);
+	    cts->contents = new_contents;
+	    cts->length = uSize+headerSize;
+	    g_print("uncompressed size: %"G_GSIZE_FORMAT"\n", cts->length);
+	}
+    } else {
+	g_set_error (&fimp->error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_CORRUPT,
 		     _("iTunesCDB '%s' could not be decompressed"),
 		     cts->filename);
-		return FALSE;
-	}
+	return FALSE;
     }
 
     return TRUE;
@@ -145,45 +144,40 @@ gboolean itdb_zlib_check_decompress_fimp (FImport *fimp)
 
 gboolean itdb_zlib_check_compress_fexp (FExport *fexp)
 {
-    Itdb_iTunesDB *itdb;
     WContents *cts;
+    guint32 header_len;
+    uLongf compressed_len;
+    guint32 uncompressed_len;
+    gchar *new_contents;
+    int status;
 
-    itdb = fexp->itdb;
     cts = fexp->wcontents;
 
-    if (itdb->version < 0x28) {
-	guint32 header_len;
-	uLongf compressed_len;
-	guint32 uncompressed_len;
-	gchar *new_contents;
-	int status;
+    g_print("target DB needs compression\n");
 
-	g_print("target DB needs compression\n");
+    header_len = *(guint32*)(cts->contents+4);
+    uncompressed_len = *(guint32*)(cts->contents+8) - header_len;
+    compressed_len = compressBound (uncompressed_len);
 
-	header_len = *(guint32*)(cts->contents+4);
-	uncompressed_len = *(guint32*)(cts->contents+8) - header_len;
-	compressed_len = compressBound (uncompressed_len);
-
-	new_contents = g_malloc (header_len + compressed_len);
-	memcpy (new_contents, cts->contents, header_len);
-	status = compress2 ((guchar*)new_contents + header_len, &compressed_len,
-			    (guchar*)cts->contents + header_len, uncompressed_len, 1);
-	if (status != Z_OK) {
-	    g_free (new_contents);
-	    g_set_error (&fexp->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_ITDB_CORRUPT,
-			 _("Error compressing iTunesCDB file!\n"));
-	    return FALSE;
-	}
-
-	g_free(cts->contents);
-	/* update mhbd size */
-	*(guint32*)(new_contents+8) = compressed_len + header_len;
-	cts->contents = new_contents;
-	cts->pos = compressed_len + header_len;
-	g_print("compressed size: %ld\n", cts->pos);
+    new_contents = g_malloc (header_len + compressed_len);
+    memcpy (new_contents, cts->contents, header_len);
+    status = compress2 ((guchar*)new_contents + header_len, &compressed_len,
+			(guchar*)cts->contents + header_len, uncompressed_len, 1);
+    if (status != Z_OK) {
+	g_free (new_contents);
+	g_set_error (&fexp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Error compressing iTunesCDB file!\n"));
+	return FALSE;
     }
+
+    g_free(cts->contents);
+    /* update mhbd size */
+    *(guint32*)(new_contents+8) = compressed_len + header_len;
+    cts->contents = new_contents;
+    cts->pos = compressed_len + header_len;
+    g_print("compressed size: %ld\n", cts->pos);
 
     return TRUE;
 }

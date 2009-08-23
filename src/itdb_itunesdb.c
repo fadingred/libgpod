@@ -2809,7 +2809,7 @@ static gboolean looks_like_itunesdb (FImport *fimp)
     return TRUE;
 }
 
-static gboolean parse_fimp (FImport *fimp)
+static gboolean parse_fimp (FImport *fimp, gboolean compressed)
 {
     glong seek=0;
     FContents *cts;
@@ -2820,12 +2820,13 @@ static gboolean parse_fimp (FImport *fimp)
     g_return_val_if_fail (fimp->fcontents, FALSE);
     g_return_val_if_fail (fimp->fcontents->filename, FALSE);
 
-
     if (!looks_like_itunesdb (fimp)) {
 	return FALSE;
     }
 
-    itdb_zlib_check_decompress_fimp (fimp);
+    if (compressed) {
+	itdb_zlib_check_decompress_fimp (fimp);
+    }
 
     cts = fimp->fcontents;
 
@@ -2970,7 +2971,7 @@ static void error_no_control_dir (const gchar *mp, GError **error)
 
 
 static gboolean
-itdb_parse_internal (Itdb_iTunesDB *itdb, GError **error)
+itdb_parse_internal (Itdb_iTunesDB *itdb, gboolean compressed, GError **error)
 {
     FImport *fimp;
     gboolean success = FALSE;
@@ -2986,7 +2987,7 @@ itdb_parse_internal (Itdb_iTunesDB *itdb, GError **error)
     {
 	if (playcounts_init (fimp))
 	{
-	    if (parse_fimp (fimp))
+	    if (parse_fimp (fimp, compressed))
 	    {
 		if (read_OTG_playlists (fimp))
 		{
@@ -3020,8 +3021,14 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 {
     gchar *filename;
     Itdb_iTunesDB *itdb = NULL;
+    gboolean compressed = FALSE;
 
-    filename = itdb_get_itunesdb_path (mp);
+    filename = itdb_get_itunescdb_path (mp);
+    if (!filename) {
+	filename = itdb_get_itunesdb_path (mp);
+    } else {
+	compressed = TRUE;
+    }
     if (filename)
     {
 	itdb = itdb_new ();
@@ -3032,7 +3039,7 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 
 	    itdb_set_mountpoint (itdb, mp);
 	    itdb->filename = g_strdup (filename);
-	    success = itdb_parse_internal (itdb, error);
+	    success = itdb_parse_internal (itdb, compressed, error);
 	    if (success)
 	    {
 		/* We don't test the return value of ipod_parse_artwork_db
@@ -3099,7 +3106,7 @@ Itdb_iTunesDB *itdb_parse_file (const gchar *filename, GError **error)
     itdb = itdb_new ();
     itdb->filename = g_strdup (filename);
 
-    success = itdb_parse_internal (itdb, error);
+    success = itdb_parse_internal (itdb, FALSE, error);
     if (!success)
     {
 	itdb_free (itdb);
@@ -5319,20 +5326,10 @@ static void prepare_itdb_for_write (FExport *fexp)
     }
 }
 
-
-/**
- * itdb_write_file:
- * @itdb:       the #Itdb_iTunesDB to save
- * @filename:   filename to save @itdb to
- * @error:      return location for a #GError or NULL
- *
- * Write the content of @itdb to @filename. If @filename is NULL, it attempts
- * to write to @itdb->filename.
- *
- * Returns: TRUE if all went well, FALSE otherwise
- */
-gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
-			  GError **error)
+static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
+					  const gchar *filename,
+					  const gchar *compressed_filename,
+					  GError **error)
 {
     FExport *fexp;
     gulong mhbd_seek = 0;
@@ -5382,15 +5379,27 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 	    {
 		if (write_mhsd_albums (fexp)) {
 		    fix_header (cts, mhbd_seek);
-		    if (itdb_zlib_check_compress_fexp (fexp)) {
-			/* Set checksum (ipods require it starting from
-			 * iPod Classic and fat Nanos)
+		    if (compressed_filename) {
+			/* If we were asked to write a compressed file, starts by writing
+			 * an uncompressed copy of the iTunesDB
 			 */
 			itdb_device_write_checksum (itdb->device,
 						    (unsigned char *)fexp->wcontents->contents,
 						    fexp->wcontents->pos,
-						    &fexp->error);
+						    NULL);
+			wcontents_write (cts);
+			if (!itdb_zlib_check_compress_fexp (fexp)) {
+			    goto err;
+			}
+			g_free (cts->filename);
+			cts->filename = g_strdup (compressed_filename);
 		    }
+
+		    /* Set checksum (ipods require it starting from Classic and Nano Video) */
+		    itdb_device_write_checksum (itdb->device,
+						(unsigned char *)fexp->wcontents->contents,
+						fexp->wcontents->pos,
+						&fexp->error);
 		}
 	    }
 	}
@@ -5401,6 +5410,7 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 	if (!wcontents_write (cts))
 	    g_propagate_error (&fexp->error, cts->error);
     }
+err:
     if (fexp->error)
     {
 	g_propagate_error (error, fexp->error);
@@ -5426,6 +5436,24 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 }
 
 /**
+ * itdb_write_file:
+ * @itdb:       the #Itdb_iTunesDB to save
+ * @filename:   filename to save @itdb to
+ * @error:      return location for a #GError or NULL
+ *
+ * Write the content of @itdb to @filename. If @filename is NULL, it attempts
+ * to write to @itdb->filename.
+ *
+ * Returns: TRUE if all went well, FALSE otherwise
+ */
+
+gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
+			  GError **error)
+{
+    return itdb_write_file_internal (itdb, filename, NULL, error);
+}
+
+/**
  * itdb_write:
  * @itdb:   the #Itdb_iTunesDB to write to disk
  * @error:  return location for a #GError or NULL
@@ -5442,6 +5470,7 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 {
     gchar *itunes_filename, *itunes_path;
+    gchar *itunescdb_filename;
     gboolean result = FALSE;
 
     g_return_val_if_fail (itdb, FALSE);
@@ -5463,15 +5492,19 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 	return FALSE;
     }
 
-    if (itdb->version >= 0x28) {
-	itunes_filename = g_build_filename (itunes_path, "iTunesCDB", NULL);
+    itunes_filename = g_build_filename (itunes_path, "iTunesDB", NULL);
+    if (itdb_device_supports_compressed_itunesdb (itdb->device)) {
+	itunescdb_filename = g_build_filename (itunes_path, "iTunesCDB", NULL);
     } else {
-	itunes_filename = g_build_filename (itunes_path, "iTunesDB", NULL);
+	itunescdb_filename = NULL;
     }
 
-    result = itdb_write_file (itdb, itunes_filename, error);
+    result = itdb_write_file_internal (itdb, itunes_filename, 
+				       itunescdb_filename,
+				       error);
 
     g_free (itunes_filename);
+    g_free (itunescdb_filename);
     g_free (itunes_path);
 
     if (result != FALSE)
@@ -6761,10 +6794,37 @@ gchar *itdb_get_itunesdb_path (const gchar *mountpoint)
 
     if (itunes_dir)
     {
+	path = itdb_get_path (itunes_dir, "iTunesDB");
+	g_free (itunes_dir);
+    }
+
+    return path;
+}
+
+/**
+ * itdb_get_itunescdb_path:
+ * @mountpoint: the iPod mountpoint
+ *
+ * Retrieve a path to the iTunesCDB. The iTunesCDB is a compressed version
+ * of the iTunesDB which can be found on iPhones/iPod Touch with firmware 3.0
+ *
+ *
+ * Returns: path to the iTunesCDB or NULL if non-existent. Must g_free()
+ * after use.
+ *
+ * Since: 0.4.0
+ */
+gchar *itdb_get_itunescdb_path (const gchar *mountpoint)
+{
+    gchar *itunes_dir, *path=NULL;
+
+    g_return_val_if_fail (mountpoint, NULL);
+
+    itunes_dir = itdb_get_itunes_dir (mountpoint);
+
+    if (itunes_dir)
+    {
 	path = itdb_get_path (itunes_dir, "iTunesCDB");
-	if (!path) {
-	    path = itdb_get_path (itunes_dir, "iTunesDB");
-	}
 	g_free (itunes_dir);
     }
 

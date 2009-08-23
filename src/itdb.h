@@ -1749,6 +1749,7 @@ gchar *itdb_get_photos_dir (const gchar *mountpoint);
 gchar *itdb_get_photos_thumb_dir (const gchar *mountpoint);
 gchar *itdb_get_device_dir (const gchar *mountpoint);
 gchar *itdb_get_itunesdb_path (const gchar *mountpoint);
+gchar *itdb_get_itunescdb_path (const gchar *mountpoint);
 gchar *itdb_get_itunessd_path (const gchar *mountpoint);
 gchar *itdb_get_artworkdb_path (const gchar *mountpoint);
 gchar *itdb_get_photodb_path (const gchar *mountpoint);
