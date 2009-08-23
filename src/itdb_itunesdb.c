@@ -1794,23 +1794,6 @@ static glong find_mhsd (FContents *cts, guint32 type)
     guint32 i, len, mhsd_num;
     glong seek;
 
-    if (!check_header_seek (cts, "mhbd", 0))
-    {
-	fcontents_set_reversed (cts, TRUE);
-	if (cts->error) return 0;
-	if (!check_header_seek (cts, "mhbd", 0))
-	{
-	    if (!cts->error)
-	    {   /* set error */
-		g_set_error (&cts->error,
-			     ITDB_FILE_ERROR,
-			     ITDB_FILE_ERROR_CORRUPT,
-			     _("Not a iTunesDB: '%s' (missing mhdb header)."),
-			     cts->filename);
-	    }
-	    return 0;
-	}
-    }
     len = get32lint (cts, 4);
     if (cts->error) return 0;
     /* all the headers I know are 0x68 long -- if this one is longer
@@ -2799,17 +2782,9 @@ static gboolean parse_playlists (FImport *fimp, glong mhsd_seek)
     return TRUE;
 }
 
-
-static gboolean parse_fimp (FImport *fimp)
+static gboolean looks_like_itunesdb (FImport *fimp)
 {
-    glong seek=0;
     FContents *cts;
-    glong mhsd_1, mhsd_2, mhsd_3;
-
-    g_return_val_if_fail (fimp, FALSE);
-    g_return_val_if_fail (fimp->itdb, FALSE);
-    g_return_val_if_fail (fimp->fcontents, FALSE);
-    g_return_val_if_fail (fimp->fcontents->filename, FALSE);
 
     cts = fimp->fcontents;
 
@@ -2831,8 +2806,28 @@ static gboolean parse_fimp (FImport *fimp)
 	    return FALSE;
 	}
     }
+    return TRUE;
+}
 
-    itdb_zlib_check_decompress_fimp(fimp);
+static gboolean parse_fimp (FImport *fimp)
+{
+    glong seek=0;
+    FContents *cts;
+    glong mhsd_1, mhsd_2, mhsd_3;
+
+    g_return_val_if_fail (fimp, FALSE);
+    g_return_val_if_fail (fimp->itdb, FALSE);
+    g_return_val_if_fail (fimp->fcontents, FALSE);
+    g_return_val_if_fail (fimp->fcontents->filename, FALSE);
+
+
+    if (!looks_like_itunesdb (fimp)) {
+	return FALSE;
+    }
+
+    itdb_zlib_check_decompress_fimp (fimp);
+
+    cts = fimp->fcontents;
 
     /* get the positions of the various mhsd */
     /* type 1: track list */
