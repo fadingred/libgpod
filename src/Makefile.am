@@ -18,6 +18,7 @@ libgpod_la_SOURCES = 		\
 	itdb_thumb.c		\
 	itdb_track.c     	\
 	itdb_tzinfo.c		\
+	itdb_zlib.c		\
 	ithumb-writer.c 	\
 	pixmaps.c 		\
 	sha1.c
