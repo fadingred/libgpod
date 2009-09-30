@@ -1411,7 +1411,7 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 	  result.data.string = g_new0 (gchar, xl+1);
 	  if (!seek_get_n_bytes (cts, result.data.string, seek+16, xl))
 	  {   /* error */
-	      g_free (entry_utf16);
+	      g_free (result.data.string);
 	      return result;  /* *ml==-1, result.valid==FALSE */
 	  }
       }
