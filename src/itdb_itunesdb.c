@@ -1161,6 +1161,7 @@ void itdb_free (Itdb_iTunesDB *itdb)
 	itdb_device_free (itdb->device);
 	if (itdb->userdata && itdb->userdata_destroy)
 	    (*itdb->userdata_destroy) (itdb->userdata);
+	g_free (itdb->priv);
 	g_free (itdb);
     }
 }
@@ -1253,6 +1254,7 @@ Itdb_iTunesDB *itdb_new (void)
 
     g_once (&g_type_init_once, (GThreadFunc)g_type_init, NULL);
     itdb = g_new0 (Itdb_iTunesDB, 1);
+    itdb->priv = g_new0 (Itdb_iTunesDB_Private, 1);
     itdb->device = itdb_device_new ();
     itdb->version = 0x13;
     itdb->id = ((guint64)g_random_int () << 32) |
@@ -2826,29 +2828,29 @@ static gboolean parse_fimp (FImport *fimp)
     CHECK_ERROR (fimp, FALSE);
     fimp->itdb->id = get64lint (cts, seek+0x18);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->unk_0x22 = get16lint (cts, seek+0x22);
+    fimp->itdb->priv->unk_0x22 = get16lint (cts, seek+0x22);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->id_0x24 = get64lint (cts, seek+0x24);
+    fimp->itdb->priv->id_0x24 = get64lint (cts, seek+0x24);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->lang = get16lint (cts, seek+0x46);
+    fimp->itdb->priv->lang = get16lint (cts, seek+0x46);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->pid = get64lint (cts, seek+0x48);
+    fimp->itdb->priv->pid = get64lint (cts, seek+0x48);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->unk_0x50 = get32lint (cts, seek+0x50);
+    fimp->itdb->priv->unk_0x50 = get32lint (cts, seek+0x50);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->unk_0x54 = get32lint (cts, seek+0x54);
+    fimp->itdb->priv->unk_0x54 = get32lint (cts, seek+0x54);
     CHECK_ERROR (fimp, FALSE);
     fimp->itdb->tzoffset = get32lint (cts, seek+0x6c);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->audio_language = get16lint (cts, seek+0xA0);
+    fimp->itdb->priv->audio_language = get16lint (cts, seek+0xA0);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->subtitle_language = get16lint (cts, seek+0xA2);
+    fimp->itdb->priv->subtitle_language = get16lint (cts, seek+0xA2);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->unk_0xa4 = get16lint (cts, seek+0xA4);
+    fimp->itdb->priv->unk_0xa4 = get16lint (cts, seek+0xA4);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->unk_0xa6 = get16lint (cts, seek+0xA6);
+    fimp->itdb->priv->unk_0xa6 = get16lint (cts, seek+0xA6);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->unk_0xa8 = get32lint (cts, seek+0xA8);
+    fimp->itdb->priv->unk_0xa8 = get32lint (cts, seek+0xA8);
     CHECK_ERROR (fimp, FALSE);
 
     if (mhsd_1 == -1)
@@ -3519,8 +3521,8 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   /* 0x20 */
   put16lint (cts, 2);   /* always seems to be 2, 0x01 on iPod Color */
   /* 0x22 */
-  put16lint (cts, fexp->itdb->unk_0x22);  /* unknown */
-  put64lint (cts, fexp->itdb->id_0x24); /* unkown id */
+  put16lint (cts, fexp->itdb->priv->unk_0x22);  /* unknown */
+  put64lint (cts, fexp->itdb->priv->id_0x24); /* unkown id */
   put32lint (cts, 0);  /* unknown */
   /* 0x30 */
   put16lint (cts, 0);   /* set hashing scheme to 0 for now, will be set
@@ -3528,13 +3530,13 @@ static void mk_mhbd (FExport *fexp, guint32 children)
 			 * itdb_device_write_checksum */
   put16_n0  (cts, 10);  /* unknown */
   /* 0x46 */
-  put16lint (cts, fexp->itdb->lang);   /* language (e.g. 'de' for German) */
-  put64lint (cts, fexp->itdb->pid);   /* library persistent ID */
+  put16lint (cts, fexp->itdb->priv->lang);   /* language (e.g. 'de' for German) */
+  put64lint (cts, fexp->itdb->priv->pid);   /* library persistent ID */
   /* 0x50 */
-  put32lint (cts, fexp->itdb->unk_0x50);  /* unknown: seen: 0x05 for nano 3G */
-  					  /* seen: 0x01 for iPod Color       */
-  put32lint (cts, fexp->itdb->unk_0x54);  /* unknown: seen: 0x4d for nano 3G */
-  					  /* seen: 0x0f for iPod Color       */
+  put32lint (cts, fexp->itdb->priv->unk_0x50);  /* unknown: seen: 0x05 for nano 3G */
+                                                /* seen: 0x01 for iPod Color       */
+  put32lint (cts, fexp->itdb->priv->unk_0x54);  /* unknown: seen: 0x4d for nano 3G */
+  				         	/* seen: 0x0f for iPod Color       */
   put32_n0 (cts, 5);    /* 20 bytes hash */
   put32lint (cts, fexp->itdb->tzoffset);   /* timezone offset in seconds */
   /* 0x70 */
@@ -3543,11 +3545,11 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put16lint (cts, 0);
   put32_n0 (cts, 11);   /* new hash */
   /* 0xa0 */
-  put16lint (cts, fexp->itdb->audio_language); /* audio_language */
-  put16lint (cts, fexp->itdb->subtitle_language); /* subtitle_language */
-  put16lint (cts, fexp->itdb->unk_0xa4); /* unknown */
-  put16lint (cts, fexp->itdb->unk_0xa6); /* unknown */
-  put32lint (cts, fexp->itdb->unk_0xa8); /* unknown */
+  put16lint (cts, fexp->itdb->priv->audio_language); /* audio_language */
+  put16lint (cts, fexp->itdb->priv->subtitle_language); /* subtitle_language */
+  put16lint (cts, fexp->itdb->priv->unk_0xa4); /* unknown */
+  put16lint (cts, fexp->itdb->priv->unk_0xa6); /* unknown */
+  put32lint (cts, fexp->itdb->priv->unk_0xa8); /* unknown */
   put32_n0 (cts, 4); /* dummy space */
 }
 
@@ -3706,7 +3708,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32_n0 (cts, 7);
   /* +0x120 */
   put32lint (cts, track->album_id);
-  put64lint (cts, track->itdb->id_0x24); /* same as mhbd+0x24, purpose unknown */
+  put64lint (cts, track->itdb->priv->id_0x24); /* same as mhbd+0x24, purpose unknown */
   put32lint (cts, track->size); /* seems to be filesize again */
   /* +0x130 */
   put32lint (cts, 0);

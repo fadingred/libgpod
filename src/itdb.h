@@ -930,6 +930,7 @@ struct _Itdb_PhotoDB
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
+typedef struct _Itdb_iTunesDB_Private Itdb_iTunesDB_Private;
 /**
  * Itdb_iTunesDB:
  * @tracks:             A list of tracks in the database (#Itdb_Track)
@@ -938,8 +939,9 @@ struct _Itdb_PhotoDB
  * @device:             iPod device info (#Itdb_Device)
  * @version:            The version number of the iTunesDB
  * @id:                 A 64 bit id value for the iTunesDB
- * @reserved_int1:      Reserved for future use
+ * @tzoffset:		offset in seconds from UTC
  * @reserved_int2:      Reserved for future use
+ * @priv:		Private data
  * @reserved1:          Reserved for future use
  * @reserved2:          Reserved for future use
  * @usertype:           For use by application
@@ -957,21 +959,10 @@ struct _Itdb_iTunesDB
     Itdb_Device *device;
     guint32 version;
     guint64 id;
-    guint16 unk_0x22;
-    guint64 id_0x24;
-    guint16 lang;
-    guint64 pid;
-    gint32 unk_0x50;
-    gint32 unk_0x54;
-    gint16 audio_language;
-    gint16 subtitle_language;
-    gint16 unk_0xa4;
-    gint16 unk_0xa6;
-    gint32 unk_0xa8;
-    /* reserved for future use */
     gint32 tzoffset;
+    /* reserved for future use */
     gint32 reserved_int2;
-    gpointer reserved1;
+    Itdb_iTunesDB_Private *priv;
     gpointer reserved2;
     /* below is for use by application */
     guint64 usertype;

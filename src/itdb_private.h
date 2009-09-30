@@ -154,6 +154,21 @@ struct _Itdb_DB{
 
 typedef struct _Itdb_DB Itdb_DB;
 
+struct _Itdb_iTunesDB_Private
+{
+    guint16 unk_0x22;
+    guint64 id_0x24;
+    guint16 lang;
+    guint64 pid;
+    gint32 unk_0x50;
+    gint32 unk_0x54;
+    gint16 audio_language;
+    gint16 subtitle_language;
+    gint16 unk_0xa4;
+    gint16 unk_0xa6;
+    gint32 unk_0xa8;
+};
+
 G_GNUC_INTERNAL gboolean itdb_spl_action_known (ItdbSPLAction action);
 G_GNUC_INTERNAL void itdb_splr_free (Itdb_SPLRule *splr);
 G_GNUC_INTERNAL const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb);
