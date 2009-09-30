@@ -1288,6 +1288,45 @@ static gint32 get_mhod_type (FContents *cts, glong seek, guint32 *ml)
     return type;
 }
 
+static char *extract_mhod_string (FContents *cts, glong seek)
+{
+    gunichar2 *entry_utf16;
+    char *entry_utf8;
+    gint string_type;
+    gsize len;
+
+    /* type of string: 0x02: UTF8, 0x01 or 0x00: UTF16 LE */
+    string_type = get32lint (cts, seek);
+    len = get32lint (cts, seek+4);   /* length of string */
+    g_return_val_if_fail (len < G_MAXUINT - 2, NULL);
+    if (string_type != 0x02) {
+	/* UTF-16 string */
+	entry_utf16 = g_new0 (gunichar2, (len+2)/2);
+	if (seek_get_n_bytes (cts, (gchar *)entry_utf16, seek+16, len)) {
+	    fixup_little_utf16 (entry_utf16);
+	    entry_utf8= g_utf16_to_utf8 (entry_utf16, -1, NULL, NULL, NULL);
+	    g_free (entry_utf16);
+	} else { 
+	    g_free (entry_utf16);
+	    return NULL;
+	}
+    } else {
+	/* UTF-8 string */
+	entry_utf8 = g_new0 (gchar, len+1);
+	if (!seek_get_n_bytes (cts, entry_utf8, seek+16, len)) {
+	    g_free (entry_utf8);
+	    return NULL;
+	}
+    }
+
+    if (g_utf8_validate (entry_utf8, -1, NULL)) {
+	return entry_utf8;
+    } else {
+	g_free (entry_utf8);
+	return NULL;
+    }
+}
+
 /* Returns the contents of the mhod at position @mhod_seek. This can
    be a simple string or something more complicated as in the case for
    Itdb_SPLPREF OR Itdb_SPLRULES.
@@ -1305,12 +1344,10 @@ static gint32 get_mhod_type (FContents *cts, glong seek, guint32 *ml)
 
 static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 {
-  gunichar2 *entry_utf16 = NULL;
   MHODData result;
   gint32 xl;
   guint32 mhod_len;
   gint32 header_length;
-  guint32 string_type;
   gulong seek;
   FContents *cts;
   
@@ -1386,34 +1423,9 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
   case MHOD_ID_SORT_ALBUMARTIST:
   case MHOD_ID_SORT_COMPOSER:
   case MHOD_ID_SORT_TVSHOW:
-      /* type of string: 0x02: UTF8, 0x01 or 0x00: UTF16 LE */
-      string_type = get32lint (cts, seek);
-      xl = get32lint (cts, seek+4);   /* length of string */
-      g_return_val_if_fail (xl < G_MAXUINT - 2, result);
-      if (string_type != 0x02)
-      {
-	  entry_utf16 = g_new0 (gunichar2, (xl+2)/2);
-	  if (seek_get_n_bytes (cts, (gchar *)entry_utf16, seek+16, xl))
-	  {
-	      fixup_little_utf16 (entry_utf16);
-	      result.data.string = g_utf16_to_utf8 (entry_utf16, -1,
-						    NULL, NULL, NULL);
-	      g_free (entry_utf16);
-	  }
-	  else
-	  {   /* error */
-	      g_free (entry_utf16);
-	      return result;  /* *ml==-1, result.valid==FALSE */
-	  }
-      }
-      else
-      {
-	  result.data.string = g_new0 (gchar, xl+1);
-	  if (!seek_get_n_bytes (cts, result.data.string, seek+16, xl))
-	  {   /* error */
-	      g_free (result.data.string);
-	      return result;  /* *ml==-1, result.valid==FALSE */
-	  }
+      result.data.string = extract_mhod_string (cts, seek);
+      if (result.data.string == NULL) {
+	  return result;
       }
       break;
   case MHOD_ID_PODCASTURL:
