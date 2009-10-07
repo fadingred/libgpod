@@ -70,7 +70,7 @@ read_sysinfo_extended (const char *device)
     GString *xml_sysinfo;
     unsigned int i;
 
-    fd = open (device, O_RDWR);
+    fd = open (device, O_RDONLY);
     if (fd < 0) {
 	return NULL;
     }
