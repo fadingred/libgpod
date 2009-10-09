@@ -481,7 +481,8 @@ gchar * itdb_resolve_path (const gchar *root,
     
   if(good_path && g_file_test(good_path,G_FILE_TEST_EXISTS))
     return good_path;
-          
+
+  g_free (good_path);
   return NULL;
 }
 
