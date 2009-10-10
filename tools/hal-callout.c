@@ -187,6 +187,7 @@ get_model_name (const Itdb_IpodInfo *info)
 		return g_strdup ("video");
 	case ITDB_IPOD_GENERATION_CLASSIC_1:
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
+	case ITDB_IPOD_GENERATION_CLASSIC_3:
 		return g_strdup ("classic");
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 	case ITDB_IPOD_GENERATION_TOUCH_2:
@@ -248,6 +249,7 @@ get_generation (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_GENERATION_CLASSIC_1:
 		return 6.0;
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
+	case ITDB_IPOD_GENERATION_CLASSIC_3:
 		return 6.5;
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 		return 1.0;
@@ -430,6 +432,7 @@ get_icon_name (const Itdb_IpodInfo *info)
 
 	case ITDB_IPOD_GENERATION_CLASSIC_1:
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
+	case ITDB_IPOD_GENERATION_CLASSIC_3:
 		if (info->ipod_model == ITDB_IPOD_MODEL_CLASSIC_BLACK) {
 			return g_strdup ("multimedia-player-apple-ipod-classic-black");
 		} else {

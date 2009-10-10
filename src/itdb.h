@@ -115,6 +115,7 @@ typedef struct _Itdb_Chapterdata Itdb_Chapterdata;
  * @ITDB_IPOD_GENERATION_VIDEO_2:   Second Generation iPod Video (aka 5.5g)
  * @ITDB_IPOD_GENERATION_CLASSIC_1: First Generation iPod Classic
  * @ITDB_IPOD_GENERATION_CLASSIC_2: Second Generation iPod Classic
+ * @ITDB_IPOD_GENERATION_CLASSIC_3: Third Generation iPod Classic
  * @ITDB_IPOD_GENERATION_TOUCH_1:   First Generation iPod Touch
  * @ITDB_IPOD_GENERATION_IPHONE_1:  First Generation iPhone
  * @ITDB_IPOD_GENERATION_TOUCH_2:   Second Generation iPod Touch
@@ -154,7 +155,8 @@ typedef enum {
     ITDB_IPOD_GENERATION_SHUFFLE_4,
     ITDB_IPOD_GENERATION_TOUCH_2,
     ITDB_IPOD_GENERATION_IPHONE_2,
-    ITDB_IPOD_GENERATION_IPHONE_3
+    ITDB_IPOD_GENERATION_IPHONE_3,
+    ITDB_IPOD_GENERATION_CLASSIC_3,
 } Itdb_IpodGeneration;
 
 /**

@@ -196,6 +196,10 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"B562", 120, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_2, 50},
     {"B565", 120, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_2, 50},
 
+    /* iPod Classic G3 */
+    {"C293", 160, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_2, 50},
+    {"C297", 160, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_2, 50},
+
     /* iPod nano video G1 (Third Nano Generation) */
     /* First generation of video support for nano */
     {"A978",   4, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_3,  6},
@@ -334,6 +338,7 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Touch (2nd Gen.)"),
 	N_("iPhone 3G"),
 	N_("iPhone 3GS"),
+	N_("Classic"),
 	N_("Unused"),
 	N_("Unused"),
 	NULL
@@ -491,6 +496,7 @@ static const ArtworkCapabilities ipod_artwork_capabilities[] = {
     { ITDB_IPOD_GENERATION_NANO_4, ipod_nano4g_cover_art_info, ipod_nano4g_photo_info, ipod_nano4g_chapter_image_info },
     { ITDB_IPOD_GENERATION_CLASSIC_1, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_CLASSIC_2, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
+    { ITDB_IPOD_GENERATION_CLASSIC_3, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_TOUCH_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_TOUCH_2, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_IPHONE_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
@@ -657,6 +663,8 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "WH8", "A712" },
     { "2C5", "B562" }, /* Silver Classic 120GB */
     { "2C7", "B565" }, /* Black Classic 120GB */
+    { "9ZS", "C293" }, /* Silver Classic 160GB (2009) */
+    { "9ZU", "C297" }, /* Black Classic 160GB (2009) */
     { "37P", "B663" }, /* 4GB Green Nano 4g */
     { "37Q", "B666" }, /* 4GB Yellow Nano 4g */
     { "37H", "B654" }, /* 4GB Pink Nano 4g */
@@ -1195,6 +1203,7 @@ itdb_device_supports_compressed_itunesdb (const Itdb_Device *device)
 	case ITDB_IPOD_GENERATION_NANO_4:
 	case ITDB_IPOD_GENERATION_CLASSIC_1:
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
+	case ITDB_IPOD_GENERATION_CLASSIC_3:
 	    return FALSE;
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 	case ITDB_IPOD_GENERATION_IPHONE_1:
@@ -1245,6 +1254,7 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
             case ITDB_IPOD_GENERATION_NANO_4:
             case ITDB_IPOD_GENERATION_CLASSIC_1:
             case ITDB_IPOD_GENERATION_CLASSIC_2:
+            case ITDB_IPOD_GENERATION_CLASSIC_3:
             case ITDB_IPOD_GENERATION_TOUCH_1:
             case ITDB_IPOD_GENERATION_IPHONE_1:
             case ITDB_IPOD_GENERATION_TOUCH_2:
@@ -1550,6 +1560,7 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
         case ITDB_IPOD_GENERATION_VIDEO_2:
         case ITDB_IPOD_GENERATION_CLASSIC_1:
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
+	case ITDB_IPOD_GENERATION_CLASSIC_3:
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 	case ITDB_IPOD_GENERATION_TOUCH_2:
@@ -1651,6 +1662,7 @@ static ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device
     switch (info->ipod_generation) {
     case ITDB_IPOD_GENERATION_CLASSIC_1: 
     case ITDB_IPOD_GENERATION_CLASSIC_2:
+    case ITDB_IPOD_GENERATION_CLASSIC_3:
     case ITDB_IPOD_GENERATION_NANO_3:
     case ITDB_IPOD_GENERATION_NANO_4:
       return ITDB_CHECKSUM_HASH58;
@@ -1940,6 +1952,7 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_VIDEO_2:
 	    case ITDB_IPOD_GENERATION_CLASSIC_1:
 	    case ITDB_IPOD_GENERATION_CLASSIC_2:
+	    case ITDB_IPOD_GENERATION_CLASSIC_3:
 	    case ITDB_IPOD_GENERATION_TOUCH_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_TOUCH_2:
