@@ -222,7 +222,8 @@ enum MHOD_ID {
   MHOD_ID_PLAYLIST = 100,
   MHOD_ID_ALBUM_ALBUM = 200, /* MHODs for the MHIAs */
   MHOD_ID_ALBUM_ARTIST = 201,
-  MHOD_ID_ALBUM_SORT_ARTIST = 202
+  MHOD_ID_ALBUM_SORT_ARTIST = 202,
+  MHOD_ID_ALBUM_ARTIST_MHII = 300,
 };
 
 
@@ -1677,6 +1678,7 @@ static gchar *get_mhod_string (FImport *fimp, glong seek, guint32 *ml, gint32 *m
     case MHOD_ID_SORT_TVSHOW:
     case MHOD_ID_ALBUM_ALBUM:
     case MHOD_ID_ALBUM_ARTIST:
+    case MHOD_ID_ALBUM_ARTIST_MHII:
     case MHOD_ID_ALBUM_SORT_ARTIST:
 	mhoddata = get_mhod (fimp, seek, ml);
 	if ((*ml != -1) && mhoddata.valid)
@@ -2109,6 +2111,7 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 	  case MHOD_ID_SORT_TVSHOW:
 	  case MHOD_ID_ALBUM_ALBUM:
 	  case MHOD_ID_ALBUM_ARTIST:
+	  case MHOD_ID_ALBUM_ARTIST_MHII:
 	  case MHOD_ID_ALBUM_SORT_ARTIST:
 	  case MHOD_ID_LIBPLAYLISTJUMPTABLE:
 	      /* these are not expected here */
@@ -2447,6 +2450,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 	  case MHOD_ID_CHAPTERDATA:
 	  case MHOD_ID_ALBUM_ALBUM:
 	  case MHOD_ID_ALBUM_ARTIST:
+	  case MHOD_ID_ALBUM_ARTIST_MHII:
 	  case MHOD_ID_ALBUM_SORT_ARTIST:
 	      g_free (entry_utf8);
 	      break;
@@ -3757,7 +3761,8 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   /* +0x170 */
   put32_n0 (cts, 28);
   /* +0x1E0 */
-  put32_n0 (cts, 5);
+  put32lint (cts, track->priv->artist_id);
+  put32_n0 (cts, 4);
   /* +0x1F4 */
   put32lint (cts, 0); /* FIXME: this is another ID for something, composer?! */
   put32_n0 (cts, 20); /* padding */
@@ -4102,6 +4107,7 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
   case MHOD_ID_ALBUM_ALBUM:
   case MHOD_ID_ALBUM_ARTIST:
   case MHOD_ID_ALBUM_SORT_ARTIST:
+  case MHOD_ID_ALBUM_ARTIST_MHII:
       g_return_if_fail (mhod->data.string);
       /* normal iTunesDBs seem to take utf16 strings), endian-inversed
 	 iTunesDBs seem to take utf8 strings */
@@ -4567,6 +4573,69 @@ static void mk_mhlp (FExport *fexp)
   put32_n0 (cts, 20);               /* dummy space              */
 }
 
+static void mk_mhii (gpointer key, gpointer value, gpointer user_data)
+{
+  FExport *fexp;
+  WContents *cts;
+  Itdb_Track *track;
+  Itdb_Item_Id *id;
+  MHODData mhod;
+  guint mhod_num;
+  gulong mhii_seek;
+
+  track = (Itdb_Track *)key;
+  g_return_if_fail (track != NULL);
+
+  id = (Itdb_Item_Id *)value;
+  g_return_if_fail (id != NULL);
+
+  fexp = (FExport *)user_data;
+  g_return_if_fail (fexp);
+  g_return_if_fail (fexp->wcontents);
+  cts = fexp->wcontents;
+  mhii_seek = cts->pos;
+
+  put_header (cts, "mhii");        		/* header                   */
+  put32lint (cts, 80);             		/* size of header           */
+  put32lint (cts, -1);             		/* total size -> later */
+  put32lint (cts, 1);		   		/* number of children mhods */
+  put32lint (cts, id->id);			/* artist id */
+  put64lint (cts, id->sql_id);			/* artist SQL id */
+  put32lint (cts, 2);		   		/* unknown */
+  put32_n0 (cts, 12); 				/* padding */
+
+  mhod.valid = TRUE;
+  mhod_num = 0;
+
+  if (track->artist && *track->artist) {
+      mhod.type = MHOD_ID_ALBUM_ARTIST_MHII;
+      mhod.data.string = track->artist;
+      mk_mhod (fexp, &mhod);
+      ++mhod_num;
+  }
+
+  fix_mhit (cts, mhii_seek, mhod_num);
+}
+
+static void mk_mhli (FExport *fexp)
+{
+  WContents *cts;
+
+  g_return_if_fail (fexp);
+  g_return_if_fail (fexp->wcontents);
+  g_return_if_fail (fexp->artists);
+
+  cts = fexp->wcontents;
+
+  put_header (cts, "mhli");        /* header                   */
+  put32lint (cts, 92);             /* size of header           */
+  /* albums on iPod (including main!) */
+  put32lint (cts, g_hash_table_size (fexp->artists));
+  put32_n0 (cts, 20);               /* dummy space              */
+  g_hash_table_foreach (fexp->artists, mk_mhii, fexp);
+  g_hash_table_destroy (fexp->artists);
+  fexp->artists = NULL;
+}
 
 /* Write out the long MHOD_ID_PLAYLIST mhod header.
    This seems to be an itunespref thing.. dunno know this
@@ -5228,6 +5297,23 @@ static gboolean write_mhsd_albums (FExport *fexp)
     return TRUE;
 }
 
+static gboolean write_mhsd_artists (FExport *fexp)
+{
+    gulong mhsd_seek;
+    WContents *cts;
+
+    g_return_val_if_fail (fexp, FALSE);
+    g_return_val_if_fail (fexp->itdb, FALSE);
+    g_return_val_if_fail (fexp->wcontents, FALSE);
+
+    cts = fexp->wcontents;
+    mhsd_seek = cts->pos;      	/* get position of mhsd header */
+    mk_mhsd (fexp, 8); 		/* write header */
+    mk_mhli (fexp);
+    fix_header (cts, mhsd_seek);
+    return TRUE;
+}
+
 static gboolean write_mhsd_type6 (FExport *fexp)
 {
     gulong mhsd_seek;
@@ -5313,15 +5399,35 @@ static gboolean itdb_album_equal (gconstpointer v1, gconstpointer v2)
   }
 }
 
-static void add_new_id (GHashTable *album_ids, Itdb_Track *track, guint album_id)
+static void add_new_id (GHashTable *ids, Itdb_Track *track, guint new_id)
 {
     Itdb_Item_Id *id;
 
     id  = g_new0 (Itdb_Item_Id, 1);
-    id->id = album_id;
+    id->id = new_id;
     id->sql_id = ((guint64)g_random_int () << 32) | ((guint64)g_random_int ()); 
 
-    g_hash_table_insert (album_ids, track, id);
+    g_hash_table_insert (ids, track, id);
+}
+
+static guint itdb_artist_hash (gconstpointer v)
+{
+  Itdb_Track *track = (Itdb_Track *)v;
+  if (track->artist != NULL) {
+    return g_str_hash (track->artist);
+  }
+  g_assert_not_reached ();
+}
+
+static gboolean itdb_artist_equal (gconstpointer v1, gconstpointer v2)
+{
+  Itdb_Track *track1 = (Itdb_Track *)v1;
+  Itdb_Track *track2 = (Itdb_Track *)v2;
+
+  g_assert (track1->artist != NULL);
+  g_assert (track2->artist != NULL);
+
+  return g_str_equal (track1->artist, track2->artist);
 }
 
 /* - reassign the iPod IDs
@@ -5334,6 +5440,7 @@ static void prepare_itdb_for_write (FExport *fexp)
     Itdb_iTunesDB *itdb;
     Itdb_Playlist *mpl;
     guint album_id = 1;
+    guint artist_id = 1;
 
     g_return_if_fail (fexp);
     itdb = fexp->itdb;
@@ -5366,6 +5473,10 @@ static void prepare_itdb_for_write (FExport *fexp)
     fexp->albums = g_hash_table_new_full (itdb_album_hash, itdb_album_equal,
 					  NULL, g_free);
 
+    g_assert (fexp->artists == NULL);
+    fexp->artists = g_hash_table_new_full (itdb_artist_hash, itdb_artist_equal,
+					   NULL, g_free);
+
     /* assign unique IDs and create sort keys */
     for (gl=itdb->tracks; gl; gl=gl->next)
     {
@@ -5389,6 +5500,22 @@ static void prepare_itdb_for_write (FExport *fexp)
 	    add_new_id (fexp->albums, track, album_id);
 	    track->priv->album_id = album_id;
 	    album_id++;
+	}
+
+	if (track->artist == NULL) {	
+	    /* unknown artist name, this entry isn't interesting to
+	     * build the list of all artists on the ipod
+	     */
+	    continue;
+	}
+	/* artist ids are used when writing the mhli header */
+	id = g_hash_table_lookup (fexp->artists, track);
+	if (id != NULL) {
+	    track->priv->artist_id = id->id;
+	} else {	
+	    add_new_id (fexp->artists, track, artist_id);
+	    track->priv->artist_id = id->id;
+	    artist_id++;
 	}
     }
 }
@@ -5436,7 +5563,7 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
     }
 #endif
 
-    mk_mhbd (fexp, 6);  /* six mhsds */
+    mk_mhbd (fexp, 7);  /* seven mhsds */
 
     /* write albums (mhsd type 4) */
     if (!write_mhsd_albums (fexp)) {
@@ -5444,6 +5571,14 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_ITDB_CORRUPT,
 		     _("Error writing list of albums (mhsd type 4)"));
+	goto err;
+    }
+    /* write artists (mhsd type 8) */
+    if (!fexp->error && !write_mhsd_artists (fexp)) {
+	g_set_error (&fexp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Error writing list of artists (mhsd type 8)"));
 	goto err;
     }
 
@@ -5528,6 +5663,9 @@ err:
     wcontents_free (cts);
     if (fexp->albums != NULL) {
 	g_hash_table_destroy (fexp->albums);
+    }
+    if (fexp->artists != NULL) {
+	g_hash_table_destroy (fexp->artists);
     }
     g_free (fexp);
     if (result == TRUE)

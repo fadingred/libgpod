@@ -133,6 +133,7 @@ typedef struct
     WContents *wcontents;
     guint32 next_id;     /* next free ID to use       */
     GHashTable *albums;  /* used to build the MHLA    */
+    GHashTable *artists; /* used to build the MHLI    */
     GError *error;       /* where to report errors to */
 } FExport;
 
@@ -172,6 +173,7 @@ struct _Itdb_iTunesDB_Private
 /* private data for Itdb_Track */
 struct _Itdb_Track_Private {
 	guint32 album_id;
+	guint32 artist_id;
 };
 
 G_GNUC_INTERNAL gboolean itdb_spl_action_known (ItdbSPLAction action);
