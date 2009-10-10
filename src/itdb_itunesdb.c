@@ -2826,7 +2826,7 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
 {
     glong seek=0;
     FContents *cts;
-    glong mhsd_1, mhsd_2, mhsd_3;
+    glong mhsd_1, mhsd_2, mhsd_3, mhsd_5;
 
     g_return_val_if_fail (fimp, FALSE);
     g_return_val_if_fail (fimp->itdb, FALSE);
@@ -2854,6 +2854,10 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
     /* type 3: playlist section with special version of Podcasts
        playlist (optional) */
     mhsd_3 = find_mhsd (cts, 3);
+    CHECK_ERROR (fimp, FALSE);
+
+    /* read smart playlists */
+    mhsd_5 = find_mhsd (cts, 5);
     CHECK_ERROR (fimp, FALSE);
 
     fimp->itdb->version = get32lint (cts, seek+0x10);
@@ -2922,6 +2926,10 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
 		     _("iTunesDB '%s' corrupt: Could not find playlists (no mhsd type 2 or type 3 sections found)"),
 		     cts->filename);
 	return FALSE;
+    }
+
+    if (mhsd_5 != -1) {
+	parse_playlists (fimp, mhsd_5);
     }
 
     return TRUE;
@@ -4548,7 +4556,7 @@ static void mk_mhlp (FExport *fexp)
   put_header (cts, "mhlp");        /* header                   */
   put32lint (cts, 92);             /* size of header           */
   /* playlists on iPod (including main!) */
-  put32lint (cts, g_list_length (fexp->itdb->playlists));
+  put32lint (cts, -1); /* filled in later */
   put32_n0 (cts, 20);               /* dummy space              */
 }
 
@@ -5158,26 +5166,41 @@ static gboolean write_mhsd_playlists (FExport *fexp, guint32 mhsd_type)
 {
     GList *gl;
     glong mhsd_seek;
+    glong mhlp_seek;
     WContents *cts;
+    int plcnt = 0;
 
     g_return_val_if_fail (fexp, FALSE);
     g_return_val_if_fail (fexp->itdb, FALSE);
     g_return_val_if_fail (fexp->wcontents, FALSE);
-    g_return_val_if_fail ((mhsd_type == 2) || (mhsd_type == 3), FALSE);
+    g_return_val_if_fail ((mhsd_type == 2) || (mhsd_type == 3) || (mhsd_type == 5), FALSE);
 
     cts = fexp->wcontents;
     mhsd_seek = cts->pos;      /* get position of mhsd header */
     mk_mhsd (fexp, mhsd_type); /* write header */
     /* write header with nr. of playlists */
+    mhlp_seek = cts->pos;
     mk_mhlp (fexp);
     for (gl=fexp->itdb->playlists; gl; gl=gl->next)
     {
 	Itdb_Playlist *pl = gl->data;
 	g_return_val_if_fail (pl, FALSE);
 
+	if ((mhsd_type == 5) && !pl->is_spl) {
+	    continue;
+	}
+
+	if (((mhsd_type == 2) || (mhsd_type == 3)) && pl->is_spl) {
+	    continue;
+	}
+
 	write_playlist (fexp, pl, mhsd_type);
+	plcnt++;
 	if (fexp->error)  return FALSE;
     }
+
+    put32lint_seek (cts, plcnt, mhlp_seek+8);
+
     fix_header (cts, mhsd_seek);
     return TRUE;
 }
@@ -5382,7 +5405,7 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
     }
 #endif
 
-    mk_mhbd (fexp, 4);  /* four mhsds */
+    mk_mhbd (fexp, 5);  /* five mhsds */
 
     /* write albums (mhsd type 4) */
     if (!write_mhsd_albums (fexp)) {
@@ -5416,6 +5439,15 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_ITDB_CORRUPT,
 		     _("Error writing standard playlists (mhsd type 2)"));
+	goto err;
+    }
+
+    /* write smart playlists (mhsd type 5) */
+    if (!fexp->error && !write_mhsd_playlists (fexp, 5)) {
+	g_set_error (&fexp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Error writing smart playlists (mhsd type 5)"));
 	goto err;
     }
 
