@@ -5222,6 +5222,23 @@ static gboolean write_mhsd_albums (FExport *fexp)
     return TRUE;
 }
 
+static gboolean write_mhsd_type6 (FExport *fexp)
+{
+    gulong mhsd_seek;
+    WContents *cts;
+
+    g_return_val_if_fail (fexp, FALSE);
+    g_return_val_if_fail (fexp->itdb, FALSE);
+    g_return_val_if_fail (fexp->wcontents, FALSE);
+
+    cts = fexp->wcontents;
+    mhsd_seek = cts->pos;      	/* get position of mhsd header */
+    mk_mhsd (fexp, 6); 		/* write header */
+    mk_mhlt (fexp, 0);	/* for now, produce an empty set */
+    fix_header (cts, mhsd_seek);
+    return TRUE;
+}
+
 /* create a WContents structure */
 static WContents *wcontents_new (const gchar *filename)
 {
@@ -5405,7 +5422,7 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
     }
 #endif
 
-    mk_mhbd (fexp, 5);  /* five mhsds */
+    mk_mhbd (fexp, 6);  /* six mhsds */
 
     /* write albums (mhsd type 4) */
     if (!write_mhsd_albums (fexp)) {
@@ -5422,6 +5439,15 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_ITDB_CORRUPT,
 		     _("Error writing list of tracks (mhsd type 1)"));
+	goto err;
+    }
+
+    /* write empty mhsd type 6, whatever it is */
+    if (!fexp->error && !write_mhsd_type6 (fexp)) {
+	g_set_error (&fexp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Error writing mhsd type 6"));
 	goto err;
     }
 
