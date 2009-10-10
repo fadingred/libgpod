@@ -263,6 +263,14 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"A623",   8, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
     {"A627",  16, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
 
+    /* iPod Touch 3rd gen */
+    /* The 8GB model is marked as 2nd gen because it's actually what the 
+     * hardware is even if Apple markets it the same as the 2 bigger models
+     */
+    {"C086",   8, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_2, 50},
+    {"C008",  32, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_3, 50},
+    {"C011",  64, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_3, 50},
+
     /* iPhone, iPhone 3G and iPhone 3GS */
     {"A501",   4, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 50},
     {"A712",   8, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 50},
@@ -361,6 +369,7 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("iPhone 3GS"),
 	N_("Classic"),
 	N_("Nano with camera (5th Gen.)"),
+	N_("Touch (3rd Gen.)"),
 	N_("Unused"),
 	N_("Unused"),
 	NULL
@@ -521,6 +530,7 @@ static const ArtworkCapabilities ipod_artwork_capabilities[] = {
     { ITDB_IPOD_GENERATION_CLASSIC_3, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_TOUCH_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_TOUCH_2, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
+    { ITDB_IPOD_GENERATION_TOUCH_3, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_IPHONE_1, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_IPHONE_2, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
     { ITDB_IPOD_GENERATION_IPHONE_3, ipod_touch_1_cover_art_info, ipod_touch_1_photo_info, NULL },
@@ -725,7 +735,11 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
 
     { "4NZ", "B867" }, /* 4GB Silver Shuffle 4g */
     { "891", "C164" }, /* 4GB Black Shuffle 4g */
+    
     { "W4T", "A627" }, /* 16GB Silver iPod Touch */
+    { "7SJ", "C086" }, /* 8GB Silver iPod Touch (3rd gen) */
+    { "6K4", "C011" }, /* 64GB Silver iPod Touch (3rd gen) */
+
     { "WH8", "A712" }, /* 8GB Silver iPhone */
     { "0KH", "B384" }, /* 16GB Silver iPhone */
     { "Y7K", "B496" }, /* 16GB Black iPhone 3G */
@@ -1240,6 +1254,7 @@ itdb_device_supports_compressed_itunesdb (const Itdb_Device *device)
 	case ITDB_IPOD_GENERATION_CLASSIC_3:
 	    return FALSE;
 	case ITDB_IPOD_GENERATION_NANO_5:
+	case ITDB_IPOD_GENERATION_TOUCH_3:
 	    return TRUE;
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 	case ITDB_IPOD_GENERATION_IPHONE_1:
@@ -1293,8 +1308,9 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
             case ITDB_IPOD_GENERATION_CLASSIC_2:
             case ITDB_IPOD_GENERATION_CLASSIC_3:
             case ITDB_IPOD_GENERATION_TOUCH_1:
-            case ITDB_IPOD_GENERATION_IPHONE_1:
             case ITDB_IPOD_GENERATION_TOUCH_2:
+	    case ITDB_IPOD_GENERATION_TOUCH_3:
+            case ITDB_IPOD_GENERATION_IPHONE_1:
             case ITDB_IPOD_GENERATION_IPHONE_2:
             case ITDB_IPOD_GENERATION_IPHONE_3:
                 supports_sparse_artwork = TRUE;
@@ -1600,8 +1616,9 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
 	case ITDB_IPOD_GENERATION_CLASSIC_3:
 	case ITDB_IPOD_GENERATION_TOUCH_1:
-	case ITDB_IPOD_GENERATION_IPHONE_1:
 	case ITDB_IPOD_GENERATION_TOUCH_2:
+	case ITDB_IPOD_GENERATION_TOUCH_3:
+	case ITDB_IPOD_GENERATION_IPHONE_1:
 	case ITDB_IPOD_GENERATION_IPHONE_2:
 	case ITDB_IPOD_GENERATION_IPHONE_3:
             return TRUE;
@@ -1708,6 +1725,7 @@ static ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device
     case ITDB_IPOD_GENERATION_NANO_5:
     case ITDB_IPOD_GENERATION_TOUCH_1:
     case ITDB_IPOD_GENERATION_TOUCH_2:
+    case ITDB_IPOD_GENERATION_TOUCH_3:
     case ITDB_IPOD_GENERATION_IPHONE_1:
     case ITDB_IPOD_GENERATION_IPHONE_2:
     case ITDB_IPOD_GENERATION_IPHONE_3:
@@ -1994,8 +2012,9 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_CLASSIC_2:
 	    case ITDB_IPOD_GENERATION_CLASSIC_3:
 	    case ITDB_IPOD_GENERATION_TOUCH_1:
-	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_TOUCH_2:
+	    case ITDB_IPOD_GENERATION_TOUCH_3:
+	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
 		return TRUE;

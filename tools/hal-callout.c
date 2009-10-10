@@ -192,6 +192,7 @@ get_model_name (const Itdb_IpodInfo *info)
 		return g_strdup ("classic");
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 	case ITDB_IPOD_GENERATION_TOUCH_2:
+	case ITDB_IPOD_GENERATION_TOUCH_3:
 		return g_strdup ("touch");
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 	case ITDB_IPOD_GENERATION_IPHONE_2:
@@ -258,6 +259,8 @@ get_generation (const Itdb_IpodInfo *info)
 		return 1.0;
 	case ITDB_IPOD_GENERATION_TOUCH_2:
 		return 2.0;
+	case ITDB_IPOD_GENERATION_TOUCH_3:
+		return 3.0;
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 		return 1.0;
 	case ITDB_IPOD_GENERATION_IPHONE_2:
@@ -446,6 +449,7 @@ get_icon_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 		return g_strdup ("multimedia-player-apple-ipod-touch");
 	case ITDB_IPOD_GENERATION_TOUCH_2:
+	case ITDB_IPOD_GENERATION_TOUCH_3:
 		return g_strdup ("multimedia-player-apple-ipod-touch-2g");
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 		return g_strdup ("phone-apple-iphone");
