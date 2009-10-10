@@ -370,8 +370,6 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Classic"),
 	N_("Nano with camera (5th Gen.)"),
 	N_("Touch (3rd Gen.)"),
-	N_("Unused"),
-	N_("Unused"),
 	NULL
 };
 
