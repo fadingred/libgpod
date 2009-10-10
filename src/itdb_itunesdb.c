@@ -4681,20 +4681,6 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
-	if (track->ipod_path && *track->ipod_path)
-	{
-	    mhod.type = MHOD_ID_PATH;
-	    mhod.data.string = track->ipod_path;
-	    mk_mhod (fexp, &mhod);
-	    ++mhod_num;
-	}
-	if (track->album && *track->album)
-	{
-	    mhod.type = MHOD_ID_ALBUM;
-	    mhod.data.string = track->album;
-	    mk_mhod (fexp, &mhod);
-	    ++mhod_num;
-	}
 	if (track->artist && *track->artist)
 	{
 	    mhod.type = MHOD_ID_ARTIST;
@@ -4702,10 +4688,10 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
-	if (track->genre && *track->genre)
+	if (track->album && *track->album)
 	{
-	    mhod.type = MHOD_ID_GENRE;
-	    mhod.data.string = track->genre;
+	    mhod.type = MHOD_ID_ALBUM;
+	    mhod.data.string = track->album;
 	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
@@ -4720,6 +4706,20 @@ static gboolean write_mhsd_tracks (FExport *fexp)
 	{
 	    mhod.type = MHOD_ID_COMMENT;
 	    mhod.data.string = track->comment;
+	    mk_mhod (fexp, &mhod);
+	    ++mhod_num;
+	}
+	if (track->ipod_path && *track->ipod_path)
+	{
+	    mhod.type = MHOD_ID_PATH;
+	    mhod.data.string = track->ipod_path;
+	    mk_mhod (fexp, &mhod);
+	    ++mhod_num;
+	}
+	if (track->genre && *track->genre)
+	{
+	    mhod.type = MHOD_ID_GENRE;
+	    mhod.data.string = track->genre;
 	    mk_mhod (fexp, &mhod);
 	    ++mhod_num;
 	}
