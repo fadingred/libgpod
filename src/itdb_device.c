@@ -238,6 +238,27 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"B917",  16, ITDB_IPOD_MODEL_NANO_RED,       ITDB_IPOD_GENERATION_NANO_4, 14},
     {"B918",  16, ITDB_IPOD_MODEL_NANO_BLACK,     ITDB_IPOD_GENERATION_NANO_4, 14},
 
+    /* iPod nano with camera (Fifth Nano Generation) */
+    {"C027",   8, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C031",   8, ITDB_IPOD_MODEL_NANO_BLACK,     ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C034",   8, ITDB_IPOD_MODEL_NANO_PURPLE,    ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C037",   8, ITDB_IPOD_MODEL_NANO_BLUE,      ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C040",   8, ITDB_IPOD_MODEL_NANO_GREEN,     ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C043",   8, ITDB_IPOD_MODEL_NANO_YELLOW,    ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C046",   8, ITDB_IPOD_MODEL_NANO_ORANGE,    ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C049",   8, ITDB_IPOD_MODEL_NANO_RED,       ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C050",   8, ITDB_IPOD_MODEL_NANO_PINK,      ITDB_IPOD_GENERATION_NANO_5, 14},
+
+    {"C060",  16, ITDB_IPOD_MODEL_NANO_SILVER,    ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C062",  16, ITDB_IPOD_MODEL_NANO_BLACK,     ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C064",  16, ITDB_IPOD_MODEL_NANO_PURPLE,    ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C066",  16, ITDB_IPOD_MODEL_NANO_BLUE,      ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C068",  16, ITDB_IPOD_MODEL_NANO_GREEN,     ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C070",  16, ITDB_IPOD_MODEL_NANO_YELLOW,    ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C072",  16, ITDB_IPOD_MODEL_NANO_ORANGE,    ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C074",  16, ITDB_IPOD_MODEL_NANO_RED,       ITDB_IPOD_GENERATION_NANO_5, 14},
+    {"C075",  16, ITDB_IPOD_MODEL_NANO_PINK,      ITDB_IPOD_GENERATION_NANO_5, 14},
+
     /* iPod Touch */
     {"A623",   8, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
     {"A627",  16, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
@@ -339,6 +360,7 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("iPhone 3G"),
 	N_("iPhone 3GS"),
 	N_("Classic"),
+	N_("Nano with camera (5th Gen.)"),
 	N_("Unused"),
 	N_("Unused"),
 	NULL
@@ -665,6 +687,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "2C7", "B565" }, /* Black Classic 120GB */
     { "9ZS", "C293" }, /* Silver Classic 160GB (2009) */
     { "9ZU", "C297" }, /* Black Classic 160GB (2009) */
+
     { "37P", "B663" }, /* 4GB Green Nano 4g */
     { "37Q", "B666" }, /* 4GB Yellow Nano 4g */
     { "37H", "B654" }, /* 4GB Pink Nano 4g */
@@ -689,6 +712,17 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "5BD", "B915" }, /* 16GB Yellow Nano 4g */
     { "5BE", "B917" }, /* 16GB Red Nano 4g */
     { "5BF", "B918" }, /* 16GB Black Nano 4g */
+
+    { "71V", "C027" }, /* 8GB Silver Nano 5g */
+    { "71Y", "C031" }, /* 8GB Black Nano 5g */
+    { "721", "C034" }, /* 8GB Purple Nano 5g */
+    { "726", "C037" }, /* 8GB Blue Nano 5g */
+    { "72A", "C040" }, /* 8GB Green Nano 5g */
+    { "72F", "C046" }, /* 8GB Orange Nano 5g */
+    { "72L", "C050" }, /* 8GB Pink Nano 5g */
+
+    { "72R", "C062" }, /* 16GB Black Nano 5g */
+
     { "4NZ", "B867" }, /* 4GB Silver Shuffle 4g */
     { "891", "C164" }, /* 4GB Black Shuffle 4g */
     { "W4T", "A627" }, /* 16GB Silver iPod Touch */
@@ -1205,6 +1239,8 @@ itdb_device_supports_compressed_itunesdb (const Itdb_Device *device)
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
 	case ITDB_IPOD_GENERATION_CLASSIC_3:
 	    return FALSE;
+	case ITDB_IPOD_GENERATION_NANO_5:
+	    return TRUE;
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 	case ITDB_IPOD_GENERATION_TOUCH_2:
@@ -1252,6 +1288,7 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
                 break;
             case ITDB_IPOD_GENERATION_NANO_3:
             case ITDB_IPOD_GENERATION_NANO_4:
+            case ITDB_IPOD_GENERATION_NANO_5:
             case ITDB_IPOD_GENERATION_CLASSIC_1:
             case ITDB_IPOD_GENERATION_CLASSIC_2:
             case ITDB_IPOD_GENERATION_CLASSIC_3:
@@ -1556,6 +1593,7 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
             return FALSE;
         case ITDB_IPOD_GENERATION_NANO_3:
         case ITDB_IPOD_GENERATION_NANO_4:
+        case ITDB_IPOD_GENERATION_NANO_5:
         case ITDB_IPOD_GENERATION_VIDEO_1:
         case ITDB_IPOD_GENERATION_VIDEO_2:
         case ITDB_IPOD_GENERATION_CLASSIC_1:
@@ -1667,6 +1705,7 @@ static ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device
     case ITDB_IPOD_GENERATION_NANO_4:
       return ITDB_CHECKSUM_HASH58;
 
+    case ITDB_IPOD_GENERATION_NANO_5:
     case ITDB_IPOD_GENERATION_TOUCH_1:
     case ITDB_IPOD_GENERATION_TOUCH_2:
     case ITDB_IPOD_GENERATION_IPHONE_1:
@@ -1944,6 +1983,7 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_NANO_2:
 	    case ITDB_IPOD_GENERATION_NANO_3:
 	    case ITDB_IPOD_GENERATION_NANO_4:
+	    case ITDB_IPOD_GENERATION_NANO_5:
 	    case ITDB_IPOD_GENERATION_SHUFFLE_1:
 	    case ITDB_IPOD_GENERATION_SHUFFLE_2:
 	    case ITDB_IPOD_GENERATION_SHUFFLE_3:

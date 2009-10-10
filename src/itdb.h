@@ -111,6 +111,7 @@ typedef struct _Itdb_Chapterdata Itdb_Chapterdata;
  * @ITDB_IPOD_GENERATION_NANO_2:    Second Generation iPod Nano
  * @ITDB_IPOD_GENERATION_NANO_3:    Third Generation iPod Nano
  * @ITDB_IPOD_GENERATION_NANO_4:    Fourth Generation iPod Nano
+ * @ITDB_IPOD_GENERATION_NANO_5:    Fifth Generation iPod Nano (with camera)
  * @ITDB_IPOD_GENERATION_VIDEO_1:   First Generation iPod Video (aka 5g)
  * @ITDB_IPOD_GENERATION_VIDEO_2:   Second Generation iPod Video (aka 5.5g)
  * @ITDB_IPOD_GENERATION_CLASSIC_1: First Generation iPod Classic
@@ -157,6 +158,7 @@ typedef enum {
     ITDB_IPOD_GENERATION_IPHONE_2,
     ITDB_IPOD_GENERATION_IPHONE_3,
     ITDB_IPOD_GENERATION_CLASSIC_3,
+    ITDB_IPOD_GENERATION_NANO_5
 } Itdb_IpodGeneration;
 
 /**
