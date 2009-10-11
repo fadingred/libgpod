@@ -3527,7 +3527,14 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put_header (cts, "mhbd");
   put32lint (cts, 188); /* header size */
   put32lint (cts, -1);  /* size of whole mhdb -- fill in later */
-  put32lint (cts, 2); /* 2 on iPhone 3.0, 1 on iPod Color */
+  if (itdb_device_supports_compressed_itunesdb (fexp->itdb->device)) {
+      /* 2 on iPhone 3.0 and Nano 5G, 1 on iPod Color and iPod Classic
+	 the iPod Classic 3G  won't work if set to 2. Tying it to compressed
+	 database support but that's a long shot. */
+      put32lint (cts, 2);
+  } else {
+      put32lint (cts, 1);
+  }
 
   /* Version number: 0x01: iTunes 2
                      0x02: iTunes 3
@@ -3546,15 +3553,18 @@ static void mk_mhbd (FExport *fexp, guint32 children)
                      0x15 = iTunes 7.2
                      0x19 = iTunes 7.4
                      0x28 = iTunes 8.2.1
+		     0x2a = iTunes 9.0.1
     Be aware that newer ipods won't work if the library version number is too 
     old
   */
-  fexp->itdb->version = 0x28;
+  fexp->itdb->version = 0x2a;
   put32lint (cts, fexp->itdb->version);
   put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
   /* 0x20 */
-  put16lint (cts, 2);   /* always seems to be 2, 0x01 on iPod Color */
+  put16lint (cts, 2); /* 2 on iPhone 3.0 and Nano 5G,
+			 1 on iPod Color and iPod Classic */
+
   /* 0x22 */
   put16lint (cts, fexp->itdb->priv->unk_0x22);  /* unknown */
   put64lint (cts, fexp->itdb->priv->id_0x24); /* unkown id */
