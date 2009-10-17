@@ -1664,7 +1664,6 @@ struct _Itdb_Track
 /* (gtkpod note: don't forget to add fields read from the file to
  * copy_new_info() in file.c!) */
 
-
 /* ------------------------------------------------------------ *\
  *
  * Error codes

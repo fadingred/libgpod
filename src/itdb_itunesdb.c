@@ -4458,17 +4458,27 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
   }
 }
 
+struct _Itdb_Item_Id {
+  guint32 id;
+  guint64 sql_id;
+};
+typedef struct _Itdb_Item_Id Itdb_Item_Id;
+
 static void mk_mhia (gpointer key, gpointer value, gpointer user_data)
 {
   FExport *fexp;
   WContents *cts;
   Itdb_Track *track;
+  Itdb_Item_Id *id;
   MHODData mhod;
   guint mhod_num;
   gulong mhia_seek;
 
   track = (Itdb_Track *)key;
   g_return_if_fail (track != NULL);
+
+  id = (Itdb_Item_Id *)value;
+  g_return_if_fail (id != NULL);
 
   fexp = (FExport *)user_data;
   g_return_if_fail (fexp);
@@ -4477,15 +4487,13 @@ static void mk_mhia (gpointer key, gpointer value, gpointer user_data)
   mhia_seek = cts->pos;
 
   put_header (cts, "mhia");        		/* header                   */
-  put32lint (cts, 92);             		/* size of header           */
+  put32lint (cts, 88);             		/* size of header           */
   put32lint (cts, -1);             		/* total size -> later */
   put32lint (cts, 2);		   		/* number of children mhods */
-  put16lint (cts, 0);		  		/* unknown */
-  put16lint (cts, GPOINTER_TO_UINT (value));   	/* album id */
-  put32lint (cts, 0);		   		/* unknown */
-  put32lint (cts, 0);		   		/* unknown */
+  put32lint (cts, id->id);		   	/* album id */
+  put64lint (cts, id->sql_id);   		/* id used in the sqlite DB */
   put32lint (cts, 2);		   		/* unknown */
-  put32_n0 (cts, 15); 				/* padding */
+  put32_n0 (cts, 14); 				/* padding */
 
   mhod.valid = TRUE;
   mhod_num = 0;
@@ -5277,19 +5285,16 @@ static void wcontents_free (WContents *cts)
     }
 }
 
-
-static guint itdb_track_hash (gconstpointer v)
+static guint itdb_album_hash (gconstpointer v)
 {
   Itdb_Track *track = (Itdb_Track *)v;
   if (track->album != NULL) {
     return g_str_hash (track->album);
-  } else if (track->artist != NULL) {
-    return g_str_hash (track->artist);;
   }
   g_assert_not_reached ();
 }
 
-static gboolean itdb_track_equal (gconstpointer v1, gconstpointer v2)
+static gboolean itdb_album_equal (gconstpointer v1, gconstpointer v2)
 {
   Itdb_Track *track1 = (Itdb_Track *)v1;
   Itdb_Track *track2 = (Itdb_Track *)v2;
@@ -5299,13 +5304,24 @@ static gboolean itdb_track_equal (gconstpointer v1, gconstpointer v2)
 
   if ((track1->albumartist != NULL) && (track2->albumartist != NULL)) {
       return (g_str_equal (track1->album, track2->album)
-	      && g_str_equal (track1->albumartist, track2->albumartist));
+              && g_str_equal (track1->albumartist, track2->albumartist));
   } else if ((track1->artist != NULL) && (track2->artist != NULL)) {
       return (g_str_equal (track1->album, track2->album)
-	      && g_str_equal (track1->artist, track2->artist));
+              && g_str_equal (track1->artist, track2->artist));
   } else {
       return (g_str_equal (track1->album, track2->album));
   }
+}
+
+static void add_new_id (GHashTable *album_ids, Itdb_Track *track, guint album_id)
+{
+    Itdb_Item_Id *id;
+
+    id  = g_new0 (Itdb_Item_Id, 1);
+    id->id = album_id;
+    id->sql_id = ((guint64)g_random_int () << 32) | ((guint64)g_random_int ()); 
+
+    g_hash_table_insert (album_ids, track, id);
 }
 
 /* - reassign the iPod IDs
@@ -5347,30 +5363,30 @@ static void prepare_itdb_for_write (FExport *fexp)
     fexp->next_id = FIRST_IPOD_ID;
 
     g_assert (fexp->albums == NULL);
-    fexp->albums = g_hash_table_new (itdb_track_hash, itdb_track_equal);
+    fexp->albums = g_hash_table_new_full (itdb_album_hash, itdb_album_equal,
+					  NULL, g_free);
 
     /* assign unique IDs and create sort keys */
     for (gl=itdb->tracks; gl; gl=gl->next)
     {
 	Itdb_Track *track = gl->data;
-	guint id;
+	Itdb_Item_Id *id;
 
 	g_return_if_fail (track);
 	track->id = fexp->next_id++;
 
 	if (track->album == NULL) {	
-	    /* unknow album name and artist, this entry isn't interesting to
+	    /* unknown album name, this entry isn't interesting to
 	     * build the list of all albums on the ipod
 	     */
 	    continue;
 	}
 	/* album ids are used when writing the mhla header */
-	id = GPOINTER_TO_UINT (g_hash_table_lookup (fexp->albums, track));
-	if (id != 0) {
-	    track->priv->album_id = id;
+	id = g_hash_table_lookup (fexp->albums, track);
+	if (id != NULL) {
+	    track->priv->album_id = id->id;
 	} else {	
-	    g_hash_table_insert (fexp->albums, track,
-				 GUINT_TO_POINTER (album_id));
+	    add_new_id (fexp->albums, track, album_id);
 	    track->priv->album_id = album_id;
 	    album_id++;
 	}
