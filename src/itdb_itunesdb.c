@@ -4991,9 +4991,8 @@ static gboolean write_podcast_mhips (FExport *fexp,
 
     cts = fexp->wcontents;
 
-    /* Create a list wit all available album names because we have to
+    /* Create a list with all available album names because we have to
        group the podcasts according to albums */
-
     album_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 					NULL, free_memberlist);
     for (gl=pl->members; gl; gl=gl->next)
