@@ -3738,7 +3738,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put16lint (cts, track->gapless_album_flag);
   put32_n0 (cts, 7);
   /* +0x120 */
-  put32lint (cts, track->album_id);
+  put32lint (cts, track->priv->album_id);
   put64lint (cts, track->itdb->priv->id_0x24); /* same as mhbd+0x24, purpose unknown */
   put32lint (cts, track->size); /* seems to be filesize again */
   /* +0x130 */
@@ -5367,11 +5367,11 @@ static void prepare_itdb_for_write (FExport *fexp)
 	/* album ids are used when writing the mhla header */
 	id = GPOINTER_TO_UINT (g_hash_table_lookup (fexp->albums, track));
 	if (id != 0) {
-	    track->album_id = id;
+	    track->priv->album_id = id;
 	} else {	
 	    g_hash_table_insert (fexp->albums, track,
 				 GUINT_TO_POINTER (album_id));
-	    track->album_id = album_id;
+	    track->priv->album_id = album_id;
 	    album_id++;
 	}
     }

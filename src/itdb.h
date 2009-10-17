@@ -993,8 +993,6 @@ struct _Itdb_iTunesDB
  * @unk028:               Unknown, seems to be always 0
  * @unk044:               Unknown, seems to always be 0
  * @unk048:               Unknown, seems to always be 0
- * @album_id:             The id of the album.  This is set automatically when
- *                        the PhotoDB is written.
  * @prev_album_id:        The id of the previous playlist.  This is set
  *                        automatically when the PhotoDB is written.
  * @reserved_int1:        Reserved for future use
@@ -1629,7 +1627,7 @@ struct _Itdb_Track
   guint32 unk252;
   guint16 gapless_track_flag;
   guint16 gapless_album_flag;
-  guint16 album_id;
+  guint16 obsolete;
 
   /* This is for Cover Art support */
   struct _Itdb_Artwork *artwork;
