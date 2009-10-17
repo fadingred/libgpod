@@ -1208,6 +1208,7 @@ typedef enum
     ITDB_MEDIATYPE_RENTAL     = 0x8000,
 } Itdb_Mediatype;
 
+typedef struct _Itdb_Track_Private Itdb_Track_Private;
 /**
  * Itdb_Track:
  * @itdb:                       A pointer to the #Itdb_iTunesDB (for convenience)
@@ -1643,7 +1644,7 @@ struct _Itdb_Track
   gint32 reserved_int4;
   gint32 reserved_int5;
   gint32 reserved_int6;
-  gpointer reserved1;
+  Itdb_Track_Private *priv;
   gpointer reserved2;
   gpointer reserved3;
   gpointer reserved4;

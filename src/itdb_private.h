@@ -169,6 +169,10 @@ struct _Itdb_iTunesDB_Private
     gint32 unk_0xa8;
 };
 
+/* private data for Itdb_Track */
+struct _Itdb_Track_Private {
+};
+
 G_GNUC_INTERNAL gboolean itdb_spl_action_known (ItdbSPLAction action);
 G_GNUC_INTERNAL void itdb_splr_free (Itdb_SPLRule *splr);
 G_GNUC_INTERNAL const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb);

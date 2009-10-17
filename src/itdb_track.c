@@ -46,6 +46,7 @@ Itdb_Track *itdb_track_new (void)
 
     track->artwork = itdb_artwork_new ();
     track->chapterdata = itdb_chapterdata_new ();
+    track->priv = g_new0 (Itdb_Track_Private, 1);
 
     track->visible = 1;
     return track;
@@ -259,6 +260,7 @@ void itdb_track_free (Itdb_Track *track)
     if (track->userdata && track->userdata_destroy)
 	(*track->userdata_destroy) (track->userdata);
 
+    g_free (track->priv);
     g_free (track);
 }
 
@@ -350,6 +352,8 @@ Itdb_Track *itdb_track_duplicate (Itdb_Track *tr)
     tr_dup->sort_composer = g_strdup (tr->sort_composer);
     tr_dup->sort_tvshow = g_strdup (tr->sort_tvshow);
 
+    /* Copy private data too */
+    tr_dup->priv = g_memdup (tr->priv, sizeof (Itdb_Track_Private));
 
     /* Copy chapterdata */
     tr_dup->chapterdata = itdb_chapterdata_duplicate (tr->chapterdata);
