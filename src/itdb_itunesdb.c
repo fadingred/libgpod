@@ -2346,7 +2346,6 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
       track->gapless_track_flag = get16lint (cts, seek+256);
       track->gapless_album_flag = get16lint (cts, seek+258);
   }
-  /* 200805 */
   if (header_len >= 0x184)
   {
       track->mhii_link = get32lint (cts, seek+352);
@@ -4535,7 +4534,7 @@ static void mk_mhla (FExport *fexp)
 
   put_header (cts, "mhla");        /* header                   */
   put32lint (cts, 92);             /* size of header           */
-  /* albums on iPod (including main!) */
+  /* albums on iPod */
   put32lint (cts, g_hash_table_size (fexp->albums));
   put32_n0 (cts, 20);               /* dummy space              */
   g_hash_table_foreach (fexp->albums, mk_mhia, fexp);
@@ -5387,7 +5386,7 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
     FExport *fexp;
     gulong mhbd_seek = 0;
     WContents *cts;
-    gboolean result = TRUE;;
+    gboolean result = TRUE;
 
     g_return_val_if_fail (itdb, FALSE);
     g_return_val_if_fail (itdb->device, FALSE);
