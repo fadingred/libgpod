@@ -9,6 +9,7 @@ libgpod_la_SOURCES = 		\
 	itdb_artwork.c   	\
 	itdb_chapterdata.c   	\
 	itdb_device.c  		\
+	itdb_iphone.c		\
 	itdb_itunesdb.c 	\
 	itdb_photoalbum.c 	\
 	itdb_playlist.c  	\
@@ -52,6 +53,10 @@ noinst_HEADERS = 		\
 
 INCLUDES=$(LIBGPOD_CFLAGS)
 LIBS=$(LIBGPOD_LIBS) $(Z_LIBS) -lm
+
+if HAVE_LIBIPHONE
+LIBS+=-liphone
+endif
 
 uninstall-hook:
 	-rmdir --ignore-fail-on-non-empty $(DESTDIR)$(libgpodincludedir)

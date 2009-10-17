@@ -193,4 +193,8 @@ G_GNUC_INTERNAL gint itdb_musicdirs_number_by_mountpoint (const gchar *mountpoin
 G_GNUC_INTERNAL gboolean itdb_file_set_contents (const char *filename, 
                                                  const char *data, gssize len, 
                                                  GError **error);
+#ifdef HAVE_LIBIPHONE
+G_GNUC_INTERNAL int itdb_iphone_start_sync(Itdb_Device *device, void **prepdata);
+G_GNUC_INTERNAL int itdb_iphone_stop_sync(void *sync_ctx);
+#endif
 #endif
