@@ -4562,8 +4562,6 @@ static void mk_mhla (FExport *fexp)
   put32lint (cts, g_hash_table_size (fexp->albums));
   put32_n0 (cts, 20);               /* dummy space              */
   g_hash_table_foreach (fexp->albums, mk_mhia, fexp);
-  g_hash_table_destroy (fexp->albums);
-  fexp->albums = NULL;
 }
 
 /* Write out the mhlp header. Size will be written later */
@@ -4643,8 +4641,6 @@ static void mk_mhli (FExport *fexp)
   put32lint (cts, g_hash_table_size (fexp->artists));
   put32_n0 (cts, 20);               /* dummy space              */
   g_hash_table_foreach (fexp->artists, mk_mhii, fexp);
-  g_hash_table_destroy (fexp->artists);
-  fexp->artists = NULL;
 }
 
 /* Write out the long MHOD_ID_PLAYLIST mhod header.
