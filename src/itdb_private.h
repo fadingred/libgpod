@@ -155,6 +155,15 @@ struct _Itdb_DB{
 
 typedef struct _Itdb_DB Itdb_DB;
 
+/* Used to store album and artist IDs. Needed to write mhla/mhli in the
+ * iTunesDB and to generate the sqlite files
+ */
+struct _Itdb_Item_Id {
+  guint32 id;
+  guint64 sql_id;
+};
+typedef struct _Itdb_Item_Id Itdb_Item_Id;
+
 struct _Itdb_iTunesDB_Private
 {
     guint16 unk_0x22;
@@ -193,6 +202,7 @@ G_GNUC_INTERNAL gint itdb_musicdirs_number_by_mountpoint (const gchar *mountpoin
 G_GNUC_INTERNAL gboolean itdb_file_set_contents (const char *filename, 
                                                  const char *data, gssize len, 
                                                  GError **error);
+G_GNUC_INTERNAL int itdb_sqlite_generate_itdbs(FExport *fexp);
 #ifdef HAVE_LIBIPHONE
 G_GNUC_INTERNAL int itdb_iphone_start_sync(Itdb_Device *device, void **prepdata);
 G_GNUC_INTERNAL int itdb_iphone_stop_sync(void *sync_ctx);

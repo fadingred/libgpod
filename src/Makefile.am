@@ -15,6 +15,7 @@ libgpod_la_SOURCES = 		\
 	itdb_playlist.c  	\
 	itdb_plist.c		\
 	itdb_sha1.c 		\
+	itdb_sqlite.c		\
 	itdb_sysinfo_extended_parser.c \
 	itdb_thumb.c		\
 	itdb_track.c     	\
@@ -45,6 +46,7 @@ noinst_HEADERS = 		\
 	itdb_plist.h		\
 	itdb_private.h   	\
 	itdb_sha1.h 		\
+	itdb_sqlite_queries.h	\
 	itdb_sysinfo_extended_parser.h \
 	itdb_thumb.h		\
 	itdb_tzinfo_data.h 	\
@@ -52,7 +54,7 @@ noinst_HEADERS = 		\
 	sha1.h
 
 INCLUDES=$(LIBGPOD_CFLAGS)
-LIBS=$(LIBGPOD_LIBS) $(Z_LIBS) -lm
+LIBS=$(LIBGPOD_LIBS) $(Z_LIBS) -lm -lsqlite3
 
 if HAVE_LIBIPHONE
 LIBS+=-liphone

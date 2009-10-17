@@ -4474,12 +4474,6 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
   }
 }
 
-struct _Itdb_Item_Id {
-  guint32 id;
-  guint64 sql_id;
-};
-typedef struct _Itdb_Item_Id Itdb_Item_Id;
-
 static void mk_mhia (gpointer key, gpointer value, gpointer user_data)
 {
   FExport *fexp;
@@ -5654,6 +5648,10 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 				(unsigned char *)fexp->wcontents->contents,
 				fexp->wcontents->pos,
 				&fexp->error);
+
+    if (itdb_sqlite_generate_itdbs(fexp) != 0) {
+	fprintf(stderr, "ERROR: There was an error while generating the itdb sqlite database files.\n");
+    }
 
     if (!fexp->error)
     {
