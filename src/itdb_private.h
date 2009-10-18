@@ -203,6 +203,16 @@ G_GNUC_INTERNAL gboolean itdb_file_set_contents (const char *filename,
                                                  const char *data, gssize len, 
                                                  GError **error);
 G_GNUC_INTERNAL int itdb_sqlite_generate_itdbs(FExport *fexp);
+G_GNUC_INTERNAL gboolean itdb_hash72_extract_hash_info(const Itdb_Device *device, 
+						       unsigned char *itdb_data, 
+						       gsize itdb_len);
+G_GNUC_INTERNAL gboolean itdb_hash72_write_hash (const Itdb_Device *device, 
+						 unsigned char *itdb_data, 
+						 gsize itdb_len,
+						 GError **error);
+G_GNUC_INTERNAL gboolean itdb_hash72_compute_hash_for_sha1 (const Itdb_Device *device, 
+							    const guchar sha1[20],
+							    guchar signature[46]);
 #ifdef HAVE_LIBIPHONE
 G_GNUC_INTERNAL int itdb_iphone_start_sync(Itdb_Device *device, void **prepdata);
 G_GNUC_INTERNAL int itdb_iphone_stop_sync(void *sync_ctx);

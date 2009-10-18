@@ -9,6 +9,7 @@ libgpod_la_SOURCES = 		\
 	itdb_artwork.c   	\
 	itdb_chapterdata.c   	\
 	itdb_device.c  		\
+	itdb_hash72.c		\
 	itdb_iphone.c		\
 	itdb_itunesdb.c 	\
 	itdb_photoalbum.c 	\
