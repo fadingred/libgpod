@@ -1150,6 +1150,114 @@ leave:
     }
 }
 
+static int cbk_calc_sha1_one_block (FILE *f, unsigned char sha1[20])
+{
+    const guint BLOCK_SIZE = 1024;
+    unsigned char block[BLOCK_SIZE];
+    size_t read_count;
+    GChecksum *checksum;
+    gsize sha1_len;
+
+    read_count = fread (block, BLOCK_SIZE, 1, f);
+    if ((read_count != 1)) {
+	if (feof (f)) {
+	    return 1;
+	} else {
+	    return -1;
+	}
+    }
+
+    g_assert (g_checksum_type_get_length (G_CHECKSUM_SHA1) == sizeof (sha1));
+    sha1_len = sizeof (sha1);
+    checksum = g_checksum_new (G_CHECKSUM_SHA1);
+    g_checksum_update (checksum, block, BLOCK_SIZE);
+    g_checksum_get_digest (checksum, sha1, &sha1_len);
+    g_assert (sha1_len == sizeof (sha1));
+    g_checksum_free (checksum);
+
+    return 0;
+}
+
+static gboolean cbk_calc_sha1s (const char *filename, GArray *sha1s)
+{
+    FILE *f;
+    int calc_ok;
+
+    f = fopen (filename, "rb");
+    if (f == NULL) {
+	return FALSE;
+    }
+
+    do {
+	unsigned char sha1[20];
+	calc_ok = cbk_calc_sha1_one_block (f, sha1);
+	if (calc_ok != 0) {
+	    break;
+	}
+	g_array_append_vals (sha1s, sha1, sizeof(sha1));
+    } while (calc_ok == 0);
+
+    if (calc_ok < 0) {
+	goto error;
+    }
+
+    fclose (f);
+    return TRUE;
+
+error:
+    fclose (f);
+    return FALSE;
+}
+
+static const guint CBK_HEADER_SIZE = 46;
+
+static void cbk_calc_sha1_of_sha1s (GArray *cbk)
+{
+    GChecksum *checksum;
+    unsigned char* final_sha1;
+    unsigned char* sha1s;
+    gsize final_sha1_len;
+
+    g_assert (cbk->len > CBK_HEADER_SIZE + 20);
+
+    final_sha1 = g_array_index(cbk, unsigned char *, CBK_HEADER_SIZE);
+    sha1s = g_array_index (cbk, unsigned char *, CBK_HEADER_SIZE + 20);
+    final_sha1_len = g_checksum_type_get_length (G_CHECKSUM_SHA1);
+    g_assert (final_sha1_len == 20);
+
+    checksum = g_checksum_new (G_CHECKSUM_SHA1);
+    g_checksum_update (checksum, sha1s, cbk->len - (CBK_HEADER_SIZE + 20));
+    g_checksum_get_digest (checksum, final_sha1, &final_sha1_len);
+    g_checksum_free (checksum);
+}
+
+static gboolean mk_Locations_cbk (const char *dirname)
+{
+    char *locations_filename;
+    char *cbk_filename;
+    GArray *cbk;
+    gboolean success;
+
+    cbk = g_array_sized_new (FALSE, TRUE, 1,
+			     CBK_HEADER_SIZE + 20);
+    g_array_set_size (cbk, CBK_HEADER_SIZE + 20);
+
+    locations_filename = g_build_filename (dirname, "Locations.itdb", NULL);
+    success = cbk_calc_sha1s (locations_filename, cbk);
+    g_free (locations_filename);
+    if (!success) {
+	g_array_free (cbk, TRUE);
+	return FALSE;
+    }
+    cbk_calc_sha1_of_sha1s (cbk);
+
+    cbk_filename = g_build_filename (dirname, "Locations.itdb.cbk", NULL);
+    success = g_file_set_contents (cbk_filename, cbk->data, cbk->len, NULL);
+    g_free (cbk_filename);
+    g_array_free (cbk, TRUE);
+    return success;
+}
+
 static void build_itdb_files(Itdb_iTunesDB *itdb,
 			     GHashTable *album_ids, GHashTable *artist_ids,
 			     const char *outpath, const char *uuid)
@@ -1159,6 +1267,7 @@ static void build_itdb_files(Itdb_iTunesDB *itdb,
     mk_Genius(itdb, outpath);
     mk_Library(itdb, album_ids, artist_ids, outpath);
     mk_Locations(itdb, outpath, uuid);
+    mk_Locations_cbk(outpath);
 }
 
 static int ensure_itlp_dir_exists(const char *itlpdir)
