@@ -1205,7 +1205,7 @@ GList *itdb_device_get_cover_art_formats (const Itdb_Device *device)
  *
  * Returns: a #GList of #Itdb_ArtworkFormat describing the chapter image 
  * formats supported by the iPod associated with @device. The returned list
- * must be freed with g_list_free() when no lonber needed.
+ * must be freed with g_list_free() when no longer needed.
  *
  **/
 GList *itdb_device_get_chapter_image_formats (const Itdb_Device *device)
