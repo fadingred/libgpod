@@ -65,16 +65,20 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	
 	/* add some required values manually to emulate old plist format */
 	ptr = plist_get_dict_el_from_key(global, "SerialNumber");
-	plist_add_sub_key_el(value, "SerialNumber");
 	plist_get_string_val(ptr, &str);
-	plist_add_sub_string_el(value, str);
-	free(str);
+	if (str != NULL) {
+	    plist_add_sub_key_el(value, "SerialNumber");
+	    plist_add_sub_string_el(value, str);
+	    free(str);
+	}
 
 	ptr = plist_get_dict_el_from_key(global, "BuildVersion");
-	plist_add_sub_key_el(value, "BuildID");
 	plist_get_string_val(ptr, &str);
-	plist_add_sub_string_el(value, str);
-	free(str);
+	if (str != NULL) {
+	    plist_add_sub_key_el(value, "BuildID");
+	    plist_add_sub_string_el(value, str);
+	    free(str);
+	}
 
 	plist_add_sub_key_el(value, "FireWireGUID");
 	plist_add_sub_string_el(value, uuid);
