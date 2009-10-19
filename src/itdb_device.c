@@ -1815,8 +1815,7 @@ G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device,
 	case ITDB_CHECKSUM_HASH58:
 	    return itdb_device_write_hash58 (device, itdb_data, itdb_len, error);
 	case ITDB_CHECKSUM_HASH72:
-	    g_set_error (error, 0, -1, "Unsupported checksum type");
-	    return FALSE;
+	    return itdb_hash72_write_hash (device, itdb_data, itdb_len, error);
     }	
     g_assert_not_reached ();
 }
