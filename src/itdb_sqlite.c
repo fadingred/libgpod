@@ -1246,12 +1246,14 @@ static void cbk_calc_sha1_of_sha1s (GArray *cbk)
     g_checksum_free (checksum);
 }
 
-static gboolean mk_Locations_cbk (const char *dirname)
+static gboolean mk_Locations_cbk (Itdb_iTunesDB *itdb, const char *dirname)
 {
     char *locations_filename;
     char *cbk_filename;
     GArray *cbk;
     gboolean success;
+    guchar *cbk_hash72;
+    guchar *final_sha1;
 
     cbk = g_array_sized_new (FALSE, TRUE, 1,
 			     CBK_HEADER_SIZE + 20);
@@ -1265,6 +1267,14 @@ static gboolean mk_Locations_cbk (const char *dirname)
 	return FALSE;
     }
     cbk_calc_sha1_of_sha1s (cbk);
+    final_sha1 = g_array_index (cbk, guchar *, CBK_HEADER_SIZE);
+    cbk_hash72 = g_array_index (cbk, guchar *, 0);
+    success = itdb_hash72_compute_hash_for_sha1 (itdb->device, final_sha1,
+						 cbk_hash72);
+    if (!success) {
+	g_array_free (cbk, TRUE);
+	return FALSE;
+    }
 
     cbk_filename = g_build_filename (dirname, "Locations.itdb.cbk", NULL);
     success = g_file_set_contents (cbk_filename, cbk->data, cbk->len, NULL);
@@ -1282,7 +1292,7 @@ static void build_itdb_files(Itdb_iTunesDB *itdb,
     mk_Genius(itdb, outpath);
     mk_Library(itdb, album_ids, artist_ids, outpath);
     mk_Locations(itdb, outpath, uuid);
-    mk_Locations_cbk(outpath);
+    mk_Locations_cbk(itdb, outpath);
 }
 
 static int ensure_itlp_dir_exists(const char *itlpdir)
