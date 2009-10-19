@@ -245,9 +245,19 @@ gboolean itdb_hash72_extract_hash_info (const Itdb_Device *device,
     guchar random_bytes[12];
     MhbdHeader *header;
     int iv_extracted;
+    struct Hash78Info *hash_info;
 
     if (itdb_len < 0x6c) {
 	return FALSE;
+    }
+
+    hash_info = read_hash_info (device);
+    g_free (hash_info);
+    if (hash_info != NULL) {
+	/* We already have what we need to generate signatures for this device,
+	 * no need to go on
+	 */
+	return TRUE;
     }
 
     header = (MhbdHeader *)itdb_data;
