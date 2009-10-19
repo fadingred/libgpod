@@ -468,6 +468,12 @@ static GList *parse_one_formats_list (GHashTable *sysinfo_dict,
     array = (GValueArray*)g_value_get_boxed (to_parse);
     for (i = 0; i < array->n_values; i++) {
         Itdb_ArtworkFormat *format;
+	/* SysInfoExtended on the iPhone has <string> fields in the artwork
+	 * format array in addition to the hash we parse
+	 */
+	if (!G_VALUE_HOLDS (g_value_array_get_nth (array, i), G_TYPE_HASH_TABLE)) {
+	    continue;
+	}
 	format = g_value_to_image_format (g_value_array_get_nth (array, i));
 	if (format != NULL) {
 		formats = g_list_prepend (formats, format);
