@@ -1,4 +1,4 @@
-If you install from Subversion, call
+If you install from Git, call
 
 ./autogen.sh
 make

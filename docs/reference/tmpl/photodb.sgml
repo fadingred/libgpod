@@ -68,7 +68,7 @@ itdb_device_set_sysinfo (db->device, "ModelNumStr", "MA450");
 </programlisting>
 <para>
 See <ulink type="http"
-url="http://gtkpod.svn.sourceforge.net/svnroot/gtkpod/libgpod/trunk/src/itdb_device.c">itdb_device.c</ulink>
+url="http://gtkpod.git.sourceforge.net/git/gitweb.cgi?p=gtkpod/libgpod;a=blob_plain;f=src/itdb_device.c;hb=HEAD">itdb_device.c</ulink>
 for a list of supported models.
 </para>
 <para>
@@ -77,9 +77,9 @@ written (itdb_photodb_write() calls itdb_device_write_sysinfo()).
 </para>
 <para>
 Have a look at the <ulink type="http"
-url="http://gtkpod.svn.sourceforge.net/svnroot/gtkpod/libgpod/trunk/tests/test-photos.c">test-photos</ulink>
+url="http://gtkpod.git.sourceforge.net/git/gitweb.cgi?p=gtkpod/libgpod;a=blob_plain;f=tests/test-photos.c;hb=HEAD">test-photos</ulink>
 test program in the <ulink type="http"
-url="http://gtkpod.svn.sourceforge.net/svnroot/gtkpod/libgpod/trunk/tests/">tests/</ulink>
+url="http://gtkpod.git.sourceforge.net/git/gitweb.cgi?p=gtkpod/libgpod;a=tree;f=tests;hb=HEAD">tests/</ulink>
 directory of the libgpod source for an example of how to use the interface.
 </para>
 

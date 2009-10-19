@@ -59,7 +59,7 @@
       </para>
       <para>
       Please see the programs in the <ulink type="http"
-      url="http://gtkpod.svn.sourceforge.net/svnroot/gtkpod/libgpod/trunk/tests/">tests/</ulink>
+      url="http://gtkpod.git.sourceforge.net/git/gitweb.cgi?p=gtkpod/libgpod;a=tree;f=tests;hb=HEAD">tests/</ulink>
       directory of the source distribution for some usage examples.  A more
       complete example can be found in the source for <ulink type="http"
       url="http://www.gtkpod.org"> Gtkpod</ulink>.  You can also ask questions
