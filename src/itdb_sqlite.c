@@ -1234,8 +1234,8 @@ static void cbk_calc_sha1_of_sha1s (GArray *cbk)
 
     g_assert (cbk->len > CBK_HEADER_SIZE + 20);
 
-    final_sha1 = g_array_index(cbk, unsigned char *, CBK_HEADER_SIZE);
-    sha1s = g_array_index (cbk, unsigned char *, CBK_HEADER_SIZE + 20);
+    final_sha1 = &g_array_index(cbk, guchar, CBK_HEADER_SIZE);
+    sha1s = &g_array_index (cbk, guchar, CBK_HEADER_SIZE + 20);
     final_sha1_len = g_checksum_type_get_length (G_CHECKSUM_SHA1);
     g_assert (final_sha1_len == 20);
 
@@ -1266,8 +1266,8 @@ static gboolean mk_Locations_cbk (Itdb_iTunesDB *itdb, const char *dirname)
 	return FALSE;
     }
     cbk_calc_sha1_of_sha1s (cbk);
-    final_sha1 = g_array_index (cbk, guchar *, CBK_HEADER_SIZE);
-    cbk_hash72 = g_array_index (cbk, guchar *, 0);
+    final_sha1 = &g_array_index (cbk, guchar, CBK_HEADER_SIZE);
+    cbk_hash72 = &g_array_index (cbk, guchar, 0);
     success = itdb_hash72_compute_hash_for_sha1 (itdb->device, final_sha1,
 						 cbk_hash72);
     if (!success) {
