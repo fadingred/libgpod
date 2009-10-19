@@ -1022,7 +1022,6 @@ static void mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *u
 {
     int rebuild = 0;
     gchar *dbf = NULL;
-    gchar *cbk = NULL;
     sqlite3 *db = NULL;
     sqlite3_stmt *stmt = NULL;
     const char *sqltail = NULL;
@@ -1160,9 +1159,6 @@ static void mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *u
 leave:
     if (db) {
 	sqlite3_close(db);
-    }
-    if (cbk) {
-	g_free(cbk);
     }
     if (dbf) {
 	g_free(dbf);
