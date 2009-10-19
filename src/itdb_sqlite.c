@@ -1182,12 +1182,11 @@ static int cbk_calc_sha1_one_block (FILE *f, unsigned char sha1[20])
 	}
     }
 
-    g_assert (g_checksum_type_get_length (G_CHECKSUM_SHA1) == sizeof (sha1));
-    sha1_len = sizeof (sha1);
+    sha1_len = g_checksum_type_get_length (G_CHECKSUM_SHA1);
+    g_assert (sha1_len == 20);
     checksum = g_checksum_new (G_CHECKSUM_SHA1);
     g_checksum_update (checksum, block, BLOCK_SIZE);
     g_checksum_get_digest (checksum, sha1, &sha1_len);
-    g_assert (sha1_len == sizeof (sha1));
     g_checksum_free (checksum);
 
     return 0;
