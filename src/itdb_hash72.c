@@ -305,5 +305,6 @@ gboolean itdb_hash72_write_hash (const Itdb_Device *device,
 
     itdb_hash72_compute_itunesdb_sha1 (itdb_data, itdb_len, sha1);
     header = (MhbdHeader *)itdb_data;
+    header->hashing_scheme = GUINT16_FROM_LE (ITDB_CHECKSUM_HASH72);
     return itdb_hash72_compute_hash_for_sha1 (device, sha1, header->hash72);
 }
