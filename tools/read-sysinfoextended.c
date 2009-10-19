@@ -27,8 +27,12 @@
 #include <glib/gi18n.h>
 
 #include "itdb.h"
-
+#ifdef HAVE_SGUTILS
 extern char *read_sysinfo_extended (const char *device);
+#endif
+#ifdef HAVE_LIBIPHONE
+extern char *read_sysinfo_extended_by_uuid (const char *uuid);
+#endif
 
 int
 main (int argc, char **argv)
@@ -36,11 +40,26 @@ main (int argc, char **argv)
     char *xml;
     
     if (argc < 3) {
-      g_print (_("usage: %s <device> <mountpoint>\n"), g_basename (argv[0]));
+      g_print (_("usage: %s <device|uuid> <mountpoint>\n"), g_basename (argv[0]));
 	return 1;
     }
 
-    xml = read_sysinfo_extended (argv[1]);
+    if (*argv[1] == '/') {
+	/* assume it's a device name */
+#ifdef HAVE_SGUTILS
+	xml = read_sysinfo_extended (argv[1]);
+#else
+	g_warning ("Compiled without sgutils support, can't read SysInfoExtended from a device");
+#endif
+    } else {
+	/* argument doesn't look like a filename, might be an UUID */
+#ifdef HAVE_LIBIPHONE
+	xml = read_sysinfo_extended_by_uuid (argv[1]);
+#else
+	g_warning ("Compiled without libiphone support, can't read SysInfoExtended from an iPhone UUID");
+#endif
+    }
+
     if (xml == NULL) {
       g_print (_("Couldn't read xml sysinfo from %s\n"), argv[1]);
       return 1;

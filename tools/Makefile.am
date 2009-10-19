@@ -1,10 +1,16 @@
-if HAVE_SGUTILS
 bin_PROGRAMS=ipod-read-sysinfo-extended
-ipod_read_sysinfo_extended_SOURCES =	\
-	read-sysinfoextended-sgutils.c	\
-	ipod-scsi.c
-ipod_read_sysinfo_extended_CFLAGS=$(LIBGPOD_CFLAGS) $(SGUTILS_CFLAGS) -I$(top_srcdir)/src
-ipod_read_sysinfo_extended_LDADD=$(LIBGPOD_LIBS) $(SGUTILS_LIBS) $(top_builddir)/src/libgpod.la
+ipod_read_sysinfo_extended_SOURCES = read-sysinfoextended.c
+ipod_read_sysinfo_extended_CFLAGS=$(LIBGPOD_CFLAGS) -I$(top_srcdir)/src
+ipod_read_sysinfo_extended_LDADD=$(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la
+if HAVE_SGUTILS
+ipod_read_sysinfo_extended_SOURCES+=ipod-scsi.c
+ipod_read_sysinfo_extended_CFLAGS+=$(SGUTILS_CFLAGS)
+ipod_read_sysinfo_extended_LDADD+=$(SGUTILS_LIBS)
+endif
+if HAVE_LIBIPHONE
+ipod_read_sysinfo_extended_SOURCES+=ipod-lockdown.c
+ipod_read_sysinfo_extended_CFLAGS+=$(LIBIPHONE_CFLAGS)
+ipod_read_sysinfo_extended_LDADD+=$(LIBIPHONE_LIBS)
 endif
 
 if HAVE_HAL
