@@ -70,7 +70,7 @@ static int hash_extract(const uint8_t signature[46],
 	}
 
 	memcpy(iv, output, 16);
-	memcpy(random_bytes, &signature[2], sizeof(random_bytes));
+	memcpy(random_bytes, &signature[2], 12);
 
 	return 0;
 }
@@ -118,7 +118,7 @@ static gboolean get_uuid (const Itdb_Device *device, unsigned char uuid[20])
     if (uuid_str == NULL) {
 	return FALSE;
     }
-    result = string_to_hex (uuid, sizeof (uuid), uuid_str);
+    result = string_to_hex (uuid, 20, uuid_str);
 
     return (result == 0);
 }
