@@ -228,7 +228,7 @@ static void itdb_hash72_compute_itunesdb_sha1 (unsigned char *itdb_data,
     memset(&header->hash58, 0, sizeof (header->hash58));
     memset(&header->hash72, 0, sizeof (header->hash72));
 
-    sha1_len = sizeof (sha1);
+    sha1_len = g_checksum_type_get_length (G_CHECKSUM_SHA1);
     checksum = g_checksum_new (G_CHECKSUM_SHA1);
     g_checksum_update (checksum, itdb_data, itdb_len);
     g_checksum_get_digest (checksum, sha1, &sha1_len);
