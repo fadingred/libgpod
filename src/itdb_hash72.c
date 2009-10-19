@@ -115,6 +115,9 @@ static gboolean get_uuid (const Itdb_Device *device, unsigned char uuid[20])
     int result;
 
     uuid_str = itdb_device_get_uuid (device);
+    if (uuid_str == NULL) {
+	return FALSE;
+    }
     result = string_to_hex (uuid, sizeof (uuid), uuid_str);
 
     return (result == 0);
