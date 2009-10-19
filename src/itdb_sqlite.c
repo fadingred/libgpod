@@ -1317,7 +1317,6 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
     int res = 0;
     gchar *itlpdir;
     gchar *dirname;
-    Itdb_iTunesDB *itdb = NULL;
 
     printf("libitdbprep: %s called with file %s and uuid %s\n", __func__,
 	   fexp->itdb->filename, itdb_device_get_uuid(fexp->itdb->device));
@@ -1338,10 +1337,10 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
     g_assert(fexp->itdb != NULL);
     g_assert(fexp->itdb->playlists != NULL);
 
-    tzoffset = itdb->tzoffset;
+    tzoffset = fexp->itdb->tzoffset;
 
     /* generate itdb files */
-    build_itdb_files(itdb, fexp->albums, fexp->artists, itlpdir,
+    build_itdb_files(fexp->itdb, fexp->albums, fexp->artists, itlpdir,
 		     itdb_device_get_uuid(fexp->itdb->device));
 
 leave:
