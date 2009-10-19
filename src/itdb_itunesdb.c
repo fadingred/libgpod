@@ -1427,6 +1427,7 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
   case MHOD_ID_SORT_TVSHOW:
       result.data.string = extract_mhod_string (cts, seek);
       if (result.data.string == NULL) {
+	  *ml = mhod_len;
 	  return result;
       }
       break;
