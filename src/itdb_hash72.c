@@ -10,6 +10,8 @@
 #include <string.h>
 #include "rijndael.h"
 
+#include <glib/gstdio.h>
+
 #include "itdb_device.h"
 #include "db-itunes-parser.h"
 #include "itdb_private.h"
@@ -186,6 +188,11 @@ static struct Hash78Info *read_hash_info (const Itdb_Device *device)
 	return NULL;
     }
     if (memcmp (info->uuid, uuid, sizeof (uuid)) != 0) {
+	/* the HashInfo file seems invalid for this device, just remove it
+	 */
+	filename = get_hash_info_path (device);
+	g_unlink (filename);
+	g_free (filename);
 	g_free (info);
 	return NULL;
     }
