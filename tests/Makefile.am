@@ -16,12 +16,17 @@ endif
 TESTMISC=test-init-ipod
 
 if HAVE_TAGLIB
+TESTCP=test-cp
+test_cp_SOURCES = test-cp.cc
+test_cp_LDADD = $(TAGLIB_LIBS)
+test_cp_CXXFLAGS = $(TAGLIB_CFLAGS)
 TESTTAGLIB=test-rebuild-db
 test_rebuild_db_SOURCES = test-rebuild-db.cc
 test_rebuild_db_LDADD = $(TAGLIB_LIBS)
 test_rebuild_db_CXXFLAGS = $(TAGLIB_CFLAGS)
 else
 TESTTAGLIB=
+TESTCP=
 endif
 
 test_itdb_SOURCES = itdb_main.c
@@ -48,7 +53,7 @@ get_timezone_SOURCES = get-timezone.c
 
 noinst_PROGRAMS=test-itdb test-ls test-checksum test-firewire-id \
 		test-sysinfo-extended-parsing			 \
-	        $(TESTTHUMBS) $(TESTTAGLIB) $(TESTMISC)
+	        $(TESTTHUMBS) $(TESTTAGLIB) $(TESTCP) $(TESTMISC)
 
 INCLUDES=$(LIBGPOD_CFLAGS) -I$(top_srcdir)/src -DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
 LIBS=$(LIBGPOD_LIBS) $(top_builddir)/src/libgpod.la
