@@ -5518,7 +5518,7 @@ static void prepare_itdb_for_write (FExport *fexp)
 	    track->priv->artist_id = id->id;
 	} else {	
 	    add_new_id (fexp->artists, track, artist_id);
-	    track->priv->artist_id = id->id;
+	    track->priv->artist_id = artist_id;
 	    artist_id++;
 	}
     }
