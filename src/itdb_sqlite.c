@@ -1020,23 +1020,19 @@ leave:
 
 static void mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *uuid)
 {
-    int rebuild = 0;
     gchar *dbf = NULL;
     sqlite3 *db = NULL;
     sqlite3_stmt *stmt = NULL;
     const char *sqltail = NULL;
     char *errmsg = NULL;
-    struct stat fst;
     int idx = 0;
    
     dbf = g_build_filename(outpath, "Locations.itdb", NULL);
     printf("[%s] Processing '%s'\n", __func__, dbf);
-    if (stat(dbf, &fst) != 0) {
-	if (errno == ENOENT) {
-	    /* file is not present. so we will create it */
-	    rebuild = 1;
-	} else {
-	    fprintf(stderr, "[%s] Error: stat: %s\n", __func__, strerror(errno));
+    /* file is present. delete it, we'll re-create it. */
+    if (g_unlink(dbf) != 0) {
+	if (errno != ENOENT) {
+	    fprintf(stderr, "[%s] could not delete '%s': %s\n", __func__, dbf, strerror(errno));
 	    goto leave;
 	}
     }
@@ -1046,18 +1042,16 @@ static void mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *u
 	goto leave;
     }
 
-    if (rebuild) {
-	fprintf(stderr, "[%s] re-building table structure\n", __func__);
-	/* db structure needs to be created. */
-	if (SQLITE_OK != sqlite3_exec(db, Locations_create, NULL, NULL, &errmsg)) {
-	    fprintf(stderr, "[%s] sqlite3_exec error: %s\n", __func__, sqlite3_errmsg(db));
-	    if (errmsg) {
-		fprintf(stderr, "[%s] additional error information: %s\n", __func__, errmsg);
-		sqlite3_free(errmsg);
-		errmsg = NULL;
-	    }
-	    goto leave;
+    fprintf(stderr, "[%s] re-building table structure\n", __func__);
+    /* db structure needs to be created. */
+    if (SQLITE_OK != sqlite3_exec(db, Locations_create, NULL, NULL, &errmsg)) {
+	fprintf(stderr, "[%s] sqlite3_exec error: %s\n", __func__, sqlite3_errmsg(db));
+	if (errmsg) {
+	    fprintf(stderr, "[%s] additional error information: %s\n", __func__, errmsg);
+	    sqlite3_free(errmsg);
+	    errmsg = NULL;
 	}
+	goto leave;
     }
 
     /* kill all entries in 'location' as they will be re-inserted */
