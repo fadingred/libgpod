@@ -44,6 +44,7 @@ main (int argc, char **argv)
 	return 1;
     }
 
+    xml = NULL;
     if (*argv[1] == '/') {
 	/* assume it's a device name */
 #ifdef HAVE_SGUTILS
