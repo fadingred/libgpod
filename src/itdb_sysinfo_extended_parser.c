@@ -107,6 +107,7 @@ struct _SysInfoIpodProperties {
         gint games_platform_id;
         gint games_platform_version;
         gint rental_clock_bias;
+	gboolean sqlite_db;
 };
 
 static gint get_int (GHashTable *dict, const char *key)
@@ -216,6 +217,7 @@ static const DictFieldMapping sysinfo_ipod_properties_fields_mapping[] = {
     { "GamesPlatformID",               G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, games_platform_id) },
     { "GamesPlatformVersion",          G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, games_platform_version) },
     { "RentalClockBias",               G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, rental_clock_bias) },
+    { "SQLiteDB",                      G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, sqlite_db) },
     { NULL,                            G_TYPE_NONE,    0 }
 };
 
