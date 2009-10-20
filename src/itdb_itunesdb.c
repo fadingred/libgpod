@@ -5653,8 +5653,10 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 				fexp->wcontents->pos,
 				&fexp->error);
 
-    if (itdb_sqlite_generate_itdbs(fexp) != 0) {
-	fprintf(stderr, "ERROR: There was an error while generating the itdb sqlite database files.\n");
+    if (itdb_device_supports_sqlite_db (itdb->device)) {
+	if (itdb_sqlite_generate_itdbs(fexp) != 0) {
+	    fprintf(stderr, "ERROR: There was an error while generating the itdb sqlite database files.\n");
+	}
     }
 
     if (!fexp->error)
