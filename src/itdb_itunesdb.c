@@ -7103,7 +7103,10 @@ gchar *itdb_get_itunesdb_path (const gchar *mountpoint)
 
     if (itunes_dir)
     {
-	path = itdb_get_path (itunes_dir, "iTunesDB");
+	path = itdb_get_path (itunes_dir, "iTunesCDB");
+	if(!path) {
+	    path = itdb_get_path (itunes_dir, "iTunesDB");
+	}
 	g_free (itunes_dir);
     }
 
