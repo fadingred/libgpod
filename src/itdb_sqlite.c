@@ -1075,7 +1075,7 @@ static void mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *u
 		continue;
 	    }
 
-	    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"location\" VALUES(?,?,?,?,:path,?,?,?,?,?,?,?,?);", -1, &stmt, &sqltail)) {
+	    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"location\" (item_pid, sub_id, base_location_id, location_type, location, extension, kind_id, date_created, file_size) VALUES(?,?,?,?,?,?,?,?,?);", -1, &stmt, &sqltail)) {
 		fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	    } else {
 		char *ipod_path = strdup(track->ipod_path);
@@ -1116,6 +1116,7 @@ static void mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *u
 		sqlite3_bind_int(stmt, ++idx, timeconv(track->time_modified));
 		/* file_size */
 		sqlite3_bind_int(stmt, ++idx, track->size);
+#if 0
 		/* file_creator */
 		/* TODO unknown, set to NULL */
 		sqlite3_bind_null(stmt, ++idx);
@@ -1128,7 +1129,7 @@ static void mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *u
 		/* num_dir_levels_lib */
 		/* TODO unknown, set to NULL */
 		sqlite3_bind_null(stmt, ++idx);
-
+#endif
 		res = sqlite3_step(stmt);
 		if (res == SQLITE_DONE) {
 		    /* expected result */
