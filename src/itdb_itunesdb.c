@@ -5763,7 +5763,7 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 	 * empty iTunesDB
 	 */
 	itunes_filename = g_build_filename (itunes_path, "iTunesDB", NULL);
-	g_unlink (itunes_filename);
+	g_file_set_contents(itunes_filename, NULL, 0, NULL);
 	g_free (itunes_filename);
     }
 
