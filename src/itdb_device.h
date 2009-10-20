@@ -167,6 +167,7 @@ G_GNUC_INTERNAL void itdb_device_autodetect_endianess (Itdb_Device *device);
 G_GNUC_INTERNAL guint64 itdb_device_get_firewire_id (const Itdb_Device *device);
 G_GNUC_INTERNAL gboolean itdb_device_supports_sparse_artwork (const Itdb_Device *device);
 G_GNUC_INTERNAL gboolean itdb_device_supports_compressed_itunesdb (const Itdb_Device *device);
+G_GNUC_INTERNAL gboolean itdb_device_supports_sqlite_db (const Itdb_Device *device);
 G_GNUC_INTERNAL gboolean itdb_device_get_storage_info (Itdb_Device *device, guint64 *capacity, guint64 *free);
 G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device,
 						     unsigned char *itdb_data,

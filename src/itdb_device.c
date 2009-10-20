@@ -1222,7 +1222,7 @@ GList *itdb_device_get_chapter_image_formats (const Itdb_Device *device)
 }
 
 G_GNUC_INTERNAL gboolean
-itdb_device_supports_compressed_itunesdb (const Itdb_Device *device)
+itdb_device_supports_sqlite_db (const Itdb_Device *device)
 {
     if (device->sysinfo_extended != NULL) {
 	return itdb_sysinfo_properties_supports_sqlite (device->sysinfo_extended);
@@ -1263,7 +1263,14 @@ itdb_device_supports_compressed_itunesdb (const Itdb_Device *device)
 		/* FIXME: needs to check firmware version */
 		return TRUE;
 	}
+	g_return_val_if_reached (FALSE);
     }
+}
+
+G_GNUC_INTERNAL gboolean
+itdb_device_supports_compressed_itunesdb (const Itdb_Device *device)
+{
+    return itdb_device_supports_sqlite_db (device);
 }
 
 G_GNUC_INTERNAL gboolean 
