@@ -5526,7 +5526,6 @@ static void prepare_itdb_for_write (FExport *fexp)
 
 static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 					  const gchar *filename,
-					  const gchar *compressed_filename,
 					  GError **error)
 {
     FExport *fexp;
@@ -5631,21 +5630,6 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
     }
 
     fix_header (cts, mhbd_seek);
-    if (compressed_filename) {
-	/* If we were asked to write a compressed file, starts by writing
-	 * an uncompressed copy of the iTunesDB
-	 */
-	itdb_device_write_checksum (itdb->device,
-				    (unsigned char *)fexp->wcontents->contents,
-				    fexp->wcontents->pos,
-				    NULL);
-	wcontents_write (cts);
-	if (!itdb_zlib_check_compress_fexp (fexp)) {
-	    goto err;
-	}
-	g_free (cts->filename);
-	cts->filename = g_strdup (compressed_filename);
-    }
 
     /* Set checksum (ipods require it starting from Classic and Nano Video) */
     itdb_device_write_checksum (itdb->device,
@@ -5653,9 +5637,15 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 				fexp->wcontents->pos,
 				&fexp->error);
 
+    if (itdb_device_supports_compressed_itunesdb (itdb->device)) {
+	if (!itdb_zlib_check_compress_fexp (fexp)) {
+	    goto err;
+	}
+    }
+
     if (itdb_device_supports_sqlite_db (itdb->device)) {
 	if (itdb_sqlite_generate_itdbs(fexp) != 0) {
-	    fprintf(stderr, "ERROR: There was an error while generating the itdb sqlite database files.\n");
+	    goto err;
 	}
     }
 
@@ -5707,7 +5697,7 @@ err:
 gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 			  GError **error)
 {
-    return itdb_write_file_internal (itdb, filename, NULL, error);
+    return itdb_write_file_internal (itdb, filename, error);
 }
 
 /**
@@ -5727,7 +5717,6 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 {
     gchar *itunes_filename, *itunes_path;
-    gchar *itunescdb_filename;
     gboolean result = FALSE;
 #ifdef HAVE_LIBIPHONE
     void *sync_ctx;
@@ -5753,11 +5742,10 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 	return FALSE;
     }
 
-    itunes_filename = g_build_filename (itunes_path, "iTunesDB", NULL);
     if (itdb_device_supports_compressed_itunesdb (itdb->device)) {
-	itunescdb_filename = g_build_filename (itunes_path, "iTunesCDB", NULL);
+	itunes_filename = g_build_filename (itunes_path, "iTunesCDB", NULL);
     } else {
-	itunescdb_filename = NULL;
+	itunes_filename = g_build_filename (itunes_path, "iTunesDB", NULL);
     }
 
 #ifdef HAVE_LIBIPHONE
@@ -5767,12 +5755,18 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
     }
 #endif
 
-    result = itdb_write_file_internal (itdb, itunes_filename, 
-				       itunescdb_filename,
-				       error);
-
+    result = itdb_write_file_internal (itdb, itunes_filename, error);
     g_free (itunes_filename);
-    g_free (itunescdb_filename);
+
+    if (result && itdb_device_supports_compressed_itunesdb (itdb->device)) {
+	/* the iPhone gets confused when it has both an iTunesCDB and a non
+	 * empty iTunesDB
+	 */
+	itunes_filename = g_build_filename (itunes_path, "iTunesDB", NULL);
+	g_unlink (itunes_filename);
+	g_free (itunes_filename);
+    }
+
     g_free (itunes_path);
 
     if (result != FALSE)
