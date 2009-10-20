@@ -680,3 +680,12 @@ itdb_sysinfo_properties_get_firmware_version (const SysInfoIpodProperties *props
 
     return props->visible_build_id;
 }
+
+gboolean
+itdb_sysinfo_properties_supports_sqlite (const SysInfoIpodProperties *props)
+{
+    g_return_val_if_fail (props != NULL, FALSE);
+
+    return props->sqlite_db;
+}
+

@@ -66,6 +66,8 @@ G_GNUC_INTERNAL gboolean
 itdb_sysinfo_properties_supports_podcast (const SysInfoIpodProperties *);
 G_GNUC_INTERNAL const char *
 itdb_sysinfo_properties_get_firmware_version (const SysInfoIpodProperties *);
+G_GNUC_INTERNAL gboolean
+itdb_sysinfo_properties_supports_sqlite (const SysInfoIpodProperties *props);
 
 G_END_DECLS
 
