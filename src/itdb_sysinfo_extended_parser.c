@@ -697,3 +697,10 @@ itdb_sysinfo_properties_get_family_id (const SysInfoIpodProperties *props)
     g_return_val_if_fail (props != NULL, FALSE);
     return props->family_id;
 }
+
+gint
+itdb_sysinfo_properties_get_db_version (const SysInfoIpodProperties *props)
+{
+    g_return_val_if_fail (props != NULL, FALSE);
+    return props->db_version;
+}
