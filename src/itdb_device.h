@@ -76,6 +76,7 @@ enum _ItdbThumbFormat
 
 typedef enum _ItdbChecksumType ItdbChecksumType;
 enum _ItdbChecksumType {
+    ITDB_CHECKSUM_UNKNOWN	= -1,
     ITDB_CHECKSUM_NONE		= 0,
     ITDB_CHECKSUM_HASH58	= 1,
     ITDB_CHECKSUM_HASH72	= 2
