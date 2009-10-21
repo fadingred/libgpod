@@ -746,7 +746,7 @@ ithumb_writer_scale_and_crop (GdkPixbuf *input_pixbuf,
 	scaled_width = width;
 	scaled_height = MIN (ceil (input_height*width_scale), height);
       } else if (width_scale > height_scale) {
-	scaled_width =MIN (ceil (input_width*height), width);
+	scaled_width =MIN (ceil (input_width*height_scale), width);
 	scaled_height = height;
       } else {
 	scaled_width = width;
