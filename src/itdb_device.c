@@ -1708,52 +1708,65 @@ guint64 itdb_device_get_firewire_id (const Itdb_Device *device)
 
 static ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
 {
-    const Itdb_IpodInfo *info;
 
     if (device == NULL) {
         return ITDB_CHECKSUM_NONE;
     }
+    
+    if (device->sysinfo_extended != NULL) {
+	gint db_version;
+	db_version = itdb_sysinfo_properties_get_db_version (device->sysinfo_extended);
+	switch (db_version) {
+	    case 3:
+		return ITDB_CHECKSUM_HASH58;
+	    case 4:
+		return ITDB_CHECKSUM_HASH72;
+	    default:
+		return ITDB_CHECKSUM_NONE;
+	}
+    } else {
+	const Itdb_IpodInfo *info;
+	info = itdb_device_get_ipod_info (device);
+	if (info == NULL) {
+	    return ITDB_CHECKSUM_NONE;
+	}
 
-    info = itdb_device_get_ipod_info (device);
-    if (info == NULL) {
-        return ITDB_CHECKSUM_NONE;
-    }
+	switch (info->ipod_generation) {
+	    case ITDB_IPOD_GENERATION_CLASSIC_1: 
+	    case ITDB_IPOD_GENERATION_CLASSIC_2:
+	    case ITDB_IPOD_GENERATION_CLASSIC_3:
+	    case ITDB_IPOD_GENERATION_NANO_3:
+	    case ITDB_IPOD_GENERATION_NANO_4:
+		return ITDB_CHECKSUM_HASH58;
 
-    switch (info->ipod_generation) {
-    case ITDB_IPOD_GENERATION_CLASSIC_1: 
-    case ITDB_IPOD_GENERATION_CLASSIC_2:
-    case ITDB_IPOD_GENERATION_CLASSIC_3:
-    case ITDB_IPOD_GENERATION_NANO_3:
-    case ITDB_IPOD_GENERATION_NANO_4:
-      return ITDB_CHECKSUM_HASH58;
+	    case ITDB_IPOD_GENERATION_NANO_5:
+	    case ITDB_IPOD_GENERATION_TOUCH_1:
+	    case ITDB_IPOD_GENERATION_TOUCH_2:
+	    case ITDB_IPOD_GENERATION_TOUCH_3:
+	    case ITDB_IPOD_GENERATION_IPHONE_1:
+	    case ITDB_IPOD_GENERATION_IPHONE_2:
+	    case ITDB_IPOD_GENERATION_IPHONE_3:
+		return ITDB_CHECKSUM_HASH72;
 
-    case ITDB_IPOD_GENERATION_NANO_5:
-    case ITDB_IPOD_GENERATION_TOUCH_1:
-    case ITDB_IPOD_GENERATION_TOUCH_2:
-    case ITDB_IPOD_GENERATION_TOUCH_3:
-    case ITDB_IPOD_GENERATION_IPHONE_1:
-    case ITDB_IPOD_GENERATION_IPHONE_2:
-    case ITDB_IPOD_GENERATION_IPHONE_3:
-        return ITDB_CHECKSUM_HASH72;
-
-    case ITDB_IPOD_GENERATION_UNKNOWN:
-    case ITDB_IPOD_GENERATION_FIRST:
-    case ITDB_IPOD_GENERATION_SECOND:
-    case ITDB_IPOD_GENERATION_THIRD:
-    case ITDB_IPOD_GENERATION_FOURTH:
-    case ITDB_IPOD_GENERATION_PHOTO:
-    case ITDB_IPOD_GENERATION_MOBILE:
-    case ITDB_IPOD_GENERATION_MINI_1:
-    case ITDB_IPOD_GENERATION_MINI_2:
-    case ITDB_IPOD_GENERATION_SHUFFLE_1:
-    case ITDB_IPOD_GENERATION_SHUFFLE_2:
-    case ITDB_IPOD_GENERATION_SHUFFLE_3:
-    case ITDB_IPOD_GENERATION_SHUFFLE_4:
-    case ITDB_IPOD_GENERATION_NANO_1:
-    case ITDB_IPOD_GENERATION_NANO_2:
-    case ITDB_IPOD_GENERATION_VIDEO_1:
-    case ITDB_IPOD_GENERATION_VIDEO_2:
-            return ITDB_CHECKSUM_NONE;
+	    case ITDB_IPOD_GENERATION_UNKNOWN:
+	    case ITDB_IPOD_GENERATION_FIRST:
+	    case ITDB_IPOD_GENERATION_SECOND:
+	    case ITDB_IPOD_GENERATION_THIRD:
+	    case ITDB_IPOD_GENERATION_FOURTH:
+	    case ITDB_IPOD_GENERATION_PHOTO:
+	    case ITDB_IPOD_GENERATION_MOBILE:
+	    case ITDB_IPOD_GENERATION_MINI_1:
+	    case ITDB_IPOD_GENERATION_MINI_2:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_1:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_2:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_3:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_4:
+	    case ITDB_IPOD_GENERATION_NANO_1:
+	    case ITDB_IPOD_GENERATION_NANO_2:
+	    case ITDB_IPOD_GENERATION_VIDEO_1:
+	    case ITDB_IPOD_GENERATION_VIDEO_2:
+		return ITDB_CHECKSUM_NONE;
+	}
     }
 
     return ITDB_CHECKSUM_NONE;
