@@ -5749,9 +5749,11 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
     }
 
 #ifdef HAVE_LIBIPHONE
-    sync_status = itdb_iphone_start_sync (itdb->device, &sync_ctx);
-    if (sync_status != 0) {
-	fprintf(stderr, "ERROR: Could not start sync!\n");
+    if (itdb_device_is_iphone_family (itdb->device)) {
+	sync_status = itdb_iphone_start_sync (itdb->device, &sync_ctx);
+	if (sync_status != 0) {
+	    fprintf(stderr, "ERROR: Could not start sync!\n");
+	}
     }
 #endif
 
@@ -5784,9 +5786,11 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
     sync ();
 
 #ifdef HAVE_LIBIPHONE
-    sync_status = itdb_iphone_stop_sync (sync_ctx);
-    if (sync_status != 0) {
-	fprintf(stderr, "ERROR: itdbprep_stop_sync failed!\n");
+    if (itdb_device_is_iphone_family (itdb->device)) {
+	sync_status = itdb_iphone_stop_sync (sync_ctx);
+	if (sync_status != 0) {
+	    fprintf(stderr, "ERROR: itdbprep_stop_sync failed!\n");
+	}
     }
 #endif
 
