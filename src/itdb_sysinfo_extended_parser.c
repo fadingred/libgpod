@@ -691,3 +691,9 @@ itdb_sysinfo_properties_supports_sqlite (const SysInfoIpodProperties *props)
     return props->sqlite_db;
 }
 
+gint
+itdb_sysinfo_properties_get_family_id (const SysInfoIpodProperties *props)
+{
+    g_return_val_if_fail (props != NULL, FALSE);
+    return props->family_id;
+}
