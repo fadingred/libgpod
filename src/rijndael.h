@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <glib.h>
 
 #define u8 uint8_t /* 8 bits  */
 #define u32 uint32_t       /* 32 bits */
@@ -28,6 +29,6 @@
 #define ROTL24(x) (((x)<<24)|((x)>>8))
 
 
-void aes_set_key(u8 *key);
-void aes_decrypt(u8 *iv, u8 *inbuf, u8 *outbuf, unsigned long long len);
-void aes_encrypt(const u8 *initiv, u8 *inbuf, u8 *outbuf, unsigned long long len);
+G_GNUC_INTERNAL void aes_set_key(u8 *key);
+G_GNUC_INTERNAL void aes_decrypt(u8 *iv, u8 *inbuf, u8 *outbuf, unsigned long long len);
+G_GNUC_INTERNAL void aes_encrypt(const u8 *initiv, u8 *inbuf, u8 *outbuf, unsigned long long len);
