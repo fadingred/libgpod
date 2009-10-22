@@ -1,7 +1,27 @@
 /*
-| Copyright (c) 2009 Chris Lee <clee@mg8.org>
-| licensed under the terms of the WTFPL <http://sam.zoy.org/wtfpl/>
+|  Copyright (c) 2009 Chris Lee <clee@mg8.org>
+|  Copyright (C) 2009 Christophe Fergeau <cfergeau@mandriva.com>
+| 
+|  The code contained in this file is free software; you can redistribute
+|  it and/or modify it under the terms of the GNU Lesser General Public
+|  License as published by the Free Software Foundation; either version
+|  2.1 of the License, or (at your option) any later version.
+|
+|  This file is distributed in the hope that it will be useful,
+|  but WITHOUT ANY WARRANTY; without even the implied warranty of
+|  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+|  Lesser General Public License for more details.
+|
+|  You should have received a copy of the GNU Lesser General Public
+|  License along with this code; if not, write to the Free Software
+|  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+|  USA
+|
+|  iTunes and iPod are trademarks of Apple
+|
+|  This product is not supported/written/published by Apple!
 */
+
 #if HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -18,6 +38,11 @@
 
 static const uint8_t AES_KEY[16] = { 0x0, };
 
+/*
+| hash_generate and hash_extract are :
+| Copyright (c) 2009 Chris Lee <clee@mg8.org>
+| licensed under the terms of the WTFPL <http://sam.zoy.org/wtfpl/>
+*/
 /* Generate a signature for an iTunesDB or a cbk file using the file SHA1
  * and a (IV, random bytes) for this device we want to sign for
  */
