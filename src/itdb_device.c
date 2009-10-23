@@ -1709,7 +1709,7 @@ guint64 itdb_device_get_firewire_id (const Itdb_Device *device)
     return g_ascii_strtoull (fwid, NULL, 16);
 }
 
-static ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
+ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
 {
 
     if (device == NULL) {
