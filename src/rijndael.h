@@ -8,6 +8,8 @@
    algorithm place on its exploitation.  
 
 */
+#ifndef RIJNDAEL_H
+#define RIJNDAEL_H
 
 #include <string.h>
 #include <stdint.h>
@@ -32,3 +34,5 @@
 G_GNUC_INTERNAL void aes_set_key(u8 *key);
 G_GNUC_INTERNAL void aes_decrypt(u8 *iv, u8 *inbuf, u8 *outbuf, unsigned long long len);
 G_GNUC_INTERNAL void aes_encrypt(const u8 *initiv, u8 *inbuf, u8 *outbuf, unsigned long long len);
+
+#endif
