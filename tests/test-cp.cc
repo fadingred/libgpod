@@ -92,14 +92,13 @@ copy_file (Itdb_iTunesDB *db, const char *filename, GError **error)
 	Itdb_Track *track;
 
 	track = track_from_file (filename);
+	itdb_track_add (db, track, -1);
+	itdb_playlist_add_track (itdb_playlist_mpl(db), track, -1);
 	itdb_cp_track_to_ipod (track, filename, error);
 	if (track->ipod_path == NULL) {
 		itdb_track_free (track);
 		return;
 	}
-
-	itdb_track_add (db, track, -1);
-	itdb_playlist_add_track (itdb_playlist_mpl(db), track, -1);
 }
 
 static Itdb_iTunesDB *
