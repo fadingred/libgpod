@@ -86,19 +86,22 @@ track_from_file (const char *filename)
 }
 
 
-static void
+static gboolean
 copy_file (Itdb_iTunesDB *db, const char *filename, GError **error)
 {
 	Itdb_Track *track;
+	char *dest_filename;
+	gboolean copy_success;
 
 	track = track_from_file (filename);
 	itdb_track_add (db, track, -1);
 	itdb_playlist_add_track (itdb_playlist_mpl(db), track, -1);
-	itdb_cp_track_to_ipod (track, filename, error);
-	if (track->ipod_path == NULL) {
+	/* dest_filename = itdb_cp_get_dest_filename (track, NULL, filename, error); */
+	copy_success = itdb_cp_track_to_ipod (track, filename, error);
+	if (!copy_success) {
 		itdb_track_free (track);
-		return;
 	}
+	return copy_success;
 }
 
 int main (int argc, char **argv)
@@ -123,13 +126,12 @@ int main (int argc, char **argv)
 	}
 
 	error = NULL;
-	copy_file (db, argv[1], &error);
-	if (error) {
-		g_print ("Error reading music files\n");
-		if (error->message) {
+	if (!copy_file (db, argv[1], &error)) {
+		g_print ("Error copying music files\n");
+		if (error && error->message) {
 			g_print("%s\n", error->message);
+			g_error_free (error);
 		}
-		g_error_free (error);
 		exit (1);
 	}
 
