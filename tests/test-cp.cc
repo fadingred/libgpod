@@ -101,24 +101,6 @@ copy_file (Itdb_iTunesDB *db, const char *filename, GError **error)
 	}
 }
 
-static Itdb_iTunesDB *
-itdb_create (const char *mountpoint)
-{
-	Itdb_Playlist *mpl;
-	Itdb_iTunesDB *db;
-
-	db = itdb_new ();
-	if (db == NULL) {
-		return NULL;
-	}
-	itdb_set_mountpoint (db, mountpoint);
-	mpl = itdb_playlist_new ("iPod", FALSE);
-	itdb_playlist_set_mpl (mpl);
-	itdb_playlist_add (db, mpl, -1);
-
-	return db;
-}
-
 int main (int argc, char **argv)
 {
 	Itdb_iTunesDB *db;
@@ -130,7 +112,10 @@ int main (int argc, char **argv)
 		exit (1);
 	}
 
-	db = itdb_create (argv[1]);
+	db = itdb_parse (argv[1], NULL);
+	if (db == NULL) {
+		return NULL;
+	}
 
 	if (db == NULL) {
 		g_print ("Error creating iPod database\n");
