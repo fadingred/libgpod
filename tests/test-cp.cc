@@ -108,11 +108,11 @@ int main (int argc, char **argv)
 
 	if (argc != 3) {
 		g_print ("Usage:\n");
-		g_print ("%s <mountpoint> <filename>\n", g_basename (argv[0]));
+		g_print ("%s <filename> <mountpoint> \n", g_basename (argv[0]));
 		exit (1);
 	}
 
-	db = itdb_parse (argv[1], NULL);
+	db = itdb_parse (argv[2], NULL);
 	if (db == NULL) {
 		return NULL;
 	}
@@ -123,7 +123,7 @@ int main (int argc, char **argv)
 	}
 
 	error = NULL;
-	copy_file (db, argv[2], &error);
+	copy_file (db, argv[1], &error);
 	if (error) {
 		g_print ("Error reading music files\n");
 		if (error->message) {
