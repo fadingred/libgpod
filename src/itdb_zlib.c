@@ -134,16 +134,16 @@ gboolean itdb_zlib_check_decompress_fimp (FImport *fimp)
 
     if (zlib_inflate(NULL, cts->contents+headerSize, cSize-headerSize, &uSize) == 0) {
 	gchar *new_contents;
-	g_print("allocating %"G_GSIZE_FORMAT"\n", uSize+headerSize);
+	/*g_print("allocating %"G_GSIZE_FORMAT"\n", uSize+headerSize);*/
 	new_contents = (gchar*)g_malloc(uSize+headerSize);
 	memcpy(new_contents, cts->contents, headerSize);
-	g_print("decompressing\n");
+	/*g_print("decompressing\n");*/
 	if (zlib_inflate(new_contents+headerSize, cts->contents+headerSize, cSize-headerSize, &uSize) == 0) {
 	    /* update FContents structure */
 	    g_free(cts->contents);
 	    cts->contents = new_contents;
 	    cts->length = uSize+headerSize;
-	    g_print("uncompressed size: %"G_GSIZE_FORMAT"\n", cts->length);
+	    /*g_print("uncompressed size: %"G_GSIZE_FORMAT"\n", cts->length);*/
 	}
     } else {
 	g_set_error (&fimp->error,
@@ -168,7 +168,7 @@ gboolean itdb_zlib_check_compress_fexp (FExport *fexp)
 
     cts = fexp->wcontents;
 
-    g_print("target DB needs compression\n");
+    /*g_print("target DB needs compression\n");*/
 
     header_len = GUINT32_FROM_LE (*(guint32*)(cts->contents+4));
     uncompressed_len = GUINT32_FROM_LE(*(guint32*)(cts->contents+8)) - header_len;
@@ -208,7 +208,7 @@ gboolean itdb_zlib_check_compress_fexp (FExport *fexp)
     *(guint32*)(new_contents+8) = GUINT32_TO_LE (compressed_len + header_len);
     cts->contents = new_contents;
     cts->pos = compressed_len + header_len;
-    g_print("compressed size: %ld\n", cts->pos);
+    /*g_print("compressed size: %ld\n", cts->pos);*/
 
     return TRUE;
 }
