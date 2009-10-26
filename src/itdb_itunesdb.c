@@ -1262,6 +1262,9 @@ Itdb_iTunesDB *itdb_new (void)
     itdb->version = 0x13;
     itdb->id = ((guint64)g_random_int () << 32) |
 	((guint64)g_random_int ());
+    itdb->priv->pid = ((guint64)g_random_int () << 32) |
+	((guint64)g_random_int ());
+    itdb->priv->lang = 0x656e;
     return itdb;
 }
 
@@ -3566,8 +3569,7 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
   /* 0x20 */
-  put16lint (cts, 2); /* 2 on iPhone 3.0 and Nano 5G,
-			 1 on iPod Color and iPod Classic */
+  put16lint (cts, 1);
 
   /* 0x22 */
   put16lint (cts, fexp->itdb->priv->unk_0x22);  /* unknown */
