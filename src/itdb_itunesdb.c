@@ -5633,17 +5633,17 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 
     fix_header (cts, mhbd_seek);
 
-    /* Set checksum (ipods require it starting from Classic and Nano Video) */
-    itdb_device_write_checksum (itdb->device,
-				(unsigned char *)fexp->wcontents->contents,
-				fexp->wcontents->pos,
-				&fexp->error);
-
     if (itdb_device_supports_compressed_itunesdb (itdb->device)) {
 	if (!itdb_zlib_check_compress_fexp (fexp)) {
 	    goto err;
 	}
     }
+
+    /* Set checksum (ipods require it starting from Classic and Nano Video) */
+    itdb_device_write_checksum (itdb->device,
+				(unsigned char *)fexp->wcontents->contents,
+				fexp->wcontents->pos,
+				&fexp->error);
 
     if (itdb_device_supports_sqlite_db (itdb->device)) {
 	if (itdb_sqlite_generate_itdbs(fexp) != 0) {
