@@ -207,6 +207,10 @@ G_GNUC_INTERNAL gboolean itdb_hash72_write_hash (const Itdb_Device *device,
 						 unsigned char *itdb_data, 
 						 gsize itdb_len,
 						 GError **error);
+G_GNUC_INTERNAL gboolean itdb_hash58_write_hash (Itdb_Device *device, 
+						 unsigned char *itdb_data, 
+						 gsize itdb_len,
+						 GError **error);
 G_GNUC_INTERNAL gboolean itdb_hash72_compute_hash_for_sha1 (const Itdb_Device *device, 
 							    const guchar sha1[20],
 							    guchar signature[46]);

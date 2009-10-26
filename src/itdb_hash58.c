@@ -33,9 +33,14 @@
 |
 |  This product is not supported/written/published by Apple!
 */
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include <glib.h>
-#include "itdb_hash58.h"
+#include <string.h>
+#include "itdb.h"
+#include "db-itunes-parser.h"
+#include "itdb_private.h"
 #include "sha1.h"
 
 static const unsigned char table1[256] = {
@@ -169,10 +174,10 @@ static unsigned char *generate_key (guint64 fwid)
     return key;
 }
 
-unsigned char *itdb_compute_hash (guint64 firewire_id,
-                                  const unsigned char *itdb,
-                                  unsigned long size, 
-				  gsize *len)
+static unsigned char *itdb_compute_hash (guint64 firewire_id,
+					 const unsigned char *itdb,
+					 unsigned long size, 
+					 gsize *len)
 {
     unsigned char *key;
     unsigned char *hash;
@@ -211,3 +216,56 @@ unsigned char *itdb_compute_hash (guint64 firewire_id,
 
     return hash;
 }
+
+gboolean itdb_hash58_write_hash (Itdb_Device *device, 
+				 unsigned char *itdb_data, 
+				 gsize itdb_len,
+				 GError **error)
+{
+    guint64 fwid;
+    guchar backup18[8];
+    guchar backup32[20];
+    unsigned char *checksum;
+    gsize len;
+    MhbdHeader *header;
+   
+    g_assert (itdb_device_get_checksum_type (device) == ITDB_CHECKSUM_HASH58);
+
+    fwid = itdb_device_get_firewire_id (device);
+    if (fwid == 0) {
+	g_set_error (error, 0, -1, "Couldn't find the iPod firewire ID");
+	return FALSE;
+    }
+
+    if (itdb_len < 0x6c) {
+	g_set_error (error, 0, -1, "iTunesDB file too small to write checksum");
+	return FALSE;
+    }
+
+    header = (MhbdHeader *)itdb_data;
+    g_assert (strncmp (header->header_id, "mhbd", strlen ("mhbd")) == 0);
+    memcpy (backup18, &header->db_id, sizeof (backup18));
+    memcpy (backup32, &header->unknown6, sizeof (backup32));
+
+    /* Those fields must be zero'ed out for the sha1 calculation */
+    memset(&header->db_id, 0, sizeof (header->db_id));
+    memset(&header->unknown6, 0, sizeof (header->unknown6));
+    memset(&header->hash58, 0, sizeof (header->hash58));
+
+    header->hashing_scheme = GUINT16_FROM_LE (ITDB_CHECKSUM_HASH58);
+
+    checksum = itdb_compute_hash (fwid, itdb_data, itdb_len, &len);
+    if (checksum == NULL) {
+	g_set_error (error, 0, -1, "Failed to compute checksum");
+	return FALSE;
+    }
+    g_assert (len <= sizeof (header->hash58));
+    memcpy (&header->hash58, checksum, len);
+    g_free (checksum);
+
+    memcpy (&header->db_id, backup18, sizeof (backup18));
+    memcpy (&header->unknown6, backup32, sizeof (backup32));
+
+    return TRUE;
+}
+

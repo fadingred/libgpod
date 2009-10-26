@@ -34,7 +34,6 @@
 #include "db-itunes-parser.h"
 #include "itdb_device.h"
 #include "itdb_private.h"
-#include "itdb_hash58.h"
 #include <ctype.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -1782,58 +1781,6 @@ ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
     return ITDB_CHECKSUM_NONE;
 }
 
-static gboolean itdb_device_write_hash58 (Itdb_Device *device, 
-					  unsigned char *itdb_data, 
-					  gsize itdb_len,
-					  GError **error)
-{
-    guint64 fwid;
-    guchar backup18[8];
-    guchar backup32[20];
-    unsigned char *checksum;
-    gsize len;
-    MhbdHeader *header;
-   
-    g_assert (itdb_device_get_checksum_type (device) == ITDB_CHECKSUM_HASH58);
-
-    fwid = itdb_device_get_firewire_id (device);
-    if (fwid == 0) {
-	g_set_error (error, 0, -1, "Couldn't find the iPod firewire ID");
-	return FALSE;
-    }
-
-    if (itdb_len < 0x6c) {
-	g_set_error (error, 0, -1, "iTunesDB file too small to write checksum");
-	return FALSE;
-    }
-
-    header = (MhbdHeader *)itdb_data;
-    g_assert (strncmp (header->header_id, "mhbd", strlen ("mhbd")) == 0);
-    memcpy (backup18, &header->db_id, sizeof (backup18));
-    memcpy (backup32, &header->unknown6, sizeof (backup32));
-
-    /* Those fields must be zero'ed out for the sha1 calculation */
-    memset(&header->db_id, 0, sizeof (header->db_id));
-    memset(&header->unknown6, 0, sizeof (header->unknown6));
-    memset(&header->hash58, 0, sizeof (header->hash58));
-
-    header->hashing_scheme = GUINT16_FROM_LE (ITDB_CHECKSUM_HASH58);
-
-    checksum = itdb_compute_hash (fwid, itdb_data, itdb_len, &len);
-    if (checksum == NULL) {
-	g_set_error (error, 0, -1, "Failed to compute checksum");
-	return FALSE;
-    }
-    g_assert (len <= sizeof (header->hash58));
-    memcpy (&header->hash58, checksum, len);
-    g_free (checksum);
-
-    memcpy (&header->db_id, backup18, sizeof (backup18));
-    memcpy (&header->unknown6, backup32, sizeof (backup32));
-
-    return TRUE;
-}
-
 G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device, 
 						     unsigned char *itdb_data, 
 						     gsize itdb_len,
@@ -1843,7 +1790,7 @@ G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device,
 	case ITDB_CHECKSUM_NONE:
 	    return TRUE;
 	case ITDB_CHECKSUM_HASH58:
-	    return itdb_device_write_hash58 (device, itdb_data, itdb_len, error);
+	    return itdb_hash58_write_hash (device, itdb_data, itdb_len, error);
 	case ITDB_CHECKSUM_HASH72:
 	    return itdb_hash72_write_hash (device, itdb_data, itdb_len, error);
 	case ITDB_CHECKSUM_UNKNOWN:
