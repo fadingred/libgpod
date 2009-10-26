@@ -165,7 +165,7 @@ G_GNUC_INTERNAL GList *itdb_device_get_cover_art_formats (const Itdb_Device *dev
 G_GNUC_INTERNAL GList *itdb_device_get_chapter_image_formats (const Itdb_Device *device);
 G_GNUC_INTERNAL gint itdb_device_musicdirs_number (Itdb_Device *device);
 G_GNUC_INTERNAL void itdb_device_autodetect_endianess (Itdb_Device *device);
-G_GNUC_INTERNAL guint64 itdb_device_get_firewire_id (const Itdb_Device *device);
+G_GNUC_INTERNAL const char *itdb_device_get_firewire_id (const Itdb_Device *device);
 G_GNUC_INTERNAL gboolean itdb_device_supports_sparse_artwork (const Itdb_Device *device);
 G_GNUC_INTERNAL gboolean itdb_device_supports_compressed_itunesdb (const Itdb_Device *device);
 G_GNUC_INTERNAL gboolean itdb_device_supports_sqlite_db (const Itdb_Device *device);

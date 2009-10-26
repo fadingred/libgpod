@@ -1688,27 +1688,18 @@ gboolean itdb_device_supports_chapter_image (const Itdb_Device *device)
  * (iPod classic/fat nanos) and is needed on iPod plugged through USB contrary
  * to what the name implies.
  *
- * Returns: the guint64 firewire id, or 0 if we don't know it
+ * Returns: a string containing the firewire id in hexadecimal
+ * or NULL if we don't know it.
  *
  * Since: 0.6.0
  */
-guint64 itdb_device_get_firewire_id (const Itdb_Device *device)
+const char *itdb_device_get_firewire_id (const Itdb_Device *device)
 {
-    const gchar *fwid = NULL;
-
     if (device->sysinfo_extended != NULL) {
-	fwid = itdb_sysinfo_properties_get_firewire_id (device->sysinfo_extended);
-    }
-    if (fwid == NULL) {
-	    fwid = (const gchar *)g_hash_table_lookup (device->sysinfo,
-			                               "FirewireGuid");
+	return itdb_sysinfo_properties_get_firewire_id (device->sysinfo_extended);
     }
 
-    if (fwid == NULL) {
-	return 0;
-    }
-
-    return g_ascii_strtoull (fwid, NULL, 16);
+    return g_hash_table_lookup (device->sysinfo, "FirewireGuid");
 }
 
 ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)

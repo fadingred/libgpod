@@ -117,6 +117,39 @@ static const unsigned char fixed[18] = {
     0x21, 0x07, 0xC1, 0xD0, 0x12, 0xB2, 0xA1, 0x07, 0x81
 };
 
+static int ord_from_hex_char(const char c)
+{
+  if ('0' <= c && c <= '9')
+    return c - '0';
+  else if ('a' <= c && c <= 'f')
+    return 10 + (c - 'a');
+  else if ('A' <= c && c <= 'F')
+    return 10 + (c - 'A');
+  else
+    return -1;
+}
+
+static int string_to_hex(unsigned char *dest, const int array_size,
+			 const char *s)
+{
+  int l;
+
+  /* skip optional '0x' prefix */
+  if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
+    s += 2;
+
+  if ((l = strlen(s)) < array_size*2)
+    return -8;
+
+  do {
+    int low, high;
+    if((high = ord_from_hex_char(s[0])) == -1 ||
+       (low = ord_from_hex_char(s[1])) == -1)
+      return -9;
+    *dest++ = high<<4 | low;
+  } while(*(s+=2));
+  return 0;
+}
 
 static int gcd(int a, int b){
     while (TRUE)
@@ -138,15 +171,20 @@ static int lcm(int a, int b)
     return (a*b)/gcd(a,b);
 }
 
-static unsigned char *generate_key (guint64 fwid)
+static unsigned char *generate_key (const char *fwid)
 {
     unsigned char *key;
     unsigned char y[16];
     GChecksum *checksum;
-    int i;
-    guint64 fwid_be = GUINT64_TO_BE (fwid);
-    const unsigned char *firewire_id = (const unsigned char *)&fwid_be;
     gsize checksum_len;
+    int i;
+    unsigned char firewire_id[20];
+    int result;
+
+    result = string_to_hex (firewire_id, sizeof (firewire_id), fwid);
+    if (result < 0) {
+	return NULL;
+    }
 
     /* take LCM of each two bytes in the FWID in turn */
     for (i=0; i<4; i++){
@@ -176,7 +214,7 @@ static unsigned char *generate_key (guint64 fwid)
     return key;
 }
 
-static unsigned char *itdb_compute_hash (guint64 firewire_id,
+static unsigned char *itdb_compute_hash (const char *firewire_id,
 					 const unsigned char *itdb,
 					 unsigned long size, 
 					 gsize *len)
@@ -189,6 +227,9 @@ static unsigned char *itdb_compute_hash (guint64 firewire_id,
     gsize digest_len;
     
     key = generate_key(firewire_id);
+    if (key == NULL) {
+	return NULL;
+    }
 
     /* hmac sha1 */
     for (i=0; i < 64; i++)
@@ -229,7 +270,7 @@ gboolean itdb_hash58_write_hash (Itdb_Device *device,
 				 gsize itdb_len,
 				 GError **error)
 {
-    guint64 fwid;
+    const char *fwid;
     guchar backup18[8];
     guchar backup32[20];
     unsigned char *checksum;
@@ -239,7 +280,7 @@ gboolean itdb_hash58_write_hash (Itdb_Device *device,
     g_assert (itdb_device_get_checksum_type (device) == ITDB_CHECKSUM_HASH58);
 
     fwid = itdb_device_get_firewire_id (device);
-    if (fwid == 0) {
+    if (fwid == NULL) {
 	g_set_error (error, 0, -1, "Couldn't find the iPod firewire ID");
 	return FALSE;
     }
