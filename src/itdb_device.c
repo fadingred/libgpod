@@ -34,7 +34,7 @@
 #include "db-itunes-parser.h"
 #include "itdb_device.h"
 #include "itdb_private.h"
-#include "itdb_sha1.h"
+#include "itdb_hash58.h"
 #include <ctype.h>
 #include <fcntl.h>
 #include <stdio.h>

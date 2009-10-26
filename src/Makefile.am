@@ -9,13 +9,13 @@ libgpod_la_SOURCES = 		\
 	itdb_artwork.c   	\
 	itdb_chapterdata.c   	\
 	itdb_device.c  		\
+	itdb_hash58.c 		\
 	itdb_hash72.c		\
 	itdb_iphone.c		\
 	itdb_itunesdb.c 	\
 	itdb_photoalbum.c 	\
 	itdb_playlist.c  	\
 	itdb_plist.c		\
-	itdb_sha1.c 		\
 	itdb_sqlite.c		\
 	itdb_sysinfo_extended_parser.c \
 	itdb_thumb.c		\
@@ -47,7 +47,7 @@ noinst_HEADERS = 		\
 	itdb_endianness.h 	\
 	itdb_plist.h		\
 	itdb_private.h   	\
-	itdb_sha1.h 		\
+	itdb_hash58.h 		\
 	itdb_sqlite_queries.h	\
 	itdb_sysinfo_extended_parser.h \
 	itdb_thumb.h		\

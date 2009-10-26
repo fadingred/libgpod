@@ -49,7 +49,7 @@
 #include <sys/stat.h>
 
 #include "itdb.h"
-#include "itdb_sha1.h"
+#include "itdb_hash58.h"
 
 static unsigned char *
 calculate_db_checksum (const char *itdb_path, guint64 fwid)

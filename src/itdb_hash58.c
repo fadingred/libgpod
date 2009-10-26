@@ -35,7 +35,7 @@
 */
 
 #include <glib.h>
-#include "itdb_sha1.h"
+#include "itdb_hash58.h"
 #include "sha1.h"
 
 static const unsigned char table1[256] = {
