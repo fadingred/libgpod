@@ -41,7 +41,6 @@
 #include "itdb.h"
 #include "db-itunes-parser.h"
 #include "itdb_private.h"
-#include "sha1.h"
 
 static const unsigned char table1[256] = {
 	0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 
@@ -143,10 +142,11 @@ static unsigned char *generate_key (guint64 fwid)
 {
     unsigned char *key;
     unsigned char y[16];
-    SHA_INFO context;
+    GChecksum *checksum;
     int i;
     guint64 fwid_be = GUINT64_TO_BE (fwid);
     const unsigned char *firewire_id = (const unsigned char *)&fwid_be;
+    gsize checksum_len;
 
     /* take LCM of each two bytes in the FWID in turn */
     for (i=0; i<4; i++){
@@ -164,12 +164,14 @@ static unsigned char *generate_key (guint64 fwid)
     }
 
     /* hash */
-    sha_init(&context);
-    sha_update(&context, fixed, 18);
-    sha_update(&context, y, 16);
+    checksum = g_checksum_new (G_CHECKSUM_SHA1);
+    g_checksum_update (checksum, fixed, sizeof (fixed));
+    g_checksum_update (checksum, y, sizeof (y));
 
     key = g_new0 (unsigned char, 64);
-    sha_final(key, &context);
+    checksum_len = 64;
+    g_checksum_get_digest (checksum, key, &checksum_len);
+    g_checksum_free (checksum);
 
     return key;
 }
@@ -181,9 +183,10 @@ static unsigned char *itdb_compute_hash (guint64 firewire_id,
 {
     unsigned char *key;
     unsigned char *hash;
-    SHA_INFO context;
+    GChecksum *checksum;
     int i;
-    const gsize CHECKSUM_LEN = 20;
+    const gsize CHECKSUM_LEN = g_checksum_type_get_length (G_CHECKSUM_SHA1);
+    gsize digest_len;
     
     key = generate_key(firewire_id);
 
@@ -194,24 +197,28 @@ static unsigned char *itdb_compute_hash (guint64 firewire_id,
     }
 
     /* 20 bytes for the checksum, and 1 trailing \0 */
-    hash = g_new0 (unsigned char, CHECKSUM_LEN + 1);
-    sha_init(&context);
-    sha_update(&context, key, 64);
-    sha_update(&context, itdb, size);
-    sha_final(hash, &context);
+    hash = g_new0 (unsigned char, CHECKSUM_LEN+1);
+    checksum = g_checksum_new (G_CHECKSUM_SHA1);
+    g_checksum_update (checksum, key, 64);
+    g_checksum_update (checksum, itdb, size);
+    digest_len = CHECKSUM_LEN;
+    g_checksum_get_digest (checksum, hash, &digest_len);
+    g_assert (digest_len == CHECKSUM_LEN);
 
     for (i=0; i < 64; i++)
         key[i] ^= 0x36 ^ 0x5c;
 
-    sha_init(&context);
-    sha_update(&context, key, 64);
-    sha_update(&context, hash, CHECKSUM_LEN);
-    sha_final(hash, &context);
+    g_checksum_reset (checksum);
+    g_checksum_update (checksum, key, 64);
+    g_checksum_update (checksum, hash, digest_len);
+    g_checksum_get_digest (checksum, hash, &digest_len);
+    g_checksum_free (checksum);
+    g_assert (digest_len == CHECKSUM_LEN);
 
     g_free (key);
 
     if (len != NULL) {
-	*len = CHECKSUM_LEN;
+	*len = digest_len;
     }
 
     return hash;

@@ -24,8 +24,7 @@ libgpod_la_SOURCES = 		\
 	itdb_zlib.c		\
 	ithumb-writer.c 	\
 	pixmaps.c 		\
-	rijndael.c		\
-	sha1.c
+	rijndael.c
 
 if WITH_INTERNAL_GCHECKSUM
 libgpod_la_SOURCES += gchecksum.c gchecksum.h
@@ -52,8 +51,7 @@ noinst_HEADERS = 		\
 	itdb_thumb.h		\
 	itdb_tzinfo_data.h 	\
 	pixmaps.h		\
-	rijndael.h		\
-	sha1.h
+	rijndael.h
 
 INCLUDES=$(LIBGPOD_CFLAGS)
 LIBS=$(LIBGPOD_LIBS) $(Z_LIBS) -lm
