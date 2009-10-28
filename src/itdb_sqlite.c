@@ -94,16 +94,17 @@ static void mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
 	GList *gl = NULL;
 
 	printf("[%s] - processing %d tracks\n", __func__, g_list_length(itdb->tracks));
+	if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"item_stats\" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", -1, &stmt, &sqltail)) {
+	    fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
+	    printf("[%s] -- inserting into \"item_stats\"\n", __func__);
+	    goto leave;
+	}
 	for (gl=itdb->tracks; gl; gl=gl->next) {
 	    Itdb_Track *track = gl->data;
 	    if (!track->ipod_path) {
 		continue;
 	    }
-
-	    printf("[%s] -- inserting into \"item_stats\"\n", __func__);
-	    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"item_stats\" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", -1, &stmt, &sqltail)) {
-		fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
-	    } else {
+	    {
 		int res;
 		idx = 0;
 		/* item_pid */
@@ -145,11 +146,17 @@ static void mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
 		} else {
 		    fprintf(stderr, "[%s] 1 sqlite3_step returned %d\n", __func__, res); 
 		}
+		res = sqlite3_reset(stmt);
+		if (res == SQLITE_DONE) {
+		    /* expected result */
+		} else {
+		    fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res); 
+		}
 	    }
-	    if (stmt) {
-		sqlite3_finalize(stmt);
-		stmt = NULL;
-	    }
+	}
+	if (stmt) {
+	    sqlite3_finalize(stmt);
+	    stmt = NULL;
 	}
     } else {
 	printf("[%s] - No tracks available, none written.\n", __func__);
