@@ -5359,8 +5359,8 @@ static gboolean wcontents_write (WContents *cts)
     g_return_val_if_fail (cts->filename, FALSE);
 
     cts->error = NULL;
-    return itdb_file_set_contents (cts->filename, cts->contents, 
-                                   cts->pos, &cts->error);
+    return g_file_set_contents (cts->filename, cts->contents, 
+                                cts->pos, &cts->error);
 }
 
 
@@ -6841,51 +6841,6 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
     g_unlink (to_file);
     g_free (data);
     return FALSE;
-}
-
-
-G_GNUC_INTERNAL gboolean
-itdb_file_set_contents (const char *filename, 
-                        const char *data, gssize len, 
-                        GError **error)
-{
-    gchar *backup;
-    gboolean success;
-
-    /* sshfs (which is used to access iPhones/iTouches) can't successfully
-     * rename a file if the destination file already exist.
-     * We first move away the existing file to workaround that limitation
-     *                            */
-    if (g_file_test (filename, G_FILE_TEST_EXISTS)) {
-        gint result;
-        backup = g_strdup_printf ("%sXXXXXX", filename);
-        result = g_rename (filename, backup);
-        if (result != 0) {
-            g_free (backup);
-            return FALSE;
-        }
-    } else {
-        backup = NULL;
-    }
-
-    success = g_file_set_contents (filename, data, len, error);
-    if (!success) {
-        if (backup != NULL) {
-            g_rename (backup, filename);
-            g_free (backup);
-        }
-        return FALSE;
-    }
-
-    /* File saving was
-     * ok, clean up our
-     * mess */
-    if (backup != NULL) {
-        g_unlink (backup);
-        g_free (backup);
-    }
-
-    return TRUE;
 }
 
 /**

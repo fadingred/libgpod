@@ -75,9 +75,9 @@ ipod_gstring_flush (struct iPodSharedDataBuffer *shared, GError **error)
 {
 	gboolean success;
 
-	success = itdb_file_set_contents (shared->filename, 
-	 	 		          shared->data->str, shared->data->len,
-				          error);
+	success = g_file_set_contents (shared->filename, 
+	 	 		       shared->data->str, shared->data->len,
+				       error);
 	if (!success) {
                 return FALSE;
 	}
