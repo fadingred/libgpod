@@ -163,6 +163,10 @@ if test "x$with_libiphone" != "xno"; then
   fi
 
   if test "x$enable_libiphone" = "xyes"; then
+      AC_CHECK_LIB([libiphone], [iphone_device_new], [libiphone_1_0=yes], [libiphone10=no])
+	if test x"$libiphone_1_0" = xyes; then
+	    AC_DEFINE([HAVE_LIBIPHONE_1_0], 1, [Define if libiphone is using its newer API])
+	fi
         AC_DEFINE(HAVE_LIBIPHONE, 1, [Define if you have libiphone support])
         AC_SUBST(LIBIPHONE_CFLAGS)
 	AC_SUBST(LIBIPHONE_LIBS)

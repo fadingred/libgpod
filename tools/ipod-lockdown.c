@@ -47,8 +47,11 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	plist_t value = NULL;
 	plist_t global = NULL;
 	plist_t ptr = NULL;
-
+#ifdef HAVE_LIBIPHONE_1_0
+	ret = iphone_device_new(&device, uuid);
+#else
 	ret = iphone_get_device_by_uuid(&device, uuid);
+#endif
 	if (ret != IPHONE_E_SUCCESS) {
 		printf("No device found with uuid %s, is it plugged in?\n", uuid);
 		return NULL;

@@ -92,8 +92,12 @@ int itdb_iphone_start_sync(Itdb_Device *device, void **prepdata)
     *prepdata = NULL;
 
     pdata_loc = g_new0 (struct itdbprep_int, 1);
-
-    if (IPHONE_E_SUCCESS != iphone_get_device_by_uuid(&pdata_loc->device, uuid)) {
+#ifdef HAVE_LIBIPHONE_1_0
+    res = iphone_device_new(&pdata_loc->device, uuid);
+#else
+    res = iphone_get_device_by_uuid(&pdata_loc->device, uuid);
+#endif
+    if (IPHONE_E_SUCCESS != res) {
 	fprintf(stderr, "No iPhone found, is it plugged in?\n");
 	res = -ENODEV;
 	goto leave_with_err;
