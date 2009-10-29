@@ -619,7 +619,7 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 	int audio_format;
 	int aw_id;
 
-	printf("[%s] -- inserting into \"item\"\n", __func__);
+	/* printf("[%s] -- inserting into \"item\"\n", __func__); */
 	res = sqlite3_reset(stmt_item);
 	if (res != SQLITE_OK) {
 	    fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
@@ -839,7 +839,7 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 	    goto leave;
 	}
 
-	printf("[%s] -- inserting into \"location_kind_map\" (if required)\n", __func__);
+	/* printf("[%s] -- inserting into \"location_kind_map\" (if required)\n", __func__); */
 	res = sqlite3_reset(stmt_location_kind_map);
 	if (res != SQLITE_OK) {
 	    fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
@@ -857,7 +857,7 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 	    fprintf(stderr, "[%s] 5 sqlite3_step returned %d: %s\n", __func__, res, sqlite3_errmsg(db));
 	}
 
-	printf("[%s] -- inserting into \"avformat_info\"\n", __func__);
+	/* printf("[%s] -- inserting into \"avformat_info\"\n", __func__); */
 	res = sqlite3_reset(stmt_avformat_info);
 	if (res != SQLITE_OK) {
 	    fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
@@ -908,7 +908,7 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 	    fprintf(stderr, "[%s] 7 sqlite3_step returned %d\n", __func__, res);
 	}
 
-	printf("[%s] -- inserting into \"item_to_container\"\n", __func__);
+	/* printf("[%s] -- inserting into \"item_to_container\"\n", __func__); */
 	res = sqlite3_reset(stmt_item_to_container);
 	if (res != SQLITE_OK) {
 	    fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
@@ -936,7 +936,7 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 	/* INSERT INTO "ext_item_view_membership" VALUES(-6197982141081478573,0,0); */
 
 	if (this_album) {
-	    printf("[%s] -- inserting into \"album\" (if required)\n", __func__);
+	    /* printf("[%s] -- inserting into \"album\" (if required)\n", __func__); */
 	    res = sqlite3_reset(stmt_album);
 	    if (res != SQLITE_OK) {
 		fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
@@ -982,7 +982,7 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 	}
 
 	if (this_artist) {
-	    printf("[%s] -- inserting into \"artist\" (if required)\n", __func__);
+	    /* printf("[%s] -- inserting into \"artist\" (if required)\n", __func__); */
 	    res = sqlite3_reset(stmt_artist);
 	    if (res != SQLITE_OK) {
 		fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
