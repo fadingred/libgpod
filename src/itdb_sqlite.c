@@ -364,30 +364,11 @@ static void mk_Library(Itdb_iTunesDB *itdb,
     GList *gl = NULL;
     Itdb_Playlist *dev_playlist = NULL;
     int idx = 0;
+    int pos = 0;
     int res;
     GHashTable *genre_map;
     guint32 genre_index;
-
-    /* get some itdb infos */
-    for (gl = itdb->playlists; gl; gl = gl->next) {
-	Itdb_Playlist *pl = (Itdb_Playlist*)gl->data;
-	if (pl->type == 1) {
-	    dev_playlist = pl;
-	    break;
-	}
-    }
-    if (!dev_playlist) {
-	fprintf(stderr, "Could not find special device playlist!\n");
-	goto leave;
-    }
     printf("library_persistent_id = 0x%016"G_GINT64_MODIFIER"x\n", itdb->priv->pid);
-    printf("primary_container_pid = 0x%016"G_GINT64_MODIFIER"x\n", dev_playlist->id);
-
-    if (!dev_playlist->name) {
-	fprintf(stderr, "Could not fetch device name from itdb!\n");
-	goto leave;
-    }
-    printf("device name = %s\n", dev_playlist->name);
 
     dbf = g_build_filename(outpath, "Library.itdb", NULL);
     printf("[%s] Processing '%s'\n", __func__, dbf);
@@ -507,77 +488,6 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 	fprintf(stderr, "[%s] 2 sqlite3_step returned %d\n", __func__, res);
     }
 
-    printf("[%s] - inserting into \"db_info\"\n", __func__);
-    idx = 0;
-    /* pid */
-    sqlite3_bind_int64(stmt_db_info, ++idx, itdb->priv->pid);
-    /* primary_container_pid */
-    /* ... stored in the playlists where the device name is stored too. */
-    sqlite3_bind_int64(stmt_db_info, ++idx, dev_playlist->id);
-    /* media_folder_url */
-    sqlite3_bind_null(stmt_db_info, ++idx);
-    /* audio_language  */
-    /*  this is +0xA0 */
-    sqlite3_bind_int(stmt_db_info, ++idx, itdb->priv->audio_language);
-    /* subtitle_language */
-    /*  this is +0xA2 */
-    sqlite3_bind_int(stmt_db_info, ++idx, itdb->priv->subtitle_language);
-    /* bib */
-    /* TODO: unkown meaning, set to NULL */
-    sqlite3_bind_null(stmt_db_info, ++idx);
-    /* rib */
-    /* TODO: unkown meaning, set to NULL */
-    sqlite3_bind_null(stmt_db_info, ++idx);
-
-    res = sqlite3_step(stmt_db_info);
-    if (res == SQLITE_DONE) {
-	/* expected result */
-    } else {
-	fprintf(stderr, "[%s] 3 sqlite3_step returned %d\n", __func__, res);
-    }
-
-    printf("[%s] - inserting into \"container\"\n", __func__);
-    res = sqlite3_reset(stmt_container);
-    if (res != SQLITE_OK) {
-	fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
-    }
-    /* INSERT INTO "container" VALUES(959107999841118509,0,267295295,'Hamouda',400,0,1,0,1,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL); */
-    idx = 0;
-    /* pid */
-    sqlite3_bind_int64(stmt_container, ++idx, dev_playlist->id);
-    /* distinguished_kind */
-    /* TODO: whatever this means, set it to 0 */
-    sqlite3_bind_int(stmt_container, ++idx, 0);
-    /* date_created */
-    sqlite3_bind_int(stmt_container, ++idx, timeconv(dev_playlist->timestamp));
-    /* name */
-    sqlite3_bind_text(stmt_container, ++idx, dev_playlist->name, -1, SQLITE_STATIC);
-    /* name order */
-    /* This seems to be always 400 */
-    sqlite3_bind_int(stmt_container, ++idx, 400);
-    /* parent_pid */
-    /* TODO: unkown meaning, set to 0 */
-    sqlite3_bind_int(stmt_container, ++idx, 0);
-    /* media_kinds */
-    /* TODO: not sure, set to 1 */
-    sqlite3_bind_int(stmt_container, ++idx, 1);
-    /* workout_template_id */
-    /* seems to be always 0 for this special playlist */
-    sqlite3_bind_int(stmt_container, ++idx, 0);
-    /* is_hidden */
-    /* seems to be always 1 for this special playlist */
-    sqlite3_bind_int(stmt_container, ++idx, 1);
-    /* smart_is_folder */
-    /* seems to be always 0 for this special playlist */
-    sqlite3_bind_int(stmt_container, ++idx, 0);
-
-    res = sqlite3_step(stmt_container);
-    if (res == SQLITE_DONE) {
-	/* expected result */
-    } else {
-	fprintf(stderr, "[%s] 4 sqlite3_step returned %d\n", __func__, res);
-    }
-
     printf("[%s] - inserting into \"genre_map\"\n", __func__);
     genre_map = g_hash_table_new(g_str_hash, g_str_equal);
 
@@ -605,6 +515,139 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 	    fprintf(stderr, "[%s] sqlite3_step returned %d\n", __func__, res);
 	    goto leave;
 	}
+    }
+
+    pos = 0;
+
+    for (gl = itdb->playlists; gl; gl = gl->next) {
+	int tpos = 0;
+	GList *glt = NULL;
+	Itdb_Playlist *pl = (Itdb_Playlist*)gl->data;
+
+	if (pl->type == 1) {
+	    dev_playlist = pl;
+	}
+
+	printf("[%s] - inserting playlist '%s' into \"container\"\n", __func__, pl->name);
+	res = sqlite3_reset(stmt_container);
+	if (res != SQLITE_OK) {
+	    fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
+	}
+	/* INSERT INTO "container" VALUES(959107999841118509,0,267295295,'Hamouda',400,0,1,0,1,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL); */
+	idx = 0;
+	/* pid */
+	sqlite3_bind_int64(stmt_container, ++idx, pl->id);
+	/* distinguished_kind */
+	/* TODO: more values? */
+	if (pl->podcastflag) {
+	    sqlite3_bind_int(stmt_container, ++idx, 11);
+	} else {
+	    sqlite3_bind_int(stmt_container, ++idx, 0);
+	}
+	/* date_created */
+	sqlite3_bind_int(stmt_container, ++idx, timeconv(pl->timestamp));
+	/* name */
+	sqlite3_bind_text(stmt_container, ++idx, pl->name, -1, SQLITE_STATIC);
+	/* name order */
+	sqlite3_bind_int(stmt_container, ++idx, pos++);
+	/* parent_pid */
+	/* TODO: unkown meaning, always 0? */
+	sqlite3_bind_int(stmt_container, ++idx, 0);
+	/* media_kinds */
+	/* TODO: not sure, set to 1 */
+	/* Probably OR of Mediatypes of all items */
+	sqlite3_bind_int(stmt_container, ++idx, 1);
+	/* workout_template_id */
+	/* TODO: seems to be always 0 */
+	sqlite3_bind_int(stmt_container, ++idx, 0);
+	/* is_hidden */
+	/* 1 for dev and podcasts, 0 elsewhere */
+	if (pl->podcastflag || pl->type == 1) {
+	    sqlite3_bind_int(stmt_container, ++idx, 1);
+	} else {
+	    sqlite3_bind_int(stmt_container, ++idx, 0);
+	}
+	/* smart_is_folder */
+	/* TODO: smart playlist stuff? */
+	sqlite3_bind_int(stmt_container, ++idx, 0);
+	/* iTunes leaves everything else NULL for normal playlists */
+
+	res = sqlite3_step(stmt_container);
+	if (res == SQLITE_DONE) {
+	    /* expected result */
+	} else {
+	    fprintf(stderr, "[%s] 4 sqlite3_step returned %d\n", __func__, res);
+	}
+	
+	printf("[%s] - inserting songs into \"item_to_container\"\n", __func__);
+	
+	for (glt = pl->members; glt; glt = glt->next) {
+	    Itdb_Track *track = glt->data;
+
+	    /* printf("[%s] -- inserting into \"item_to_container\"\n", __func__); */
+	    res = sqlite3_reset(stmt_item_to_container);
+	    if (res != SQLITE_OK) {
+		fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
+	    }	/* INSERT INTO "item_to_container" VALUES(-6197982141081478573,959107999841118509,0,NULL); */
+	    idx = 0;
+	    /* item_pid */
+	    sqlite3_bind_int64(stmt_item_to_container, ++idx, track->dbid);
+	    /* container_pid */
+	    sqlite3_bind_int64(stmt_item_to_container, ++idx, pl->id);
+	    /* physical_order */
+	    sqlite3_bind_int(stmt_item_to_container, ++idx, tpos++);
+	    /* shuffle_order */
+	    /* TODO what's this? set to NULL as iTunes does */
+	    sqlite3_bind_null(stmt_item_to_container, ++idx);
+
+	    res = sqlite3_step(stmt_item_to_container);
+	    if (res == SQLITE_DONE) {
+		/* expected result */
+	    } else {
+		fprintf(stderr, "[%s] 8 sqlite3_step returned %d\n", __func__, res);
+	    }
+	}
+    }
+
+    if (!dev_playlist) {
+	fprintf(stderr, "Could not find special device playlist!\n");
+	goto leave;
+    }
+    printf("library_persistent_id = 0x%016"G_GINT64_MODIFIER"x\n", itdb->priv->pid);
+
+    if (!dev_playlist->name) {
+	fprintf(stderr, "Could not fetch device name from itdb!\n");
+	goto leave;
+    }
+    printf("device name = %s\n", dev_playlist->name);
+
+    printf("[%s] - inserting into \"db_info\"\n", __func__);
+    idx = 0;
+    /* pid */
+    sqlite3_bind_int64(stmt_db_info, ++idx, itdb->priv->pid);
+    /* primary_container_pid */
+    /* ... stored in the playlists where the device name is stored too. */
+    sqlite3_bind_int64(stmt_db_info, ++idx, dev_playlist->id);
+    /* media_folder_url */
+    sqlite3_bind_null(stmt_db_info, ++idx);
+    /* audio_language  */
+    /*  this is +0xA0 */
+    sqlite3_bind_int(stmt_db_info, ++idx, itdb->priv->audio_language);
+    /* subtitle_language */
+    /*  this is +0xA2 */
+    sqlite3_bind_int(stmt_db_info, ++idx, itdb->priv->subtitle_language);
+    /* bib */
+    /* TODO: unkown meaning, set to NULL */
+    sqlite3_bind_null(stmt_db_info, ++idx);
+    /* rib */
+    /* TODO: unkown meaning, set to NULL */
+    sqlite3_bind_null(stmt_db_info, ++idx);
+
+    res = sqlite3_step(stmt_db_info);
+    if (res == SQLITE_DONE) {
+	/* expected result */
+    } else {
+	fprintf(stderr, "[%s] 3 sqlite3_step returned %d\n", __func__, res);
     }
 
     /* for each track: */
@@ -906,30 +949,6 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 	    /* expected result */
 	} else {
 	    fprintf(stderr, "[%s] 7 sqlite3_step returned %d\n", __func__, res);
-	}
-
-	/* printf("[%s] -- inserting into \"item_to_container\"\n", __func__); */
-	res = sqlite3_reset(stmt_item_to_container);
-	if (res != SQLITE_OK) {
-	    fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
-	}	/* INSERT INTO "item_to_container" VALUES(-6197982141081478573,959107999841118509,0,NULL); */
-	idx = 0;
-	/* item_pid */
-	sqlite3_bind_int64(stmt_item_to_container, ++idx, track->dbid);
-	/* container_pid */
-	sqlite3_bind_int64(stmt_item_to_container, ++idx, dev_playlist->id);
-	/* physical_order */
-	/* TODO what's this? set to 0 */
-	sqlite3_bind_int(stmt_item_to_container, ++idx, 0);
-	/* shuffle_order */
-	/* TODO what's this? set to NULL */
-	sqlite3_bind_null(stmt_item_to_container, ++idx);
-
-	res = sqlite3_step(stmt_item_to_container);
-	if (res == SQLITE_DONE) {
-	    /* expected result */
-	} else {
-	    fprintf(stderr, "[%s] 8 sqlite3_step returned %d\n", __func__, res);
 	}
 
 	/* this is done by a trigger, so we don't need to do this :-D */
