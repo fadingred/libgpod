@@ -2895,6 +2895,9 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
     CHECK_ERROR (fimp, FALSE);
     fimp->itdb->priv->unk_0xa8 = get32lint (cts, seek+0xA8);
     CHECK_ERROR (fimp, FALSE);
+    if(fimp->itdb->priv->unk_0xa8 != 0) {
+	g_warning ("Unknown value for 0xa8 in header: should be 0 for uncompressed, is %d.\n", fimp->itdb->priv->unk_0xa8);
+    }
 
     if (mhsd_1 == -1)
     {   /* Very bad: no type 1 mhsd which should hold the tracklist */

@@ -117,6 +117,21 @@ gboolean itdb_zlib_check_decompress_fimp (FImport *fimp)
     headerSize = *(guint32*)(cts->contents+4);
     uSize = 0;
 
+    if (headerSize < 0xA9) {
+	g_set_error (&fimp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Header is too small for iTunesCDB!\n"));
+	return FALSE;
+    }
+
+    /* compression flag */
+    if (*(guint8*)(cts->contents+0xa8) == 1) {
+	*(guint8*)(cts->contents+0xa8) = 0;
+    } else {
+	g_warning ("Unknown value for 0xa8 in header: should be 1 for uncompressed, is %d.\n", *(guint8*)(cts->contents+0xa8));
+    }
+
     if (zlib_inflate(NULL, cts->contents+headerSize, cSize-headerSize, &uSize) == 0) {
 	gchar *new_contents;
 	g_print("allocating %"G_GSIZE_FORMAT"\n", uSize+headerSize);
@@ -157,6 +172,22 @@ gboolean itdb_zlib_check_compress_fexp (FExport *fexp)
 
     header_len = GUINT32_FROM_LE (*(guint32*)(cts->contents+4));
     uncompressed_len = GUINT32_FROM_LE(*(guint32*)(cts->contents+8)) - header_len;
+
+    if (header_len < 0xA9) {
+	g_set_error (&fexp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Header is too small for iTunesCDB!\n"));
+	return FALSE;
+    }
+
+    /* compression flag */
+    if (*(guint8*)(cts->contents+0xa8) == 0) {
+	*(guint8*)(cts->contents+0xa8) = 1;
+    } else {
+	g_warning ("Unknown value for 0xa8 in header: should be 0 for uncompressed, is %d.\n", *(guint8*)(cts->contents+0xa8));
+    }
+
     compressed_len = compressBound (uncompressed_len);
 
     new_contents = g_malloc (header_len + compressed_len);
