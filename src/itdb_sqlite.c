@@ -1,7 +1,8 @@
 /*
 |  Copyright (C) 2009 Nikias Bassen <nikias@gmx.li>
 |  Copyright (C) 2009 Christophe Fergeau <cfergeau@mandriva.com>
-
+|  Copyright (C) 2009 Hector Martin <hector@marcansoft.com>
+|
 |  The code contained in this file is free software; you can redistribute
 |  it and/or modify it under the terms of the GNU Lesser General Public
 |  License as published by the Free Software Foundation; either version
