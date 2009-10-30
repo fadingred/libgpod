@@ -531,10 +531,42 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     for (gl = itdb->playlists; gl; gl = gl->next) {
 	int tpos = 0;
 	GList *glt = NULL;
+	guint32 types = 0;
 	Itdb_Playlist *pl = (Itdb_Playlist*)gl->data;
 
 	if (pl->type == 1) {
 	    dev_playlist = pl;
+	}
+
+	printf("[%s] - inserting songs into \"item_to_container\"\n", __func__);
+
+	for (glt = pl->members; glt; glt = glt->next) {
+	    Itdb_Track *track = glt->data;
+
+	    /* printf("[%s] -- inserting into \"item_to_container\"\n", __func__); */
+	    res = sqlite3_reset(stmt_item_to_container);
+	    if (res != SQLITE_OK) {
+		fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
+	    }	/* INSERT INTO "item_to_container" VALUES(-6197982141081478573,959107999841118509,0,NULL); */
+	    idx = 0;
+	    /* item_pid */
+	    sqlite3_bind_int64(stmt_item_to_container, ++idx, track->dbid);
+	    /* container_pid */
+	    sqlite3_bind_int64(stmt_item_to_container, ++idx, pl->id);
+	    /* physical_order */
+	    sqlite3_bind_int(stmt_item_to_container, ++idx, tpos++);
+	    /* shuffle_order */
+	    /* TODO what's this? set to NULL as iTunes does */
+	    sqlite3_bind_null(stmt_item_to_container, ++idx);
+
+	    res = sqlite3_step(stmt_item_to_container);
+	    if (res == SQLITE_DONE) {
+		/* expected result */
+	    } else {
+		fprintf(stderr, "[%s] 8 sqlite3_step returned %d\n", __func__, res);
+	    }
+
+	    types |= track->mediatype;
 	}
 
 	printf("[%s] - inserting playlist '%s' into \"container\"\n", __func__, pl->name);
@@ -563,9 +595,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	/* TODO: unkown meaning, always 0? */
 	sqlite3_bind_int(stmt_container, ++idx, 0);
 	/* media_kinds */
-	/* TODO: not sure, set to 1 */
-	/* Probably OR of Mediatypes of all items */
-	sqlite3_bind_int(stmt_container, ++idx, 1);
+	sqlite3_bind_int(stmt_container, ++idx, types);
 	/* workout_template_id */
 	/* TODO: seems to be always 0 */
 	sqlite3_bind_int(stmt_container, ++idx, 0);
@@ -586,35 +616,6 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    /* expected result */
 	} else {
 	    fprintf(stderr, "[%s] 4 sqlite3_step returned %d\n", __func__, res);
-	}
-	
-	printf("[%s] - inserting songs into \"item_to_container\"\n", __func__);
-	
-	for (glt = pl->members; glt; glt = glt->next) {
-	    Itdb_Track *track = glt->data;
-
-	    /* printf("[%s] -- inserting into \"item_to_container\"\n", __func__); */
-	    res = sqlite3_reset(stmt_item_to_container);
-	    if (res != SQLITE_OK) {
-		fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
-	    }	/* INSERT INTO "item_to_container" VALUES(-6197982141081478573,959107999841118509,0,NULL); */
-	    idx = 0;
-	    /* item_pid */
-	    sqlite3_bind_int64(stmt_item_to_container, ++idx, track->dbid);
-	    /* container_pid */
-	    sqlite3_bind_int64(stmt_item_to_container, ++idx, pl->id);
-	    /* physical_order */
-	    sqlite3_bind_int(stmt_item_to_container, ++idx, tpos++);
-	    /* shuffle_order */
-	    /* TODO what's this? set to NULL as iTunes does */
-	    sqlite3_bind_null(stmt_item_to_container, ++idx);
-
-	    res = sqlite3_step(stmt_item_to_container);
-	    if (res == SQLITE_DONE) {
-		/* expected result */
-	    } else {
-		fprintf(stderr, "[%s] 8 sqlite3_step returned %d\n", __func__, res);
-	    }
 	}
     }
 
