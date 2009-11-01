@@ -1414,11 +1414,65 @@ static int ensure_itlp_dir_exists(const char *itlpdir)
     return TRUE;
 }
 
+static int copy_itdb_file(gchar *from_dir, gchar *to_dir, gchar *fname)
+{
+    int res = 0;
+
+    gchar *srcname = g_build_filename (from_dir, fname, NULL);
+    gchar *dstname = g_build_filename (to_dir, fname, NULL);
+    GError *error = NULL;
+
+    if (itdb_cp (srcname, dstname, &error)) {
+	fprintf(stderr, "itdbprep: copying '%s'\n", fname);
+	res++;
+    }
+
+    if (error) {
+	fprintf (stderr, "Error copying '%s' to '%s': %s\n", srcname, dstname, error->message);
+	g_error_free (error);
+    }
+
+    if (srcname) {
+	g_free (srcname);
+    }
+
+    if (dstname) {
+	g_free (dstname);
+    }
+
+    return res;
+}
+
+static void rmdir_recursive (gchar *path)
+{
+    GDir *cur_dir;
+    const gchar *dir_file;
+
+    cur_dir = g_dir_open (path, 0, NULL);
+    if (cur_dir) while ((dir_file = g_dir_read_name (cur_dir)))
+    {
+	gchar *fpath = g_build_filename (path, dir_file, NULL);
+	if (fpath) {
+	    if (g_file_test (fpath, G_FILE_TEST_IS_DIR)) {
+		rmdir_recursive (fpath);
+	    } else {
+		g_unlink (fpath);
+	    }
+	    g_free (fpath);
+	}
+    }
+    if (cur_dir) {
+	g_dir_close (cur_dir);
+    }
+    g_rmdir (path);
+}
+
 int itdb_sqlite_generate_itdbs(FExport *fexp)
 {
     int res = 0;
     gchar *itlpdir;
     gchar *dirname;
+    gchar *tmpdir = NULL;
 
     printf("libitdbprep: %s called with file %s and uuid %s\n", __func__,
 	   fexp->itdb->filename, itdb_device_get_uuid(fexp->itdb->device));
@@ -1441,13 +1495,42 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
 
     tzoffset = fexp->itdb->tzoffset;
 
-    /* generate itdb files */
-    build_itdb_files(fexp->itdb, fexp->albums, fexp->artists, itlpdir,
-		     itdb_device_get_uuid(fexp->itdb->device));
+    tmpdir = g_build_path (g_get_tmp_dir(), tmpnam(NULL), NULL);
+    if (g_mkdir (tmpdir, 0755) != 0) {
+	fprintf(stderr, "Could not create temporary directory '%s': %s\n", tmpdir, strerror(errno));
+	res = -1;
+	goto leave;
+    }
 
+    /* generate itdb files in temporary directory */
+    if (build_itdb_files(fexp->itdb, fexp->albums, fexp->artists, tmpdir,
+		     itdb_device_get_uuid(fexp->itdb->device)) != 0) {
+	res = -1;
+	goto leave;
+    } else {
+	/* copy files */
+	int cpcnt = 0;
+	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Dynamic.itdb");
+	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Extras.itdb");
+	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Genius.itdb");
+	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Library.itdb");
+	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Locations.itdb");
+	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Locations.itdb.cbk");
+	if (cpcnt != 6) {
+	    res = -1;
+	    goto leave;
+	}
+    }
+
+    res = 0;
 leave:
     if (itlpdir) {
 	g_free(itlpdir);
+    }
+    if (tmpdir) {
+	/* cleanup tmpdir, this will also delete tmpdir itself */
+	rmdir_recursive (tmpdir);
+	g_free(tmpdir);
     }
 
     return res;
