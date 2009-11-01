@@ -398,11 +398,18 @@ set_pixel_format (Itdb_ArtworkFormat *img_spec, GHashTable *dict)
         img_spec->format = THUMB_FORMAT_RGB565_LE;
     } else if (strcmp (pixel_format, "79343230" /* y420 */) == 0) {
         img_spec->format = THUMB_FORMAT_I420_LE;
+    } else if (strcmp (pixel_format, "4C353535" /* L555 */) == 0) {
+	if (g_hash_table_lookup (dict, "PixelOrder") != NULL) {
+	    img_spec->format = THUMB_FORMAT_REC_RGB555_LE;
+	} else {
+	    img_spec->format = THUMB_FORMAT_RGB555_LE;
+	}
     } else {
         g_free (pixel_format);
         return FALSE;
     }
     g_hash_table_remove (dict, "PixelFormat");
+    g_hash_table_remove (dict, "PixelOrder");
     g_free (pixel_format);
     return TRUE;
 }
