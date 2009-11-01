@@ -115,13 +115,11 @@ static int ord_from_hex_char(const char c)
 static int string_to_hex(unsigned char *dest, const int array_size,
 			 const char *s)
 {
-  int l;
-
   /* skip optional '0x' prefix */
   if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
     s += 2;
 
-  if ((l = strlen(s)) < array_size*2)
+  if (strlen(s) > array_size*2)
     return -8;
 
   do {
