@@ -38,8 +38,6 @@ test_ls_LDADD =
 test_init_ipod_SOURCES = test-init-ipod.c
 test_init_ipod_LDADD = 
 
-test_checksum_SOURCES = test-checksum.c
-
 test_firewire_id_SOURCES = test-fw-id.c
 
 test_sysinfo_extended_parsing_SOURCES = \
@@ -51,7 +49,7 @@ test_sysinfo_extended_parsing_LDADD =
 
 get_timezone_SOURCES = get-timezone.c
 
-noinst_PROGRAMS=test-itdb test-ls test-checksum test-firewire-id \
+noinst_PROGRAMS=test-itdb test-ls test-firewire-id \
 		test-sysinfo-extended-parsing			 \
 	        $(TESTTHUMBS) $(TESTTAGLIB) $(TESTCP) $(TESTMISC)
 
