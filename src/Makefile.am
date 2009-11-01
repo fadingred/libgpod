@@ -57,7 +57,7 @@ noinst_HEADERS = 		\
 	sha1.h
 
 INCLUDES=$(LIBGPOD_CFLAGS)
-LIBS=$(LIBGPOD_LIBS) $(Z_LIBS) -lm -lsqlite3
+LIBS=$(LIBGPOD_LIBS) $(Z_LIBS) -lm
 
 if HAVE_LIBIPHONE
 LIBS+=-liphone

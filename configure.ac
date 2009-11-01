@@ -59,7 +59,7 @@ AC_PROG_INTLTOOL([0.21])
 
 AC_CHECK_FUNCS([localtime_r])
 AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[#include <time.h>])
-PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.8.0 gobject-2.0)
+PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.8.0 gobject-2.0 sqlite3)
 
 dnl **************************************************
 dnl we've copied gchecksum from glib 2.16. Only use the
