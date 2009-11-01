@@ -370,6 +370,7 @@ static void dump_struct (const DictFieldMapping *mapping,
 static void dump_image_format (Itdb_ArtworkFormat *format)
 {
     dump_struct (sysinfo_image_format_fields_mapping, format);
+    g_print ("PixelFormat: %d\n", format->format); 
 }
 
 void itdb_sysinfo_properties_dump (SysInfoIpodProperties *props)
