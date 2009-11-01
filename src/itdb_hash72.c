@@ -136,13 +136,17 @@ static int string_to_hex(unsigned char *dest, const int array_size,
 
 static gboolean get_uuid (const Itdb_Device *device, unsigned char uuid[20])
 {
-    char *uuid_str;
+    const char *uuid_str;
     int result;
 
     uuid_str = itdb_device_get_uuid (device);
     if (uuid_str == NULL) {
+	uuid_str = itdb_device_get_firewire_id (device);
+    }
+    if (uuid_str == NULL) {
 	return FALSE;
     }
+    memset (uuid, 0, 20);
     result = string_to_hex (uuid, 20, uuid_str);
 
     return (result == 0);
