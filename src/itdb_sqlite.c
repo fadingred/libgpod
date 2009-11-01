@@ -47,15 +47,15 @@ static uint32_t timeconv(time_t tv)
 }
 
 
-static void mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
+static int mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
 {
+    int res = -1;
     gchar *dbf = NULL;
     sqlite3 *db = NULL;
     sqlite3_stmt *stmt = NULL;
     char *errmsg = NULL;
     struct stat fst;
     int idx = 0;
-    int res;
 
     dbf = g_build_filename(outpath, "Dynamic.itdb", NULL);
     printf("[%s] Processing '%s'\n", __func__, dbf);
@@ -164,6 +164,7 @@ static void mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
 
     sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
 
+    res = 0;
     printf("[%s] done.\n", __func__);
 leave:
     if (db) {
@@ -172,10 +173,12 @@ leave:
     if (dbf) {
 	g_free(dbf);
     }
+    return res;
 }
 
-static void mk_Extras(Itdb_iTunesDB *itdb, const char *outpath)
+static int mk_Extras(Itdb_iTunesDB *itdb, const char *outpath)
 {
+    int res = -1;
     int rebuild = 0;
     gchar *dbf = NULL;
     sqlite3 *db = NULL;
@@ -243,6 +246,7 @@ static void mk_Extras(Itdb_iTunesDB *itdb, const char *outpath)
 
     sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
 
+    res = 0;
     printf("[%s] done.\n", __func__);
 leave:
     if (db) {
@@ -251,10 +255,12 @@ leave:
     if (dbf) {
 	g_free(dbf);
     }
+    return res;
 }
 
-static void mk_Genius(Itdb_iTunesDB *itdb, const char *outpath)
+static int mk_Genius(Itdb_iTunesDB *itdb, const char *outpath)
 {
+    int res = -1;
     int rebuild = 0;
     gchar *dbf = NULL;
     sqlite3 *db = NULL;
@@ -334,6 +340,7 @@ static void mk_Genius(Itdb_iTunesDB *itdb, const char *outpath)
 
     sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
 
+    res = 0;
     printf("[%s] done.\n", __func__);
 leave:
     if (db) {
@@ -342,12 +349,14 @@ leave:
     if (dbf) {
 	g_free(dbf);
     }
+    return res;
 }
 
-static void mk_Library(Itdb_iTunesDB *itdb,
+static int mk_Library(Itdb_iTunesDB *itdb,
 		       GHashTable *album_ids, GHashTable *artist_ids,
 		       const char *outpath)
 {
+    int res = -1;
     gchar *dbf = NULL;
     sqlite3 *db = NULL;
     sqlite3_stmt *stmt_version_info = NULL;
@@ -366,7 +375,6 @@ static void mk_Library(Itdb_iTunesDB *itdb,
     Itdb_Playlist *dev_playlist = NULL;
     int idx = 0;
     int pos = 0;
-    int res;
     GHashTable *genre_map;
     guint32 genre_index;
     printf("library_persistent_id = 0x%016"G_GINT64_MODIFIER"x\n", itdb->priv->pid);
@@ -1040,6 +1048,7 @@ static void mk_Library(Itdb_iTunesDB *itdb,
 
     sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
 
+    res = 0;
     printf("[%s] done.\n", __func__);
 leave:
     if (stmt_version_info) {
@@ -1081,10 +1090,12 @@ leave:
     if (dbf) {
 	g_free(dbf);
     }
+    return res;
 }
 
-static void mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *uuid)
+static int mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *uuid)
 {
+    int res = -1;
     gchar *dbf = NULL;
     sqlite3 *db = NULL;
     sqlite3_stmt *stmt = NULL;
@@ -1222,6 +1233,7 @@ static void mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *u
 
     sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
 
+    res = 0;
     printf("[%s] done.\n", __func__);
 leave:
     if (stmt) {
@@ -1233,6 +1245,7 @@ leave:
     if (dbf) {
 	g_free(dbf);
     }
+    return res;
 }
 
 static int cbk_calc_sha1_one_block (FILE *f, unsigned char sha1[20])
@@ -1352,16 +1365,35 @@ static gboolean mk_Locations_cbk (Itdb_iTunesDB *itdb, const char *dirname)
     return success;
 }
 
-static void build_itdb_files(Itdb_iTunesDB *itdb,
+static int build_itdb_files(Itdb_iTunesDB *itdb,
 			     GHashTable *album_ids, GHashTable *artist_ids,
 			     const char *outpath, const char *uuid)
 {
-    mk_Dynamic(itdb, outpath);
-    mk_Extras(itdb, outpath);
-    mk_Genius(itdb, outpath);
-    mk_Library(itdb, album_ids, artist_ids, outpath);
-    mk_Locations(itdb, outpath, uuid);
-    mk_Locations_cbk(itdb, outpath);
+    int err = 0;
+
+    if (mk_Dynamic(itdb, outpath) != 0) {
+	err++;
+    }
+    if (mk_Extras(itdb, outpath) != 0) {
+	err++;
+    }
+    if (mk_Genius(itdb, outpath) != 0) {
+	err++;
+    }
+    if (mk_Library(itdb, album_ids, artist_ids, outpath) != 0) {
+	err++;
+    }
+    if (mk_Locations(itdb, outpath, uuid) != 0) {
+	err++;
+    }
+    if (!mk_Locations_cbk(itdb, outpath)) {
+	err++;
+    }
+
+    if (err > 0) {
+	return -1;
+    }
+    return 0;
 }
 
 static int ensure_itlp_dir_exists(const char *itlpdir)
