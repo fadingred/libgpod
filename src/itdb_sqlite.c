@@ -988,7 +988,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    /* user_rating */
 	    sqlite3_bind_int(stmt_album, ++idx, 0);
 	    /* name */
-	    sqlite3_bind_text(stmt_album, ++idx, track->title, -1, SQLITE_STATIC);
+	    sqlite3_bind_text(stmt_album, ++idx, track->album, -1, SQLITE_STATIC);
 	    /* name_order */
 	    /* TODO */
 	    sqlite3_bind_int(stmt_album, ++idx, 100);
