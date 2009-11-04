@@ -1179,7 +1179,6 @@ ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 	        g_free (filename);
 		return -1;
 	}
-	g_free (filename);
 	bytes_written = write_mhfd (&db, buf, id_max);
 
 	/* Refcount of the shared buffer should drop to 0 and this should
@@ -1190,8 +1189,10 @@ ipod_write_artwork_db (Itdb_iTunesDB *itdb)
 	if (bytes_written == -1) {
 		g_print ("Failed to save %s\n", filename);
 		/* FIXME: maybe should unlink the file we may have created */
+		g_free (filename);
 		return -1;
 	}
+	g_free (filename);
 	return 0;
 }
 
@@ -1231,13 +1232,15 @@ ipod_write_photo_db (Itdb_PhotoDB *photodb)
 	 * sync buffered data to disk
 	 */
 	ipod_buffer_destroy (buf);
-        g_free (filename);
 
 	if (bytes_written == -1) {
 		g_print ("Failed to save %s\n", filename);
 		/* FIXME: maybe should unlink the file we may have created */
+	        g_free (filename);
 		return -1;
 	}
+        g_free (filename);
+
 	return 0;
 }
 #else
