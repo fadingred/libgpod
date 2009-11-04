@@ -1568,6 +1568,7 @@ itdb_write_ithumb_files (Itdb_DB *db)
                 ithmb_rearrange_existing_thumbnails (thumbs_dir, db, format);
                 writer = ithumb_writer_new (thumbs_dir, format,
                                             db->db_type, device->byte_order);
+		g_free (thumbs_dir);
                 if (writer != NULL) {
                         writers = g_list_prepend (writers, writer);
 		}
