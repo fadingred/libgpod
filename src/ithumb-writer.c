@@ -1545,6 +1545,7 @@ itdb_write_ithumb_files (Itdb_DB *db)
 	}
 	
         formats = NULL;
+	thumbs_dir = NULL;
         switch (db->db_type) {
         case DB_TYPE_ITUNES:
             formats = itdb_device_get_cover_art_formats(db_get_device(db));
@@ -1555,6 +1556,9 @@ itdb_write_ithumb_files (Itdb_DB *db)
 	    thumbs_dir = ithumb_get_photos_thumb_dir (mount_point);
             break;
         }
+	if (thumbs_dir == NULL) {
+		return -1;
+	}
 	writers = NULL;
 	for (it = formats; it != NULL; it = it->next) {
 		iThumbWriter *writer;
