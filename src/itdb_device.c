@@ -731,6 +731,13 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
 
     { "72Q", "C060" }, /* 16GB Silver Nano 5g */
     { "72R", "C062" }, /* 16GB Black Nano 5g */
+    { "72S", "C064" }, /* 16GB Purple Nano 5g */
+    { "72X", "C066" }, /* 16GB Blue Nano 5g */
+    { "734", "C068" }, /* 16GB Green Nano 5g */
+    { "738", "C070" }, /* 16GB Yellow Nano 5g */
+    { "739", "C072" }, /* 16GB Orange Nano 5g */
+    { "73A", "C074" }, /* 16GB Red Nano 5g */
+    { "73B", "C075" }, /* 16GB Pink Nano 5g */
 
     { "4NZ", "B867" }, /* 4GB Silver Shuffle 4g */
     { "891", "C164" }, /* 4GB Black Shuffle 4g */
