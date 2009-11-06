@@ -775,8 +775,9 @@ ithumb_writer_scale_and_crop (GdkPixbuf *input_pixbuf,
       g_assert(round(scaled_width) == width ||
 	       round(scaled_height) == height);
 
-      output_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
-				     width + border_width,
+      output_pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
+				     gdk_pixbuf_get_has_alpha (input_pixbuf),
+				     8, width + border_width,
 				     height + border_width);
       gdk_pixbuf_fill(output_pixbuf, 0xffffffff);
 
