@@ -281,6 +281,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"B048",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_2, 50},
     {"B496",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_2, 50},
     {"C131",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
+    {"C133",  32, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
 
     /* iPhone G2 aka iPhone 3G (yeah, confusing ;) */
     {"B500",  16, ITDB_IPOD_MODEL_IPHONE_WHITE,       ITDB_IPOD_GENERATION_IPHONE_2, 14},
@@ -754,6 +755,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "Y7H", "B046" }, /* 8GB Black iPhone 3G */
     { "Y7K", "B496" }, /* 16GB Black iPhone 3G */
     { "3NP", "C131" }, /* 16GB Black iPhone 3GS */
+    { "3NR", "C133" }, /* 32GB Black iPhone 3GS */
     { NULL ,  NULL  }
 };
 
