@@ -107,7 +107,6 @@ gboolean itdb_zlib_check_decompress_fimp (FImport *fimp)
     size_t uSize;
 
     g_return_val_if_fail (fimp, FALSE);
-    g_return_val_if_fail (fimp->itdb, FALSE);
     g_return_val_if_fail (fimp->fcontents, FALSE);
     g_return_val_if_fail (fimp->fcontents->filename, FALSE);
 
