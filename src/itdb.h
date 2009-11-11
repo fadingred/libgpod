@@ -945,10 +945,9 @@ typedef struct _Itdb_iTunesDB_Private Itdb_iTunesDB_Private;
  * @device:             iPod device info (#Itdb_Device)
  * @version:            The version number of the iTunesDB
  * @id:                 A 64 bit id value for the iTunesDB
- * @tzoffset:		offset in seconds from UTC
+ * @tzoffset:           offset in seconds from UTC
  * @reserved_int2:      Reserved for future use
- * @priv:		Private data
- * @reserved1:          Reserved for future use
+ * @priv:               Private data
  * @reserved2:          Reserved for future use
  * @usertype:           For use by application
  * @userdata:           For use by application
