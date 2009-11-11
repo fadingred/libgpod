@@ -1975,7 +1975,7 @@ static glong get_mhip (FImport *fimp, glong mhip_seek)
    be. On error -1 is returned and fimp->error is set
    appropriately. */
 /* get_mhyp */
-static glong get_playlist (FImport *fimp, glong mhyp_seek)
+static glong get_playlist (FImport *fimp, guint mhsd_type, glong mhyp_seek)
 {
   guint32 i, mhipnum, mhod_num;
   glong nextseek, mhod_seek, mhip_seek;
@@ -2156,7 +2156,11 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 #endif
 
   /* add new playlist */
-  itdb_playlist_add (fimp->itdb, plitem, -1);
+  if (mhsd_type == 5) {
+      itdb_playlist_add_to_purchases (fimp->itdb, plitem, -1);
+  } else {
+      itdb_playlist_add (fimp->itdb, plitem, -1);
+  }
 
   mhip_seek = mhod_seek;
 
@@ -2750,6 +2754,7 @@ static gboolean parse_playlists (FImport *fimp, glong mhsd_seek)
     FContents *cts;
     glong seek, mhlp_seek;
     guint32 nr_playlists, i;
+    guint mhsd_type;
 
     g_return_val_if_fail (fimp, FALSE);
     g_return_val_if_fail (fimp->itdb, FALSE);
@@ -2761,11 +2766,11 @@ static gboolean parse_playlists (FImport *fimp, glong mhsd_seek)
 
     g_return_val_if_fail (check_header_seek (cts, "mhsd", mhsd_seek),
 			  FALSE);
+    mhsd_type = get32lint (cts, mhsd_seek+12);
 
     /* The mhlp header should be the next after the mhsd header. In
        order to allow slight changes in the format, we skip headers
        until we find an mhlp inside the given mhsd */
-
     mhlp_seek = find_next_a_in_b (cts, "mhlp", mhsd_seek, mhsd_seek);
     CHECK_ERROR (fimp, FALSE);
 
@@ -2790,7 +2795,7 @@ static gboolean parse_playlists (FImport *fimp, glong mhsd_seek)
     {
 	/* seek could be -1 if first mhyp could not be found */
 	if (seek != -1)
-	    seek = get_playlist (fimp, seek);
+	    seek = get_playlist (fimp, mhsd_type, seek);
 	if (fimp->error) return FALSE;
 	if (seek == -1)
 	{   /* this should not be -- issue warning */
@@ -5192,7 +5197,24 @@ static gboolean write_playlist (FExport *fexp,
     put16lint (cts, 1);            /* string mhod count (1)     */
     put16lint (cts, pl->podcastflag);
     put32lint (cts, pl->sortorder);
-    put32_n0 (cts, 15);            /* ?                         */
+    if (mhsd_type == 5) {
+        put32_n0 (cts, 8);            /* ?                         */
+        /* +0x50 */
+        put16lint (cts, pl->priv->purchase_type);
+        put16lint (cts, pl->priv->purchase_type); /* same as 0x50 ? */
+        /* +0x54 */
+        if ((pl->priv->purchase_type == ITDB_PLAYLIST_PURCHASE_MOVIE_RENTALS)
+             || (pl->priv->purchase_type == ITDB_PLAYLIST_PURCHASE_RINGTONES)){
+            put32lint (cts, 1); /* unknown, 1 for Movie rentals + Ringtones */
+        } else {
+            put32lint (cts, 0); /* 0 otherwise */
+        }
+        put32_n0 (cts, 5); /* ? */
+
+
+    } else {
+        put32_n0 (cts, 15);            /* ?                         */
+    }
 
     mhod.valid = TRUE;
     mhod.type = MHOD_ID_TITLE;
@@ -5256,6 +5278,7 @@ static gboolean write_mhsd_playlists (FExport *fexp, guint32 mhsd_type)
     glong mhlp_seek;
     WContents *cts;
     int plcnt = 0;
+    GList *playlists;
 
     g_return_val_if_fail (fexp, FALSE);
     g_return_val_if_fail (fexp->itdb, FALSE);
@@ -5268,14 +5291,15 @@ static gboolean write_mhsd_playlists (FExport *fexp, guint32 mhsd_type)
     /* write header with nr. of playlists */
     mhlp_seek = cts->pos;
     mk_mhlp (fexp);
-    for (gl=fexp->itdb->playlists; gl; gl=gl->next)
+    if (mhsd_type == 5) {
+        playlists = fexp->itdb->priv->purchase_playlists;
+    } else {
+        playlists = fexp->itdb->playlists;
+    }
+    for (gl=playlists; gl; gl=gl->next)
     {
 	Itdb_Playlist *pl = gl->data;
 	g_return_val_if_fail (pl, FALSE);
-
-	if (mhsd_type == 5) {
-	    continue;
-	}
 
 	write_playlist (fexp, pl, mhsd_type);
 	plcnt++;
