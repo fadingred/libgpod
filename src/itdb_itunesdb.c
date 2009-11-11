@@ -5273,11 +5273,7 @@ static gboolean write_mhsd_playlists (FExport *fexp, guint32 mhsd_type)
 	Itdb_Playlist *pl = gl->data;
 	g_return_val_if_fail (pl, FALSE);
 
-	if ((mhsd_type == 5) && !pl->is_spl) {
-	    continue;
-	}
-
-	if (((mhsd_type == 2) || (mhsd_type == 3)) && pl->is_spl) {
+	if (mhsd_type == 5) {
 	    continue;
 	}
 
@@ -5628,12 +5624,12 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 	goto err;
     }
 
-    /* write smart playlists (mhsd type 5) */
+    /* write purchase playlists (mhsd type 5) */
     if (!fexp->error && !write_mhsd_playlists (fexp, 5)) {
 	g_set_error (&fexp->error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_ITDB_CORRUPT,
-		     _("Error writing smart playlists (mhsd type 5)"));
+		     _("Error writing purchase playlists (mhsd type 5)"));
 	goto err;
     }
 
