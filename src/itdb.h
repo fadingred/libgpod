@@ -1047,6 +1047,7 @@ struct _Itdb_PhotoAlbum
     ItdbUserDataDestroyFunc userdata_destroy;
 };
 
+typedef struct _Itdb_Playlist_Private Itdb_Playlist_Private;
 /**
  * Itdb_Playlist:
  * @itdb:               A pointer to the #Itdb_iTunesDB (for convenience)
@@ -1074,7 +1075,7 @@ struct _Itdb_PhotoAlbum
  * @reserved101:        Reserved for MHOD100 implementation
  * @reserved_int1:      Reserved for future use
  * @reserved_int2:      Reserved for future use
- * @reserved1:          Reserved for future use
+ * @priv:               Private data
  * @reserved2:          Reserved for future use
  * @usertype:           For use by application
  * @userdata:           For use by application
@@ -1105,7 +1106,7 @@ struct _Itdb_Playlist
     /* reserved for future use */
     gint32 reserved_int1;
     gint32 reserved_int2;
-    gpointer reserved1;
+    Itdb_Playlist_Private *priv;
     gpointer reserved2;
     /* below is for use by application */
     guint64 usertype;

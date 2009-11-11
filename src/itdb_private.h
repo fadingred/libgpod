@@ -185,6 +185,9 @@ struct _Itdb_Track_Private {
 	guint32 artist_id;
 };
 
+struct _Itdb_Playlist_Private {
+};
+
 G_GNUC_INTERNAL gboolean itdb_spl_action_known (ItdbSPLAction action);
 G_GNUC_INTERNAL void itdb_splr_free (Itdb_SPLRule *splr);
 G_GNUC_INTERNAL const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb);

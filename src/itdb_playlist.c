@@ -1166,6 +1166,9 @@ Itdb_Playlist *itdb_playlist_duplicate (Itdb_Playlist *pl)
     if (pl->userdata && pl->userdata_duplicate)
 	pl_dup->userdata = pl->userdata_duplicate (pl->userdata);
 
+    /* Copy private data too */
+    pl_dup->priv = g_memdup (pl->priv, sizeof (Itdb_Playlist_Private));
+
     return pl_dup;
 }
 
@@ -1241,6 +1244,8 @@ Itdb_Playlist *itdb_playlist_new (const gchar *title, gboolean spl)
 	/* add at least one rule */
 	itdb_splr_add_new (pl, 0);
     }
+    pl->priv = g_new0 (Itdb_Playlist_Private, 1);
+
     return pl;
 }
 
@@ -1260,6 +1265,8 @@ void itdb_playlist_free (Itdb_Playlist *pl)
     g_list_free (pl->splrules.rules);
     if (pl->userdata && pl->userdata_destroy)
 	(*pl->userdata_destroy) (pl->userdata);
+
+    g_free (pl->priv);
     g_free (pl);
 }
 
