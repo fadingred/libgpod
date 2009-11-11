@@ -164,6 +164,17 @@ struct _Itdb_Item_Id {
 };
 typedef struct _Itdb_Item_Id Itdb_Item_Id;
 
+enum _Itdb_Playlist_Purchase_Type {
+    ITDB_PLAYLIST_PURCHASE_NONE          = 0,
+    ITDB_PLAYLIST_PURCHASE_MOVIES        = 2,
+    ITDB_PLAYLIST_PURCHASE_TV_SHOWS      = 3,
+    ITDB_PLAYLIST_PURCHASE_MUSIC         = 4,
+    ITDB_PLAYLIST_PURCHASE_AUDIOBOOKS    = 5,
+    ITDB_PLAYLIST_PURCHASE_RINGTONES     = 6,
+    ITDB_PLAYLIST_PURCHASE_MOVIE_RENTALS = 7
+};
+typedef enum _Itdb_Playlist_Purchase_Type Itdb_Playlist_Purchase_Type;
+
 struct _Itdb_iTunesDB_Private
 {
     guint16 unk_0x22;
@@ -186,6 +197,7 @@ struct _Itdb_Track_Private {
 };
 
 struct _Itdb_Playlist_Private {
+    Itdb_Playlist_Purchase_Type purchase_type;
 };
 
 G_GNUC_INTERNAL gboolean itdb_spl_action_known (ItdbSPLAction action);

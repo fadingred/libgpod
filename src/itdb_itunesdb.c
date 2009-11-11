@@ -2036,6 +2036,9 @@ static glong get_playlist (FImport *fimp, glong mhyp_seek)
 /*  plitem->libmhodcount = get16lint (cts, mhyp_seek+40);*/
   plitem->podcastflag = get16lint (cts, mhyp_seek+42);
   plitem->sortorder = get32lint (cts, mhyp_seek+44);
+  if (header_len >= 0x6C) {
+      plitem->priv->purchase_type = get16lint (cts, mhyp_seek+0x50);
+  }
 
   mhod_seek = mhyp_seek + header_len;
 
