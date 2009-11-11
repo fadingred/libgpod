@@ -1270,19 +1270,8 @@ void itdb_playlist_free (Itdb_Playlist *pl)
     g_free (pl);
 }
 
-/**
- * itdb_playlist_add:
- * @itdb:   an #Itdb_iTunesDB
- * @pl:     an #Itdb_Playlist
- * @pos:    position to insert @pl at
- *
- * Adds playlist @pl to the database @itdb at position @pos (-1 for
- * "append to end"). A unique id is created if @pl->id is equal to
- * zero. After calling this function, @itdb manages the memory of @pl,
- * which means you no longer need to explicitly call
- * itdb_playlist_free()
- */
-void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
+static void itdb_playlist_add_internal (Itdb_iTunesDB *itdb, Itdb_Playlist *pl,
+                                        gint32 pos, GList **playlists)
 {
     g_return_if_fail (itdb);
     g_return_if_fail (pl);
@@ -1302,7 +1291,7 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
 	    /* check if id is really unique (with 100 playlists the
 	     * chance to create a duplicate is 1 in
 	     * 184,467,440,737,095,516.16) */
-	    for (gl=itdb->playlists; id && gl; gl=gl->next)
+	    for (gl=*playlists; id && gl; gl=gl->next)
 	    {
 		Itdb_Playlist *g_pl = gl->data;
 		g_return_if_fail (g_pl);
@@ -1315,7 +1304,30 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
     if (pl->timestamp == 0)  pl->timestamp = time (NULL);
 
     /* pos == -1 appends at the end of the list */
-    itdb->playlists = g_list_insert (itdb->playlists, pl, pos);
+    *playlists = g_list_insert (*playlists, pl, pos);
+}
+
+void itdb_playlist_add_to_purchases (Itdb_iTunesDB *itdb, Itdb_Playlist *pl,
+                                     gint32 pos)
+{
+    itdb_playlist_add_internal (itdb, pl, pos, &itdb->priv->purchase_playlists);
+}
+
+/**
+ * itdb_playlist_add:
+ * @itdb:   an #Itdb_iTunesDB
+ * @pl:     an #Itdb_Playlist
+ * @pos:    position to insert @pl at
+ *
+ * Adds playlist @pl to the database @itdb at position @pos (-1 for
+ * "append to end"). A unique id is created if @pl->id is equal to
+ * zero. After calling this function, @itdb manages the memory of @pl,
+ * which means you no longer need to explicitly call
+ * itdb_playlist_free()
+ */
+void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
+{
+    itdb_playlist_add_internal (itdb, pl, pos, &itdb->playlists);
 }
 
 /**
