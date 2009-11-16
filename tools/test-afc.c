@@ -1,4 +1,8 @@
+#define _BSD_SOURCE 1 /* for daemon() */
 #include <glib.h>
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
 
 extern char *read_sysinfo_extended_by_uuid (const char *uuid);
 extern gboolean iphone_write_sysinfo_extended (const char *uuid, const char *xml);
@@ -26,8 +30,21 @@ static gboolean write_sysinfo_extended (const char *uuid)
 
 int main (int argc, char **argv)
 {
+    int daemonize_failed;
+
     if (argc != 2) {
         g_print ("Usage: %s <uuid>\n", argv[0]);
+        return 1;
+    }
+
+    /* we don't want to block the calling process since it would delay udev
+     * event handling, and usbmuxd might not be ready yet so we could be
+     * blocking for some time. Just daemonize to run in the background, 
+     * SysInfoExtended generation can be async anyway
+     */
+    daemonize_failed = daemon (0, 0);
+    if (daemonize_failed) {
+        g_print ("%s: daemon() failed: %s\n", argv[0], strerror (errno));
         return 1;
     }
 
