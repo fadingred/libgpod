@@ -11,6 +11,8 @@ if HAVE_LIBIPHONE
 ipod_read_sysinfo_extended_SOURCES+=ipod-lockdown.c
 ipod_read_sysinfo_extended_CFLAGS+=$(LIBIPHONE_CFLAGS)
 ipod_read_sysinfo_extended_LDADD+=$(LIBIPHONE_LIBS)
+
+bin_PROGRAMS+=test-afc
 endif
 
 if HAVE_HAL
@@ -41,6 +43,10 @@ if HAVE_LIBIPHONE
 libgpod_callout_SOURCES += ipod-lockdown.c
 libgpod_callout_CFLAGS += $(LIBIPHONE_CFLAGS)
 libgpod_callout_LDADD += $(LIBIPHONE_LIBS)
+
+test_afc_SOURCES = ipod-lockdown.c test-afc.c
+test_afc_CFLAGS = $(LIBIPHONE_CFLAGS)
+test_afc_LDADD = $(LIBIPHONE_LIBS)
 endif
 
 if HAVE_SGUTILS
