@@ -29,11 +29,13 @@
 #include <glib.h>
 #include <libxml/xmlmemory.h>
 
+#include <libiphone/afc.h>
 #include <libiphone/libiphone.h>
 #include <libiphone/lockdown.h>
 
 
 extern char *read_sysinfo_extended_by_uuid (const char *uuid);
+extern gboolean iphone_write_sysinfo_extended (const char *uuid, const char *xml);
 
 char *
 read_sysinfo_extended_by_uuid (const char *uuid)
@@ -113,4 +115,79 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 		gxml = NULL;
 	}
 	return gxml;
+}
+
+gboolean iphone_write_sysinfo_extended (const char *uuid, const char *xml)
+{
+	lockdownd_client_t client = NULL;
+	iphone_device_t device = NULL;
+	afc_client_t afc = NULL;
+	iphone_error_t ret = IPHONE_E_UNKNOWN_ERROR;
+	afc_error_t afc_ret;
+	int afcport = 0;
+	char *dest_filename;
+	char *dest_directory;
+	uint64_t handle;
+	uint32_t bytes_written;
+
+#ifdef HAVE_LIBIPHONE_1_0
+	ret = iphone_device_new(&device, uuid);
+#else
+	ret = iphone_get_device_by_uuid(&device, uuid);
+#endif
+	if (IPHONE_E_SUCCESS != ret) {
+		printf("No device found with uuid %s, is it plugged in?\n", uuid);
+		return FALSE;
+	}
+
+	if (LOCKDOWN_E_SUCCESS != lockdownd_client_new(device, &client)) {
+		iphone_device_free(device);
+		return FALSE;
+	}
+
+	if (LOCKDOWN_E_SUCCESS != lockdownd_start_service(client, "com.apple.afc", &afcport)) {
+		lockdownd_client_free(client);
+		iphone_device_free(device);
+		return FALSE;
+	}
+	g_assert (afcport != 0);
+	if (AFC_E_SUCCESS != afc_client_new(device, afcport, &afc)) {
+		lockdownd_client_free(client);
+		iphone_device_free(device);
+		return FALSE;
+	}
+	dest_directory = g_build_filename("iTunes_Control", "Device", NULL);
+	afc_ret = afc_make_directory(afc, dest_directory);
+	if ((AFC_E_SUCCESS != ret) && (AFC_E_OBJECT_EXISTS != ret)) {
+		g_free (dest_directory);
+		afc_client_free(afc);
+		lockdownd_client_free(client);
+		iphone_device_free(device);
+		return FALSE;
+	}
+	dest_filename = g_build_filename(dest_directory, "SysInfoExtended", NULL);
+	g_free (dest_directory);
+	if (AFC_E_SUCCESS != afc_file_open(afc, dest_filename, AFC_FOPEN_WRONLY, &handle)) {
+		g_free (dest_filename);
+		afc_client_free(afc);
+		lockdownd_client_free(client);
+		iphone_device_free(device);
+		return FALSE;
+	}
+	g_free (dest_filename);
+
+	if (AFC_E_SUCCESS != afc_file_write(afc, handle, xml, strlen(xml), &bytes_written)) {
+		afc_file_close(afc, handle);
+		afc_client_free(afc);
+		lockdownd_client_free(client);
+		iphone_device_free(device);
+		return FALSE;
+	}
+
+	afc_file_close(afc, handle);
+	afc_client_free(afc);
+	lockdownd_client_free(client);
+	iphone_device_free(device);
+
+	return TRUE;
 }
