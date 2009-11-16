@@ -2037,7 +2037,7 @@ static glong get_playlist (FImport *fimp, guint mhsd_type, glong mhyp_seek)
   plitem->podcastflag = get16lint (cts, mhyp_seek+42);
   plitem->sortorder = get32lint (cts, mhyp_seek+44);
   if (header_len >= 0x6C) {
-      plitem->priv->purchase_type = get16lint (cts, mhyp_seek+0x50);
+      plitem->priv->mhsd5_type = get16lint (cts, mhyp_seek+0x50);
   }
 
   mhod_seek = mhyp_seek + header_len;
@@ -2157,7 +2157,7 @@ static glong get_playlist (FImport *fimp, guint mhsd_type, glong mhyp_seek)
 
   /* add new playlist */
   if (mhsd_type == 5) {
-      itdb_playlist_add_to_purchases (fimp->itdb, plitem, -1);
+      itdb_playlist_add_mhsd5_playlist (fimp->itdb, plitem, -1);
   } else {
       itdb_playlist_add (fimp->itdb, plitem, -1);
   }
@@ -5200,11 +5200,11 @@ static gboolean write_playlist (FExport *fexp,
     if (mhsd_type == 5) {
         put32_n0 (cts, 8);            /* ?                         */
         /* +0x50 */
-        put16lint (cts, pl->priv->purchase_type);
-        put16lint (cts, pl->priv->purchase_type); /* same as 0x50 ? */
+        put16lint (cts, pl->priv->mhsd5_type);
+        put16lint (cts, pl->priv->mhsd5_type); /* same as 0x50 ? */
         /* +0x54 */
-        if ((pl->priv->purchase_type == ITDB_PLAYLIST_PURCHASE_MOVIE_RENTALS)
-             || (pl->priv->purchase_type == ITDB_PLAYLIST_PURCHASE_RINGTONES)){
+        if ((pl->priv->mhsd5_type == ITDB_PLAYLIST_MHSD5_MOVIE_RENTALS)
+             || (pl->priv->mhsd5_type == ITDB_PLAYLIST_MHSD5_RINGTONES)){
             put32lint (cts, 1); /* unknown, 1 for Movie rentals + Ringtones */
         } else {
             put32lint (cts, 0); /* 0 otherwise */
@@ -5292,7 +5292,7 @@ static gboolean write_mhsd_playlists (FExport *fexp, guint32 mhsd_type)
     mhlp_seek = cts->pos;
     mk_mhlp (fexp);
     if (mhsd_type == 5) {
-        playlists = fexp->itdb->priv->purchase_playlists;
+        playlists = fexp->itdb->priv->mhsd5_playlists;
     } else {
         playlists = fexp->itdb->playlists;
     }
@@ -5648,12 +5648,12 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 	goto err;
     }
 
-    /* write purchase playlists (mhsd type 5) */
+    /* write mhsd5 playlists */
     if (!fexp->error && !write_mhsd_playlists (fexp, 5)) {
 	g_set_error (&fexp->error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_ITDB_CORRUPT,
-		     _("Error writing purchase playlists (mhsd type 5)"));
+		     _("Error writing mhsd5 playlists"));
 	goto err;
     }
 

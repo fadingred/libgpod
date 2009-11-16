@@ -1307,10 +1307,10 @@ static void itdb_playlist_add_internal (Itdb_iTunesDB *itdb, Itdb_Playlist *pl,
     *playlists = g_list_insert (*playlists, pl, pos);
 }
 
-void itdb_playlist_add_to_purchases (Itdb_iTunesDB *itdb, Itdb_Playlist *pl,
-                                     gint32 pos)
+void itdb_playlist_add_mhsd5_playlist (Itdb_iTunesDB *itdb, Itdb_Playlist *pl,
+                                       gint32 pos)
 {
-    itdb_playlist_add_internal (itdb, pl, pos, &itdb->priv->purchase_playlists);
+    itdb_playlist_add_internal (itdb, pl, pos, &itdb->priv->mhsd5_playlists);
 }
 
 /**

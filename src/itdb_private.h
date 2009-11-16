@@ -164,20 +164,20 @@ struct _Itdb_Item_Id {
 };
 typedef struct _Itdb_Item_Id Itdb_Item_Id;
 
-enum _Itdb_Playlist_Purchase_Type {
-    ITDB_PLAYLIST_PURCHASE_NONE          = 0,
-    ITDB_PLAYLIST_PURCHASE_MOVIES        = 2,
-    ITDB_PLAYLIST_PURCHASE_TV_SHOWS      = 3,
-    ITDB_PLAYLIST_PURCHASE_MUSIC         = 4,
-    ITDB_PLAYLIST_PURCHASE_AUDIOBOOKS    = 5,
-    ITDB_PLAYLIST_PURCHASE_RINGTONES     = 6,
-    ITDB_PLAYLIST_PURCHASE_MOVIE_RENTALS = 7
+enum _Itdb_Playlist_Mhsd5_Type {
+    ITDB_PLAYLIST_MHSD5_NONE          = 0,
+    ITDB_PLAYLIST_MHSD5_MOVIES        = 2,
+    ITDB_PLAYLIST_MHSD5_TV_SHOWS      = 3,
+    ITDB_PLAYLIST_MHSD5_MUSIC         = 4,
+    ITDB_PLAYLIST_MHSD5_AUDIOBOOKS    = 5,
+    ITDB_PLAYLIST_MHSD5_RINGTONES     = 6,
+    ITDB_PLAYLIST_MHSD5_MOVIE_RENTALS = 7
 };
-typedef enum _Itdb_Playlist_Purchase_Type Itdb_Playlist_Purchase_Type;
+typedef enum _Itdb_Playlist_Mhsd5_Type Itdb_Playlist_Mhsd5_Type;
 
 struct _Itdb_iTunesDB_Private
 {
-    GList *purchase_playlists;
+    GList *mhsd5_playlists;
     guint16 unk_0x22;
     guint64 id_0x24;
     guint16 lang;
@@ -198,12 +198,12 @@ struct _Itdb_Track_Private {
 };
 
 struct _Itdb_Playlist_Private {
-    Itdb_Playlist_Purchase_Type purchase_type;
+    Itdb_Playlist_Mhsd5_Type mhsd5_type;
 };
 
-G_GNUC_INTERNAL void itdb_playlist_add_to_purchases (Itdb_iTunesDB *itdb,
-                                                     Itdb_Playlist *pl,
-                                                     gint32 pos);
+G_GNUC_INTERNAL void itdb_playlist_add_mhsd5_playlist(Itdb_iTunesDB *itdb,
+                                                      Itdb_Playlist *pl,
+                                                      gint32 pos);
 G_GNUC_INTERNAL gboolean itdb_spl_action_known (ItdbSPLAction action);
 G_GNUC_INTERNAL void itdb_splr_free (Itdb_SPLRule *splr);
 G_GNUC_INTERNAL const gchar *itdb_photodb_get_mountpoint (Itdb_PhotoDB *photodb);
