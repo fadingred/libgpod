@@ -11,8 +11,13 @@ if HAVE_LIBIPHONE
 ipod_read_sysinfo_extended_SOURCES+=ipod-lockdown.c
 ipod_read_sysinfo_extended_CFLAGS+=$(LIBIPHONE_CFLAGS)
 ipod_read_sysinfo_extended_LDADD+=$(LIBIPHONE_LIBS)
+endif
 
-bin_PROGRAMS+=test-afc
+if HAVE_LIBIPHONE
+bin_PROGRAMS+=iphone-callout
+iphone_callout_SOURCES = iphone-callout.c ipod-lockdown.c
+iphone_callout_CFLAGS = $(LIBIPHONE_CFLAGS)
+iphone_callout_LDADD = $(LIBIPHONE_LIBS)
 endif
 
 if HAVE_HAL
@@ -38,16 +43,6 @@ fdidir = $(HALFDIDIR)/policy/20thirdparty
 fdi_DATA = 20-libgpod-sysinfo-extended.fdi
 
 EXTRA_DIST = $(fdi_DATA)
-
-if HAVE_LIBIPHONE
-libgpod_callout_SOURCES += ipod-lockdown.c
-libgpod_callout_CFLAGS += $(LIBIPHONE_CFLAGS)
-libgpod_callout_LDADD += $(LIBIPHONE_LIBS)
-
-test_afc_SOURCES = ipod-lockdown.c test-afc.c
-test_afc_CFLAGS = $(LIBIPHONE_CFLAGS)
-test_afc_LDADD = $(LIBIPHONE_LIBS)
-endif
 
 if HAVE_SGUTILS
 libgpod_callout_SOURCES += ipod-scsi.c

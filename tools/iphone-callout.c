@@ -31,9 +31,16 @@ static gboolean write_sysinfo_extended (const char *uuid)
 int main (int argc, char **argv)
 {
     int daemonize_failed;
+    const char *uuid;
 
-    if (argc != 2) {
-        g_print ("Usage: %s <uuid>\n", argv[0]);
+    if (argc != 1) {
+        g_print ("%s should only be ran by HAL\n", argv[0]);
+        return 1;
+    }
+
+    uuid = g_getenv ("HAL_PROP_USB_SERIAL");
+    if (uuid == NULL) {
+        g_print ("%s should only be ran by HAL\n", argv[0]);
         return 1;
     }
 
@@ -48,6 +55,6 @@ int main (int argc, char **argv)
         return 1;
     }
 
-    return write_sysinfo_extended (argv[1]);
+    return write_sysinfo_extended (uuid);
 }
 

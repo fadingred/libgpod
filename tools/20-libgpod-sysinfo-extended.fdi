@@ -11,7 +11,7 @@
     </match>
     <!-- iPhone/iPod Touch -->
     <match key="info.capabilities" contains="afc">
-      <append key="info.callouts.add" type="strlist">libgpod-callout</append>
+      <append key="info.callouts.add" type="strlist">iphone-callout</append>
     </match>
   </device>
 </deviceinfo>
