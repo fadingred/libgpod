@@ -19,6 +19,7 @@ static gboolean write_sysinfo_extended (const char *uuid)
     }
 
     write_ok = iphone_write_sysinfo_extended (uuid, sysinfo_extended);
+    g_free (sysinfo_extended);
 
     if (!write_ok) {
         g_print ("couldn't write SysInfoExtended to device %s\n", uuid);
