@@ -37,7 +37,7 @@
 extern char *read_sysinfo_extended_by_uuid (const char *uuid);
 extern gboolean iphone_write_sysinfo_extended (const char *uuid, const char *xml);
 
-char *
+G_GNUC_INTERNAL char *
 read_sysinfo_extended_by_uuid (const char *uuid)
 {
 	lockdownd_client_t client = NULL;
@@ -117,7 +117,8 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	return gxml;
 }
 
-gboolean iphone_write_sysinfo_extended (const char *uuid, const char *xml)
+G_GNUC_INTERNAL gboolean
+iphone_write_sysinfo_extended (const char *uuid, const char *xml)
 {
 	lockdownd_client_t client = NULL;
 	iphone_device_t device = NULL;
