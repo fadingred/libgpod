@@ -196,8 +196,8 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"B565", 120, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_2, 50},
 
     /* iPod Classic G3 */
-    {"C293", 160, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_2, 50},
-    {"C297", 160, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_2, 50},
+    {"C293", 160, ITDB_IPOD_MODEL_CLASSIC_SILVER, ITDB_IPOD_GENERATION_CLASSIC_3, 50},
+    {"C297", 160, ITDB_IPOD_MODEL_CLASSIC_BLACK,  ITDB_IPOD_GENERATION_CLASSIC_3, 50},
 
     /* iPod nano video G1 (Third Nano Generation) */
     /* First generation of video support for nano */
