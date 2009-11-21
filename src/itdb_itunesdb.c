@@ -5403,11 +5403,22 @@ static void wcontents_free (WContents *cts)
     }
 }
 
+static gboolean safe_str_equal (gconstpointer v1, gconstpointer v2)
+{
+    if ((v1 == NULL) || (v2 == NULL)) {
+        return (v1 == v2);
+    } else {
+        return g_str_equal (v1, v2);
+    }
+}
+
 static guint itdb_album_hash (gconstpointer v)
 {
   Itdb_Track *track = (Itdb_Track *)v;
   if (track->album != NULL) {
     return g_str_hash (track->album);
+  } else {
+    return 0;
   }
   g_assert_not_reached ();
 }
@@ -5416,18 +5427,20 @@ static gboolean itdb_album_equal (gconstpointer v1, gconstpointer v2)
 {
   Itdb_Track *track1 = (Itdb_Track *)v1;
   Itdb_Track *track2 = (Itdb_Track *)v2;
+  gboolean same_album;
 
-  g_assert (track1->album != NULL);
-  g_assert (track2->album != NULL);
+  same_album = safe_str_equal (track1->album, track2->album);
+
+  if (!same_album) {
+      return FALSE;
+  }
 
   if ((track1->albumartist != NULL) && (track2->albumartist != NULL)) {
-      return (g_str_equal (track1->album, track2->album)
-              && g_str_equal (track1->albumartist, track2->albumartist));
+      return  safe_str_equal (track1->albumartist, track2->albumartist);
   } else if ((track1->artist != NULL) && (track2->artist != NULL)) {
-      return (g_str_equal (track1->album, track2->album)
-              && g_str_equal (track1->artist, track2->artist));
+      return safe_str_equal (track1->artist, track2->artist);
   } else {
-      return (g_str_equal (track1->album, track2->album));
+      return same_album;
   }
 }
 
@@ -5447,8 +5460,9 @@ static guint itdb_artist_hash (gconstpointer v)
   Itdb_Track *track = (Itdb_Track *)v;
   if (track->artist != NULL) {
     return g_str_hash (track->artist);
+  } else {
+    return 0;
   }
-  g_assert_not_reached ();
 }
 
 static gboolean itdb_artist_equal (gconstpointer v1, gconstpointer v2)
@@ -5456,10 +5470,7 @@ static gboolean itdb_artist_equal (gconstpointer v1, gconstpointer v2)
   Itdb_Track *track1 = (Itdb_Track *)v1;
   Itdb_Track *track2 = (Itdb_Track *)v2;
 
-  g_assert (track1->artist != NULL);
-  g_assert (track2->artist != NULL);
-
-  return g_str_equal (track1->artist, track2->artist);
+  return safe_str_equal (track1->artist, track2->artist);
 }
 
 /* - reassign the iPod IDs
