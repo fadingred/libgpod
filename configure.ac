@@ -25,7 +25,7 @@ dnl libtool versioning
 #                 changes to the signature and the semantic)
 #  ? :+1 : ?   == just internal changes
 # CURRENT : REVISION : AGE
-LIBGPOD_SO_VERSION=5:0:1
+LIBGPOD_SO_VERSION=6:0:2
 
 AC_SUBST(LIBGPOD_SO_VERSION)
 AC_SUBST(LIBGPOD_MAJOR_VERSION)
