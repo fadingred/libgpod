@@ -13,13 +13,6 @@ ipod_read_sysinfo_extended_CFLAGS+=$(LIBIPHONE_CFLAGS)
 ipod_read_sysinfo_extended_LDADD+=$(LIBIPHONE_LIBS)
 endif
 
-if HAVE_LIBIPHONE
-bin_PROGRAMS+=iphone-callout
-iphone_callout_SOURCES = iphone-callout.c ipod-lockdown.c
-iphone_callout_CFLAGS = $(LIBIPHONE_CFLAGS)
-iphone_callout_LDADD = $(LIBIPHONE_LIBS)
-endif
-
 if HAVE_HAL
 haldir = $(HALCALLOUTSDIR)
 hal_PROGRAMS = libgpod-callout
@@ -38,6 +31,13 @@ libgpod_callout_LDADD =						\
 	$(top_builddir)/src/libgpod.la				\
 	$(LIBGPOD_LIBS)						\
 	$(HAL_LIBS)
+
+if HAVE_LIBIPHONE
+hal_PROGRAMS+=iphone-callout
+iphone_callout_SOURCES = iphone-callout.c ipod-lockdown.c
+iphone_callout_CFLAGS = $(LIBIPHONE_CFLAGS)
+iphone_callout_LDADD = $(LIBIPHONE_LIBS)
+endif
 
 fdidir = $(HALFDIDIR)/policy/20thirdparty
 fdi_DATA = 20-libgpod-sysinfo-extended.fdi
