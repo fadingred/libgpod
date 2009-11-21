@@ -13,6 +13,7 @@ src/itdb_photoalbum.c
 src/itdb_playlist.c
 src/itdb_thumb.c
 src/itdb_track.c
+src/itdb_zlib.c
 src/ithumb-writer.c
 tests/itdb_main.c
 tests/test-covers.c
@@ -21,4 +22,4 @@ tests/test-photos.c
 tests/test-write-covers.c
 tests/test-init-ipod.c
 tools/ipod-time-sync.c
-tools/read-sysinfoextended-sgutils.c
+tools/read-sysinfoextended.c
