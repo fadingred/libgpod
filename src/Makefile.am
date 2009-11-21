@@ -50,6 +50,7 @@ noinst_HEADERS = 		\
 	itdb_sysinfo_extended_parser.h \
 	itdb_thumb.h		\
 	itdb_tzinfo_data.h 	\
+	itdb_zlib.h		\
 	pixmaps.h		\
 	rijndael.h
 
