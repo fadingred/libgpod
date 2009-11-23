@@ -91,6 +91,9 @@ if test "x$have_sgutils" != xyes; then
                  have_sgutils=no)
 fi
 AC_SUBST(SGUTILS_LIBS)
+if test x"$have_sgutils" = xyes; then
+        AC_DEFINE(HAVE_SGUTILS, 1, [Define if you have sgutils support])
+fi
 AM_CONDITIONAL(HAVE_SGUTILS, test x"$have_sgutils" = xyes)
 
 dnl **************************************************
