@@ -1401,9 +1401,7 @@ static int ensure_itlp_dir_exists(const char *itlpdir)
 {
     /* check if directory exists */
     if (!g_file_test(itlpdir, G_FILE_TEST_EXISTS)) {
-	int success;
-	success = g_mkdir(itlpdir, 0755);
-	if (!success) {
+	if (g_mkdir(itlpdir, 0755) != 0) {
 		fprintf(stderr, "Could not create directory '%s': %s\n", itlpdir, strerror(errno));
 		return FALSE;
 	}
