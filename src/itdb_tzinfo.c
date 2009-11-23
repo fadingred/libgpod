@@ -178,7 +178,7 @@ static gboolean raw_timezone_to_utc_shift_6g (gint16 city_id,
 	    gboolean unused1;
 	    int unused2;
 	    gboolean got_tzinfo;
-	    g_print ("timezone: %s\n", it->tz_name);
+
 	    got_tzinfo = parse_tzdata (it->tz_name, time (NULL), time (NULL),
 				       &offset, &unused1, &unused2);
 	    if (!got_tzinfo) {
