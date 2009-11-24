@@ -429,6 +429,17 @@ static const Itdb_ArtworkFormat ipod_nano4g_chapter_image_info[] = {
     {1071, 240, 240, THUMB_FORMAT_RGB565_LE},
 };
 
+static const Itdb_ArtworkFormat ipod_nano5g_photo_info[] = {
+    {1087, 384, 384, THUMB_FORMAT_RGB565_LE},
+    /*
+     * To be implemented, THUMB_FORMAT_JPEG 
+     {1081,  640,  480, THUMB_FORMAT_JPEG},
+     */
+    {1079,  80,  80, THUMB_FORMAT_RGB565_LE},
+    {1066,  64,  64, THUMB_FORMAT_RGB565_LE},
+    {  -1,  -1,  -1, -1}
+};
+
 static const Itdb_ArtworkFormat ipod_video_cover_art_info[] = {
     {1028, 100, 100, THUMB_FORMAT_RGB565_LE},
     {1029, 200, 200, THUMB_FORMAT_RGB565_LE},
@@ -526,6 +537,7 @@ static const ArtworkCapabilities ipod_artwork_capabilities[] = {
     { ITDB_IPOD_GENERATION_NANO_2, ipod_nano_cover_art_info, ipod_nano_photo_info, NULL },
     { ITDB_IPOD_GENERATION_NANO_3, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_NANO_4, ipod_nano4g_cover_art_info, ipod_nano4g_photo_info, ipod_nano4g_chapter_image_info },
+    { ITDB_IPOD_GENERATION_NANO_5, NULL, ipod_nano5g_photo_info, NULL },
     { ITDB_IPOD_GENERATION_CLASSIC_1, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_CLASSIC_2, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
     { ITDB_IPOD_GENERATION_CLASSIC_3, ipod_classic_1_cover_art_info, ipod_classic_1_photo_info, ipod_classic_1_chapter_image_info },
