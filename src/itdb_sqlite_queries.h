@@ -22,9 +22,9 @@
 /** creation statement for 'Dynamic.itdb' */
 static const char Dynamic_create[] =
 	"BEGIN TRANSACTION;" \
-	"CREATE TABLE item_stats (item_pid INTEGER NOT NULL, has_been_played INTEGER DEFAULT 0, date_played INTEGER DEFAULT 0, play_count_user INTEGER DEFAULT 0, play_count_recent INTEGER DEFAULT 0, date_skipped INTEGER DEFAULT 0, skip_count_user INTEGER DEFAULT 0, skip_count_recent INTEGER DEFAULT 0, bookmark_time_ms REAL, bookmark_time_ms_common REAL, user_rating INTEGER DEFAULT 0, user_rating_common INTEGER DEFAULT 0, hidden INTEGER DEFAULT 0, deleted INTEGER DEFAULT 0, has_changes INTEGER DEFAULT 0, PRIMARY KEY (item_pid));" \
-	"CREATE TABLE rental_info (rental_date_started INTEGER DEFAULT 0, rental_duration INTEGER DEFAULT 0, rental_playback_date_started INTEGER DEFAULT 0, rental_playback_duration INTEGER DEFAULT 0);" \
-	"ANALYZE sqlite_master;" \
+	"CREATE TABLE item_stats (item_pid INTEGER NOT NULL, has_been_played INTEGER DEFAULT 0, date_played INTEGER DEFAULT 0, play_count_user INTEGER DEFAULT 0, play_count_recent INTEGER DEFAULT 0, date_skipped INTEGER DEFAULT 0, skip_count_user INTEGER DEFAULT 0, skip_count_recent INTEGER DEFAULT 0, bookmark_time_ms REAL, bookmark_time_ms_common REAL, user_rating INTEGER DEFAULT 0, user_rating_common INTEGER DEFAULT 0, rental_expired INTEGER DEFAULT 0, hidden INTEGER DEFAULT 0, deleted INTEGER DEFAULT 0, has_changes INTEGER DEFAULT 0, PRIMARY KEY (item_pid));" \
+	"CREATE TABLE container_ui (container_pid INTEGER NOT NULL, play_order INTEGER DEFAULT 0, is_reversed INTEGER DEFAULT 0, album_field_order INTEGER DEFAULT 0, repeat_mode INTEGER DEFAULT 0, shuffle_items INTEGER DEFAULT 0, has_been_shuffled INTEGER DEFAULT 0, PRIMARY KEY (container_pid));" \
+	"CREATE TABLE rental_info (item_pid INTEGER NOT NULL, rental_date_started INTEGER DEFAULT 0, rental_duration INTEGER DEFAULT 0, rental_playback_date_started INTEGER DEFAULT 0, rental_playback_duration INTEGER DEFAULT 0, is_demo INTEGER DEFAULT 0, PRIMARY KEY (item_pid));" \
 	"COMMIT;";
 
 /** creation statement for 'Extras.itdb' */

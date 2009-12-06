@@ -59,6 +59,7 @@ static int mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
     char *errmsg = NULL;
     struct stat fst;
     int idx = 0;
+    GList *gl = NULL;
 
     dbf = g_build_filename(outpath, "Dynamic.itdb", NULL);
     printf("[%s] Processing '%s'\n", __func__, dbf);
@@ -99,12 +100,9 @@ static int mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
     sqlite3_exec(db, "BEGIN;", NULL, NULL, NULL);
 
     if (itdb->tracks) {
-	GList *gl = NULL;
-
 	printf("[%s] - processing %d tracks\n", __func__, g_list_length(itdb->tracks));
-	if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"item_stats\" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", -1, &stmt, NULL)) {
+	if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"item_stats\" (item_pid,has_been_played,date_played,play_count_user,play_count_recent,date_skipped,skip_count_user,skip_count_recent,bookmark_time_ms,bookmark_time_ms_common,user_rating,user_rating_common) VALUES(?,?,?,?,?,?,?,?,?,?,?,?);", -1, &stmt, NULL)) {
 	    fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
-	    printf("[%s] -- inserting into \"item_stats\"\n", __func__);
 	    goto leave;
 	}
 	for (gl=itdb->tracks; gl; gl=gl->next) {
@@ -143,12 +141,6 @@ static int mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
 	    /* user_rating_common */
 	    /* FIXME: don't know if this is the right value */
 	    sqlite3_bind_int(stmt, ++idx, track->app_rating);
-	    /* hidden */
-	    sqlite3_bind_int(stmt, ++idx, 0);
-	    /* deleted */
-	    sqlite3_bind_int(stmt, ++idx, 0);
-	    /* has_changes */
-	    sqlite3_bind_int(stmt, ++idx, 0);
 
 	    res = sqlite3_step(stmt);
 	    if (res == SQLITE_DONE) {
@@ -165,7 +157,61 @@ static int mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
 	printf("[%s] - No tracks available, none written.\n", __func__);
     }
 
+    /* add playlist info to container_ui */
+    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"container_ui\" VALUES(?,?,?,?,?,?,?);", -1, &stmt, NULL)) {
+	    fprintf(stderr, "[%s] 2 sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
+	    goto leave;
+    }
+
+    printf("[%s] - processing %d playlists\n", __func__, g_list_length(itdb->playlists));
+    for (gl = itdb->playlists; gl; gl = gl->next) {
+	Itdb_Playlist *pl = (Itdb_Playlist*)gl->data;
+
+	res = sqlite3_reset(stmt);
+	if (res != SQLITE_OK) {
+	    fprintf(stderr, "[%s] 2 sqlite3_reset returned %d\n", __func__, res);
+	}
+	idx = 0;
+	/* container_pid */
+	sqlite3_bind_int64(stmt, ++idx, pl->id);
+	/* play_order TODO: where does this value come from? */
+	/* FIXME: 5 --> 7, 24 --> 39 ??!? */
+	switch (pl->sortorder) {
+	    case 5:
+		sqlite3_bind_int(stmt, ++idx, 7);
+		break;
+	    case 24:
+		sqlite3_bind_int(stmt, ++idx, 39);
+		break;
+	    default:
+		sqlite3_bind_int(stmt, ++idx, 7);
+		break;
+	}
+	/* is_reversed TODO where does this value come from? */
+	sqlite3_bind_int(stmt, ++idx, 0);
+	/* album_field_order TODO where does this value come from? */
+	sqlite3_bind_int(stmt, ++idx, 1);
+	/* repeat_mode TODO where does this value come from? */
+	sqlite3_bind_int(stmt, ++idx, 0);
+	/* shuffle_items TODO where does this value come from? */
+	sqlite3_bind_int(stmt, ++idx, 0);
+	/* has_been_shuffled TODO where does this value come from? */
+	sqlite3_bind_int(stmt, ++idx, 0);
+
+	res = sqlite3_step(stmt);
+	if (res == SQLITE_DONE) {
+	    /* expected result */
+	} else {
+	    fprintf(stderr, "[%s] 2 sqlite3_step returned %d\n", __func__, res);
+	}
+    }
+
     sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
+
+    if (stmt) {
+	sqlite3_finalize(stmt);
+	stmt = NULL;
+    }
 
     res = 0;
     printf("[%s] done.\n", __func__);
