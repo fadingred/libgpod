@@ -32,6 +32,9 @@
 #include <glib/gstdio.h>
 #include <sqlite3.h>
 
+#include <libiphone/libiphone.h>
+#include <libiphone/lockdown.h>
+
 #include "itdb.h"
 #include "itdb_private.h"
 #include "itdb_sqlite_queries.h"
@@ -352,6 +355,12 @@ leave:
     return res;
 }
 
+static void free_key_val_strings(gpointer key, gpointer value, gpointer user_data)
+{
+	g_free(key);
+	g_free(value);
+}
+
 static int mk_Library(Itdb_iTunesDB *itdb,
 		       GHashTable *album_ids, GHashTable *artist_ids,
 		       const char *outpath)
@@ -441,9 +450,8 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    "bpm,relative_volume,eq_preset,radio_stream_status,genre_id,album_pid,artist_pid,composer_pid,title,artist,album,"
 	    "album_artist,composer,sort_title,sort_artist,sort_album,sort_album_artist,sort_composer,title_order,artist_order,"
 	    "album_order,genre_order,composer_order,album_artist_order,album_by_artist_order,series_name_order,comment,grouping,"
-	    "description,description_long,title_section_order,artist_section_order,album_section_order,album_artist_section_order,"
-	    "composer_section_order,genre_section_order,series_name_section_order) "
-	    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", -1, &stmt_item, NULL)) {
+	    "description,description_long) "
+	    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", -1, &stmt_item, NULL)) {
 	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	goto leave;
     }
@@ -871,20 +879,6 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	/* description_long */
 	/* TODO libgpod doesn't know about it */
 	sqlite3_bind_null(stmt_item, ++idx);
-	/* title_section_order */
-	sqlite3_bind_null(stmt_item, ++idx);
-	/* artist_section_order */
-	sqlite3_bind_null(stmt_item, ++idx);
-	/* album_section_order */
-	sqlite3_bind_null(stmt_item, ++idx);
-	/* album_artist_section_order */
-	sqlite3_bind_null(stmt_item, ++idx);
-	/* composer_section_order */
-	sqlite3_bind_null(stmt_item, ++idx);
-	/* genre_section_order */
-	sqlite3_bind_null(stmt_item, ++idx);
-	/* series_name_section_order */
-	sqlite3_bind_null(stmt_item, ++idx);
 
 	res = sqlite3_step(stmt_item);
 	if (res != SQLITE_DONE) {
@@ -1249,6 +1243,233 @@ leave:
     return res;
 }
 
+static void run_post_process_commands(Itdb_iTunesDB *itdb, const char *outpath, const char *uuid)
+{
+    plist_t plist_node = NULL;
+    plist_t ppc_dict = NULL;
+    const gchar *basedb = "Library.itdb";
+    const gchar *otherdbs[] = {"Dynamic.itdb", "Extras.itdb", "Genius.itdb", "Location.itdb", NULL};
+    int res;
+    sqlite3 *db = NULL;
+
+    if (itdb_device_is_iphone_family(itdb->device)) {
+	/* get SQL post process commands via lockdown (iPhone/iPod Touch) */
+	lockdownd_client_t client = NULL;
+	iphone_device_t phone = NULL;
+	iphone_error_t ret = IPHONE_E_UNKNOWN_ERROR;
+	lockdownd_error_t lockdownerr = LOCKDOWN_E_UNKNOWN_ERROR;
+
+	ret = iphone_device_new(&phone, uuid);
+	if (ret != IPHONE_E_SUCCESS) {
+	    printf("[%s] ERROR: Could not find device with uuid %s, is it plugged in?\n", __func__, uuid);
+	    goto leave;
+	}
+
+	if (LOCKDOWN_E_SUCCESS != lockdownd_client_new(phone, &client)) {
+	    printf("[%s] ERROR: Could not connect to device's lockdownd!\n", __func__);
+	    iphone_device_free(phone);
+	    goto leave;
+	}
+
+	lockdownerr = lockdownd_get_value(client, "com.apple.mobile.iTunes.SQLMusicLibraryPostProcessCommands", NULL, &plist_node);
+	lockdownd_client_free(client);
+	iphone_device_free(phone);
+
+	if (lockdownerr == LOCKDOWN_E_SUCCESS) {
+	    ppc_dict = plist_node;
+	} else {
+	    if (plist_node) {
+		plist_free(plist_node);
+		plist_node = NULL;
+	    }
+	}
+    } else if (itdb->device->sysinfo_extended != NULL) {
+	/* try to get SQL post process commands via sysinfo_extended */
+	gchar *dev_path = itdb_get_device_dir (itdb->device->mountpoint);
+	if (dev_path) {
+	    const gchar *p_sysinfo_ex[] = {"SysInfoExtended", NULL};
+	    gchar *sysinfo_ex_path = itdb_resolve_path (dev_path, p_sysinfo_ex);
+	    g_free(dev_path);
+	    if (sysinfo_ex_path) {
+		/* open plist file */
+		char *xml_contents = NULL;
+		gsize xml_length = 0;
+		if (g_file_get_contents(sysinfo_ex_path, &xml_contents, &xml_length, NULL)) {
+		    plist_from_xml(xml_contents, xml_length, &plist_node);
+		    if (plist_node) {
+			/* locate specific key */
+			ppc_dict = plist_dict_get_item(plist_node, "com.apple.mobile.iTunes.SQLMusicLibraryPostProcessCommands");
+		    }
+		}
+		if (xml_contents) {
+		    g_free(xml_contents);
+		}
+		g_free(sysinfo_ex_path);
+	    }
+	}
+    }
+
+    if (ppc_dict) {
+	plist_dict_iter iter = NULL;
+	plist_t sql_cmds = NULL;
+	plist_t user_ver_cmds = NULL;
+
+	printf("[%s] Getting SQL post process commands\n", __func__);
+
+	sql_cmds = plist_dict_get_item(ppc_dict, "SQLCommands");
+	user_ver_cmds = plist_dict_get_item(ppc_dict, "UserVersionCommandSets");
+
+	if (sql_cmds && user_ver_cmds) {
+	    /* we found the SQLCommands and the UserVersionCommandSets keys */
+	    char *key = NULL;
+	    unsigned long int maxver = 0;
+	    plist_t curnode = user_ver_cmds;
+	    plist_t subnode = NULL;
+
+	    user_ver_cmds = NULL;
+
+	    /* now look for numbered subkey in the UserVersionCommandsSets */
+	    plist_dict_new_iter(curnode, &iter);
+	    if (iter) {
+		plist_dict_next_item(curnode, iter, &key, &subnode);
+		while (subnode) {
+		    unsigned long int intval = strtoul(key, NULL, 0);
+		    if ((intval > 0) && (intval > maxver)) {
+			user_ver_cmds = subnode;
+			maxver = intval;
+		    }
+		    subnode = NULL;
+		    free(key);
+		    key = NULL;
+		    plist_dict_next_item(curnode, iter, &key, &subnode);
+		}
+		free(iter);
+		iter = NULL;
+	    }
+	    if (user_ver_cmds) {
+		/* found numbered key (usually '8', for Nano 5G it is '9') */
+		curnode = user_ver_cmds;
+		/* now get the commands array */
+		user_ver_cmds = plist_dict_get_item(curnode, "Commands");
+		if (user_ver_cmds && (plist_get_node_type(user_ver_cmds) == PLIST_ARRAY)) {
+		    /* We found our array with the commands to execute, now
+		     * make a hashmap for the SQLCommands to find them faster
+		     * when we actually execute them in correct order. */
+	    	    GHashTable *sqlcmd_map = g_hash_table_new(g_str_hash, g_str_equal);
+		    if (sqlcmd_map) {
+			char *val = NULL;
+		    	gchar *dbf = NULL;
+		    	gchar *attach_str = NULL;
+			char *errmsg = NULL;
+			guint32 i = 0, cnt = 0, ok_cnt = 0;
+
+			plist_dict_new_iter(sql_cmds, &iter);
+			if (iter) {
+			    plist_dict_next_item(sql_cmds, iter, &key, &subnode);
+			    while (subnode) {
+				if (plist_get_node_type(subnode) == PLIST_STRING) {
+				    plist_get_string_val(subnode, &val);
+				    g_hash_table_insert(sqlcmd_map, key, val);
+				    val = NULL;
+				} else {
+				    printf("[%s] WARNING: ignoring non-string value for key '%s'\n", __func__, key);
+				    free(key);
+				}
+				subnode = NULL;
+				key = NULL;
+				plist_dict_next_item(sql_cmds, iter, &key, &subnode);
+			    }
+			    free(iter);
+			    iter = NULL;
+			}
+
+			/* open Library.itdb first */
+			dbf = g_build_filename(outpath, basedb, NULL);
+
+			if (SQLITE_OK != sqlite3_open((const char*)dbf, &db)) {
+			    fprintf(stderr, "Error opening database '%s': %s\n", dbf, sqlite3_errmsg(db));
+			    g_free(dbf);
+			    goto leave;
+			}
+			g_free(dbf);
+
+			/* now attach other required database files */
+			i = 0;
+			while (otherdbs[i]) {
+			    errmsg = NULL;
+			    dbf = g_build_filename(outpath, otherdbs[i], NULL);
+			    attach_str = g_strdup_printf("ATTACH DATABASE '%s' AS '%s';", dbf, otherdbs[i]);
+			    g_free(dbf);
+			    res = sqlite3_exec(db, attach_str, NULL, NULL, &errmsg);
+			    g_free(attach_str);
+			    if (res != SQLITE_OK) {
+				printf("[%s] WARNING: Could not attach database '%s': %s\n", __func__, otherdbs[i], errmsg);
+			    }
+			    if (errmsg) {
+				free(errmsg);
+			    }
+			    i++;
+			}
+
+			cnt = plist_array_get_size(user_ver_cmds);
+			printf("[%s] Running %d post process commands now\n", __func__, cnt);
+
+			sqlite3_exec(db, "BEGIN;", NULL, NULL, NULL);
+			for (i=0; i<cnt; i++) {
+			    subnode = plist_array_get_item(user_ver_cmds, i);
+			    plist_get_string_val(subnode, &key);
+			    if (key) {
+				val = g_hash_table_lookup(sqlcmd_map, key);
+				if (val) {
+				    char *errmsg = NULL; 
+				    if (SQLITE_OK == sqlite3_exec(db, val, NULL, NULL, &errmsg)) {
+				        /*printf("[%s] executing '%s': OK", __func__, key);*/
+					ok_cnt++;
+				    } else {
+					printf("[%s] ERROR when executing '%s': %s\n", __func__, key, errmsg);
+				    }
+				    if (errmsg) {
+					sqlite3_free(errmsg);
+				    }
+				} else {
+				    printf("[%s] value for '%s' not found in hashmap!\n", __func__, key);
+				}
+				free(key);
+				key = NULL;
+			    }
+			}
+			g_hash_table_foreach(sqlcmd_map, free_key_val_strings, NULL);
+			g_hash_table_destroy(sqlcmd_map);
+
+			printf("[%s] %d out of %d post process commands successfully executed\n", __func__, ok_cnt, cnt);
+			/* TODO perhaps we want to roll back when an error has occured ? */
+			sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
+		    } else {
+			printf("[%s]: Error: could not create hash table!\n", __func__);
+		    }
+		} else {
+		    printf("[%s]: Error fetching commands array\n", __func__);
+		}
+	    } else {
+		printf("[%s]: Error fetching user version command set\n", __func__);
+	    }
+	} else {
+	    printf("[%s]: Error fetching post process commands from device!\n", __func__);
+	}
+    }
+   
+    printf("[%s] done.\n", __func__);
+
+leave:
+    if (db) {
+	sqlite3_close(db);
+    }
+    if (plist_node) {
+	plist_free(plist_node);
+    }
+
+}
+
 static int cbk_calc_sha1_one_block (FILE *f, unsigned char sha1[20])
 {
     const guint BLOCK_SIZE = 1024;
@@ -1387,6 +1608,9 @@ static int build_itdb_files(Itdb_iTunesDB *itdb,
     if (mk_Locations(itdb, outpath, uuid) != 0) {
 	err++;
     }
+
+    run_post_process_commands(itdb, outpath, uuid);
+
     if (!mk_Locations_cbk(itdb, outpath)) {
 	err++;
     }
