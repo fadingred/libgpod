@@ -427,7 +427,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     sqlite3_exec(db, "BEGIN;", NULL, NULL, NULL);
 
     fprintf(stderr, "[%s] compiling SQL statements\n", __func__);
-    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"version_info\" VALUES(?,?,?,?,?,?);", -1, &stmt_version_info, NULL)) {
+    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"version_info\" VALUES(?,?,?,?,?,?,?);", -1, &stmt_version_info, NULL)) {
 	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	goto leave;
     }
@@ -477,7 +477,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     }
 
     printf("[%s] - inserting into \"version_info\"\n", __func__);
-    /* INSERT INTO "version_info" VALUES(1,2,40,0,0,2); */
+    /* INSERT INTO "version_info" VALUES(1,2,40,0,0,0,2); */
     idx = 0;
     /* id */
     sqlite3_bind_int(stmt_version_info, ++idx, 1);
@@ -492,6 +492,8 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     sqlite3_bind_int(stmt_version_info, ++idx, 0);
     /* update_level */
     /* This has an unknown meaning. use 0. */
+    sqlite3_bind_int(stmt_version_info, ++idx, 0);
+    /* device_update_level, default is 0 */
     sqlite3_bind_int(stmt_version_info, ++idx, 0);
     /* platform */
     /* TODO: this is a guess: 2 = Windows, 1 = MacOS */
