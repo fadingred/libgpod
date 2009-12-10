@@ -177,6 +177,16 @@ if test "x$with_libiphone" != "xno"; then
 fi
 AM_CONDITIONAL(HAVE_LIBIPHONE, test x"$enable_libiphone" = xyes)
 
+dnl ***********************************************************************
+dnl * libplist is optional, but is required for iPhone/iPod Touch support
+dnl ***********************************************************************
+if test "x$enable_libiphone" = "xyes"; then
+  PKG_CHECK_MODULES(LIBPLIST, libplist >= 1.0, libplist_1_0=yes, libplist_1_0=no)
+  if test x"$libiphone_1_0" = xyes; then
+      AC_DEFINE([HAVE_LIBPLIST_1_0], 1, [Define if libplist is using its newer API])
+  fi
+fi
+
 dnl **************************************************
 dnl * TagLib is only used by test-rebuild-db 
 dnl **************************************************

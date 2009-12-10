@@ -33,6 +33,12 @@
 #include <libiphone/libiphone.h>
 #include <libiphone/lockdown.h>
 
+#ifndef HAVE_LIBPLIST_1_0
+/* Old API */
+#define plist_dict_get_item plist_get_dict_el_from_key
+#define plist_new_string plist_add_sub_key_el
+#define plist_dict_insert_item plist_add_sub_string_el
+#endif
 
 extern char *read_sysinfo_extended_by_uuid (const char *uuid);
 extern gboolean iphone_write_sysinfo_extended (const char *uuid, const char *xml);
@@ -69,27 +75,27 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	lockdownd_get_value(client, "com.apple.mobile.iTunes", NULL, &value);
 	
 	/* add some required values manually to emulate old plist format */
-	ptr = plist_get_dict_el_from_key(global, "SerialNumber");
+	ptr = plist_dict_get_item(global, "SerialNumber");
 	plist_get_string_val(ptr, &str);
 	if (str != NULL) {
-	    plist_add_sub_key_el(value, "SerialNumber");
-	    plist_add_sub_string_el(value, str);
+	    ptr = plist_new_string(str);
+	    plist_dict_insert_item(value, "SerialNumber", ptr);
 	    free(str);
 	}
 
-	ptr = plist_get_dict_el_from_key(global, "BuildVersion");
+	ptr = plist_dict_get_item(global, "BuildVersion");
 	plist_get_string_val(ptr, &str);
 	if (str != NULL) {
-	    plist_add_sub_key_el(value, "BuildID");
-	    plist_add_sub_string_el(value, str);
+	    ptr = plist_new_string(str);
+	    plist_dict_insert_item(value, "BuildID", ptr);
 	    free(str);
 	}
 
-	plist_add_sub_key_el(value, "FireWireGUID");
-	plist_add_sub_string_el(value, uuid);
+	ptr = plist_new_string(uuid);
+	plist_dict_insert_item(value, "FireWireGUID", ptr);
 
-	plist_add_sub_key_el(value, "UniqueDeviceID");
-	plist_add_sub_string_el(value, uuid);
+	ptr = plist_new_string(uuid);
+	plist_dict_insert_item(value, "UniqueDeviceID", ptr);
 
 	plist_to_xml(value, &xml, &xml_length);
 
