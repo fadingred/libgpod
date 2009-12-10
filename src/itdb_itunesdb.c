@@ -812,8 +812,24 @@ static inline guint64 get64bint (FContents *cts, glong seek)
     return cts->be_reader.get64int (cts, seek);
 }
 
+/* Try to convert from UTF-16 to UTF-8 and handle partial characters
+ * at the end of the string */
+static char *utf16_to_utf8_with_partial (gunichar2 *entry_utf16)
+{
+    GError *error = NULL;
+    char *entry_utf8;
+    glong items_read;
 
+    entry_utf8 = g_utf16_to_utf8 (entry_utf16, -1, &items_read, NULL, &error);
+    if (entry_utf8 == NULL) {
+        if (g_error_matches (error, G_CONVERT_ERROR, G_CONVERT_ERROR_PARTIAL_INPUT)) {
+            entry_utf8 = g_utf16_to_utf8 (entry_utf16, items_read, NULL, NULL, NULL);
+        }
+        g_error_free (error);
+    }
 
+    return entry_utf8;
+}
 
 /* Fix little endian UTF16 String to correct byteorder if necessary
  * (all strings in the Itdb_iTunesDB are little endian except for the ones
@@ -1309,7 +1325,7 @@ static char *extract_mhod_string (FContents *cts, glong seek)
 	entry_utf16 = g_new0 (gunichar2, (len+2)/2);
 	if (seek_get_n_bytes (cts, (gchar *)entry_utf16, seek+16, len)) {
 	    fixup_little_utf16 (entry_utf16);
-	    entry_utf8= g_utf16_to_utf8 (entry_utf16, -1, NULL, NULL, NULL);
+	    entry_utf8 = utf16_to_utf8_with_partial (entry_utf16);
 	    g_free (entry_utf16);
 	} else { 
 	    g_free (entry_utf16);
