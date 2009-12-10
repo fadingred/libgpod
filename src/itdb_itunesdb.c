@@ -1324,7 +1324,7 @@ static char *extract_mhod_string (FContents *cts, glong seek)
 	}
     }
 
-    if (g_utf8_validate (entry_utf8, -1, NULL)) {
+    if ((entry_utf8 != NULL) && g_utf8_validate (entry_utf8, -1, NULL)) {
 	return entry_utf8;
     } else {
 	g_free (entry_utf8);
