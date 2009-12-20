@@ -477,7 +477,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	goto leave;
     }
-    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"db_info\" VALUES(?,?,?,?,?,?,?);", -1, &stmt_db_info, NULL)) {
+    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"db_info\" VALUES(?,?,?,?,?,?,?,?);", -1, &stmt_db_info, NULL)) {
 	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	goto leave;
     }
@@ -704,6 +704,9 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     /* subtitle_language */
     /*  this is +0xA2 */
     sqlite3_bind_int(stmt_db_info, ++idx, itdb->priv->subtitle_language);
+    /* genius cuid */
+    /* TODO: unkown meaning, set to NULL */
+    sqlite3_bind_null(stmt_db_info, ++idx);
     /* bib */
     /* TODO: unkown meaning, set to NULL */
     sqlite3_bind_null(stmt_db_info, ++idx);
