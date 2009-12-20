@@ -482,7 +482,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	goto leave;
     }
     if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"container\" "
-	    "VALUES(?,?,?,:name,?,?,?,?,?,?,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);", -1, &stmt_container, NULL)) {
+	    "VALUES(?,?,?,?,:name,?,?,?,?,?,?,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);", -1, &stmt_container, NULL)) {
 	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	goto leave;
     }
@@ -642,6 +642,8 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    sqlite3_bind_int(stmt_container, ++idx, 0);
 	}
 	/* date_created */
+	sqlite3_bind_int(stmt_container, ++idx, timeconv(pl->timestamp));
+	/* date_modified */
 	sqlite3_bind_int(stmt_container, ++idx, timeconv(pl->timestamp));
 	/* name */
 	sqlite3_bind_text(stmt_container, ++idx, pl->name, -1, SQLITE_STATIC);
