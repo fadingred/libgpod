@@ -82,9 +82,6 @@ static const char Locations_create[] =
 	"BEGIN TRANSACTION;" \
 	"CREATE TABLE location (item_pid INTEGER NOT NULL, sub_id INTEGER NOT NULL DEFAULT 0, base_location_id INTEGER DEFAULT 0, location_type INTEGER, location TEXT, extension INTEGER, kind_id INTEGER DEFAULT 0, date_created INTEGER DEFAULT 0, file_size INTEGER DEFAULT 0, file_creator INTEGER, file_type INTEGER, num_dir_levels_file INTEGER, num_dir_levels_lib INTEGER, PRIMARY KEY (item_pid,sub_id));" \
 	"CREATE TABLE base_location (id INTEGER NOT NULL, path TEXT, PRIMARY KEY (id));" \
-	"INSERT INTO \"base_location\" VALUES(1,'iTunes_Control/Music');" \
-	"INSERT INTO \"base_location\" VALUES(4,'Podcasts');" \
-	"INSERT INTO \"base_location\" VALUES(6,'iTunes_Control/Ringtones');" \
 	"ANALYZE sqlite_master;" \
 	"INSERT INTO \"sqlite_stat1\" VALUES('location','sqlite_autoindex_location_1','1 1 1');" \
 	"COMMIT;";

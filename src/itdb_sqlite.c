@@ -1181,17 +1181,63 @@ static int mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *uu
 
     sqlite3_exec(db, "BEGIN;", NULL, NULL, NULL);
 
-    /* kill all entries in 'location' as they will be re-inserted */
-    if (SQLITE_OK != sqlite3_exec(db, "DELETE FROM location;", NULL, NULL, &errmsg)) {
-	fprintf(stderr, "[%s] sqlite3_exec error: %s\n", __func__, sqlite3_errmsg(db));
-	if (errmsg) {
-	    fprintf(stderr, "[%s] additional error information: %s\n", __func__, errmsg);
-	    sqlite3_free(errmsg);
-	    errmsg = NULL;
-	}
+    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"base_location\" (id, path) VALUES (?,?);", -1, &stmt, NULL)) {
+	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	goto leave;
     }
+    idx = 0;
+    res = sqlite3_reset(stmt);
+    if (res != SQLITE_OK) {
+	fprintf(stderr, "[%s] sqlite3_reset returned %d\n", __func__, res);
+    }
 
+    sqlite3_bind_int(stmt, ++idx, 1);
+    if (itdb_device_is_iphone_family(itdb->device)) {
+	sqlite3_bind_text(stmt, ++idx, "iTunes_Control/Music", -1, SQLITE_STATIC);
+    } else {
+	sqlite3_bind_text(stmt, ++idx, "iPod_Control/Music", -1, SQLITE_STATIC);
+    }
+    res = sqlite3_step(stmt);
+    if (res == SQLITE_DONE) {
+	/* expected result */
+    } else {
+	fprintf(stderr, "[%s] sqlite3_step returned %d\n", __func__, res);
+    }
+
+    if (itdb_device_is_iphone_family (itdb->device)) {
+	idx = 0;
+	res = sqlite3_reset(stmt);
+	if (res != SQLITE_OK) {
+	    fprintf(stderr, "[%s] sqlite3_reset returned %d\n", __func__, res);
+	}
+	sqlite3_bind_int(stmt, ++idx, 4);
+	sqlite3_bind_text(stmt, ++idx, "Podcasts", -1, SQLITE_STATIC);
+	res = sqlite3_step(stmt);
+	if (res == SQLITE_DONE) {
+	    /* expected result */
+	} else {
+	    fprintf(stderr, "[%s] sqlite3_step returned %d\n", __func__, res);
+	}
+
+	idx = 0;
+	res = sqlite3_reset(stmt);
+	if (res != SQLITE_OK) {
+	    fprintf(stderr, "[%s] sqlite3_reset returned %d\n", __func__, res);
+	}
+	sqlite3_bind_int(stmt, ++idx, 6);
+	sqlite3_bind_text(stmt, ++idx, "iTunes_Control/Ringtones", -1, SQLITE_STATIC);
+	res = sqlite3_step(stmt);
+	if (res == SQLITE_DONE) {
+	    /* expected result */
+	} else {
+	    fprintf(stderr, "[%s] sqlite3_step returned %d\n", __func__, res);
+	}
+    }
+
+    if (stmt) {
+	sqlite3_finalize(stmt);
+    }
+ 
     if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"location\" (item_pid, sub_id, base_location_id, location_type, location, extension, kind_id, date_created, file_size) VALUES(?,?,?,?,?,?,?,?,?);", -1, &stmt, NULL)) {
 	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	goto leave;
