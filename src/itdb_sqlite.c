@@ -31,9 +31,12 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <sqlite3.h>
+#include <plist/plist.h>
 
+#ifdef HAVE_LIBIPHONE
 #include <libiphone/libiphone.h>
 #include <libiphone/lockdown.h>
+#endif
 
 #include "itdb.h"
 #include "itdb_private.h"
@@ -1351,6 +1354,7 @@ static void run_post_process_commands(Itdb_iTunesDB *itdb, const char *outpath, 
     int res;
     sqlite3 *db = NULL;
 
+#ifdef HAVE_LIBIPHONE
     if (itdb_device_is_iphone_family(itdb->device)) {
 	/* get SQL post process commands via lockdown (iPhone/iPod Touch) */
 	lockdownd_client_t client = NULL;
@@ -1382,7 +1386,9 @@ static void run_post_process_commands(Itdb_iTunesDB *itdb, const char *outpath, 
 		plist_node = NULL;
 	    }
 	}
-    } else if (itdb->device->sysinfo_extended != NULL) {
+    } else 
+#endif
+    if (itdb->device->sysinfo_extended != NULL) {
 	/* try to get SQL post process commands via sysinfo_extended */
 	gchar *dev_path = itdb_get_device_dir (itdb->device->mountpoint);
 	if (dev_path) {
