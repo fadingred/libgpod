@@ -12,6 +12,11 @@ ipod_read_sysinfo_extended_SOURCES+=ipod-lockdown.c
 ipod_read_sysinfo_extended_CFLAGS+=$(LIBIPHONE_CFLAGS)
 ipod_read_sysinfo_extended_LDADD+=$(LIBIPHONE_LIBS)
 endif
+if HAVE_LIBUSB
+ipod_read_sysinfo_extended_SOURCES+=ipod-usb.c
+ipod_read_sysinfo_extended_CFLAGS+=$(LIBUSB_CFLAGS)
+ipod_read_sysinfo_extended_LDADD+=$(LIBUSB_LIBS)
+endif
 
 if HAVE_HAL
 haldir = $(HALCALLOUTSDIR)
@@ -48,6 +53,11 @@ if HAVE_SGUTILS
 libgpod_callout_SOURCES += ipod-scsi.c
 libgpod_callout_CFLAGS += $(SGUTILS_CFLAGS)
 libgpod_callout_LDADD += $(SGUTILS_LIBS)
+endif
+if HAVE_LIBUSB
+libgpod_callout_SOURCES+=ipod-usb.c
+libgpod_callout_CFLAGS+=$(LIBUSB_CFLAGS)
+libgpod_callout_LDADD+=$(LIBUSB_LIBS)
 endif
 
 endif

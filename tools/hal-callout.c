@@ -44,6 +44,9 @@
 #ifdef HAVE_SGUTILS
 extern char *read_sysinfo_extended (const char *device);
 #endif
+#ifdef HAVE_LIBUSB
+extern char *read_sysinfo_extended_from_usb (guint bus_number, guint device_address);
+#endif
 
 struct _ProductionInfo {
 	gchar *factory_id;
@@ -759,7 +762,61 @@ static gboolean write_sysinfo_extended (const char *mountpoint,
 
         return result;
 }
+#ifdef HAVE_LIBUSB
+static gboolean hal_get_ipod_usb_position (LibHalContext *ctx, const char *udi,
+                                           int *usb_bus_number, int *usb_device_number)
+{
+	char *parent_udi;
+	char *subsystem;
+	gboolean found_ids;
+	DBusError error;
 
+
+	parent_udi = NULL;
+	subsystem = NULL;
+	found_ids = FALSE;
+	dbus_error_init (&error);
+	while (TRUE) {
+		parent_udi = libhal_device_get_property_string (ctx, udi,
+				"info.parent", &error);
+		if (parent_udi == NULL || dbus_error_is_set (&error))
+			goto end;
+		udi = parent_udi;
+		subsystem = libhal_device_get_property_string (ctx, udi,
+							       "linux.subsystem",
+							       &error);
+		if (subsystem == NULL || dbus_error_is_set (&error)) {
+			dbus_error_free (&error);
+			dbus_error_init (&error);
+			continue;
+		}
+		if (strcmp (subsystem, "usb") == 0) {
+			*usb_bus_number = libhal_device_get_property_int (ctx, udi,
+									  "usb.bus_number", &error);
+			if (dbus_error_is_set (&error)) {
+				goto end;
+			}
+			*usb_device_number = libhal_device_get_property_int (ctx, udi,
+									     "usb.linux.device_number", &error);
+			if (dbus_error_is_set (&error)) {
+				goto end;
+			}
+			found_ids = TRUE;
+			goto end;
+		}
+	}
+
+end:
+	libhal_free_string (parent_udi);
+	libhal_free_string (subsystem);
+	if (dbus_error_is_set (&error)) {
+	    g_print ("Error: %s\n", error.message);
+	    dbus_error_free (&error);
+	}
+
+	return found_ids;
+}
+#endif
 
 int main (int argc, char **argv)
 {
@@ -770,30 +827,48 @@ int main (int argc, char **argv)
 	const char *udi;
 
 	g_type_init ();
+	g_print ("huho\n");
+
+	ctx = hal_ipod_initialize ();
+	if (ctx == NULL) {
+		g_print ("Failed to init hal\n");
+		return FALSE;
+	}
+	udi = g_getenv ("UDI");
+	if (udi == NULL) {
+		g_print ("Failed to get UDI\n");
+		libhal_ctx_free (ctx);
+		return FALSE;
+	}
+
+	xml = NULL;
+
+#ifdef HAVE_LIBUSB
+{
+	gboolean found_ipod;
+	gint usb_bus_number = 0;
+	gint usb_device_number = 0;
+
+	found_ipod = hal_get_ipod_usb_position (ctx, udi, &usb_bus_number,
+						&usb_device_number);
+	if (found_ipod) {
+		xml = read_sysinfo_extended_from_usb (usb_bus_number,
+						      usb_device_number);
+	}
+}
+#endif
 
 #ifdef HAVE_SGUTILS
-        xml = read_sysinfo_extended (g_getenv ("HAL_PROP_BLOCK_DEVICE"));
-#else
-        return -1;
+	if (xml == NULL) {
+		xml = read_sysinfo_extended (g_getenv ("HAL_PROP_BLOCK_DEVICE"));
+	}
 #endif
+
         if (xml == NULL) {
+                libhal_ctx_free (ctx);
                 return -1;
         }
         props = itdb_sysinfo_extended_parse_from_xml (xml, NULL);
-
-        ctx = hal_ipod_initialize ();
-        if (ctx == NULL) {
-		g_free (xml);
-                itdb_sysinfo_properties_free (props);
-                return FALSE;
-        }
-        udi = g_getenv ("UDI");
-        if (udi == NULL) {
-		g_free (xml);
-                libhal_ctx_free (ctx);
-                itdb_sysinfo_properties_free (props);
-                return FALSE;
-        }
 
         hal_ipod_set_properties (ctx, udi, props);
         itdb_sysinfo_properties_free (props);

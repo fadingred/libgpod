@@ -82,7 +82,8 @@ fi
 AM_CONDITIONAL(WITH_INTERNAL_GCHECKSUM, test "x$with_internal_gchecksum" = "xyes")
 
 dnl **************************************************
-dnl * sgutils is necessary to get the xml device file from the ipod
+dnl * sgutils is necessary to get the xml device file
+dnl * from older ipods
 dnl **************************************************
 AC_CHECK_LIB(sgutils2, sg_ll_inquiry,
              [SGUTILS_LIBS="-lsgutils2"; have_sgutils=yes],
@@ -97,6 +98,17 @@ if test x"$have_sgutils" = xyes; then
         AC_DEFINE(HAVE_SGUTILS, 1, [Define if you have sgutils support])
 fi
 AM_CONDITIONAL(HAVE_SGUTILS, test x"$have_sgutils" = xyes)
+
+dnl **************************************************
+dnl * libusb is necessary to get the xml device file
+dnl * from newer ipods (nano5g)
+dnl **************************************************
+PKG_CHECK_MODULES(LIBUSB, libusb-1.0, have_libusb=yes, have_libusb=no)
+if test x"$have_libusb" = xyes; then
+   AH_TEMPLATE([HAVE_LIBUSB], [Whether libusb is installed])
+   AC_DEFINE_UNQUOTED(HAVE_LIBUSB, 1)
+fi
+AM_CONDITIONAL(HAVE_LIBUSB, test x"$have_libusb" = xyes)
 
 dnl **************************************************
 dnl * zlib is neeeded for handling compressed iTunesCDB files
