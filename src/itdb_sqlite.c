@@ -976,6 +976,11 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    case 0x4d503320:
 		audio_format = 301;
 		break;
+	    case 0x4d344120:
+	    case 0x4d345220:
+	    case 0x4d503420:
+		audio_format = 502;
+		break;
 	    default:
 		audio_format = 0;
 	}
