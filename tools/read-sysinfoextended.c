@@ -25,6 +25,7 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <stdlib.h>
 
 #include "itdb.h"
 #ifdef HAVE_SGUTILS
@@ -33,6 +34,9 @@ extern char *read_sysinfo_extended (const char *device);
 #ifdef HAVE_LIBIPHONE
 extern char *read_sysinfo_extended_by_uuid (const char *uuid);
 #endif
+#ifdef HAVE_LIBUSB
+extern char *read_sysinfo_extended_from_usb (guint bus_number, guint device_address);
+#endif
 
 int
 main (int argc, char **argv)
@@ -40,7 +44,7 @@ main (int argc, char **argv)
     char *xml;
     
     if (argc < 3) {
-      g_print (_("usage: %s <device|uuid> <mountpoint>\n"), g_basename (argv[0]));
+      g_print (_("usage: %s <device|uuid|bus device> <mountpoint>\n"), g_basename (argv[0]));
 	return 1;
     }
 
@@ -52,7 +56,21 @@ main (int argc, char **argv)
 #else
 	g_warning ("Compiled without sgutils support, can't read SysInfoExtended from a device");
 #endif
-    } else {
+    }
+#ifdef HAVE_LIBUSB
+    else if (argc == 4) {
+        int bus_number;
+        int device_number;
+        /* 2 arguments in addition to the mountpoint, attempt to parse them
+         * as an USB bus number/device number (useful for Nano5G for
+         * example)
+         */
+        bus_number = atoi (argv[1]);
+        device_number = atoi (argv[2]);
+        xml = read_sysinfo_extended_from_usb (bus_number, device_number);
+    }
+#endif
+    else {
 	/* argument doesn't look like a filename, might be an UUID */
 #ifdef HAVE_LIBIPHONE
 	xml = read_sysinfo_extended_by_uuid (argv[1]);
@@ -65,7 +83,7 @@ main (int argc, char **argv)
       g_print (_("Couldn't read xml sysinfo from %s\n"), argv[1]);
       return 1;
     } else {
-	const char *mountpoint = argv[2];
+	const char *mountpoint = argv[argc-1];
 	char *device_path;
 	char *filename;
 	gboolean success;
@@ -73,7 +91,7 @@ main (int argc, char **argv)
 	device_path = itdb_get_device_dir (mountpoint);
 	if (device_path == NULL) {
 	    g_free (xml);
-	    g_print (_("Couldn't resolve Device directory path on %s"), 
+	    g_print (_("Couldn't resolve Device directory path on %s\n"),
 		     mountpoint);
 	    return 1;
 	}
