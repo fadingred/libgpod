@@ -989,8 +989,9 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	sqlite3_bind_int(stmt_avformat_info, ++idx, track->bitrate);
 	/* sample_rate */
 	sqlite3_bind_double(stmt_avformat_info, ++idx, track->samplerate);
-	/* duration */
-	sqlite3_bind_int(stmt_avformat_info, ++idx, track->tracklen);
+	/* duration (in samples) (track->tracklen is in ms) */
+	/* iTunes sometimes set it to 0, do that for now since it's easier */
+	sqlite3_bind_int(stmt_avformat_info, ++idx, 0);
 	/* gapless_heuristic_info */
 	sqlite3_bind_int(stmt_avformat_info, ++idx, track->gapless_track_flag);
 	/* gapless_encoding_delay */
