@@ -52,6 +52,64 @@ static uint32_t timeconv(time_t tv)
     return tv - 978307200 - tzoffset;
 }
 
+static const char *get_artist (const Itdb_Track *track)
+{
+    return track->artist;
+}
+
+typedef const char *(*KeyGetter) (const Itdb_Track *);
+
+static gint compare_tracks (gconstpointer lhs, gconstpointer rhs,
+                            gpointer user_data)
+{
+    const Itdb_Track *track_lhs = (Itdb_Track *)lhs;
+    const Itdb_Track *track_rhs = (Itdb_Track *)rhs;
+    KeyGetter get_key = (KeyGetter)user_data;
+
+    g_assert (lhs != NULL);
+    g_assert (rhs != NULL);
+
+    if (get_key (track_lhs) == NULL) {
+        if (get_key (track_rhs) == NULL) {
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+
+    if (get_key (track_rhs) == NULL) {
+        return 1;
+    }
+
+    /* FIXME: should probably generate collation keys first */
+    return g_utf8_collate (get_key (track_lhs), get_key (track_rhs));
+}
+
+static GHashTable *compute_key_order (GList *tracks, KeyGetter get_key)
+{
+    GList *sorted_tracks;
+    GList *it;
+    GHashTable *order; 
+    guint cur_order;
+
+    sorted_tracks = g_list_sort_with_data (tracks, compare_tracks, get_key);
+    order = g_hash_table_new (g_str_hash, g_str_equal);
+
+    cur_order = 100;
+    for (it = sorted_tracks; it != NULL; it = it->next) {
+        Itdb_Track *track = (Itdb_Track *)it->data;
+
+        g_assert (track != NULL);
+
+        if (!g_hash_table_lookup (order, get_key (track))) {
+            g_hash_table_insert (order, (gpointer)get_key (track),
+                                 GUINT_TO_POINTER (cur_order));
+            cur_order += 100;
+        }
+    }
+
+    return order;
+}
 
 static int mk_Dynamic(Itdb_iTunesDB *itdb, const char *outpath)
 {
@@ -434,6 +492,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     int idx = 0;
     int pos = 0;
     GHashTable *genre_map;
+    GHashTable *artist_order;
     guint32 genre_index;
     printf("library_persistent_id = 0x%016"G_GINT64_MODIFIER"x\n", itdb->priv->pid);
 
@@ -726,6 +785,8 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 
     /* for each track: */
     printf("[%s] - processing %d tracks\n", __func__, g_list_length(itdb->tracks));
+    artist_order = compute_key_order (itdb->tracks, get_artist);
+    g_assert (artist_order != NULL);
     for (gl = itdb->tracks; gl; gl = gl->next) {
 	Itdb_Track *track = gl->data;
 	Itdb_Item_Id *this_album = NULL;
@@ -901,11 +962,12 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    }
 	}
 
-	/* title_order */
 	/* TODO figure out where these values are stored */
+	/* title_order */
 	sqlite3_bind_int(stmt_item, ++idx, 100);
 	/* artist_order */
-	sqlite3_bind_int(stmt_item, ++idx, 100);
+	sqlite3_bind_int(stmt_item, ++idx,
+                         GPOINTER_TO_UINT (g_hash_table_lookup (artist_order, track->artist)));
 	/* album_order */
 	sqlite3_bind_int(stmt_item, ++idx, 100);
 	/* genre_order */
@@ -1102,6 +1164,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    }
 	}
     }
+    g_hash_table_destroy (artist_order);
 
     sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
 
