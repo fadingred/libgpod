@@ -21,6 +21,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -468,6 +469,24 @@ static void free_key_val_strings(gpointer key, gpointer value, gpointer user_dat
 	g_free(value);
 }
 
+static void bind_first_text(sqlite3_stmt *stmt, int idx, int n, ...)
+{
+    va_list ap;
+    int i;
+
+    va_start(ap, n);
+    for (i = 0; i < n; i++) {
+        char *str = va_arg(ap, char*);
+        if (str && *str) {
+	    sqlite3_bind_text(stmt, idx, str, -1, SQLITE_STATIC);
+            goto done;
+        }
+    }
+    sqlite3_bind_null(stmt, idx);
+done:
+    va_end(ap);
+}
+
 static int mk_Library(Itdb_iTunesDB *itdb,
 		       GHashTable *album_ids, GHashTable *artist_ids,
 		       GHashTable *composer_ids, const char *outpath)
@@ -892,85 +911,25 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	}
 	sqlite3_bind_int64(stmt_item, ++idx, composer_pid);
 	/* title */
-	if (track->title && *track->title) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->title, -1, SQLITE_STATIC);
-	} else {
-	    sqlite3_bind_null(stmt_item, ++idx);
-	}
+        bind_first_text(stmt_item, ++idx, 1, track->title);
 	/* artist */
-	if (track->artist && *track->artist) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->artist, -1, SQLITE_STATIC);
-	} else {
-	    sqlite3_bind_null(stmt_item, ++idx);
-	}
+        bind_first_text(stmt_item, ++idx, 1, track->artist);
 	/* album */
-	if (track->album && *track->album) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->album, -1, SQLITE_STATIC);
-	} else {
-	    sqlite3_bind_null(stmt_item, ++idx);
-	}
+        bind_first_text(stmt_item, ++idx, 1, track->album);
 	/* album_artist */
-	if (track->albumartist && *track->albumartist) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->albumartist, -1, SQLITE_STATIC);
-	} else {
-	    sqlite3_bind_null(stmt_item, ++idx);
-	}
+        bind_first_text(stmt_item, ++idx, 1, track->albumartist);
 	/* composer */
-	if (track->composer && *track->composer) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->composer, -1, SQLITE_STATIC);
-	} else {
-	    sqlite3_bind_null(stmt_item, ++idx);
-	}
+        bind_first_text(stmt_item, ++idx, 1, track->composer);
 	/* sort_title */
-	if (track->sort_title && *track->sort_title) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->sort_title, -1, SQLITE_STATIC);
-	} else {
-	    if (track->title && *track->title) {
-		sqlite3_bind_text(stmt_item, ++idx, track->title, -1, SQLITE_STATIC);
-	    } else {
-		sqlite3_bind_null(stmt_item, ++idx);
-	    }
-	}
+        bind_first_text(stmt_item, ++idx, 2, track->sort_title, track->title);
 	/* sort_artist */
-	if (track->sort_artist && *track->sort_artist) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->sort_artist, -1, SQLITE_STATIC);
-	} else {
-	    if (track->artist && *track->artist) {
-		sqlite3_bind_text(stmt_item, ++idx, track->artist, -1, SQLITE_STATIC);
-	    } else {
-		sqlite3_bind_null(stmt_item, ++idx);
-	    }
-	}
+        bind_first_text(stmt_item, ++idx, 2, track->sort_artist, track->artist);
 	/* sort_album */
-	if (track->sort_album && *track->sort_album) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->sort_album, -1, SQLITE_STATIC);
-	} else {
-	    if (track->album && *track->album) {
-		sqlite3_bind_text(stmt_item, ++idx, track->album, -1, SQLITE_STATIC);
-	    } else {
-		sqlite3_bind_null(stmt_item, ++idx);
-	    }
-	}
+        bind_first_text(stmt_item, ++idx, 2, track->sort_album, track->album);
 	/* sort_album_artist */
-	if (track->sort_albumartist && *track->sort_albumartist) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->sort_albumartist, -1, SQLITE_STATIC);
-	} else {
-	    if (track->albumartist && *track->albumartist) {
-		sqlite3_bind_text(stmt_item, ++idx, track->albumartist, -1, SQLITE_STATIC);
-	    } else {
-		sqlite3_bind_null(stmt_item, ++idx);
-	    }
-	}
+        bind_first_text(stmt_item, ++idx, 2, track->sort_albumartist, track->albumartist);
 	/* sort_composer */
-	if (track->sort_composer && *track->sort_composer) {
-	    sqlite3_bind_text(stmt_item, ++idx, track->sort_composer, -1, SQLITE_STATIC);
-	} else {
-	    if (track->composer && *track->composer) {
-		sqlite3_bind_text(stmt_item, ++idx, track->composer, -1, SQLITE_STATIC);
-	    } else {
-		sqlite3_bind_null(stmt_item, ++idx);
-	    }
-	}
+        bind_first_text(stmt_item, ++idx, 2, track->sort_composer, track->composer);
 
 	/* TODO figure out where these values are stored */
 	/* title_order */
@@ -993,17 +952,9 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	/* comment */
 	sqlite3_bind_text(stmt_item, ++idx, track->comment, -1, SQLITE_STATIC);
 	/* grouping */
-	if (!track->grouping) {
-	    sqlite3_bind_null(stmt_item, ++idx);
-	} else {
-	    sqlite3_bind_text(stmt_item, ++idx, track->grouping, -1, SQLITE_STATIC);
-	}
+        bind_first_text(stmt_item, ++idx, 1, track->grouping);
 	/* description */
-	if (!track->description) {
-	    sqlite3_bind_null(stmt_item, ++idx);
-	} else {
-	    sqlite3_bind_text(stmt_item, ++idx, track->description, -1, SQLITE_STATIC);
-	}
+        bind_first_text(stmt_item, ++idx, 1, track->description);
 	/* description_long */
 	/* TODO libgpod doesn't know about it */
 	sqlite3_bind_null(stmt_item, ++idx);
