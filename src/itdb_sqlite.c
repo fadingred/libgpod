@@ -470,7 +470,7 @@ static void free_key_val_strings(gpointer key, gpointer value, gpointer user_dat
 
 static int mk_Library(Itdb_iTunesDB *itdb,
 		       GHashTable *album_ids, GHashTable *artist_ids,
-		       const char *outpath)
+		       GHashTable *composer_ids, const char *outpath)
 {
     int res = -1;
     gchar *dbf = NULL;
@@ -485,6 +485,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     sqlite3_stmt *stmt_item_to_container = NULL;
     sqlite3_stmt *stmt_album = NULL;
     sqlite3_stmt *stmt_artist = NULL;
+    sqlite3_stmt *stmt_composer = NULL;
     char *errmsg = NULL;
     struct stat fst;
     GList *gl = NULL;
@@ -580,6 +581,10 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	goto leave;
     }
     if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT OR IGNORE INTO \"artist\" VALUES(?,?,?,?,?,?,?);", -1, &stmt_artist, NULL)) {
+	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
+	goto leave;
+    }
+    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT OR IGNORE INTO \"composer\" (pid,name,name_order,sort_name) VALUES(?,?,?,?);", -1, &stmt_composer, NULL)) {
 	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	goto leave;
     }
@@ -791,8 +796,10 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	Itdb_Track *track = gl->data;
 	Itdb_Item_Id *this_album = NULL;
 	Itdb_Item_Id *this_artist = NULL;
+	Itdb_Item_Id *this_composer = NULL;
 	uint64_t album_pid = 0;
 	uint64_t artist_pid = 0;
+	uint64_t composer_pid = 0;
 	gpointer genre_id = NULL;
 	int audio_format;
 	int aw_id;
@@ -879,8 +886,11 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	}
 	sqlite3_bind_int64(stmt_item, ++idx, artist_pid);
 	/* composer_pid */
-	/* FIXME TODO libgpod support missing! */
-	sqlite3_bind_int64(stmt_item, ++idx, 0);
+	this_composer = g_hash_table_lookup(composer_ids, track);
+	if (this_composer) {
+	    composer_pid = this_composer->sql_id;
+	}
+	sqlite3_bind_int64(stmt_item, ++idx, composer_pid);
 	/* title */
 	if (track->title && *track->title) {
 	    sqlite3_bind_text(stmt_item, ++idx, track->title, -1, SQLITE_STATIC);
@@ -1128,6 +1138,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    }
 	}
 
+
 	if (this_artist) {
 	    /* printf("[%s] -- inserting into \"artist\" (if required)\n", __func__); */
 	    res = sqlite3_reset(stmt_artist);
@@ -1157,6 +1168,32 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    sqlite3_bind_text(stmt_artist, ++idx, track->artist, -1, SQLITE_STATIC);
 
 	    res = sqlite3_step(stmt_artist);
+	    if (res == SQLITE_DONE) {
+		/* expected result */
+	    } else {
+		fprintf(stderr, "[%s] 8 sqlite3_step returned %d\n", __func__, res);
+	    }
+	}
+
+	if (this_composer) {
+	    /* printf("[%s] -- inserting into \"composer\" (if required)\n", __func__); */
+	    res = sqlite3_reset(stmt_composer);
+	    if (res != SQLITE_OK) {
+		fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
+	    }
+	    idx = 0;
+	    /* pid */
+	    sqlite3_bind_int64(stmt_composer, ++idx, composer_pid);
+	    /* name */
+	    sqlite3_bind_text(stmt_composer, ++idx, track->composer, -1, SQLITE_STATIC);
+	    /* name_order */
+	    /* TODO */
+	    sqlite3_bind_int(stmt_composer, ++idx, 100);
+	    /* sort_name */
+	    /* TODO always same as 'name'? */
+	    sqlite3_bind_text(stmt_composer, ++idx, track->composer, -1, SQLITE_STATIC);
+
+	    res = sqlite3_step(stmt_composer);
 	    if (res == SQLITE_DONE) {
 		/* expected result */
 	    } else {
@@ -1763,6 +1800,7 @@ static gboolean mk_Locations_cbk (Itdb_iTunesDB *itdb, const char *dirname)
 
 static int build_itdb_files(Itdb_iTunesDB *itdb,
 			     GHashTable *album_ids, GHashTable *artist_ids,
+			     GHashTable *composer_ids,
 			     const char *outpath, const char *uuid)
 {
     int err = 0;
@@ -1776,7 +1814,7 @@ static int build_itdb_files(Itdb_iTunesDB *itdb,
     if (mk_Genius(itdb, outpath) != 0) {
 	err++;
     }
-    if (mk_Library(itdb, album_ids, artist_ids, outpath) != 0) {
+    if (mk_Library(itdb, album_ids, artist_ids, composer_ids, outpath) != 0) {
 	err++;
     }
     if (mk_Locations(itdb, outpath, uuid) != 0) {
@@ -1900,7 +1938,7 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
     }
 
     /* generate itdb files in temporary directory */
-    if (build_itdb_files(fexp->itdb, fexp->albums, fexp->artists, tmpdir,
+    if (build_itdb_files(fexp->itdb, fexp->albums, fexp->artists, fexp->composers, tmpdir,
 		     itdb_device_get_uuid(fexp->itdb->device)) != 0) {
 	res = -1;
 	goto leave;

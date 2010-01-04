@@ -3807,7 +3807,7 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put32lint (cts, track->priv->artist_id);
   put32_n0 (cts, 4);
   /* +0x1F4 */
-  put32lint (cts, 0); /* FIXME: this is another ID for something, composer?! */
+  put32lint (cts, track->priv->composer_id); /* FIXME: this is another ID for something, composer?! */
   put32_n0 (cts, 20); /* padding */
 }
 
@@ -5489,6 +5489,24 @@ static gboolean itdb_artist_equal (gconstpointer v1, gconstpointer v2)
   return safe_str_equal (track1->artist, track2->artist);
 }
 
+static guint itdb_composer_hash (gconstpointer v)
+{
+  Itdb_Track *track = (Itdb_Track *)v;
+  if (track->composer != NULL) {
+    return g_str_hash (track->composer);
+  } else {
+    return 0;
+  }
+}
+
+static gboolean itdb_composer_equal (gconstpointer v1, gconstpointer v2)
+{
+  Itdb_Track *track1 = (Itdb_Track *)v1;
+  Itdb_Track *track2 = (Itdb_Track *)v2;
+
+  return safe_str_equal (track1->composer, track2->composer);
+}
+
 /* - reassign the iPod IDs
    - make sure the itdb->tracks are in the same order as the mpl
    - assign album IDs to write the MHLA
@@ -5500,6 +5518,7 @@ static void prepare_itdb_for_write (FExport *fexp)
     Itdb_Playlist *mpl;
     guint album_id = 1;
     guint artist_id = 1;
+    guint composer_id = 1;
 
     g_return_if_fail (fexp);
     itdb = fexp->itdb;
@@ -5536,6 +5555,10 @@ static void prepare_itdb_for_write (FExport *fexp)
     fexp->artists = g_hash_table_new_full (itdb_artist_hash, itdb_artist_equal,
 					   NULL, g_free);
 
+    g_assert (fexp->composers == NULL);
+    fexp->composers = g_hash_table_new_full (itdb_composer_hash, itdb_composer_equal,
+					     NULL, g_free);
+
     /* assign unique IDs and create sort keys */
     for (gl=itdb->tracks; gl; gl=gl->next)
     {
@@ -5545,36 +5568,39 @@ static void prepare_itdb_for_write (FExport *fexp)
 	g_return_if_fail (track);
 	track->id = fexp->next_id++;
 
-	if (track->album == NULL) {	
-	    /* unknown album name, this entry isn't interesting to
-	     * build the list of all albums on the ipod
-	     */
-	    continue;
-	}
-	/* album ids are used when writing the mhla header */
-	id = g_hash_table_lookup (fexp->albums, track);
-	if (id != NULL) {
-	    track->priv->album_id = id->id;
-	} else {	
-	    add_new_id (fexp->albums, track, album_id);
-	    track->priv->album_id = album_id;
-	    album_id++;
+	if (track->album != NULL) {
+		/* album ids are used when writing the mhla header */
+		id = g_hash_table_lookup (fexp->albums, track);
+		if (id != NULL) {
+		    track->priv->album_id = id->id;
+		} else {
+		    add_new_id (fexp->albums, track, album_id);
+		    track->priv->album_id = album_id;
+		    album_id++;
+		}
 	}
 
-	if (track->artist == NULL) {	
-	    /* unknown artist name, this entry isn't interesting to
-	     * build the list of all artists on the ipod
-	     */
-	    continue;
+	if (track->artist != NULL) {
+		/* artist ids are used when writing the mhli header */
+		id = g_hash_table_lookup (fexp->artists, track);
+		if (id != NULL) {
+		    track->priv->artist_id = id->id;
+		} else {
+		    add_new_id (fexp->artists, track, artist_id);
+		    track->priv->artist_id = artist_id;
+		    artist_id++;
+		}
 	}
-	/* artist ids are used when writing the mhli header */
-	id = g_hash_table_lookup (fexp->artists, track);
-	if (id != NULL) {
-	    track->priv->artist_id = id->id;
-	} else {	
-	    add_new_id (fexp->artists, track, artist_id);
-	    track->priv->artist_id = artist_id;
-	    artist_id++;
+
+	if (track->composer != NULL) {
+		id = g_hash_table_lookup (fexp->composers, track);
+		if (id != NULL) {
+		    track->priv->composer_id = id->id;
+		} else {
+		    add_new_id (fexp->composers, track, composer_id);
+		    track->priv->composer_id = composer_id;
+		    composer_id++;
+		}
 	}
     }
 }

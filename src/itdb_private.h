@@ -131,10 +131,11 @@ typedef struct
 {
     Itdb_iTunesDB *itdb;
     WContents *wcontents;
-    guint32 next_id;     /* next free ID to use       */
-    GHashTable *albums;  /* used to build the MHLA    */
-    GHashTable *artists; /* used to build the MHLI    */
-    GError *error;       /* where to report errors to */
+    guint32 next_id;       /* next free ID to use       */
+    GHashTable *albums;    /* used to build the MHLA    */
+    GHashTable *artists;   /* used to build the MHLI    */
+    GHashTable *composers;
+    GError *error;         /* where to report errors to */
 } FExport;
 
 
@@ -195,6 +196,7 @@ struct _Itdb_iTunesDB_Private
 struct _Itdb_Track_Private {
 	guint32 album_id;
 	guint32 artist_id;
+	guint32 composer_id;
 };
 
 struct _Itdb_Playlist_Private {
