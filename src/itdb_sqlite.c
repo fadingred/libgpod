@@ -76,7 +76,7 @@ static glong sort_offsets[][2] = {
     { 0, 0 } /* TODO: Series Name: ignored for now. */
 };
 
-static gchar *sort_field (Itdb_Track *track, guint member)
+static gchar *sort_field(Itdb_Track *track, guint member)
 {
     gchar *field;
     int offset;
@@ -92,7 +92,7 @@ static gchar *sort_field (Itdb_Track *track, guint member)
     return NULL;
 }
 
-static int lookup_order (GHashTable **order_hashes, guint member, Itdb_Track *track)
+static int lookup_order(GHashTable **order_hashes, guint member, Itdb_Track *track)
 {
     const char *key;
 
@@ -106,7 +106,7 @@ static int lookup_order (GHashTable **order_hashes, guint member, Itdb_Track *tr
     return GPOINTER_TO_UINT(g_hash_table_lookup(order_hashes[member], key));
 }
 
-static gint compare_track_fields (gconstpointer lhs, gconstpointer rhs)
+static gint compare_track_fields(gconstpointer lhs, gconstpointer rhs)
 {
     const gchar *field_lhs = (const gchar *)lhs;
     const gchar *field_rhs = (const gchar *)rhs;
@@ -124,10 +124,10 @@ static gint compare_track_fields (gconstpointer lhs, gconstpointer rhs)
     }
 
     /* FIXME: should probably generate collation keys first */
-    return g_utf8_collate (field_lhs, field_rhs);
+    return g_utf8_collate(field_lhs, field_rhs);
 }
 
-static gboolean traverse_tracks (gpointer key, gpointer value, gpointer data)
+static gboolean traverse_tracks(gpointer key, gpointer value, gpointer data)
 {
     GHashTable *hash = (GHashTable *)data;
 
@@ -137,7 +137,7 @@ static gboolean traverse_tracks (gpointer key, gpointer value, gpointer data)
     return FALSE;
 }
 
-static GHashTable **compute_key_orders (GList *tracks)
+static GHashTable **compute_key_orders(GList *tracks)
 {
     GHashTable **result;
     int i;
@@ -167,7 +167,7 @@ static GHashTable **compute_key_orders (GList *tracks)
     return result;
 }
 
-static void destroy_key_orders (GHashTable **orders)
+static void destroy_key_orders(GHashTable **orders)
 {
     int i;
 
@@ -1224,7 +1224,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     printf("[%s] done.\n", __func__);
 leave:
     if (orders != NULL) {
-        destroy_key_orders (orders);
+        destroy_key_orders(orders);
     }
 
     if (stmt_version_info) {
@@ -1332,7 +1332,7 @@ static int mk_Locations(Itdb_iTunesDB *itdb, const char *outpath, const char *uu
 	fprintf(stderr, "[%s] sqlite3_step returned %d\n", __func__, res);
     }
 
-    if (itdb_device_is_iphone_family (itdb->device)) {
+    if (itdb_device_is_iphone_family(itdb->device)) {
 	idx = 0;
 	res = sqlite3_reset(stmt);
 	if (res != SQLITE_OK) {
@@ -1515,10 +1515,10 @@ static void run_post_process_commands(Itdb_iTunesDB *itdb, const char *outpath, 
 #endif
     if (itdb->device->sysinfo_extended != NULL) {
 	/* try to get SQL post process commands via sysinfo_extended */
-	gchar *dev_path = itdb_get_device_dir (itdb->device->mountpoint);
+	gchar *dev_path = itdb_get_device_dir(itdb->device->mountpoint);
 	if (dev_path) {
 	    const gchar *p_sysinfo_ex[] = {"SysInfoExtended", NULL};
-	    gchar *sysinfo_ex_path = itdb_resolve_path (dev_path, p_sysinfo_ex);
+	    gchar *sysinfo_ex_path = itdb_resolve_path(dev_path, p_sysinfo_ex);
 	    g_free(dev_path);
 	    if (sysinfo_ex_path) {
 		/* open plist file */
@@ -1700,7 +1700,7 @@ leave:
 
 }
 
-static int cbk_calc_sha1_one_block (FILE *f, unsigned char sha1[20])
+static int cbk_calc_sha1_one_block(FILE *f, unsigned char sha1[20])
 {
     const guint BLOCK_SIZE = 1024;
     unsigned char block[BLOCK_SIZE];
@@ -1708,59 +1708,59 @@ static int cbk_calc_sha1_one_block (FILE *f, unsigned char sha1[20])
     GChecksum *checksum;
     gsize sha1_len;
 
-    read_count = fread (block, BLOCK_SIZE, 1, f);
+    read_count = fread(block, BLOCK_SIZE, 1, f);
     if ((read_count != 1)) {
-	if (feof (f)) {
+	if (feof(f)) {
 	    return 1;
 	} else {
 	    return -1;
 	}
     }
 
-    sha1_len = g_checksum_type_get_length (G_CHECKSUM_SHA1);
+    sha1_len = g_checksum_type_get_length(G_CHECKSUM_SHA1);
     g_assert (sha1_len == 20);
-    checksum = g_checksum_new (G_CHECKSUM_SHA1);
-    g_checksum_update (checksum, block, BLOCK_SIZE);
-    g_checksum_get_digest (checksum, sha1, &sha1_len);
-    g_checksum_free (checksum);
+    checksum = g_checksum_new(G_CHECKSUM_SHA1);
+    g_checksum_update(checksum, block, BLOCK_SIZE);
+    g_checksum_get_digest(checksum, sha1, &sha1_len);
+    g_checksum_free(checksum);
 
     return 0;
 }
 
-static gboolean cbk_calc_sha1s (const char *filename, GArray *sha1s)
+static gboolean cbk_calc_sha1s(const char *filename, GArray *sha1s)
 {
     FILE *f;
     int calc_ok;
 
-    f = fopen (filename, "rb");
+    f = fopen(filename, "rb");
     if (f == NULL) {
 	return FALSE;
     }
 
     do {
 	unsigned char sha1[20];
-	calc_ok = cbk_calc_sha1_one_block (f, sha1);
+	calc_ok = cbk_calc_sha1_one_block(f, sha1);
 	if (calc_ok != 0) {
 	    break;
 	}
-	g_array_append_vals (sha1s, sha1, sizeof(sha1));
+	g_array_append_vals(sha1s, sha1, sizeof(sha1));
     } while (calc_ok == 0);
 
     if (calc_ok < 0) {
 	goto error;
     }
 
-    fclose (f);
+    fclose(f);
     return TRUE;
 
 error:
-    fclose (f);
+    fclose(f);
     return FALSE;
 }
 
 static const guint CBK_HEADER_SIZE = 46;
 
-static void cbk_calc_sha1_of_sha1s (GArray *cbk)
+static void cbk_calc_sha1_of_sha1s(GArray *cbk)
 {
     GChecksum *checksum;
     unsigned char* final_sha1;
@@ -1770,17 +1770,17 @@ static void cbk_calc_sha1_of_sha1s (GArray *cbk)
     g_assert (cbk->len > CBK_HEADER_SIZE + 20);
 
     final_sha1 = &g_array_index(cbk, guchar, CBK_HEADER_SIZE);
-    sha1s = &g_array_index (cbk, guchar, CBK_HEADER_SIZE + 20);
-    final_sha1_len = g_checksum_type_get_length (G_CHECKSUM_SHA1);
+    sha1s = &g_array_index(cbk, guchar, CBK_HEADER_SIZE + 20);
+    final_sha1_len = g_checksum_type_get_length(G_CHECKSUM_SHA1);
     g_assert (final_sha1_len == 20);
 
-    checksum = g_checksum_new (G_CHECKSUM_SHA1);
-    g_checksum_update (checksum, sha1s, cbk->len - (CBK_HEADER_SIZE + 20));
-    g_checksum_get_digest (checksum, final_sha1, &final_sha1_len);
-    g_checksum_free (checksum);
+    checksum = g_checksum_new(G_CHECKSUM_SHA1);
+    g_checksum_update(checksum, sha1s, cbk->len - (CBK_HEADER_SIZE + 20));
+    g_checksum_get_digest(checksum, final_sha1, &final_sha1_len);
+    g_checksum_free(checksum);
 }
 
-static gboolean mk_Locations_cbk (Itdb_iTunesDB *itdb, const char *dirname)
+static gboolean mk_Locations_cbk(Itdb_iTunesDB *itdb, const char *dirname)
 {
     char *locations_filename;
     char *cbk_filename;
@@ -1789,31 +1789,31 @@ static gboolean mk_Locations_cbk (Itdb_iTunesDB *itdb, const char *dirname)
     guchar *cbk_hash72;
     guchar *final_sha1;
 
-    cbk = g_array_sized_new (FALSE, TRUE, 1,
-			     CBK_HEADER_SIZE + 20);
-    g_array_set_size (cbk, CBK_HEADER_SIZE + 20);
+    cbk = g_array_sized_new(FALSE, TRUE, 1,
+			    CBK_HEADER_SIZE + 20);
+    g_array_set_size(cbk, CBK_HEADER_SIZE + 20);
 
-    locations_filename = g_build_filename (dirname, "Locations.itdb", NULL);
-    success = cbk_calc_sha1s (locations_filename, cbk);
-    g_free (locations_filename);
+    locations_filename = g_build_filename(dirname, "Locations.itdb", NULL);
+    success = cbk_calc_sha1s(locations_filename, cbk);
+    g_free(locations_filename);
     if (!success) {
-	g_array_free (cbk, TRUE);
+	g_array_free(cbk, TRUE);
 	return FALSE;
     }
-    cbk_calc_sha1_of_sha1s (cbk);
-    final_sha1 = &g_array_index (cbk, guchar, CBK_HEADER_SIZE);
-    cbk_hash72 = &g_array_index (cbk, guchar, 0);
+    cbk_calc_sha1_of_sha1s(cbk);
+    final_sha1 = &g_array_index(cbk, guchar, CBK_HEADER_SIZE);
+    cbk_hash72 = &g_array_index(cbk, guchar, 0);
     success = itdb_hash72_compute_hash_for_sha1 (itdb->device, final_sha1,
 						 cbk_hash72);
     if (!success) {
-	g_array_free (cbk, TRUE);
+	g_array_free(cbk, TRUE);
 	return FALSE;
     }
 
-    cbk_filename = g_build_filename (dirname, "Locations.itdb.cbk", NULL);
-    success = g_file_set_contents (cbk_filename, cbk->data, cbk->len, NULL);
-    g_free (cbk_filename);
-    g_array_free (cbk, TRUE);
+    cbk_filename = g_build_filename(dirname, "Locations.itdb.cbk", NULL);
+    success = g_file_set_contents(cbk_filename, cbk->data, cbk->len, NULL);
+    g_free(cbk_filename);
+    g_array_free(cbk, TRUE);
     return success;
 }
 
@@ -1872,53 +1872,53 @@ static int copy_itdb_file(gchar *from_dir, gchar *to_dir, gchar *fname)
 {
     int res = 0;
 
-    gchar *srcname = g_build_filename (from_dir, fname, NULL);
-    gchar *dstname = g_build_filename (to_dir, fname, NULL);
+    gchar *srcname = g_build_filename(from_dir, fname, NULL);
+    gchar *dstname = g_build_filename(to_dir, fname, NULL);
     GError *error = NULL;
 
-    if (itdb_cp (srcname, dstname, &error)) {
+    if (itdb_cp(srcname, dstname, &error)) {
 	fprintf(stderr, "itdbprep: copying '%s'\n", fname);
 	res++;
     }
 
     if (error) {
-	fprintf (stderr, "Error copying '%s' to '%s': %s\n", srcname, dstname, error->message);
-	g_error_free (error);
+	fprintf(stderr, "Error copying '%s' to '%s': %s\n", srcname, dstname, error->message);
+	g_error_free(error);
     }
 
     if (srcname) {
-	g_free (srcname);
+	g_free(srcname);
     }
 
     if (dstname) {
-	g_free (dstname);
+	g_free(dstname);
     }
 
     return res;
 }
 
-static void rmdir_recursive (gchar *path)
+static void rmdir_recursive(gchar *path)
 {
     GDir *cur_dir;
     const gchar *dir_file;
 
-    cur_dir = g_dir_open (path, 0, NULL);
-    if (cur_dir) while ((dir_file = g_dir_read_name (cur_dir)))
+    cur_dir = g_dir_open(path, 0, NULL);
+    if (cur_dir) while ((dir_file = g_dir_read_name(cur_dir)))
     {
-	gchar *fpath = g_build_filename (path, dir_file, NULL);
+	gchar *fpath = g_build_filename(path, dir_file, NULL);
 	if (fpath) {
-	    if (g_file_test (fpath, G_FILE_TEST_IS_DIR)) {
-		rmdir_recursive (fpath);
+	    if (g_file_test(fpath, G_FILE_TEST_IS_DIR)) {
+		rmdir_recursive(fpath);
 	    } else {
-		g_unlink (fpath);
+		g_unlink(fpath);
 	    }
-	    g_free (fpath);
+	    g_free(fpath);
 	}
     }
     if (cur_dir) {
-	g_dir_close (cur_dir);
+	g_dir_close(cur_dir);
     }
-    g_rmdir (path);
+    g_rmdir(path);
 }
 
 int itdb_sqlite_generate_itdbs(FExport *fexp)
@@ -1949,8 +1949,8 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
 
     tzoffset = fexp->itdb->tzoffset;
 
-    tmpdir = g_build_path (g_get_tmp_dir(), tmpnam(NULL), NULL);
-    if (g_mkdir (tmpdir, 0755) != 0) {
+    tmpdir = g_build_path(g_get_tmp_dir(), tmpnam(NULL), NULL);
+    if (g_mkdir(tmpdir, 0755) != 0) {
 	fprintf(stderr, "Could not create temporary directory '%s': %s\n", tmpdir, strerror(errno));
 	res = -1;
 	goto leave;
@@ -1983,7 +1983,7 @@ leave:
     }
     if (tmpdir) {
 	/* cleanup tmpdir, this will also delete tmpdir itself */
-	rmdir_recursive (tmpdir);
+	rmdir_recursive(tmpdir);
 	g_free(tmpdir);
     }
 
