@@ -65,14 +65,16 @@ enum sort_order {
 	ORDER_END
 };
 
-static glong sort_offsets[][2] = {
+static glong sort_offsets[][4] = {
     { G_STRUCT_OFFSET(Itdb_Track, sort_title),       G_STRUCT_OFFSET(Itdb_Track, title) },
     { G_STRUCT_OFFSET(Itdb_Track, sort_artist),      G_STRUCT_OFFSET(Itdb_Track, artist) },
     { G_STRUCT_OFFSET(Itdb_Track, sort_album),       G_STRUCT_OFFSET(Itdb_Track, album) },
     { G_STRUCT_OFFSET(Itdb_Track, genre),            0 },
     { G_STRUCT_OFFSET(Itdb_Track, sort_composer),    G_STRUCT_OFFSET(Itdb_Track, composer) },
     { G_STRUCT_OFFSET(Itdb_Track, sort_artist),      G_STRUCT_OFFSET(Itdb_Track, artist) },
-    { G_STRUCT_OFFSET(Itdb_Track, sort_albumartist), G_STRUCT_OFFSET(Itdb_Track, albumartist) },
+    /* TODO: iTunes sorts first by album_artist, then by artist. */
+    { G_STRUCT_OFFSET(Itdb_Track, sort_albumartist), G_STRUCT_OFFSET(Itdb_Track, albumartist),
+      G_STRUCT_OFFSET(Itdb_Track, sort_artist),      G_STRUCT_OFFSET(Itdb_Track, artist) },
     { 0, 0 } /* TODO: Series Name: ignored for now. */
 };
 
@@ -82,7 +84,7 @@ static gchar *sort_field(Itdb_Track *track, guint member)
     int offset;
     int i;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 4; i++) {
 	offset = sort_offsets[member][i];
 	field = G_STRUCT_MEMBER(gchar *, track, offset);
         if (offset != 0 && field != NULL && *field) {
@@ -1134,8 +1136,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    /* name */
 	    sqlite3_bind_text(stmt_album, ++idx, track->album, -1, SQLITE_STATIC);
 	    /* name_order */
-	    /* TODO */
-	    sqlite3_bind_int(stmt_album, ++idx, 100);
+	    sqlite3_bind_int(stmt_album, ++idx, lookup_order(orders, ORDER_ALBUM_ARTIST, track));
 	    /* all_compilations */
 	    /* TODO */
 	    sqlite3_bind_int(stmt_album, ++idx, 0);
@@ -1177,8 +1178,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    /* name */
 	    sqlite3_bind_text(stmt_artist, ++idx, track->artist, -1, SQLITE_STATIC);
 	    /* name_order */
-	    /* TODO */
-	    sqlite3_bind_int(stmt_artist, ++idx, 100);
+	    sqlite3_bind_int(stmt_artist, ++idx, lookup_order(orders, ORDER_ARTIST, track));
 	    /* sort_name */
 	    /* TODO always same as 'name'? */
 	    sqlite3_bind_text(stmt_artist, ++idx, track->artist, -1, SQLITE_STATIC);
@@ -1203,8 +1203,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    /* name */
 	    sqlite3_bind_text(stmt_composer, ++idx, track->composer, -1, SQLITE_STATIC);
 	    /* name_order */
-	    /* TODO */
-	    sqlite3_bind_int(stmt_composer, ++idx, 100);
+	    sqlite3_bind_int(stmt_composer, ++idx, lookup_order(orders, ORDER_COMPOSER, track));
 	    /* sort_name */
 	    /* TODO always same as 'name'? */
 	    sqlite3_bind_text(stmt_composer, ++idx, track->composer, -1, SQLITE_STATIC);
