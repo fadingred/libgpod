@@ -1217,6 +1217,8 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	}
     }
 
+    sqlite3_exec(db, "UPDATE album SET artwork_item_pid = (SELECT item.pid FROM item WHERE item.artwork_cache_id != 0 AND item.album_pid = album.pid LIMIT 1);", NULL, NULL, NULL);
+
     sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
 
     res = 0;
