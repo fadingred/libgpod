@@ -1097,8 +1097,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	/* TODO this either */
 	sqlite3_bind_int(stmt_avformat_info, ++idx, 0);
 	/* volume_normalization_energy */
-	/* TODO and where is this value stored?! */
-	sqlite3_bind_int(stmt_avformat_info, ++idx, 0);
+	sqlite3_bind_int(stmt_avformat_info, ++idx, track->soundcheck);
 
 	res = sqlite3_step(stmt_avformat_info);
 	if (res == SQLITE_DONE) {
