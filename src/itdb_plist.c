@@ -410,7 +410,6 @@ itdb_plist_parse_from_file (const char *filename, GError **error)
     parsed_doc = itdb_plist_parse (root_element, error);
 
     xmlFreeDoc(doc);
-    xmlCleanupParser();
 
     return parsed_doc;
 }
@@ -449,7 +448,6 @@ itdb_plist_parse_from_memory (const char *data, gsize len, GError **error)
     parsed_doc = itdb_plist_parse (root_element, error);
 
     xmlFreeDoc(doc);
-    xmlCleanupParser();
 
     return parsed_doc;
 }
