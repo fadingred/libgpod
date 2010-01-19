@@ -261,6 +261,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     /* iPod Touch 1st gen */
     {"A623",   8, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
     {"A627",  16, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
+    {"B376",  32, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
 
     {"B528",   8, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_2, 50},
     {"B531",  16, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_2, 50},
@@ -765,6 +766,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "891", "C164" }, /* 4GB Black Shuffle 4g */
     
     { "W4T", "A627" }, /* 16GB Silver iPod Touch (1st gen) */
+    { "0JW", "B376" }, /* 32GB Silver iPod Touch (1st gen) */
     { "201", "B528" }, /* 8GB Silver iPod Touch (2nd gen) */
     { "203", "B531" }, /* 16GB Silver iPod Touch (2nd gen) */
     { "75J", "C086" }, /* 8GB Silver iPod Touch (3rd gen) */
