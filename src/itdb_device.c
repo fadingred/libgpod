@@ -263,6 +263,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"A627",  16, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
 
     {"B528",   8, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_2, 50},
+    {"B531",  16, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_2, 50},
 
     /* iPod Touch 3rd gen */
     /* The 8GB model is marked as 2nd gen because it's actually what the 
@@ -765,6 +766,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     
     { "W4T", "A627" }, /* 16GB Silver iPod Touch (1st gen) */
     { "201", "B528" }, /* 8GB Silver iPod Touch (2nd gen) */
+    { "203", "B531" }, /* 16GB Silver iPod Touch (2nd gen) */
     { "75J", "C086" }, /* 8GB Silver iPod Touch (3rd gen) */
     { "6K2", "C008" }, /* 32GB Silver iPod Touch (3rd gen) */
     { "6K4", "C011" }, /* 64GB Silver iPod Touch (3rd gen) */
