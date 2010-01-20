@@ -263,8 +263,10 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"A627",  16, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
     {"B376",  32, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_1, 50},
 
+    /* iPod Touch 2nd gen */
     {"B528",   8, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_2, 50},
     {"B531",  16, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_2, 50},
+    {"B533",  32, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_2, 50},
 
     /* iPod Touch 3rd gen */
     /* The 8GB model is marked as 2nd gen because it's actually what the 
