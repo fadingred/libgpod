@@ -33,13 +33,6 @@
 #include <libiphone/libiphone.h>
 #include <libiphone/lockdown.h>
 
-#ifndef HAVE_LIBPLIST_1_0
-/* Old API */
-#define plist_dict_get_item plist_get_dict_el_from_key
-#define plist_new_string plist_add_sub_key_el
-#define plist_dict_insert_item plist_add_sub_string_el
-#endif
-
 extern char *read_sysinfo_extended_by_uuid (const char *uuid);
 extern gboolean iphone_write_sysinfo_extended (const char *uuid, const char *xml);
 
