@@ -61,7 +61,7 @@ AC_CHECK_FUNCS([localtime_r])
 AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[#include <time.h>])
 dnl sqlite3 is needed for newer ipod models (nano5g), and libplist is needed 
 dnl by libgpod sqlite code
-PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.8.0 gobject-2.0 sqlite3 libplist)
+PKG_CHECK_MODULES(LIBGPOD, glib-2.0 >= 2.8.0 gobject-2.0 sqlite3 libplist >= 1.0)
 
 dnl **************************************************
 dnl we've copied gchecksum from glib 2.16. Only use the
@@ -190,16 +190,6 @@ if test "x$with_libiphone" != "xno"; then
   fi
 fi
 AM_CONDITIONAL(HAVE_LIBIPHONE, test x"$enable_libiphone" = xyes)
-
-dnl ***********************************************************************
-dnl * libplist is optional, but is required for iPhone/iPod Touch support
-dnl ***********************************************************************
-if test "x$enable_libiphone" = "xyes"; then
-  PKG_CHECK_MODULES(LIBPLIST, libplist >= 1.0, libplist_1_0=yes, libplist_1_0=no)
-  if test x"$libiphone_1_0" = xyes; then
-      AC_DEFINE([HAVE_LIBPLIST_1_0], 1, [Define if libplist is using its newer API])
-  fi
-fi
 
 dnl **************************************************
 dnl * TagLib is only used by test-rebuild-db 
