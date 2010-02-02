@@ -34,9 +34,9 @@
 #include <sqlite3.h>
 #include <plist/plist.h>
 
-#ifdef HAVE_LIBIPHONE
-#include <libiphone/libiphone.h>
-#include <libiphone/lockdown.h>
+#ifdef HAVE_LIBIMOBILEDEVICE
+#include <libimobiledevice/libimobiledevice.h>
+#include <libimobiledevice/lockdown.h>
 #endif
 
 #include "itdb.h"
@@ -1479,29 +1479,29 @@ static void run_post_process_commands(Itdb_iTunesDB *itdb, const char *outpath, 
     int res;
     sqlite3 *db = NULL;
 
-#ifdef HAVE_LIBIPHONE
+#ifdef HAVE_LIBIMOBILEDEVICE
     if (itdb_device_is_iphone_family(itdb->device)) {
 	/* get SQL post process commands via lockdown (iPhone/iPod Touch) */
 	lockdownd_client_t client = NULL;
-	iphone_device_t phone = NULL;
-	iphone_error_t ret = IPHONE_E_UNKNOWN_ERROR;
+	idevice_t phone = NULL;
+	idevice_error_t ret = IDEVICE_E_UNKNOWN_ERROR;
 	lockdownd_error_t lockdownerr = LOCKDOWN_E_UNKNOWN_ERROR;
 
-	ret = iphone_device_new(&phone, uuid);
-	if (ret != IPHONE_E_SUCCESS) {
+	ret = idevice_new(&phone, uuid);
+	if (ret != IDEVICE_E_SUCCESS) {
 	    printf("[%s] ERROR: Could not find device with uuid %s, is it plugged in?\n", __func__, uuid);
 	    goto leave;
 	}
 
-	if (LOCKDOWN_E_SUCCESS != lockdownd_client_new(phone, &client)) {
+	if (LOCKDOWN_E_SUCCESS != lockdownd_client_new_with_handshake(phone, &client, "libgpod")) {
 	    printf("[%s] ERROR: Could not connect to device's lockdownd!\n", __func__);
-	    iphone_device_free(phone);
+	    idevice_free(phone);
 	    goto leave;
 	}
 
 	lockdownerr = lockdownd_get_value(client, "com.apple.mobile.iTunes.SQLMusicLibraryPostProcessCommands", NULL, &plist_node);
 	lockdownd_client_free(client);
-	iphone_device_free(phone);
+	idevice_free(phone);
 
 	if (lockdownerr == LOCKDOWN_E_SUCCESS) {
 	    ppc_dict = plist_node;

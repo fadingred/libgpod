@@ -31,7 +31,7 @@
 #ifdef HAVE_SGUTILS
 extern char *read_sysinfo_extended (const char *device);
 #endif
-#ifdef HAVE_LIBIPHONE
+#ifdef HAVE_LIBIMOBILEDEVICE
 extern char *read_sysinfo_extended_by_uuid (const char *uuid);
 #endif
 #ifdef HAVE_LIBUSB
@@ -72,10 +72,10 @@ main (int argc, char **argv)
 #endif
     else {
 	/* argument doesn't look like a filename, might be an UUID */
-#ifdef HAVE_LIBIPHONE
+#ifdef HAVE_LIBIMOBILEDEVICE
 	xml = read_sysinfo_extended_by_uuid (argv[1]);
 #else
-	g_warning ("Compiled without libiphone support, can't read SysInfoExtended from an iPhone UUID");
+	g_warning ("Compiled without libimobiledevice support, can't read SysInfoExtended from an iPhone UUID");
 #endif
     }
 

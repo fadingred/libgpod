@@ -29,9 +29,9 @@
 #include <glib.h>
 #include <libxml/xmlmemory.h>
 
-#include <libiphone/afc.h>
-#include <libiphone/libiphone.h>
-#include <libiphone/lockdown.h>
+#include <libimobiledevice/afc.h>
+#include <libimobiledevice/libimobiledevice.h>
+#include <libimobiledevice/lockdown.h>
 
 extern char *read_sysinfo_extended_by_uuid (const char *uuid);
 extern gboolean iphone_write_sysinfo_extended (const char *uuid, const char *xml);
@@ -40,26 +40,22 @@ G_GNUC_INTERNAL char *
 read_sysinfo_extended_by_uuid (const char *uuid)
 {
 	lockdownd_client_t client = NULL;
-	iphone_device_t device = NULL;
-	iphone_error_t ret = IPHONE_E_UNKNOWN_ERROR;
+	idevice_t device = NULL;
+	idevice_error_t ret = IDEVICE_E_UNKNOWN_ERROR;
 	char *xml = NULL; char *str = NULL;
 	char *gxml;
 	uint32_t xml_length = 0;
 	plist_t value = NULL;
 	plist_t global = NULL;
 	plist_t ptr = NULL;
-#ifdef HAVE_LIBIPHONE_1_0
-	ret = iphone_device_new(&device, uuid);
-#else
-	ret = iphone_get_device_by_uuid(&device, uuid);
-#endif
-	if (ret != IPHONE_E_SUCCESS) {
+	ret = idevice_new(&device, uuid);
+	if (ret != IDEVICE_E_SUCCESS) {
 		printf("No device found with uuid %s, is it plugged in?\n", uuid);
 		return NULL;
 	}
 
-	if (LOCKDOWN_E_SUCCESS != lockdownd_client_new(device, &client)) {
-		iphone_device_free(device);
+	if (LOCKDOWN_E_SUCCESS != lockdownd_client_new_with_handshake(device, &client, "libgpod")) {
+		idevice_free(device);
 		return NULL;
 	}
 
@@ -101,7 +97,7 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	global = NULL;
 
 	lockdownd_client_free(client);
-	iphone_device_free(device);
+	idevice_free(device);
 
 	/* Jump through hoops since libxml will say to free mem it allocated
 	 * with xmlFree while memory freed with g_free has to be allocated
@@ -120,40 +116,36 @@ G_GNUC_INTERNAL gboolean
 iphone_write_sysinfo_extended (const char *uuid, const char *xml)
 {
 	lockdownd_client_t client = NULL;
-	iphone_device_t device = NULL;
+	idevice_t device = NULL;
 	afc_client_t afc = NULL;
-	iphone_error_t ret = IPHONE_E_UNKNOWN_ERROR;
+	idevice_error_t ret = IDEVICE_E_UNKNOWN_ERROR;
 	afc_error_t afc_ret;
-	int afcport = 0;
+	uint16_t afcport = 0;
 	char *dest_filename;
 	char *dest_directory;
 	uint64_t handle;
 	uint32_t bytes_written;
 
-#ifdef HAVE_LIBIPHONE_1_0
-	ret = iphone_device_new(&device, uuid);
-#else
-	ret = iphone_get_device_by_uuid(&device, uuid);
-#endif
-	if (IPHONE_E_SUCCESS != ret) {
+	ret = idevice_new(&device, uuid);
+	if (IDEVICE_E_SUCCESS != ret) {
 		printf("No device found with uuid %s, is it plugged in?\n", uuid);
 		return FALSE;
 	}
 
-	if (LOCKDOWN_E_SUCCESS != lockdownd_client_new(device, &client)) {
-		iphone_device_free(device);
+	if (LOCKDOWN_E_SUCCESS != lockdownd_client_new_with_handshake(device, &client, "libgpod")) {
+		idevice_free(device);
 		return FALSE;
 	}
 
 	if (LOCKDOWN_E_SUCCESS != lockdownd_start_service(client, "com.apple.afc", &afcport)) {
 		lockdownd_client_free(client);
-		iphone_device_free(device);
+		idevice_free(device);
 		return FALSE;
 	}
 	g_assert (afcport != 0);
 	if (AFC_E_SUCCESS != afc_client_new(device, afcport, &afc)) {
 		lockdownd_client_free(client);
-		iphone_device_free(device);
+		idevice_free(device);
 		return FALSE;
 	}
 	dest_directory = g_build_filename("iTunes_Control", "Device", NULL);
@@ -162,7 +154,7 @@ iphone_write_sysinfo_extended (const char *uuid, const char *xml)
 		g_free (dest_directory);
 		afc_client_free(afc);
 		lockdownd_client_free(client);
-		iphone_device_free(device);
+		idevice_free(device);
 		return FALSE;
 	}
 	dest_filename = g_build_filename(dest_directory, "SysInfoExtended", NULL);
@@ -171,7 +163,7 @@ iphone_write_sysinfo_extended (const char *uuid, const char *xml)
 		g_free (dest_filename);
 		afc_client_free(afc);
 		lockdownd_client_free(client);
-		iphone_device_free(device);
+		idevice_free(device);
 		return FALSE;
 	}
 	g_free (dest_filename);
@@ -180,14 +172,14 @@ iphone_write_sysinfo_extended (const char *uuid, const char *xml)
 		afc_file_close(afc, handle);
 		afc_client_free(afc);
 		lockdownd_client_free(client);
-		iphone_device_free(device);
+		idevice_free(device);
 		return FALSE;
 	}
 
 	afc_file_close(afc, handle);
 	afc_client_free(afc);
 	lockdownd_client_free(client);
-	iphone_device_free(device);
+	idevice_free(device);
 
 	return TRUE;
 }

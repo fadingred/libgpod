@@ -57,8 +57,8 @@ noinst_HEADERS = 		\
 INCLUDES=$(LIBGPOD_CFLAGS)
 LIBS=$(LIBGPOD_LIBS) $(Z_LIBS) -lm
 
-if HAVE_LIBIPHONE
-LIBS+=-liphone
+if HAVE_LIBIMOBILEDEVICE
+LIBS+=-limobiledevice
 endif
 
 uninstall-hook:

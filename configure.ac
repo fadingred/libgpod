@@ -168,28 +168,24 @@ fi
 AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal" = xyes)
 
 dnl ***********************************************************************
-dnl * libiphone is optional, but is required for iPhone/iPod Touch support
+dnl * libimobiledevice is optional, but is required for iPhone/iPod Touch support
 dnl ***********************************************************************
-AC_ARG_WITH(libiphone, AC_HELP_STRING([--without-libiphone],
+AC_ARG_WITH(libimobiledevice, AC_HELP_STRING([--without-libimobiledevice],
         [Disable iPhone/iPod Touch support]))
 
-if test "x$with_libiphone" != "xno"; then
-  PKG_CHECK_MODULES(LIBIPHONE, libiphone-1.0 >= 0.9.1, enable_libiphone=yes, enable_libiphone=no)
-  if test "x$enable_libiphone" != "xyes" -a "x$with_libiphone" = "xyes"; then
-      AC_MSG_ERROR([iPhone/iPod Touch support explicitly requested but libiphone couldn't be found])
+if test "x$with_libimobiledevice" != "xno"; then
+  PKG_CHECK_MODULES(LIBIMOBILEDEVICE, libimobiledevice-1.0 >= 0.9.7, enable_libimobiledevice=yes, enable_libimobiledevice=no)
+  if test "x$enable_libimobiledevice" != "xyes" -a "x$with_libimobiledevice" = "xyes"; then
+      AC_MSG_ERROR([iPhone/iPod Touch support explicitly requested but libimobiledevice couldn't be found])
   fi
 
-  if test "x$enable_libiphone" = "xyes"; then
-      AC_CHECK_LIB([iphone], [iphone_device_new], [libiphone_1_0=yes], [libiphone10=no])
-	if test x"$libiphone_1_0" = xyes; then
-	    AC_DEFINE([HAVE_LIBIPHONE_1_0], 1, [Define if libiphone is using its newer API])
-	fi
-        AC_DEFINE(HAVE_LIBIPHONE, 1, [Define if you have libiphone support])
-        AC_SUBST(LIBIPHONE_CFLAGS)
-	AC_SUBST(LIBIPHONE_LIBS)
+  if test "x$enable_libimobiledevice" = "xyes"; then
+      AC_DEFINE(HAVE_LIBIMOBILEDEVICE, 1, [Define if you have libimobiledevice support])
+      AC_SUBST(LIBIMOBILEDEVICE_CFLAGS)
+      AC_SUBST(LIBIMOBILEDEVICE_LIBS)
   fi
 fi
-AM_CONDITIONAL(HAVE_LIBIPHONE, test x"$enable_libiphone" = xyes)
+AM_CONDITIONAL(HAVE_LIBIMOBILEDEVICE, test x"$enable_libimobiledevice" = xyes)
 
 dnl **************************************************
 dnl * TagLib is only used by test-rebuild-db 
@@ -379,7 +375,7 @@ Configuration for $PACKAGE $VERSION :
  Artwork support ..........: $have_gdkpixbuf
  Python bindings ..........: $with_python
  PyGObject support ........: $have_pygobject
- iPhone/iPod Touch support.: $enable_libiphone
+ iPhone/iPod Touch support.: $enable_libimobiledevice
 
  Now type 'make' to build $PACKAGE $VERSION,
  and then 'make install' for installation.

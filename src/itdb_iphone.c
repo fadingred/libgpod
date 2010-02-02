@@ -22,14 +22,14 @@
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
-#ifdef HAVE_LIBIPHONE
-#include <libiphone/libiphone.h>
-#include <libiphone/lockdown.h>
-#include <libiphone/afc.h>
-#include <libiphone/notification_proxy.h>
+#ifdef HAVE_LIBIMOBILEDEVICE
+#include <libimobiledevice/libimobiledevice.h>
+#include <libimobiledevice/lockdown.h>
+#include <libimobiledevice/afc.h>
+#include <libimobiledevice/notification_proxy.h>
 
 struct itdbprep_int {
-	iphone_device_t device;
+	idevice_t device;
 	afc_client_t afc;
 	uint64_t lockfile;
 };
@@ -39,14 +39,12 @@ typedef struct itdbprep_int *itdbprep_t;
 #define LOCK_WAIT	200000
 
 
-/* libiphone should probably be reworked so we don't have to reopen a connection
-   to notification_proxy for every notification... */
-static int itdb_iphone_post_notification(iphone_device_t device,
+static int itdb_iphone_post_notification(idevice_t device,
 					 lockdownd_client_t client,
 					 const char *notification)
 {
     np_client_t np = NULL;
-    int nport = 0;
+    uint16_t nport = 0;
 
     lockdownd_start_service(client, "com.apple.mobile.notification_proxy", &nport);
     if (!nport) {
@@ -77,7 +75,7 @@ int itdb_iphone_start_sync(Itdb_Device *device, void **prepdata)
     itdbprep_t pdata_loc = NULL;
     const char *uuid;
     lockdownd_client_t client = NULL;
-    int afcport = 0;
+    uint16_t afcport = 0;
     int i;
 
     uuid = itdb_device_get_uuid (device);
@@ -92,17 +90,13 @@ int itdb_iphone_start_sync(Itdb_Device *device, void **prepdata)
     *prepdata = NULL;
 
     pdata_loc = g_new0 (struct itdbprep_int, 1);
-#ifdef HAVE_LIBIPHONE_1_0
-    res = iphone_device_new(&pdata_loc->device, uuid);
-#else
-    res = iphone_get_device_by_uuid(&pdata_loc->device, uuid);
-#endif
-    if (IPHONE_E_SUCCESS != res) {
+    res = idevice_new(&pdata_loc->device, uuid);
+    if (IDEVICE_E_SUCCESS != res) {
 	fprintf(stderr, "No iPhone found, is it plugged in?\n");
 	res = -ENODEV;
 	goto leave_with_err;
     }
-    if (LOCKDOWN_E_SUCCESS != lockdownd_client_new(pdata_loc->device, &client)) {
+    if (LOCKDOWN_E_SUCCESS != lockdownd_client_new_with_handshake(pdata_loc->device, &client, "libgpod")) {
 	fprintf(stderr, "Error: Could not establish lockdownd connection!\n");
 	res = -1;
 	goto leave_with_err;
@@ -196,7 +190,7 @@ leave_with_err:
 	    pdata_loc->afc = NULL;
 	}
 	if (pdata_loc->device) {
-	    iphone_device_free(pdata_loc->device);
+	    idevice_free(pdata_loc->device);
 	    pdata_loc->device = NULL;
 	}
 	g_free(pdata_loc);
@@ -229,11 +223,11 @@ int itdb_iphone_stop_sync(void *sync_ctx)
 	printf("%s called but prepdata->afc is NULL!\n", __func__);
     } else {
 	/* remove .status-com.apple.itdbprep.command.runPostProcess */
-	if (afc_remove_path(prepdata->afc, "/iTunes_Control/iTunes/iTunes Library.itlp/DBTemp/.status-com.apple.itdprep.command.runPostProcess") != IPHONE_E_SUCCESS) {
+	if (afc_remove_path(prepdata->afc, "/iTunes_Control/iTunes/iTunes Library.itlp/DBTemp/.status-com.apple.itdprep.command.runPostProcess") != IDEVICE_E_SUCCESS) {
 	    fprintf(stderr, "Could not delete '.status-com.apple.itdprep.command.runPostProcess'\n");
 	}
 	/* remove ddd.itdbm */
-	if (afc_remove_path(prepdata->afc, "/iTunes_Control/iTunes/iTunes Library.itlp/DBTemp/ddd.itdbm") != IPHONE_E_SUCCESS) {
+	if (afc_remove_path(prepdata->afc, "/iTunes_Control/iTunes/iTunes Library.itlp/DBTemp/ddd.itdbm") != IDEVICE_E_SUCCESS) {
 	    fprintf(stderr, "Could not delete 'ddd.itdbm'\n");
 	}
 	if (prepdata->lockfile) {
@@ -247,7 +241,7 @@ int itdb_iphone_stop_sync(void *sync_ctx)
 	prepdata->afc = NULL;
     }
 
-    if (LOCKDOWN_E_SUCCESS != lockdownd_client_new(prepdata->device, &client)) {
+    if (LOCKDOWN_E_SUCCESS != lockdownd_client_new_with_handshake(prepdata->device, &client, "libgpod")) {
 	fprintf(stderr, "Error: Could not establish lockdownd connection!\n");
 	goto leave;
     }
@@ -260,7 +254,7 @@ int itdb_iphone_stop_sync(void *sync_ctx)
     lockdownd_client_free(client);
 
 leave:
-    iphone_device_free(prepdata->device);
+    idevice_free(prepdata->device);
 
     g_free(prepdata);
 

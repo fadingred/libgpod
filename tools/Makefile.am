@@ -7,10 +7,10 @@ ipod_read_sysinfo_extended_SOURCES+=ipod-scsi.c
 ipod_read_sysinfo_extended_CFLAGS+=$(SGUTILS_CFLAGS)
 ipod_read_sysinfo_extended_LDADD+=$(SGUTILS_LIBS)
 endif
-if HAVE_LIBIPHONE
+if HAVE_LIBIMOBILEDEVICE
 ipod_read_sysinfo_extended_SOURCES+=ipod-lockdown.c
-ipod_read_sysinfo_extended_CFLAGS+=$(LIBIPHONE_CFLAGS)
-ipod_read_sysinfo_extended_LDADD+=$(LIBIPHONE_LIBS)
+ipod_read_sysinfo_extended_CFLAGS+=$(LIBIMOBILEDEVICE_CFLAGS)
+ipod_read_sysinfo_extended_LDADD+=$(LIBIMOBILEDEVICE_LIBS)
 endif
 if HAVE_LIBUSB
 ipod_read_sysinfo_extended_SOURCES+=ipod-usb.c
@@ -37,11 +37,11 @@ libgpod_callout_LDADD =						\
 	$(LIBGPOD_LIBS)						\
 	$(HAL_LIBS)
 
-if HAVE_LIBIPHONE
+if HAVE_LIBIMOBILEDEVICE
 hal_PROGRAMS+=iphone-callout
 iphone_callout_SOURCES = iphone-callout.c ipod-lockdown.c
-iphone_callout_CFLAGS = $(LIBIPHONE_CFLAGS)
-iphone_callout_LDADD = $(LIBIPHONE_LIBS)
+iphone_callout_CFLAGS = $(LIBIMOBILEDEVICE_CFLAGS)
+iphone_callout_LDADD = $(LIBIMOBILEDEVICE_LIBS)
 endif
 
 fdidir = $(HALFDIDIR)/policy/20thirdparty
