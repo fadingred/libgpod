@@ -1,0 +1,102 @@
+Introduction:
+
+The goal of this document is to provide an overview of the various parts/files
+involved when libgpod interacts with a device. Ideally it will be helpful to
+help application writers/distributors/... figure out what's going wrong when 
+trying to interact with an iPod-like device.
+
+Please note that not all devices need all these steps (especially the
+hash58/hash72 stuff and the sqlite databases), see the table at the end for
+more details
+
+
+Overview:
+
+* device is plugged in
+
+HAL/udev detects the insertion and runs a callout. This callout sends the
+appropriate commands (raw SCSI/USB commands or special AFC command) to the
+device to get an XML file describing the device capabilities (artwork formats
+supported, serial number, ...) and dumps this XML file to
+iPod_Control/Device/SysInfoExtended for future use by libgpod. libgpod doesn't 
+do it directly because sending these SCSI/USB commands might need elevated
+priviledges.
+
+* the application uses libgpod to read the device content
+
+iPod_Control/iTunes/iTunesDB is accessed as well as a few other files. If
+the device needs an hash72 (either in its iTunesDB or because it's using sqlite
+databases), then the necessary information is extracted from the existing 
+iTunesDB to generate an iPod_Control/Device/HashInfo file (if it doesn't
+exist) which will be useful to generate any hash72 we need for this device.
+
+* the application uses libgpod to write to the device
+
+libgpod generates an iPod_Control/iTunes/iTunesDB file. If an hash58 is needed
+then the device FirewireID is used to generate it. If an hash72 is needed
+then the HashInfo file is used to generate it. If the device uses sqlite
+databases, they are generated as well. Post process SQL commands are then 
+extracted from the device (either by getting them from SysInfoExtended or by 
+getting them through AFC) and executed after the sqlite database generation. 
+These post process commands are useful to make sure the sqlite databases layout
+matches what the current device firmware expects.
+
+
+Glossary:
+
+iTunesDB: binary file containing information about all the songs, playlists, ...
+stored on the device. On recent devices (iPhoneOS 3.x, Nano 5g), it's replaced
+by iTunesCDB which is a compressed version of iTunesDB.
+
+sqlite: recent devices (iPhoneOS 3.x, Nano5g) use sqlite databases instead
+of an iTunesDB to store song information, playlists, ... More accurately, they 
+have both an iTunesCDB (compressed iTunesDB) used by iTunes to know the device
+content and sqlite databases used by the device. Along with these sqlite
+databases, there's a .cbk file which contains checksum information and a hash72
+for the sqlite data.
+
+iPhoneOS: umbrella for iPhone-like devices, ie iPhones, iPod Touch and (likely)
+iPad. On these devices, what matters is the firmware version, not the device
+type.
+
+hash58: first iTunesDB hashing scheme introduced by Apple. It appeared in the 
+iPod Nano Video (3g)  and iPod Classic and was used by iPhoneOS 1.x. It's fully
+reverse-engineered and uses the iPod FirewireID (called this way even on USB
+devices) as part of the calculation.
+
+hash72: hashing scheme that was first introduced in iPhoneOS 2.x and has then
+been used on the iPod Nano with a camera (5g). It was much more complicated to 
+reverse engineer and is not yet 100% known. However, given a file with a valid
+hash72, we can extract some hashing data to be able to generate valid hash72
+hashes for any file. 
+
+
+
+iPod feature matrix:
+
+		SysInfoExtended   hash58   hash72   sqlite   iTunesCDB
+iPod 1G	                     no       no       no       no          no
+iPod 2G	                     no       no       no       no          no
+iPod 3G	                     no       no       no       no          no
+Mini 1G	                     no       no       no       no          no
+Mini 2G	                     no       no       no       no          no
+
+iPod 4G                     yes       no       no       no          no
+iPod 5G                     yes       no       no       no          no
+Nano 1G                     yes       no       no       no          no
+Nano 2G                     yes       no       no       no          no
+
+iPod Classic                yes      yes       no       no          no
+Nano3G                      yes      yes       no       no          no
+Nano4G                      yes      yes       no       no          no
+iPhoneOS 1.x                yes      yes       no       no          no
+
+iPhoneOS 2.x                yes       no      yes       no          no
+
+Nano5G                      yes   yes[1]      yes      yes         yes
+iPhoneOS 3.x                yes       no      yes      yes         yes
+
+
+[1] surprisingly, the Nano5G uses a hash58 for its iTunesCDB and a hash72 
+for its sqlite cbk file. iPhoneOS 3.x uses hash72 everywhere.
+
