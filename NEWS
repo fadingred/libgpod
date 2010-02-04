@@ -1,3 +1,39 @@
+Overview of changes in libgpod 0.7.90
+=====================================
+
+This release is API and ABI compatible with libgpod 0.7.2. It's a development
+release toward libgpod 0.8.0. Please report any bug or misbehaviour you may 
+find with this release, especially with the iPhoneOS/iPod Nano 5g support. 
+
+* iPhoneOS 3.x support (iPhone and iPod Touch) 
+
+This requires a working libimobiledevice stack and a device initialized
+once by iTunes. This support is optional so make sure you have libimobiledevice
+development headers installed when compiling libgpod if you want to get it.
+libgpod HAL callout needs to be installed and working for this support to work,
+see README.overview for more details.
+
+* iPod Nano 5G support 
+
+The device database needs to be initialized by iTunes once.
+libgpod HAL callout needs to be installed and working for this support to work,
+see README.overview for more details.
+
+* iPod Classic 3G support
+
+* fix iPod Nano 4G 4GB serial number (bgo #599772)
+
+* properly read timezone information from iPod Classic and Nano 4G
+
+* artwork writing bug fixes
+
+* iTunesDB reading bug fixes
+
+* add code sample showing how to copy a file to the iPod
+
+* export podsleuth-like information to HAL
+
+
 Overview of changes in libgpod 0.7.2
 ====================================
 
