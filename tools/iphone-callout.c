@@ -35,13 +35,17 @@ int main (int argc, char **argv)
     const char *uuid;
 
     if (argc != 1) {
-        g_print ("%s should only be ran by HAL\n", argv[0]);
+        g_print ("%s should only be ran by HAL or udev\n", argv[0]);
         return 1;
     }
 
+#ifdef USE_UDEV
+    uuid = g_getenv ("ID_SERIAL_SHORT");
+#else
     uuid = g_getenv ("HAL_PROP_USB_SERIAL");
+#endif
     if (uuid == NULL) {
-        g_print ("%s should only be ran by HAL\n", argv[0]);
+        g_print ("%s should only be ran by HAL or udev\n", argv[0]);
         return 1;
     }
 

@@ -62,19 +62,21 @@ rulesdir=${libudevdir}/rules.d
 rules_DATA= libgpod.rules
 endif # USE_UDEV
 
-if HAVE_LIBIPHONE
-if HAVE_HAL
-hal_PROGRAMS+=iphone-callout
-endif
-if USE_UDEV
-libudev_PROGRAMS+=iphone-callout
-endif
-
 if HAVE_LIBIMOBILEDEVICE
+if HAVE_HAL
 hal_PROGRAMS+=iphone-callout
 iphone_callout_SOURCES = iphone-callout.c ipod-lockdown.c
 iphone_callout_CFLAGS = $(LIBIMOBILEDEVICE_CFLAGS)
 iphone_callout_LDADD = $(LIBIMOBILEDEVICE_LIBS)
+endif
+
+if USE_UDEV
+libudev_PROGRAMS+=iphone-set-info
+iphone_set_info_SOURCES = iphone-callout.c ipod-lockdown.c
+iphone_set_info_CFLAGS = $(LIBIMOBILEDEVICE_CFLAGS)
+iphone_set_info_LDADD = $(LIBIMOBILEDEVICE_LIBS)
+iphone_set_info_CPPFLAGS = -DUSE_UDEV
+endif
 endif # HAVE_LIBIPHONE
 
 if HAVE_SGUTILS
