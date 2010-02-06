@@ -47,14 +47,18 @@ static void udev_backend_destroy (ItdbBackend *itdb_backend)
 static gboolean
 udev_backend_set_version (ItdbBackend *itdb_backend, unsigned int version)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"VERSION=%u\n", version);
+#endif
 	return TRUE;
 }
 
 static gboolean
 udev_backend_set_is_unknown (ItdbBackend *itdb_backend, gboolean unknown)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"IS_UNKNOWN=%u\n", !!unknown);
+#endif
 	return TRUE;
 }
 
@@ -68,42 +72,54 @@ udev_backend_set_icon_name (ItdbBackend *itdb_backend, const char *icon_name)
 static gboolean
 udev_backend_set_firewire_id (ItdbBackend *itdb_backend, const char *fwid)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"FIREWIRE_ID=%s\n", fwid);
+#endif
 	return TRUE;
 }
 
 static gboolean
 udev_backend_set_serial_number (ItdbBackend *itdb_backend, const char *serial_number)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"SERIAL_NUMBER=%s\n", serial_number);
+#endif
 	return TRUE;
 }
 
 static gboolean udev_backend_set_firmware_version (ItdbBackend *itdb_backend,
 						  const char *firmware_version)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"FIRMWARE_VERSION=%s\n", firmware_version);
+#endif
 	return TRUE;
 }
 
 static gboolean
 udev_backend_set_model_name (ItdbBackend *itdb_backend, const char *model_name)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"DEVICE_CLASS=%s\n", model_name);
+#endif
 	return TRUE;
 }
 
 static gboolean
 udev_backend_set_generation (ItdbBackend *itdb_backend, gdouble generation)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"MODEL_GENERATION=%f\n", generation);
+#endif
 	return TRUE;
 }
 
 static gboolean
 udev_backend_set_color (ItdbBackend *itdb_backend, const char *color_name)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"MODEL_SHELL_COLOR=%s\n", color_name);
+#endif
 	return TRUE;
 }
 
@@ -111,35 +127,45 @@ static gboolean
 udev_backend_set_factory_id (ItdbBackend *itdb_backend,
 			    const char *factory_id)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"PRODUCTION_FACTORY_ID=%s\n", factory_id);
+#endif
 	return TRUE;
 }
 
 static gboolean
 udev_backend_set_production_year (ItdbBackend *itdb_backend, guint year)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"PRODUCTION_YEAR=%u\n", year);
+#endif
 	return TRUE;
 }
 
 static gboolean 
 udev_backend_set_production_week (ItdbBackend *itdb_backend, guint week)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"PRODUCTION_WEEK=%u\n", week);
+#endif
 	return TRUE;
 }
 
 static gboolean
 udev_backend_set_production_index (ItdbBackend *itdb_backend, guint index)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"PRODUCTION_INDEX=%u\n", index);
+#endif
 	return TRUE;
 }
 
 static gboolean
 udev_backend_set_control_path (ItdbBackend *itdb_backend, const char *control_path)
 {
+#ifdef UPODSLEUTH
 	g_print (LIBGPOD_UDEV_NS"MODEL_CONTROL_PATH=%s\n", control_path);
+#endif
 	return TRUE;
 }
 
@@ -150,6 +176,7 @@ udev_backend_set_name (ItdbBackend *itdb_backend, const char *name)
 	return TRUE;
 }
 
+#ifdef UPODSLEUTH
 static gboolean udev_backend_set_artwork_type_supported (ItdbBackend *itdb_backend,
 							enum ArtworkType type,
 							gboolean supported)
@@ -171,13 +198,16 @@ static gboolean udev_backend_set_artwork_type_supported (ItdbBackend *itdb_backe
 	g_print (propname, !!supported);
 	return TRUE;
 }
+#endif
 
 static gboolean udev_backend_set_artwork_formats (ItdbBackend *itdb_backend,
 						 enum ArtworkType type,
 						 const GList *formats)
 {
+#ifdef UPODSLEUTH
 	udev_backend_set_artwork_type_supported (itdb_backend, type,
 					       	(formats != NULL));
+#endif
 
 	return TRUE;
 }
