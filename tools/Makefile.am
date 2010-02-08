@@ -38,6 +38,8 @@ COMMON_CFLAGS  +=$(LIBUSB_CFLAGS)
 COMMON_LIBS    +=$(LIBUSB_LIBS)
 endif
 
+noinst_HEADERS = backends.h
+
 if HAVE_HAL
 haldir = $(HALCALLOUTSDIR)
 hal_PROGRAMS = libgpod-callout
