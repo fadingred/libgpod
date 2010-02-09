@@ -18,49 +18,68 @@ ipod_read_sysinfo_extended_CFLAGS+=$(LIBUSB_CFLAGS)
 ipod_read_sysinfo_extended_LDADD+=$(LIBUSB_LIBS)
 endif
 
-if HAVE_HAL
-haldir = $(HALCALLOUTSDIR)
-hal_PROGRAMS = libgpod-callout
-libgpod_callout_SOURCES =					\
-	hal-callout.c 						\
+COMMON_SOURCES = 						\
+	generic-callout.c					\
 	$(top_srcdir)/src/itdb_sysinfo_extended_parser.c 	\
 	$(top_srcdir)/src/itdb_plist.c
 
-libgpod_callout_CFLAGS =						\
-	$(LIBGPOD_CFLAGS)					\
-	$(HAL_CFLAGS)						\
-	-I$(top_srcdir)/src
+COMMON_CFLAGS = $(LIBGPOD_CFLAGS) -I$(top_srcdir)/src
+COMMON_LIBS = $(top_builddir)/src/libgpod.la $(LIBGPOD_LIBS)
 
-#libgpod_callout_LDADD=$(LIBGPOD_LIBS) $(HAL_LIBS) $(SGUTILS_LIBS) 
-libgpod_callout_LDADD =						\
-	$(top_builddir)/src/libgpod.la				\
-	$(LIBGPOD_LIBS)						\
-	$(HAL_LIBS)
-
-if HAVE_LIBIMOBILEDEVICE
-hal_PROGRAMS+=iphone-callout
-iphone_callout_SOURCES = iphone-callout.c ipod-lockdown.c
-iphone_callout_CFLAGS = $(LIBGPOD_CFLAGS) $(LIBIMOBILEDEVICE_CFLAGS)
-iphone_callout_LDADD = $(LIBGPOD_LIBS) $(LIBIMOBILEDEVICE_LIBS)
+if HAVE_SGUTILS
+COMMON_SOURCES += ipod-scsi.c
+COMMON_CFLAGS  += $(SGUTILS_CFLAGS)
+COMMON_LIBS    += $(SGUTILS_LIBS)
 endif
+
+if HAVE_LIBUSB
+COMMON_SOURCES +=ipod-usb.c
+COMMON_CFLAGS  +=$(LIBUSB_CFLAGS)
+COMMON_LIBS    +=$(LIBUSB_LIBS)
+endif
+
+noinst_HEADERS = backends.h
+
+if HAVE_HAL
+haldir = $(HALCALLOUTSDIR)
+hal_PROGRAMS = libgpod-callout
+libgpod_callout_SOURCES = $(COMMON_SOURCES) hal-backend.c
+libgpod_callout_CFLAGS  = $(HAL_CFLAGS) $(COMMON_CFLAGS)
+libgpod_callout_LDADD   = $(HAL_LIBS) $(COMMON_LIBS)
 
 fdidir = $(HALFDIDIR)/policy/20thirdparty
 fdi_DATA = 20-libgpod-sysinfo-extended.fdi
 
 EXTRA_DIST = $(fdi_DATA)
+endif # HAVE_HAL
 
-if HAVE_SGUTILS
-libgpod_callout_SOURCES += ipod-scsi.c
-libgpod_callout_CFLAGS += $(SGUTILS_CFLAGS)
-libgpod_callout_LDADD += $(SGUTILS_LIBS)
-endif
-if HAVE_LIBUSB
-libgpod_callout_SOURCES+=ipod-usb.c
-libgpod_callout_CFLAGS+=$(LIBUSB_CFLAGS)
-libgpod_callout_LDADD+=$(LIBUSB_LIBS)
+if USE_UDEV
+libudevdir=@udevdir@
+libudev_PROGRAMS=ipod-set-info
+ipod_set_info_SOURCES = $(COMMON_SOURCES) udev-backend.c
+ipod_set_info_CFLAGS  = $(COMMON_CFLAGS)
+ipod_set_info_LDADD   = $(COMMON_LIBS)
+
+rulesdir=${libudevdir}/rules.d
+rules_DATA= libgpod.rules
+endif # USE_UDEV
+
+if HAVE_LIBIMOBILEDEVICE
+if HAVE_HAL
+hal_PROGRAMS+=iphone-callout
+iphone_callout_SOURCES = iphone-callout.c ipod-lockdown.c
+iphone_callout_CFLAGS = $(COMMON_CFLAGS) $(HAL_LIBS) $(LIBIMOBILEDEVICE_CFLAGS)
+iphone_callout_LDADD = $(COMMON_LIBS) $(HAL_CFLAGS) $(LIBIMOBILEDEVICE_LIBS)
 endif
 
+if USE_UDEV
+libudev_PROGRAMS+=iphone-set-info
+iphone_set_info_SOURCES = iphone-callout.c ipod-lockdown.c
+iphone_set_info_CFLAGS = $(COMMON_CFLAGS) $(LIBIMOBILEDEVICE_CFLAGS)
+iphone_set_info_LDADD = $(COMMON_LIBS) $(LIBIMOBILEDEVICE_LIBS)
+iphone_set_info_CPPFLAGS = -DUSE_UDEV
 endif
+endif # HAVE_LIBIPHONE
 
 if HAVE_SGUTILS
 noinst_PROGRAMS=ipod-time-sync

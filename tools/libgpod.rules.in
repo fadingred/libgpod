@@ -1,0 +1,5 @@
+# iPods showing up as mass storage devices
+ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_FS_USAGE}=="filesystem", ATTRS{idVendor}=="05ac", ENV{ID_MODEL}=="iPod", IMPORT{program}="@udevdir@/ipod-set-info $tempnode $attr{busnum} $attr{devnum}"
+
+# "iPods" using the afc protocol (iPhone, iPod Touch, ...)
+ACTION=="add|change", SUBSYSTEM=="usb", ATTR{idVendor}=="05ac", ATTR{idProduct}=="129[0-9]", IMPORT{program}+="@udevdir@/iphone-set-info"

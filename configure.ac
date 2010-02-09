@@ -187,6 +187,22 @@ if test "x$with_libimobiledevice" != "xno"; then
 fi
 AM_CONDITIONAL(HAVE_LIBIMOBILEDEVICE, test x"$enable_libimobiledevice" = xyes)
 
+dnl ***********************************************************************
+dnl * udev can be used to run a callout as an alternative to the hal callout
+dnl * nowadays (2009), it's the recommended way of having callouts, so
+dnl * it should be preferred over HAL
+dnl ***********************************************************************
+AC_ARG_ENABLE(udev,
+             [AC_HELP_STRING([--enable-udev],[Enable udev callout])],
+             [if test $enableval = "yes" ; then
+                 enable_udev=yes
+              else
+                enable_udev=no
+              fi],
+              [enable_udev=no])
+AM_CONDITIONAL(USE_UDEV, test x"$enable_udev" = xyes)
+AC_SUBST([udevdir], [/lib/udev])
+
 dnl **************************************************
 dnl * TagLib is only used by test-rebuild-db 
 dnl **************************************************
@@ -360,6 +376,7 @@ src/Makefile
 tools/Makefile
 tests/Makefile
 libgpod-1.0.pc
+tools/libgpod.rules
 ])
 AC_OUTPUT
 
@@ -394,5 +411,13 @@ if test x"$have_gdkpixbuf" = xno; then
         echo "
 **WARNING** gdkpixbuf support is disabled. libgpod won't be able
 to read or write artwork (covers, photos, ...) from/to the iPod
+"
+fi
+
+if test x"$enable_udev" = xyes -a x"$enable_hal" = xyes; then
+	echo "
+**WARNING** HAL and udev callouts have been enabled at the same time.
+While this should be harmless, this isn't recommended. The udev
+callout is the recommended one.
 "
 fi
