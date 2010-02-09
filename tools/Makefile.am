@@ -40,8 +40,8 @@ libgpod_callout_LDADD =						\
 if HAVE_LIBIMOBILEDEVICE
 hal_PROGRAMS+=iphone-callout
 iphone_callout_SOURCES = iphone-callout.c ipod-lockdown.c
-iphone_callout_CFLAGS = $(LIBIMOBILEDEVICE_CFLAGS)
-iphone_callout_LDADD = $(LIBIMOBILEDEVICE_LIBS)
+iphone_callout_CFLAGS = $(LIBGPOD_CFLAGS) $(LIBIMOBILEDEVICE_CFLAGS)
+iphone_callout_LDADD = $(LIBGPOD_LIBS) $(LIBIMOBILEDEVICE_LIBS)
 endif
 
 fdidir = $(HALFDIDIR)/policy/20thirdparty
