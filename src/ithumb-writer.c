@@ -1124,7 +1124,7 @@ static gchar *ithumb_get_artwork_dir (const char *mount_point)
 			return NULL;
 		}
 		dir = g_build_filename (control_dir, "Artwork", NULL);
-		mkdir (dir, 0777);
+		g_mkdir (dir, 0777);
 		g_free (dir);
 		g_free (control_dir);
 
@@ -1149,7 +1149,7 @@ static gchar *ithumb_get_photos_thumb_dir(const char *mount_point)
 		return NULL;
 	    }
 	    dir = g_build_filename (photos_dir, "Thumbs", NULL);
-	    mkdir (dir, 0777);
+	    g_mkdir (dir, 0777);
 	    g_free (dir);
 	    g_free (photos_dir);
 

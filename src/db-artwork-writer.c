@@ -44,7 +44,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <sys/mman.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <sys/types.h>

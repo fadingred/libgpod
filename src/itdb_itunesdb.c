@@ -381,6 +381,12 @@ static void fcontents_free (FContents *cts)
     }
 }
 
+static void itdb_sync (void)
+{
+#ifndef WIN32
+    sync();
+#endif
+}
 
 /* There seems to be a problem with some distributions (kernel
    versions or whatever -- even identical version numbers don't don't
@@ -5758,7 +5764,7 @@ err:
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
-    sync ();
+    itdb_sync ();
 
     return result;
 }
@@ -5864,7 +5870,7 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
-    sync ();
+    itdb_sync ();
 
 #ifdef HAVE_LIBIMOBILEDEVICE
     if (itdb_device_is_iphone_family (itdb->device)) {
@@ -6032,7 +6038,7 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error)
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
-    sync ();
+    itdb_sync ();
 
     return result;
 }
@@ -6161,7 +6167,7 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
-    sync ();
+    itdb_sync ();
 
     return result;
 }
@@ -6846,8 +6852,7 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
 	goto err_out;
     }
 
-    file_out =  g_open (to_file, O_CREAT|O_WRONLY|O_TRUNC|O_BINARY,
-                        S_IRWXU|S_IRWXG|S_IRWXO);
+    file_out =  g_open (to_file, O_CREAT|O_WRONLY|O_TRUNC|O_BINARY, 0777);
     if (file_out < 0)
     {
 	g_set_error (error,
