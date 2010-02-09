@@ -72,11 +72,11 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	    free(str);
 	}
 
-	ptr = plist_dict_get_item(global, "BuildVersion");
+	ptr = plist_dict_get_item(global, "ProductVersion");
 	plist_get_string_val(ptr, &str);
 	if (str != NULL) {
 	    ptr = plist_new_string(str);
-	    plist_dict_insert_item(value, "BuildID", ptr);
+	    plist_dict_insert_item(value, "VisibleBuildID", ptr);
 	    free(str);
 	}
 
