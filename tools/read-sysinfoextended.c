@@ -57,8 +57,8 @@ main (int argc, char **argv)
 	g_warning ("Compiled without sgutils support, can't read SysInfoExtended from a device");
 #endif
     }
-#ifdef HAVE_LIBUSB
     else if (argc == 4) {
+#ifdef HAVE_LIBUSB
         int bus_number;
         int device_number;
         /* 2 arguments in addition to the mountpoint, attempt to parse them
@@ -68,8 +68,10 @@ main (int argc, char **argv)
         bus_number = atoi (argv[1]);
         device_number = atoi (argv[2]);
         xml = read_sysinfo_extended_from_usb (bus_number, device_number);
-    }
+#else
+	g_warning ("Compiled without libusb support, can't read SysInfoExtended through raw USB calls");
 #endif
+    }
     else {
 	/* argument doesn't look like a filename, might be an UUID */
 #ifdef HAVE_LIBIMOBILEDEVICE
