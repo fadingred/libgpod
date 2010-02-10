@@ -25,10 +25,10 @@ static u32 rco[30];
 
 /* Parameter-dependent data */
 
-int Nk,Nb,Nr;
-u8 fi[24],ri[24];
-u32 fkey[120];
-u32 rkey[120];
+static int Nk,Nb,Nr;
+static u8 fi[24],ri[24];
+static u32 fkey[120];
+static u32 rkey[120];
 
 static u32 pack(u8 *b)
 { /* pack bytes into a 32-bit Word */
