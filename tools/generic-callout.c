@@ -650,7 +650,6 @@ int itdb_callout_set_ipod_properties (ItdbBackend *backend, const char *dev,
         ipod_mountpoint = mount_ipod (dev, fstype);
         if (ipod_mountpoint == NULL) {
                 g_free (xml);
-                backend->destroy (backend);
                 return -1;
         }
         write_sysinfo_extended (ipod_mountpoint, xml); 
