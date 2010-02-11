@@ -641,7 +641,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	goto leave;
     }
     if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"item\" "
-	    "(pid,media_kind,date_modified,year,is_compilation,exclude_from_shuffle,artwork_status,artwork_cache_id,"
+	    "(pid,media_kind,date_modified,year,is_compilation,remember_bookmark,exclude_from_shuffle,artwork_status,artwork_cache_id,"
 	    "start_time_ms,stop_time_ms,total_time_ms,total_burn_time_ms,track_number,track_count,disc_number,disc_count,"
 	    "bpm,relative_volume,eq_preset,radio_stream_status,genre_id,album_pid,artist_pid,composer_pid,title,artist,album,"
 	    "album_artist,composer,sort_title,sort_artist,sort_album,sort_album_artist,sort_composer,title_order,artist_order,"
@@ -917,6 +917,8 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	sqlite3_bind_int(stmt_item, ++idx, track->year);
 	/* is_compilation */
 	sqlite3_bind_int(stmt_item, ++idx, track->compilation);
+	/* remember_bookmark */
+	sqlite3_bind_int(stmt_item, ++idx, track->remember_playback_position);
 	/* exclude_from_shuffle */
 	sqlite3_bind_int(stmt_item, ++idx, track->skip_when_shuffling);
 	/* artwork_status 1 = has artwork, 2 = doesn't */
