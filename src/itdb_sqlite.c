@@ -911,8 +911,8 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	/*  podcast = 4 */
 	/*  rental = 32768 */
 	sqlite3_bind_int(stmt_item, ++idx, track->mediatype);
-	/* date_modified, set to 0 */
-	sqlite3_bind_int(stmt_item, ++idx, 0);
+	/* date_modified */
+	sqlite3_bind_int(stmt_item, ++idx, timeconv(track->time_modified));
 	/* year */
 	sqlite3_bind_int(stmt_item, ++idx, track->year);
 	/* is_compilation */
