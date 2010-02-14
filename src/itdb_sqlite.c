@@ -1477,7 +1477,7 @@ static void run_post_process_commands(Itdb_iTunesDB *itdb, const char *outpath, 
     plist_t plist_node = NULL;
     plist_t ppc_dict = NULL;
     const gchar *basedb = "Library.itdb";
-    const gchar *otherdbs[] = {"Dynamic.itdb", "Extras.itdb", "Genius.itdb", "Location.itdb", NULL};
+    const gchar *otherdbs[] = {"Dynamic.itdb", "Extras.itdb", "Genius.itdb", "Locations.itdb", NULL};
     int res;
     sqlite3 *db = NULL;
 
