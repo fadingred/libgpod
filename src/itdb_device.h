@@ -176,6 +176,7 @@ G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device,
 						     GError **error);
 G_GNUC_INTERNAL void itdb_device_set_timezone_info (Itdb_Device *device);
 G_GNUC_INTERNAL gboolean itdb_device_is_iphone_family (const Itdb_Device *device);
+G_GNUC_INTERNAL gboolean itdb_device_is_shuffle (const Itdb_Device *device);
 G_GNUC_INTERNAL ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device);
 
 const Itdb_IpodInfo *
