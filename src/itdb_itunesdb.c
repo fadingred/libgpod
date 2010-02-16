@@ -7451,37 +7451,22 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     /* Retrieve the model from the device information */
     info = itdb_device_get_ipod_info(device);
 
-    /* Set up special treatment for shuffle and mobile */
-    switch(info->ipod_model)
-    {
-    case ITDB_IPOD_MODEL_SHUFFLE:
+    if (itdb_device_is_shuffle (device)) {
 	podpath = g_strdup ("iPod_Control");
 	calconnotes = FALSE;
 	devicefile = TRUE;
-	break;
-    case ITDB_IPOD_MODEL_MOBILE_1:
-	podpath = g_build_filename ("iTunes", "iTunes_Control", NULL);
-	calconnotes = FALSE;
-	devicefile = TRUE;
-	break;
-    case ITDB_IPOD_MODEL_IPHONE_1:
-    case ITDB_IPOD_MODEL_TOUCH_SILVER:
-    case ITDB_IPOD_MODEL_IPHONE_WHITE:
-    case ITDB_IPOD_MODEL_IPHONE_BLACK:
+    } else if (itdb_device_is_iphone_family (device)) {
 	podpath = g_strdup ("iTunes_Control");
 	calconnotes = FALSE;
 	devicefile = TRUE;
-	break;
-    case ITDB_IPOD_MODEL_UNKNOWN:
+    } else if (info->ipod_model == ITDB_IPOD_MODEL_MOBILE_1) {
+	podpath = g_build_filename ("iTunes", "iTunes_Control", NULL);
+	calconnotes = FALSE;
+	devicefile = TRUE;
+    } else {
 	podpath = g_strdup ("iPod_Control");
 	calconnotes = TRUE;
 	devicefile = TRUE;
-	break;
-    default:
-	podpath = g_strdup ("iPod_Control");
-	calconnotes = TRUE;
-	devicefile = TRUE;
-	break;
     }
 
     /* Construct the Control directory */
