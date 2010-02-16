@@ -7294,7 +7294,6 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	gboolean writeok;
 	Itdb_iTunesDB *itdb = NULL;
 	Itdb_Playlist *mpl = NULL;
-	Itdb_IpodInfo const *info = NULL;
 	gchar *path;
 
 	g_return_val_if_fail (mountpoint, FALSE);
@@ -7353,13 +7352,10 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	}
 	g_free (path);
 
-	/* Retrieve the model from the device information */
-	info = itdb_device_get_ipod_info(itdb->device);
-
 	/* If model is a shuffle or the model is undetermined,
 	 * ie. @model_number is NULL, then create the itunesSD database
 	 */
-	if(!model_number || info->ipod_model == ITDB_IPOD_MODEL_SHUFFLE)
+	if(!model_number || itdb_device_is_shuffle (itdb->device))
 	{
 	    path = itdb_get_itunessd_path (mountpoint);
 	    if (!path)
