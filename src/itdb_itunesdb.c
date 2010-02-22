@@ -3929,6 +3929,12 @@ static gint mhod52_sort_composer (struct mhod52track *a, struct mhod52track *b)
 
     result = strcmp (a->composer, b->composer);
     if (result == 0)
+	result = strcmp (a->album, b->album);
+    if (result == 0)
+	result = a->cd_nr - b->cd_nr;
+    if (result == 0)
+	result = a->track_nr - b->track_nr;
+    if (result == 0)
 	result = strcmp (a->title, b->title);
     return result;
 }
