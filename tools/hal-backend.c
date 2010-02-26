@@ -446,8 +446,10 @@ int main (int argc, char **argv)
         }
 
         hal_backend = (HalBackend *)backend;
+#ifdef HAVE_LIBUSB
         hal_get_ipod_usb_position (hal_backend->ctx, hal_backend->udi,
                                    &usb_bus_number, &usb_device_number);
+#endif
 
 	result = itdb_callout_set_ipod_properties (backend, dev,
                                                    usb_bus_number,
