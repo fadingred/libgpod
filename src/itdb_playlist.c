@@ -75,7 +75,7 @@ gboolean itdb_spl_action_known (ItdbSPLAction action)
     }
     if (result == FALSE)
     {	/* New action! */
-	g_warning (_("Unknown action (%d) in smart playlist will be ignored.\n"), action);
+	g_warning (_("Unknown action (0x%x) in smart playlist will be ignored.\n"), action);
     }
     return result;
 }

@@ -2039,7 +2039,8 @@ static glong get_playlist (FImport *fimp, guint mhsd_type, glong mhyp_seek)
   check_seek (cts, mhyp_seek, header_len);
   CHECK_ERROR (fimp, -1);
 
-  nextseek = mhyp_seek + get32lint (cts, mhyp_seek+8);/* possible begin of next PL */  mhod_num = get32lint (cts, mhyp_seek+12); /* number of MHODs we expect */
+  nextseek = mhyp_seek + get32lint (cts, mhyp_seek+8);/* possible begin of next PL */
+  mhod_num = get32lint (cts, mhyp_seek+12); /* number of MHODs we expect */
   mhipnum = get32lint (cts, mhyp_seek+16); /* number of tracks
 					       (mhips) in playlist */
 
