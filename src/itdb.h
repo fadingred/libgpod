@@ -1123,7 +1123,7 @@ struct _Itdb_Playlist
  * @ITDB_PSO_TITLE:         Sort by track title
  * @ITDB_PSO_ALBUM:         Sort by album
  * @ITDB_PSO_ARTIST:        Sort by artist
- * @ITDB_PSO_BIRATE:        Sort by bitrate
+ * @ITDB_PSO_BITRATE:       Sort by bitrate
  * @ITDB_PSO_GENRE:         Sort by genre
  * @ITDB_PSO_FILETYPE:      Sort by filetype
  * @ITDB_PSO_TIME_MODIFIED: Sort by date modified
@@ -1157,7 +1157,7 @@ typedef enum
     ITDB_PSO_TITLE = 3,
     ITDB_PSO_ALBUM = 4,
     ITDB_PSO_ARTIST = 5,
-    ITDB_PSO_BIRATE = 6,
+    ITDB_PSO_BITRATE = 6,
     ITDB_PSO_GENRE = 7,
     ITDB_PSO_FILETYPE = 8,
     ITDB_PSO_TIME_MODIFIED = 9,
@@ -1181,6 +1181,11 @@ typedef enum
     ITDB_PSO_CATEGORY = 27,
     ITDB_PSO_DESCRIPTION = 28
 } ItdbPlaylistSortOrder;
+/* libgpod 0.7.90 and earlier had a typo in ITDB_PSO_BITRATE, workaround
+ * that typo and avoid breaking the API (even if I doubt there are users 
+ * of this)
+ */
+#define ITDB_PSO_BIRATE ITDB_PSO_BITRATE
 
 
 /**
