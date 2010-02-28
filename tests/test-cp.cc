@@ -90,13 +90,11 @@ static gboolean
 copy_file (Itdb_iTunesDB *db, const char *filename, GError **error)
 {
 	Itdb_Track *track;
-	char *dest_filename;
 	gboolean copy_success;
 
 	track = track_from_file (filename);
 	itdb_track_add (db, track, -1);
 	itdb_playlist_add_track (itdb_playlist_mpl(db), track, -1);
-	/* dest_filename = itdb_cp_get_dest_filename (track, NULL, filename, error); */
 	copy_success = itdb_cp_track_to_ipod (track, filename, error);
 	if (!copy_success) {
 		itdb_track_free (track);
