@@ -447,6 +447,8 @@ typedef enum {
  *  bit 7 = unknown, but probably less than or equal to
  *  bit 8 = a range selection
  *  bit 9 = "in the last"
+ *  bit 10 = binary AND
+ *  bit 11 = unknown
  *  </programlisting>
  * </informalexample>
  *
@@ -459,6 +461,20 @@ typedef enum {
     ITDB_SPLACTION_IS_IN_THE_RANGE = 0x00000100,
     ITDB_SPLACTION_IS_IN_THE_LAST = 0x00000200,
     ITDB_SPLACTION_BINARY_AND = 0x00000400,
+    /* This action has been seen in the smart playlists stored in mhsd5
+     * on recent ipods. It operates on the "video kind" field. 
+     * It uses integer values, and the from/to values are different.
+     * The "from" value might be the list of bits that are allowed to be set
+     * in the value we are matching, and the "to" value might be a value
+     * that must be set in the value we are matching. For example, there's 
+     * a TVShow playlist using that action, from is 0x208044, to is 0x40. 
+     * "video kind" is a bitfield so the 1st value let us filter out
+     * entries with unwanted bits, and the second one ensures we have a
+     * TVShow. A match could be tested with:
+     * is_match = (((val & from) == val) && (val & to))
+     * I'm not sure what this becomes when this action is negated...
+     */
+    ITDB_SPLACTION_BINARY_UNKNOWN1 = 0x00000800,
 
     ITDB_SPLACTION_IS_STRING = 0x01000001,
     ITDB_SPLACTION_CONTAINS = 0x01000002,
@@ -470,6 +486,8 @@ typedef enum {
     ITDB_SPLACTION_IS_NOT_LESS_THAN = 0x02000040,
     ITDB_SPLACTION_IS_NOT_IN_THE_RANGE = 0x02000100,
     ITDB_SPLACTION_IS_NOT_IN_THE_LAST = 0x02000200,
+    ITDB_SPLACTION_BINARY_UNKNOWN2 = 0x02000800,
+
 
     ITDB_SPLACTION_IS_NOT = 0x03000001,
     ITDB_SPLACTION_DOES_NOT_CONTAIN = 0x03000002,

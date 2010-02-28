@@ -71,6 +71,8 @@ gboolean itdb_spl_action_known (ItdbSPLAction action)
     case ITDB_SPLACTION_IS_NOT:
     case ITDB_SPLACTION_DOES_NOT_CONTAIN:
     case ITDB_SPLACTION_BINARY_AND:
+    case ITDB_SPLACTION_BINARY_UNKNOWN1:
+    case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	result = TRUE;
     }
     if (result == FALSE)
@@ -187,6 +189,8 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 	case ITDB_SPLACTION_IS_IN_THE_LAST:
 	case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
 	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_BINARY_UNKNOWN1:
+	case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	    return ITDB_SPLAT_INVALID;
 	}
 	/* Unknown action type */
@@ -207,6 +211,8 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 	case ITDB_SPLACTION_IS_IN_THE_RANGE:
 	    return ITDB_SPLAT_RANGE_INT;
 	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_BINARY_UNKNOWN1:
+	case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	case ITDB_SPLACTION_IS_STRING:
 	case ITDB_SPLACTION_CONTAINS:
 	case ITDB_SPLACTION_STARTS_WITH:
@@ -251,11 +257,16 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 	case ITDB_SPLACTION_IS_NOT:
 	case ITDB_SPLACTION_DOES_NOT_CONTAIN:
 	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_BINARY_UNKNOWN1:
+	case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	    return ITDB_SPLAT_INVALID;
 	}
     case ITDB_SPLFT_BINARY_AND:
 	switch ((ItdbSPLAction)splr->action)
 	{
+	case ITDB_SPLACTION_BINARY_UNKNOWN1:
+	case ITDB_SPLACTION_BINARY_UNKNOWN2:
+            return ITDB_SPLAT_UNKNOWN;
 	case ITDB_SPLACTION_BINARY_AND:
 	    return ITDB_SPLAT_BINARY_AND;
 	case ITDB_SPLACTION_IS_INT:
@@ -306,6 +317,8 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 	case ITDB_SPLACTION_IS_NOT:
 	case ITDB_SPLACTION_DOES_NOT_CONTAIN:
 	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_BINARY_UNKNOWN1:
+	case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	    return ITDB_SPLAT_INVALID;
 	}
 	/* Unknown action type */
