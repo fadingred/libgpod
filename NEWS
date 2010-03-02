@@ -1,3 +1,26 @@
+Overview of changes in libgpod 0.7.91
+=====================================
+
+For information about iPhone/iPod Touch/iPod Nano 5g support, please read
+carefully the overview of libgpod 0.7.90 below.
+
+* add udev callout 
+
+HAL is actively being deprecated, this udev callout is meant to be functionally
+equivalent to the HAL callout except that it doesn't export the podsleuth-like
+information to the udev database. This would be easy to do, but udev
+maintainers didn't recommend doing that. Installing both the udev and HAL
+callout at the same time is disrecommended since they'd both be run upon
+device insertion. As for the HAL callout, the udev callout needs to be compiled
+against libusb for plug-n-play nano5g support.
+
+* fix playback order when sorting by composer (bug reported and fixed by
+Alex T.)
+
+* fix handling of nano5g with the latest firmware
+
+* various bug fixes
+
 Overview of changes in libgpod 0.7.90
 =====================================
 
