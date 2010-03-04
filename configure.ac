@@ -203,6 +203,20 @@ AC_ARG_ENABLE(udev,
 AM_CONDITIONAL(USE_UDEV, test x"$enable_udev" = xyes)
 AC_SUBST([udevdir], [/lib/udev])
 
+dnl ***********************************************************************
+dnl * for the udev and hal callouts, we need a temporary directory to
+dnl * mount the iPod to write out its extended info file.
+dnl ***********************************************************************
+
+temp_mount_dir="/tmp/"
+AC_ARG_WITH(temp_mount_dir, AC_HELP_STRING([--with-mount-dir=DIR],
+	[Directory where HAL/udev will create a sub-directory to mount iPods]),,
+	with_temp_mount_dir="$temp_mount_dir")
+TMPMOUNTDIR="$with_temp_mount_dir"
+AC_SUBST(TMPMOUNTDIR)
+AH_TEMPLATE([TMPMOUNTDIR], [Directory where HAL/udev will create a sub-directory to mount iPods])
+AC_DEFINE_UNQUOTED(TMPMOUNTDIR, "$with_temp_mount_dir", [Directory where HAL/udev will create a sub-directory to mount iPods])
+
 dnl **************************************************
 dnl * TagLib is only used by test-rebuild-db 
 dnl **************************************************
@@ -393,6 +407,7 @@ Configuration for $PACKAGE $VERSION :
  Python bindings ..........: $with_python
  PyGObject support ........: $have_pygobject
  iPhone/iPod Touch support.: $enable_libimobiledevice
+ Temporary mount directory.: $with_temp_mount_dir
 
  Now type 'make' to build $PACKAGE $VERSION,
  and then 'make install' for installation.

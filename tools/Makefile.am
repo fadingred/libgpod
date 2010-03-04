@@ -90,3 +90,12 @@ ipod_time_sync_CFLAGS=$(SGUTILS_CFLAGS) $(LIBGPOD_CFLAGS)
 ipod_time_sync_LDADD=$(SGUTILS_LIBS) $(LIBGPOD_LIBS) 
 endif
 
+if USE_UDEV
+install-data-hook:
+	$(MKDIR_P) "$(DESTDIR)$(MOUNTDIR)"
+endif
+if HAVE_HAL
+install-data-hook:
+	$(MKDIR_P) "$(DESTDIR)$(MOUNTDIR)"
+endif
+

@@ -560,7 +560,7 @@ static char *mount_ipod (const char *dev_path, const char *fstype)
         char *tmpname;
         int result;
 
-        filename = g_build_filename (g_get_tmp_dir (), "ipodXXXXXX", NULL);
+        filename = g_build_filename (TMPMOUNTDIR, "ipodXXXXXX", NULL);
         if (filename == NULL) {
                 return NULL;
         }
