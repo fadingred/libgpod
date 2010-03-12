@@ -381,7 +381,7 @@ static void fcontents_free (FContents *cts)
     }
 }
 
-static void itdb_sync (void)
+static void itdb_fsync (void)
 {
 #ifndef WIN32
     sync();
@@ -5771,7 +5771,7 @@ err:
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
-    itdb_sync ();
+    itdb_fsync ();
 
     return result;
 }
@@ -5866,7 +5866,7 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
-    itdb_sync ();
+    itdb_fsync ();
 
     itdb_stop_sync (itdb);
 
@@ -6085,7 +6085,7 @@ gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error)
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
-    itdb_sync ();
+    itdb_fsync ();
 
     return result;
 }
@@ -6214,7 +6214,7 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 
     /* make sure all buffers are flushed as some people tend to
        disconnect as soon as gtkpod returns */
-    itdb_sync ();
+    itdb_fsync ();
 
     return result;
 }
