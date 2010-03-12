@@ -71,6 +71,7 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
     gchar *audible_subdesc[] = {"Audible", "audible", "Book", "book", NULL};
     gchar *wav_desc[] = {"WAV", "wav", NULL};
     gchar *m4v_desc[] = {"M4V", "MP4", "MP4V", "m4v", "mp4", "mp4v", NULL};
+    gchar *mov_desc[] = {"MOV", "mov", NULL};
 
     g_return_if_fail (tr);
     g_return_if_fail (tr->itdb);
@@ -153,7 +154,8 @@ static void itdb_track_set_defaults (Itdb_Track *tr)
 	 */
 	if (tr->mediatype == 0)
 	{
-	    if (haystack (tr->filetype, m4v_desc))
+	    if (haystack (tr->filetype, m4v_desc)
+		 || haystack (tr->filetype, mov_desc))
 	    {
 		/* set type to video (0x00000002) */
 		tr->mediatype = 0x00000002;
