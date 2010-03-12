@@ -92,10 +92,10 @@ endif
 
 if USE_UDEV
 install-data-hook:
-	$(MKDIR_P) "$(DESTDIR)$(MOUNTDIR)"
+	$(MKDIR_P) "$(DESTDIR)$(TMPMOUNTDIR)"
 endif
 if HAVE_HAL
 install-data-hook:
-	$(MKDIR_P) "$(DESTDIR)$(MOUNTDIR)"
+	$(MKDIR_P) "$(DESTDIR)$(TMPMOUNTDIR)"
 endif
 
