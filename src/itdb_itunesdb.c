@@ -5812,10 +5812,6 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 {
     gchar *itunes_filename, *itunes_path;
     gboolean result = FALSE;
-#ifdef HAVE_LIBIMOBILEDEVICE
-    void *sync_ctx;
-    int sync_status;
-#endif
 
     g_return_val_if_fail (itdb, FALSE);
     g_return_val_if_fail (itdb_get_mountpoint (itdb), FALSE);
@@ -5842,14 +5838,7 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 	itunes_filename = g_build_filename (itunes_path, "iTunesDB", NULL);
     }
 
-#ifdef HAVE_LIBIMOBILEDEVICE
-    if (itdb_device_is_iphone_family (itdb->device)) {
-	sync_status = itdb_iphone_start_sync (itdb->device, &sync_ctx);
-	if (sync_status != 0) {
-	    fprintf(stderr, "ERROR: Could not start sync!\n");
-	}
-    }
-#endif
+    itdb_start_sync (itdb);
 
     result = itdb_write_file_internal (itdb, itunes_filename, error);
     g_free (itunes_filename);
@@ -5879,14 +5868,7 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
        disconnect as soon as gtkpod returns */
     itdb_sync ();
 
-#ifdef HAVE_LIBIMOBILEDEVICE
-    if (itdb_device_is_iphone_family (itdb->device)) {
-	sync_status = itdb_iphone_stop_sync (sync_ctx);
-	if (sync_status != 0) {
-	    fprintf(stderr, "ERROR: itdbprep_stop_sync failed!\n");
-	}
-    }
-#endif
+    itdb_stop_sync (itdb);
 
     return result;
 }
