@@ -95,6 +95,8 @@ enum _ItdbChecksumType {
  *                      otherwise.  (see itdb_set_sysinfo())
  * @timezone_shift:     The difference in seconds between the current timezone
  *                      and UTC
+ * @iphone_sync_context:Private data passed as is to libimobiledevice by 
+ *                      itdb_start/stop_sync
  *
  * Structure representing an iPod device
  *
@@ -109,6 +111,7 @@ struct _Itdb_Device
     SysInfoIpodProperties *sysinfo_extended;
     gboolean sysinfo_changed;
     gint timezone_shift;
+    void *iphone_sync_context;
 };
 
 /**

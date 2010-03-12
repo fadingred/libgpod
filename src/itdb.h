@@ -1735,6 +1735,8 @@ gboolean itdb_write_file (Itdb_iTunesDB *itdb, const gchar *filename,
 gboolean itdb_shuffle_write (Itdb_iTunesDB *itdb, GError **error);
 gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 				  const gchar *filename, GError **error);
+gboolean itdb_start_sync (Itdb_iTunesDB *itdb);
+gboolean itdb_stop_sync (Itdb_iTunesDB *itdb);
 Itdb_iTunesDB *itdb_new (void);
 void itdb_free (Itdb_iTunesDB *itdb);
 Itdb_iTunesDB *itdb_duplicate (Itdb_iTunesDB *itdb); /* not implemented */

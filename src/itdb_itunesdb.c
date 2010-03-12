@@ -5891,6 +5891,64 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
     return result;
 }
 
+/**
+ * itdb_start_sync:
+ * @itdb:   the #Itdb_iTunesDB that is being sync'ed
+ *
+ * Hints libgpod that a series of file copies/database saves/... is about
+ * to start. On regular iPods, this does nothing (but is safe to be used),
+ * but on iPhones and iPod Touch this makes sure the "Sync in progress" screen
+ * is shown for the whole duration of the writing process.
+ *
+ * Returns: TRUE on success, FALSE on error
+ */
+gboolean itdb_start_sync (Itdb_iTunesDB *itdb)
+{
+    g_return_val_if_fail (itdb != NULL, FALSE);
+    g_return_val_if_fail (itdb->device != NULL, FALSE);
+
+#ifdef HAVE_LIBIMOBILEDEVICE
+    g_return_val_if_fail (itdb->device->iphone_sync_context == NULL, FALSE);
+    if (itdb_device_is_iphone_family (itdb->device)) {
+	int sync_status;
+	sync_status = itdb_iphone_start_sync (itdb->device,
+		                              &itdb->device->iphone_sync_context);
+	if (sync_status == 0) {
+	    return TRUE;
+	} else {
+	    return FALSE;
+	}
+    }
+#endif
+
+    return TRUE;
+}
+
+/**
+ * itdb_stop_sync:
+ * @itdb:   the #Itdb_iTunesDB that is being sync'ed
+ *
+ * Hints libgpod that the series of file copies/database saves/... started
+ * with itdb_start_sync is finished. On regular iPods, this does nothing
+ * (but is safe to be used). On iPhones and iPod Touch this will hide the
+ * "Sync in progress" screen.
+ *
+ * Returns: TRUE on success, FALSE on error
+ */
+gboolean itdb_stop_sync (Itdb_iTunesDB *itdb)
+{
+#ifdef HAVE_LIBIMOBILEDEVICE
+    if (itdb_device_is_iphone_family (itdb->device)) {
+	int sync_status;
+	sync_status = itdb_iphone_stop_sync (itdb->device->iphone_sync_context);
+	itdb->device->iphone_sync_context = NULL;
+	if (sync_status != 0) {
+	    return FALSE;
+	}
+    }
+#endif
+    return TRUE;
+}
 
 /* from here on we have the functions for writing the iTunesDB          */
 /* -------------------------------------------------------------------- */
