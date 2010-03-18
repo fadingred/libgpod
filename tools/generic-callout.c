@@ -288,8 +288,9 @@ get_color_name (const Itdb_IpodInfo *info)
 static char *
 get_icon_name (const Itdb_IpodInfo *info)
 {
+	const char prefix[] = "multimedia-player-apple-";
 	if (info == NULL) {
-		return g_strdup ("multimedia-player-apple-ipod");
+		return g_strconcat (prefix, "ipod", NULL);
 	}
 	switch (info->ipod_generation) {
 	case ITDB_IPOD_GENERATION_UNKNOWN:
@@ -297,75 +298,75 @@ get_icon_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_GENERATION_SECOND:
 	case ITDB_IPOD_GENERATION_THIRD:
 	case ITDB_IPOD_GENERATION_FOURTH:
-		return g_strdup ("multimedia-player-apple-ipod");
+		return g_strconcat (prefix, "ipod", NULL);
 
 	case ITDB_IPOD_GENERATION_PHOTO:
-		return g_strdup ("multimedia-player-apple-ipod-color");
+		return g_strconcat (prefix, "ipod-color", NULL);
 
 	case ITDB_IPOD_GENERATION_MINI_1:
 	case ITDB_IPOD_GENERATION_MINI_2:
 		switch (info->ipod_model) {
 		case ITDB_IPOD_MODEL_MINI_BLUE:
-			return g_strdup ("multimedia-player-apple-ipod-mini-blue");
+			return g_strconcat (prefix, "ipod-mini-blue", NULL);
 		case ITDB_IPOD_MODEL_MINI_PINK:
-			return g_strdup ("multimedia-player-apple-ipod-mini-pink");
+			return g_strconcat (prefix, "ipod-mini-pink", NULL);
 		case ITDB_IPOD_MODEL_MINI_GOLD:
-			return g_strdup ("multimedia-player-apple-ipod-mini-gold");
+			return g_strconcat (prefix, "ipod-mini-gold", NULL);
 		case ITDB_IPOD_MODEL_MINI_GREEN:
-			return g_strdup ("multimedia-player-apple-ipod-mini-green");
+			return g_strconcat (prefix, "ipod-mini-green", NULL);
 		case ITDB_IPOD_MODEL_MINI:
-			return g_strdup ("multimedia-player-apple-ipod-mini-silver");
+			return g_strconcat (prefix, "ipod-mini-silver", NULL);
 		default:
 			g_assert_not_reached ();
 		}
 
 	case ITDB_IPOD_GENERATION_SHUFFLE_1:
-		return g_strdup ("multimedia-player-apple-ipod-shuffle");
+		return g_strconcat (prefix, "ipod-shuffle", NULL);
 
 	case ITDB_IPOD_GENERATION_SHUFFLE_2:
 	case ITDB_IPOD_GENERATION_SHUFFLE_3:
 		switch (info->ipod_model) {
 		case ITDB_IPOD_MODEL_SHUFFLE_SILVER:
-			return g_strdup ("multimedia-player-apple-ipod-shuffle-clip-silver");
+			return g_strconcat (prefix, "ipod-shuffle-clip-silver", NULL);
 		case ITDB_IPOD_MODEL_SHUFFLE_GREEN:
-			return g_strdup ("multimedia-player-apple-ipod-shuffle-clip-green");
+			return g_strconcat (prefix, "ipod-shuffle-clip-green", NULL);
 		case ITDB_IPOD_MODEL_SHUFFLE_ORANGE:
-			return g_strdup ("multimedia-player-apple-ipod-shuffle-clip-orange");
+			return g_strconcat (prefix, "ipod-shuffle-clip-orange", NULL);
 		case ITDB_IPOD_MODEL_SHUFFLE_PURPLE:
-			return g_strdup ("multimedia-player-apple-ipod-shuffle-clip-purple");
+			return g_strconcat (prefix, "ipod-shuffle-clip-purple", NULL);
 		case ITDB_IPOD_MODEL_SHUFFLE_PINK:
-			return g_strdup ("multimedia-player-apple-ipod-shuffle-clip-pink");
+			return g_strconcat (prefix, "ipod-shuffle-clip-pink", NULL);
 		case ITDB_IPOD_MODEL_SHUFFLE_BLUE:
-			return g_strdup ("multimedia-player-apple-ipod-shuffle-clip-blue");
+			return g_strconcat (prefix, "ipod-shuffle-clip-blue", NULL);
 		default:
 			g_assert_not_reached ();
 		}
 
 	case ITDB_IPOD_GENERATION_SHUFFLE_4:
-		return g_strdup ("multimedia-player-apple-ipod-shuffle");
+		return g_strconcat (prefix, "ipod-shuffle", NULL);
 
 	case ITDB_IPOD_GENERATION_NANO_1:
 		if (info->ipod_model == ITDB_IPOD_MODEL_NANO_BLACK) {
-			return g_strdup ("multimedia-player-apple-ipod-nano-black");
+			return g_strconcat (prefix, "ipod-nano-black", NULL);
 		} else {
-			return g_strdup ("multimedia-player-apple-ipod-nano-white");
+			return g_strconcat (prefix, "ipod-nano-white", NULL);
 		}
 
 	case ITDB_IPOD_GENERATION_NANO_2:
-		return g_strdup ("multimedia-player-apple-ipod-nano-white");
+		return g_strconcat (prefix, "ipod-nano-white", NULL);
 
 	case ITDB_IPOD_GENERATION_NANO_3:
 		switch (info->ipod_model) {
 		case ITDB_IPOD_MODEL_NANO_SILVER:
-			return g_strdup ("multimedia-player-apple-ipod-nano-video");
+			return g_strconcat (prefix, "ipod-nano-video", NULL);
 		case ITDB_IPOD_MODEL_NANO_BLACK:
-			return g_strdup ("multimedia-player-apple-ipod-nano-video-black");
+			return g_strconcat (prefix, "ipod-nano-video-black", NULL);
 		case ITDB_IPOD_MODEL_NANO_BLUE:
-			return g_strdup ("multimedia-player-apple-ipod-nano-video-turquoise");
+			return g_strconcat (prefix, "ipod-nano-video-turquoise", NULL);
 		case ITDB_IPOD_MODEL_NANO_GREEN:
-			return g_strdup ("multimedia-player-apple-ipod-nano-video-green");
+			return g_strconcat (prefix, "ipod-nano-video-green", NULL);
 		case ITDB_IPOD_MODEL_NANO_RED:
-			return g_strdup ("multimedia-player-apple-ipod-nano-video-red");
+			return g_strconcat (prefix, "ipod-nano-video-red", NULL);
 		default:
 			g_assert_not_reached ();
 		}
@@ -375,30 +376,30 @@ get_icon_name (const Itdb_IpodInfo *info)
 		/* FIXME: set the correct icon name once it's added to
 		 * gnome-icon-theme-extras 
 		 */
-		return g_strdup ("multimedia-player-apple-ipod-nano-white");
+		return g_strconcat (prefix, "ipod-nano-white", NULL);
 
 	case ITDB_IPOD_GENERATION_VIDEO_1:
 	case ITDB_IPOD_GENERATION_VIDEO_2:
 		if (info->ipod_model == ITDB_IPOD_MODEL_VIDEO_BLACK) {
-			return g_strdup ("multimedia-player-apple-ipod-video-black");
+			return g_strconcat (prefix, "ipod-video-black", NULL);
 		} else {
-			return g_strdup ("multimedia-player-apple-ipod-video-white");
+			return g_strconcat (prefix, "ipod-video-white", NULL);
 		}
 
 	case ITDB_IPOD_GENERATION_CLASSIC_1:
 	case ITDB_IPOD_GENERATION_CLASSIC_2:
 	case ITDB_IPOD_GENERATION_CLASSIC_3:
 		if (info->ipod_model == ITDB_IPOD_MODEL_CLASSIC_BLACK) {
-			return g_strdup ("multimedia-player-apple-ipod-classic-black");
+			return g_strconcat (prefix, "ipod-classic-black", NULL);
 		} else {
-			return g_strdup ("multimedia-player-apple-ipod-classic-white");
+			return g_strconcat (prefix, "ipod-classic-white", NULL);
 		}
 
 	case ITDB_IPOD_GENERATION_TOUCH_1:
-		return g_strdup ("multimedia-player-apple-ipod-touch");
+		return g_strconcat (prefix, "ipod-touch", NULL);
 	case ITDB_IPOD_GENERATION_TOUCH_2:
 	case ITDB_IPOD_GENERATION_TOUCH_3:
-		return g_strdup ("multimedia-player-apple-ipod-touch-2g");
+		return g_strconcat (prefix, "ipod-touch-2g", NULL);
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 		return g_strdup ("phone-apple-iphone");
 	case ITDB_IPOD_GENERATION_IPHONE_2:
@@ -406,7 +407,7 @@ get_icon_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_GENERATION_IPHONE_3:
 		return g_strdup ("phone-apple-iphone-3gs");
 	case ITDB_IPOD_GENERATION_MOBILE:
-		return g_strdup ("multimedia-player-apple-ipod");
+		return g_strconcat (prefix, "ipod", NULL);
 	}
 
 	g_assert_not_reached ();
