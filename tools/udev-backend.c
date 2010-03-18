@@ -65,7 +65,7 @@ udev_backend_set_is_unknown (ItdbBackend *itdb_backend, gboolean unknown)
 static gboolean
 udev_backend_set_icon_name (ItdbBackend *itdb_backend, const char *icon_name)
 {
-	g_print ("DKD_PRESENTATION_ICON_NAME=%s\n", icon_name);
+	g_print ("UDISKS_PRESENTATION_ICON_NAME=%s\n", icon_name);
 	return TRUE;
 }
 
@@ -172,7 +172,7 @@ udev_backend_set_control_path (ItdbBackend *itdb_backend, const char *control_pa
 static gboolean
 udev_backend_set_name (ItdbBackend *itdb_backend, const char *name)
 {
-	g_print ("DKD_PRESENTATION_NAME=%s\n", name);
+	g_print ("UDISKS_PRESENTATION_NAME=%s\n", name);
 	return TRUE;
 }
 
