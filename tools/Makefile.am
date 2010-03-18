@@ -61,7 +61,7 @@ ipod_set_info_CFLAGS  = $(COMMON_CFLAGS)
 ipod_set_info_LDADD   = $(COMMON_LIBS)
 
 rulesdir=${libudevdir}/rules.d
-rules_DATA= libgpod.rules
+rules_DATA= 80-libgpod.rules
 endif # USE_UDEV
 
 if HAVE_LIBIMOBILEDEVICE

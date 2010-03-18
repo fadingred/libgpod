@@ -390,7 +390,7 @@ src/Makefile
 tools/Makefile
 tests/Makefile
 libgpod-1.0.pc
-tools/libgpod.rules
+tools/80-libgpod.rules
 ])
 AC_OUTPUT
 
