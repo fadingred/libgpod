@@ -1,3 +1,21 @@
+Overview of changes in libgpod 0.7.92
+=====================================
+
+For information about iPhone/iPod Touch/iPod Nano 5g support, please read
+carefully the overview of libgpod 0.7.90 below.
+
+* make the temporary mountpoint used by the HAL/udev callouts configurable
+  at compile time (Bastien Nocera). This is helpful for distros who use 
+  SELinux to restrict what the callouts can do.
+* tag .mov files as video files (Erik Staats)
+* add itdb_start_sync and itdb_stop_sync functions to show/hide the "Sync
+  in progress" screen on iPhones and iPod Touch (this is a no-op on other
+  devices)
+* set udisks-compliant names for icons in the udev callout instead of using
+  the old devicekit-disks names
+* prefix libgpod udev rule with a number (80-) since it's the usual way
+  of naming rules
+
 Overview of changes in libgpod 0.7.91
 =====================================
 
