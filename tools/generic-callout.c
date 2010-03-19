@@ -288,7 +288,7 @@ get_color_name (const Itdb_IpodInfo *info)
 static char *
 get_icon_name (const Itdb_IpodInfo *info)
 {
-	const char prefix[] = "multimedia-player-";
+	const char prefix[] = "multimedia-player-apple-";
 	if (info == NULL) {
 		return g_strconcat (prefix, "ipod", NULL);
 	}
