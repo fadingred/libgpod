@@ -7,10 +7,21 @@ content parsing code was made to be self-contained with gtkpod 0.93,
 we chose to put this code in a separate library so that other project
 can benefit from it without duplicating code.
 
-If you decide to make improvements, like support for cover art or
-photos please contact us so we can work together. Just drop a mail to
-Gtkpod-devel@lists.sourceforge.net (you may ask to be CC in the
-answer).
+Currently (2010-03-23) libgpod supports writing to all "classic" iPod models,
+all iPod Nanos, iPod Minis and iPhones and iPod Touch. iPod Nano 5th Gen. and
+iPhone/iPod Touch support is "partial" in the sense that a database with at
+least one song written by iTunes is needed the first time you use the iPod 
+with libgpod. For these models, it's also highly recommended to get the
+provided udev/hal callout to work for proper support. Older iPod Shuffle models
+are supported, but the new button-less ones (3rd and 4th Gen.) are not. Please
+get in touch if you want to hack on adding support for that.
+
+For supported models, covert art and photos are supported in addition to
+manipulating the music database.
+
+If you decide to make improvements,  or have bug fixes to report or contribute,
+just drop a mail to Gtkpod-devel@lists.sourceforge.net (due to too much spam,
+the mailing list is unfortunately subscriber-only).
 
 ----------------------------------------------------------------------
 
