@@ -1965,7 +1965,7 @@ Itdb_Chapter *itdb_chapter_new (void);
 void itdb_chapter_free (Itdb_Chapter *chapter);
 Itdb_Chapter *itdb_chapter_duplicate (Itdb_Chapter *chapter);
 gboolean itdb_chapterdata_add_chapter (Itdb_Chapterdata *chapterdata,
-				       gint32 startpos,
+				       guint32 startpos,
 				       gchar *chaptertitle);
 
 #ifndef LIBGPOD_DISABLE_DEPRECATED
