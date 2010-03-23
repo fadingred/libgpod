@@ -1835,7 +1835,7 @@ Itdb_Track *itdb_track_id_tree_by_id (GTree *idtree, guint32 id);
 Itdb_Playlist *itdb_playlist_new (const gchar *title, gboolean spl);
 void itdb_playlist_free (Itdb_Playlist *pl);
 void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos);
-void itdb_playlist_move (Itdb_Playlist *pl, guint32 pos);
+void itdb_playlist_move (Itdb_Playlist *pl, gint32 pos);
 void itdb_playlist_remove (Itdb_Playlist *pl);
 void itdb_playlist_unlink (Itdb_Playlist *pl);
 Itdb_Playlist *itdb_playlist_duplicate (Itdb_Playlist *pl);

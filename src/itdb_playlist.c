@@ -1359,9 +1359,10 @@ void itdb_playlist_add (Itdb_iTunesDB *itdb, Itdb_Playlist *pl, gint32 pos)
  * @pl:     an #Itdb_Playlist
  * @pos:    new position
  *
- * Moves playlist @pl to position @pos
+ * Moves playlist @pl to position @pos. -1 will append to the end of the
+ * list.
  */
-void itdb_playlist_move (Itdb_Playlist *pl, guint32 pos)
+void itdb_playlist_move (Itdb_Playlist *pl, gint32 pos)
 {
     Itdb_iTunesDB *itdb;
 
