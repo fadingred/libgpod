@@ -1362,9 +1362,9 @@ typedef struct _Itdb_Track_Private Itdb_Track_Private;
  * @type2:                      MP3s are 0x01, AAC are 0x00
  * @compilation:                Flag to mark the track as a compilation.  True
  *                              if set to 0x1, false if set to 0x0.
- * @starttime:                  The time, in milliseconds, at which the song
+ * @starttime:                  The offset, in milliseconds, at which the song
  *                              will start playing.
- * @stoptime:                   The time, in milliseconds, at which the song
+ * @stoptime:                   The offset, in milliseconds, at which the song
  *                              will stop playing.
  * @checked:                    Flag for whether the track is checked.  True if
  *                              set to 0x0, false if set to 0x1
