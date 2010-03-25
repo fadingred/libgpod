@@ -129,11 +129,17 @@ Itdb_Chapterdata *itdb_chapterdata_duplicate (Itdb_Chapterdata *chapterdata)
 void
 itdb_chapterdata_remove_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *chapter)
 {
+    itdb_chapterdata_unlink_chapter(chapterdata, chapter);
+    itdb_chapter_free (chapter);
+}
+
+void
+itdb_chapterdata_unlink_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *chapter)
+{
     g_return_if_fail (chapterdata);
     g_return_if_fail (chapter);
 
     chapterdata->chapters = g_list_remove (chapterdata->chapters, chapter);
-    itdb_chapter_free (chapter);
 }
 
 /**

@@ -1968,6 +1968,7 @@ Itdb_Chapterdata *itdb_chapterdata_new (void);
 void itdb_chapterdata_free (Itdb_Chapterdata *chapterdata);
 Itdb_Chapterdata *itdb_chapterdata_duplicate (Itdb_Chapterdata *chapterdata);
 void itdb_chapterdata_remove_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *chapter);
+void itdb_chapterdata_unlink_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *chapter);
 void itdb_chapterdata_remove_chapters (Itdb_Chapterdata *chapterdata);
 Itdb_Chapter *itdb_chapter_new (void);
 void itdb_chapter_free (Itdb_Chapter *chapter);
