@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libgpod-sharp", "libgpod-sharp\libgpod-sharp.csproj", "{FDD7AB7C-8712-4631-974C-2F7A9EF77C58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libgpod-sharp-test", "libgpod-sharp-test\libgpod-sharp-test.csproj", "{507CCD05-1478-48DF-8DC8-6F1A7FE5E40F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{507CCD05-1478-48DF-8DC8-6F1A7FE5E40F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{507CCD05-1478-48DF-8DC8-6F1A7FE5E40F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{507CCD05-1478-48DF-8DC8-6F1A7FE5E40F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{507CCD05-1478-48DF-8DC8-6F1A7FE5E40F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDD7AB7C-8712-4631-974C-2F7A9EF77C58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDD7AB7C-8712-4631-974C-2F7A9EF77C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDD7AB7C-8712-4631-974C-2F7A9EF77C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDD7AB7C-8712-4631-974C-2F7A9EF77C58}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = libgpod-sharp\libgpod-sharp.csproj
+	EndGlobalSection
+EndGlobal
