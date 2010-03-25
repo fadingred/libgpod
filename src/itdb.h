@@ -1928,6 +1928,7 @@ void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
 void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 				     Itdb_PhotoAlbum *album,
 				     gboolean remove_pics);
+void itdb_photodb_photoalbum_unlink (Itdb_PhotoAlbum *album);
 Itdb_PhotoAlbum *itdb_photodb_photoalbum_by_name(Itdb_PhotoDB *db,
 						 const gchar *albumname );
 

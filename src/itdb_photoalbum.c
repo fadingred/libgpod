@@ -685,8 +685,9 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 				     Itdb_PhotoAlbum *album,
 				     gboolean remove_pics)
 {
-        g_return_if_fail (db);
         g_return_if_fail (album);
+        g_return_if_fail (album->photodb);
+        g_return_if_fail (db == NULL || album->photodb == db);
 
         /* if remove_pics, iterate over the photos within that album
 	 * and remove them from the database */
@@ -700,11 +701,28 @@ void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 	    while (album->members)
 	    {
 		Itdb_Artwork *photo = album->members->data;
-		itdb_photodb_remove_photo (db, NULL, photo);
+		itdb_photodb_remove_photo (album->photodb, NULL, photo);
 	    }
         }
-        db->photoalbums = g_list_remove (db->photoalbums, album);
+	itdb_photodb_photoalbum_unlink (album);
 	itdb_photodb_photoalbum_free (album);
+}
+
+/**
+ * itdb_photodb_photoalbum_unlink:
+ * @album: an #Itdb_PhotoAlbum
+ *
+ * Removes @album from the #Itdb_PhotoDB it's associated with, but do not free
+ * memory.
+ * @album->photodb is set to NULL.
+ */
+void itdb_photodb_photoalbum_unlink (Itdb_PhotoAlbum *album)
+{
+	g_return_if_fail (album);
+	g_return_if_fail (album->photodb);
+
+	album->photodb->photoalbums = g_list_remove (album->photodb->photoalbums, album);
+	album->photodb = NULL;
 }
 
 /**
