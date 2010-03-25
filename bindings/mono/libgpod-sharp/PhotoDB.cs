@@ -63,11 +63,9 @@ namespace GPod {
 			[DllImport ("gpod")]
 			public static extern void   itdb_photodb_photoalbum_remove(HandleRef photodb, HandleRef album, bool remove_pics);
 			
-			// TODO: Not in libgpod
 			[DllImport ("gpod")]
 			public static extern void itdb_photodb_photoalbum_add(HandleRef photodb, HandleRef album, int pos);
 			
-			// TODO: Not in libgpod
 			[DllImport ("gpod")]
 			public static extern void itdb_photodb_photoalbum_unlink(HandleRef album);
 		}

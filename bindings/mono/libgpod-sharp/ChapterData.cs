@@ -37,7 +37,6 @@ namespace GPod {
 			[DllImport ("gpod")]
 			public static extern IntPtr itdb_chapterdata_duplicate(HandleRef chapterdata);
 			
-			// TODO: Not in libgpod
 			[DllImport ("gpod")]
 			public static extern void   itdb_chapterdata_unlink_chapter(HandleRef chapterdata, HandleRef chapter);
 			

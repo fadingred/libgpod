@@ -39,11 +39,9 @@ namespace GPod {
 			public long   song_id;
 			// Ignore the rest
 
-			// TODO: Not in libgpod
 			[DllImport ("gpod")]
 			public static extern IntPtr itdb_photodb_photoalbum_new(string albumname);
 			
-			// TODO: Not in libgpod
 			[DllImport ("gpod")]
 			public static extern void   itdb_photodb_photoalbum_free(HandleRef album);
 			
