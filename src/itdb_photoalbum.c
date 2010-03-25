@@ -764,6 +764,44 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
 }
 
 /**
+ * itdb_photodb_photoalbum_new:
+ * @albumname: name of the new album
+ *
+ * Creates an empty #Itdb_PhotoAlbum named @albumname
+ *
+ * Returns: the new #Itdb_PhotoAlbum, free it with
+ * itdb_photodb_photoalbum_free () when no longer needed
+ */
+Itdb_PhotoAlbum *itdb_photodb_photoalbum_new (const gchar *albumname)
+{
+	Itdb_PhotoAlbum *album;
+
+	g_return_val_if_fail (albumname, NULL);
+
+	album = g_new0 (Itdb_PhotoAlbum, 1);
+	album->album_type = 2; /* normal album, set to 1 for Photo Library */
+	album->name = g_strdup(albumname);
+
+	return album;
+}
+
+/**
+ * itdb_photodb_photoalbum_add:
+ * @db:   an #Itdb_PhotoDB
+ * @album:  an #Itdb_PhotoAlbum
+ * @pos:    position of the album to add
+ *
+ * Adds @album to @db->photoalbums at position @pos (or at the end if pos
+ * is -1).The @ib gets ownership of the @album and will take care of
+ * freeing the memory it uses when it's no longer necessary.
+ */
+void itdb_photodb_photoalbum_add (Itdb_PhotoDB *db, Itdb_PhotoAlbum *album, gint pos)
+{
+	album->photodb = db;
+	db->photoalbums = g_list_insert (db->photoalbums, album, pos);
+}
+
+/**
  * itdb_photodb_write:
  * @photodb:    the #Itdb_PhotoDB to write to disk
  * @error:      return location for a #GError or NULL

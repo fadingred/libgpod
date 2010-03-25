@@ -1917,6 +1917,8 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
 						 const gchar *albumname,
 						 gint pos);
 Itdb_PhotoDB *itdb_photodb_create (const gchar *mountpoint);
+Itdb_PhotoAlbum *itdb_photodb_photoalbum_new (const gchar *albumname);
+void itdb_photodb_photoalbum_add (Itdb_PhotoDB *db, Itdb_PhotoAlbum *album, gint pos);
 void itdb_photodb_free (Itdb_PhotoDB *photodb);
 gboolean itdb_photodb_write (Itdb_PhotoDB *photodb, GError **error);
 void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
