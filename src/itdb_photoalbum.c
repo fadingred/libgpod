@@ -754,12 +754,10 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
 	g_return_val_if_fail (db, NULL);
 	g_return_val_if_fail (albumname, NULL);
 
-	album = g_new0 (Itdb_PhotoAlbum, 1);
-	album->album_type = 2; /* normal album, set to 1 for Photo Library */
-	album->photodb = db;
-	album->name = g_strdup(albumname);
-	db->photoalbums = g_list_insert (db->photoalbums, album, pos);
+	album = itdb_photodb_photoalbum_new (albumname);
+	g_return_val_if_fail (album, NULL);
 
+	itdb_photodb_photoalbum_add(db, album, pos);
 	return album;
 }
 
