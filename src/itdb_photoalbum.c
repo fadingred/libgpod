@@ -91,9 +91,7 @@
    saved (itdb_device_write_sysinfo() is called).
 */
 
-
 static Itdb_PhotoDB *itdb_photodb_new (void);
-static void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *pa);
 
 /* Set @error with standard error message */
 static void error_no_photos_dir (const gchar *mp, GError **error)
@@ -337,7 +335,13 @@ G_GNUC_INTERNAL gint itdb_get_max_photo_id ( Itdb_PhotoDB *db )
 	return max_seen_id;
 }
 
-static void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *album)
+/**
+ * itdb_photodb_photoalbum_free:
+ * @album: an #Itdb_PhotoAlbum
+ *
+ * Frees the memory used by @album
+ */
+void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *album)
 {
     if (album)
     {
