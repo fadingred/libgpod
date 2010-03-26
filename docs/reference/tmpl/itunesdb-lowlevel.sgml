@@ -90,6 +90,15 @@ control over the iPod database.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_get_itunescdb_path ##### -->
+<para>
+
+</para>
+
+@mountpoint: 
+@Returns: 
+
+
 <!-- ##### FUNCTION itdb_get_artworkdb_path ##### -->
 <para>
 

@@ -1031,6 +1031,8 @@ struct _Itdb_iTunesDB
  * @unk028:               Unknown, seems to be always 0
  * @unk044:               Unknown, seems to always be 0
  * @unk048:               Unknown, seems to always be 0
+ * @album_id:             Unique integer for each playlist. This is set
+ *                        automatically when the PhotoDB is written.
  * @prev_album_id:        The id of the previous playlist.  This is set
  *                        automatically when the PhotoDB is written.
  * @reserved_int1:        Reserved for future use
@@ -1229,6 +1231,11 @@ typedef enum
  * @ITDB_MEDIATYPE_AUDIOBOOK:  Audio books
  * @ITDB_MEDIATYPE_MUSICVIDEO: Music videos
  * @ITDB_MEDIATYPE_TVSHOW:     TV Shows
+ * @ITDB_MEDIATYPE_RINGTONE:   Ringtone
+ * @ITDB_MEDIATYPE_RENTAL:     Rental
+ * @ITDB_MEDIATYPE_ITUNES_EXTRA: ?
+ * @ITDB_MEDIATYPE_MEMO:       Memo
+ * @ITDB_MEDIATYPE_ITUNES_U:   iTunes U
  *
  * Mediatype definitions
  *
@@ -1548,6 +1555,7 @@ typedef struct _Itdb_Track_Private Itdb_Track_Private;
  * @userdata:                   For use by application
  * @userdata_duplicate:         A function to duplicate #userdata
  * @userdata_destroy:           A function to free #userdata
+ * @priv:                       Private data
  *
  * Structure representing a track in an iTunesDB
  *

@@ -126,7 +126,7 @@ information about an iPod track.
 @unk252: 
 @gapless_track_flag: 
 @gapless_album_flag: 
-@album_id: 
+@obsolete: 
 @artwork: 
 @mhii_link: 
 @reserved_int1: 
@@ -135,7 +135,7 @@ information about an iPod track.
 @reserved_int4: 
 @reserved_int5: 
 @reserved_int6: 
-@reserved1: 
+@priv: 
 @reserved2: 
 @reserved3: 
 @reserved4: 
@@ -145,6 +145,15 @@ information about an iPod track.
 @userdata: 
 @userdata_duplicate: 
 @userdata_destroy: 
+
+<!-- ##### STRUCT Itdb_Track_Private ##### -->
+<para>
+
+</para>
+
+@album_id: 
+@artist_id: 
+@composer_id: 
 
 <!-- ##### ENUM Itdb_Mediatype ##### -->
 <para>

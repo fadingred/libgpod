@@ -29,6 +29,7 @@ These functions are for reading and setting information about the iPod.
 @sysinfo_extended: 
 @sysinfo_changed: 
 @timezone_shift: 
+@iphone_sync_context: 
 
 <!-- ##### FUNCTION itdb_device_new ##### -->
 <para>
@@ -160,6 +161,12 @@ These functions are for reading and setting information about the iPod.
 @ITDB_IPOD_GENERATION_TOUCH_1: 
 @ITDB_IPOD_GENERATION_IPHONE_1: 
 @ITDB_IPOD_GENERATION_SHUFFLE_4: 
+@ITDB_IPOD_GENERATION_TOUCH_2: 
+@ITDB_IPOD_GENERATION_IPHONE_2: 
+@ITDB_IPOD_GENERATION_IPHONE_3: 
+@ITDB_IPOD_GENERATION_CLASSIC_3: 
+@ITDB_IPOD_GENERATION_NANO_5: 
+@ITDB_IPOD_GENERATION_TOUCH_3: 
 
 <!-- ##### FUNCTION itdb_info_get_ipod_generation_string ##### -->
 <para>
@@ -211,8 +218,10 @@ These functions are for reading and setting information about the iPod.
 @ITDB_IPOD_MODEL_SHUFFLE_RED: 
 @ITDB_IPOD_MODEL_CLASSIC_SILVER: 
 @ITDB_IPOD_MODEL_CLASSIC_BLACK: 
-@ITDB_IPOD_MODEL_TOUCH_BLACK: 
+@ITDB_IPOD_MODEL_TOUCH_SILVER: 
 @ITDB_IPOD_MODEL_SHUFFLE_BLACK: 
+@ITDB_IPOD_MODEL_IPHONE_WHITE: 
+@ITDB_IPOD_MODEL_IPHONE_BLACK: 
 
 <!-- ##### FUNCTION itdb_info_get_ipod_model_name_string ##### -->
 <para>
