@@ -642,10 +642,10 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "XQY", "A951" },
     { "YX8", "A951" },
     { "XR1", "A953" },
-    { "YXA", "B233" },
-    { "YX6", "B225" },
-    { "YX7", "B228" },
-    { "YX9", "B225" },
+    { "YXA", "B233" }, /* 1GB Purple Shuffle 2g */
+    { "YX6", "B225" }, /* 1GB Silver Shuffle 2g */
+    { "YX7", "B228" }, /* 1GB Blue Shuffle 2g */
+    { "YX9", "B225" }, /* 1GB Silver Shuffle 2g */
     { "UNA", "A350" },
     { "UNB", "A350" },
     { "UPR", "A352" },
