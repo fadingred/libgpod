@@ -2660,42 +2660,32 @@ static gboolean read_OTG_playlists (FImport *fimp)
 {
     gchar *db[] = {"OTGPlaylistInfo", NULL};
     gchar *dirname, *otgname;
+    gint i=1;
 
     g_return_val_if_fail (fimp, FALSE);
     g_return_val_if_fail (fimp->itdb, FALSE);
     g_return_val_if_fail (fimp->itdb->filename, FALSE);
 
     dirname = g_path_get_dirname (fimp->itdb->filename);
-
     otgname = itdb_resolve_path (dirname, (const gchar **)db);
 
-
     /* only parse if "OTGPlaylistInfo" exists */
-    if (otgname)
+    while (otgname)
     {
-	gchar *filename;
-	gint i=1;
-	do
-	{
-	    db[0] = g_strdup_printf ("OTGPlaylistInfo_%d", i);
-	    filename = itdb_resolve_path (dirname, (const gchar **)db);
-	    g_free (db[0]);
-	    if (filename)
-	    {
-		FContents *cts = fcontents_read (filename, &fimp->error);
-		if (cts)
-		{
-		    gchar *plname = g_strdup_printf (_("OTG Playlist %d"), i);
-		    process_OTG_file (fimp, cts, plname);
-		    g_free (plname);
-		    fcontents_free (cts);
-		}
-		g_free (filename);
-	    }
-	    if (fimp->error) break;
-	    ++i;
-	} while (filename);
-	g_free (otgname);
+        FContents *cts = fcontents_read (otgname, &fimp->error);
+        if (cts)
+        {
+            gchar *plname = g_strdup_printf (_("OTG Playlist %d"), i);
+            process_OTG_file (fimp, cts, plname);
+            g_free (plname);
+            fcontents_free (cts);
+        }
+        g_free (otgname);
+        if (fimp->error) break;
+        db[0] = g_strdup_printf ("OTGPlaylistInfo_%d", i);
+        otgname = itdb_resolve_path (dirname, (const gchar **)db);
+        g_free (db[0]);
+        ++i;
     }
     g_free (dirname);
     return TRUE;
