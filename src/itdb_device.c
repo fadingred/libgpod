@@ -121,6 +121,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"A949", 1,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
     {"A951", 1,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
     {"A953", 1,  ITDB_IPOD_MODEL_SHUFFLE_ORANGE, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"C167", 1,  ITDB_IPOD_MODEL_SHUFFLE_GOLD,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
     /* Shuffle / Seventh Generation */
     /* Square, connected to computer via cable -- look identicaly to
      * Sixth Generation*/
@@ -343,6 +344,7 @@ static const gchar *ipod_model_name_table [] = {
 	N_("Shuffle (Black)"),
 	N_("iPhone (White)"),
 	N_("iPhone (Black)"),
+	N_("Shuffle (Gold)"),
 	NULL
 };
 
@@ -646,6 +648,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "YX6", "B225" }, /* 1GB Silver Shuffle 2g */
     { "YX7", "B228" }, /* 1GB Blue Shuffle 2g */
     { "YX9", "B225" }, /* 1GB Silver Shuffle 2g */
+    { "8CQ", "C167" }, /* 1GB Gold Shuffle 2g */
     { "UNA", "A350" },
     { "UNB", "A350" },
     { "UPR", "A352" },

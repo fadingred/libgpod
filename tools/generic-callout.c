@@ -264,6 +264,7 @@ get_color_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_MODEL_SHUFFLE_GREEN:
 		return g_strdup ("green");
 	case ITDB_IPOD_MODEL_MINI_GOLD:
+	case ITDB_IPOD_MODEL_SHUFFLE_GOLD:
 		return g_strdup ("gold");
 	case ITDB_IPOD_MODEL_NANO_BLUE:
 	case ITDB_IPOD_MODEL_MINI_BLUE:
@@ -330,6 +331,8 @@ get_icon_name (const Itdb_IpodInfo *info)
 			return g_strconcat (prefix, "ipod-shuffle-clip-silver", NULL);
 		case ITDB_IPOD_MODEL_SHUFFLE_GREEN:
 			return g_strconcat (prefix, "ipod-shuffle-clip-green", NULL);
+		case ITDB_IPOD_MODEL_SHUFFLE_GOLD:
+			return g_strconcat (prefix, "ipod-shuffle-clip-gold", NULL);
 		case ITDB_IPOD_MODEL_SHUFFLE_ORANGE:
 			return g_strconcat (prefix, "ipod-shuffle-clip-orange", NULL);
 		case ITDB_IPOD_MODEL_SHUFFLE_PURPLE:
