@@ -323,6 +323,13 @@ PYTHON_MUTAGEN_MIN_VERSION=1.8
 SWIG_MIN_VERSION=1.3.24
 LIBGPOD_CHECK_PYTHON($PYTHON_MIN_VERSION)
 
+dnl **************************************************
+dnl * optional mono bindings
+dnl **************************************************
+
+MONO_MIN_VERSION=1.9.1
+GTK_SHARP_MIN_VERSION=2.12
+LIBGPOD_CHECK_MONO
 
 dnl warnings bits, copied from gnome-keyring configure.in
 dnl Turn on the additional warnings last, so -Werror doesn't affect other tests.
@@ -377,6 +384,10 @@ m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AC_CONFIG_FILES([
 Makefile
 bindings/Makefile
+bindings/mono/Makefile
+bindings/mono/libgpod-sharp/libgpod-sharp.pc
+bindings/mono/libgpod-sharp/Makefile
+bindings/mono/libgpod-sharp-test/Makefile
 bindings/python/gpod.i
 bindings/python/Makefile
 bindings/python/examples/Makefile
@@ -404,6 +415,7 @@ Configuration for $PACKAGE $VERSION :
  Compiler .................: $CC $CFLAGS $LIBGPOD_CFLAGS
  Linker ...................: $CC $LDFLAGS $LIBS $LIBGPOD_LIBS
  Artwork support ..........: $have_gdkpixbuf
+ Mono bindings ............: $with_mono
  Python bindings ..........: $with_python
  PyGObject support ........: $have_pygobject
  iPhone/iPod Touch support.: $enable_libimobiledevice
