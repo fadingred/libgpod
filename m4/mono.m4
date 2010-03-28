@@ -47,7 +47,7 @@ AC_DEFUN([CHECK_GLIB_GTK_SHARP],
 [
         found_gtksharp="yes"
 	PKG_CHECK_MODULES(GDKSHARP,
-		gdk-sharp-2.0 >= $GTK_SHARP_MIN_VERSION, [], found_gtksharp="no")
+		gtk-sharp-2.0 >= $GTK_SHARP_MIN_VERSION, [], found_gtksharp="no")
 	AC_SUBST(GDKSHARP_LIBS)
 
 	PKG_CHECK_MODULES(GLIBSHARP,
