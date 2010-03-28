@@ -17,14 +17,11 @@
  */
 
 using System;
-using Gtk;
 using GPod;
 
 class MainClass {
 	public static int Main (string[] args)
 	{
-		Application.Init ();
-		
 		if (args.Length == 0) {
 			System.Console.Error.WriteLine ("Usage: cmd <mountpoint>");
 			return 1;
