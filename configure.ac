@@ -388,6 +388,7 @@ bindings/mono/Makefile
 bindings/mono/libgpod-sharp/libgpod-sharp.pc
 bindings/mono/libgpod-sharp/Makefile
 bindings/mono/libgpod-sharp-test/Makefile
+bindings/mono/libgpod-sharp-test/libgpod-sharp-test
 bindings/python/gpod.i
 bindings/python/Makefile
 bindings/python/examples/Makefile
