@@ -40,6 +40,7 @@
 #include "db-itunes-parser.h"
 #include "db-parse-context.h"
 #include <glib/gi18n-lib.h>
+#include <glib/gstdio.h>
 
 typedef int (*ParseListItem)(DBParseContext *ctx, GError *error);
 
@@ -679,7 +680,7 @@ ipod_db_get_artwork_db_path (const char *mount_point)
 		if (control_dir)
 		{
 		    gchar *dir = g_build_filename (control_dir, "Artwork", NULL);
-		    mkdir (dir, 0777);
+		    g_mkdir (dir, 0777);
 		    g_free (control_dir);
 		    g_free (dir);
 		    artwork_dir = itdb_get_artwork_dir (mount_point);
@@ -757,7 +758,7 @@ ipod_db_get_photos_db_path (const char *mount_point)
 	    {
 		/* attempt to create Photos dir */
 		gchar *dir = g_build_filename (mount_point, "Photos", NULL);
-		mkdir (dir, 0777);
+		g_mkdir (dir, 0777);
 		g_free (dir);
 		photos_dir = itdb_get_photos_dir (mount_point);
 	    }
