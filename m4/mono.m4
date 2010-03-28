@@ -45,12 +45,13 @@ AC_DEFUN([SHAMROCK_CHECK_MONO_MODULE],
 
 AC_DEFUN([CHECK_GLIB_GTK_SHARP],
 [
+        found_gtksharp="yes"
 	PKG_CHECK_MODULES(GDKSHARP,
-		gdk-sharp-2.0 >= $GTK_SHARP_MIN_VERSION)
+		gdk-sharp-2.0 >= $GTK_SHARP_MIN_VERSION, [], found_gtksharp="no")
 	AC_SUBST(GDKSHARP_LIBS)
 
 	PKG_CHECK_MODULES(GLIBSHARP,
-		glib-sharp-2.0 >= $GTK_SHARP_MIN_VERSION)
+		glib-sharp-2.0 >= $GTK_SHARP_MIN_VERSION, [], found_gtksharp="no")
 	AC_SUBST(GLIBSHARP_LIBS)
 ])
 
@@ -74,7 +75,9 @@ AC_DEFUN([LIBGPOD_CHECK_MONO],
         SHAMROCK_FIND_MONO_2_0_COMPILER
         SHAMROCK_FIND_MONO_RUNTIME
         CHECK_GLIB_GTK_SHARP
-
+        if test "X$found_gtksharp" != "Xyes"; then
+                with_mono="no"
+        fi
     fi
     AM_CONDITIONAL(HAVE_MONO, test x$with_mono = xyes)
 ])
