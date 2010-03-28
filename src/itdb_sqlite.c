@@ -573,6 +573,7 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     sqlite3_stmt *stmt_album = NULL;
     sqlite3_stmt *stmt_artist = NULL;
     sqlite3_stmt *stmt_composer = NULL;
+    sqlite3_stmt *stmt_video_info = NULL;
     char *errmsg = NULL;
     struct stat fst;
     GList *gl = NULL;
@@ -672,6 +673,10 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	goto leave;
     }
     if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT OR IGNORE INTO \"composer\" (pid,name,name_order,sort_name) VALUES(?,?,?,?);", -1, &stmt_composer, NULL)) {
+	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
+	goto leave;
+    }
+    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"video_info\" VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);", -1, &stmt_video_info, NULL)) {
 	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
 	goto leave;
     }
@@ -1216,6 +1221,68 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 		fprintf(stderr, "[%s] 8 sqlite3_step returned %d\n", __func__, res);
 	    }
 	}
+	/* if it's a movie, music video or tv show */
+	if ((track->mediatype & ITDB_MEDIATYPE_MOVIE)
+		|| (track->mediatype & ITDB_MEDIATYPE_MUSICVIDEO)
+		|| (track->mediatype & ITDB_MEDIATYPE_TVSHOW)) {
+	    /* printf("[%s] -- inserting into \"video_info\"\n", __func__); */
+	    res = sqlite3_reset(stmt_video_info);
+	    if (res != SQLITE_OK) {
+		fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
+	    }
+	    idx = 0;
+	    /* item_pid INTEGER NOT NULL */
+	    sqlite3_bind_int64(stmt_video_info, ++idx, track->dbid);
+	    /* has_alternate_audio INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* has_subtitles INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* characteristics_valid INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* has_closed_captions INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* is_self_contained INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* is_compressed INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* is_anamorphic INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* season_number INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, track->season_nr);
+	    /* audio_language INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* audio_track_index INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* audio_track_id INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* subtitle_language INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* subtitle_track_index INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* subtitle_track_id INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, 0);
+	    /* series_name TEXT */
+	    sqlite3_bind_text(stmt_video_info, ++idx, track->tvshow, -1, SQLITE_STATIC);
+	    /* sort_series_name TEXT */
+	    sqlite3_bind_text(stmt_video_info, ++idx, track->sort_tvshow, -1, SQLITE_STATIC);
+	    /* episode_id TEXT */
+	    sqlite3_bind_text(stmt_video_info, ++idx, track->tvepisode, -1, SQLITE_STATIC);
+	    /* episode_sort_id INTEGER */
+	    sqlite3_bind_int(stmt_video_info, ++idx, track->episode_nr);
+	    /* network_name TEXT */
+	    sqlite3_bind_text(stmt_video_info, ++idx, track->tvnetwork, -1, SQLITE_STATIC);
+	    /* extended_content_rating TEXT */
+	    sqlite3_bind_null(stmt_video_info, ++idx);
+	    /* movie_info TEXT */
+	    sqlite3_bind_null(stmt_video_info, ++idx);
+
+	    res = sqlite3_step(stmt_video_info);
+	    if (res == SQLITE_DONE) {
+		/* expected result */
+	    } else {
+		fprintf(stderr, "[%s] 8 sqlite3_step returned %d\n", __func__, res);
+	    }
+	}
     }
 
     sqlite3_exec(db, "UPDATE album SET artwork_item_pid = (SELECT item.pid FROM item WHERE item.artwork_cache_id != 0 AND item.album_pid = album.pid LIMIT 1);", NULL, NULL, NULL);
@@ -1258,6 +1325,9 @@ leave:
     }
     if (stmt_artist) {
 	sqlite3_finalize(stmt_artist);
+    }
+    if (stmt_video_info) {
+	sqlite3_finalize(stmt_video_info);
     }
     if (genre_map) {
 	g_hash_table_destroy(genre_map);
