@@ -134,7 +134,7 @@ AC_DEFUN([LIBGPOD_CHECK_PYTHON],
 
                 dnl check for swig
                 if test "X$with_python" = Xyes; then
-                    AX_PKG_SWIG($SWIG_MIN_VERSION, $has_swig=yes, $has_swig=no)
+                    AX_PKG_SWIG($SWIG_MIN_VERSION, has_swig=yes, has_swig=no)
                     with_python="$has_swig"
                 fi
             fi
