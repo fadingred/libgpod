@@ -148,7 +148,9 @@ iphone_write_sysinfo_extended (const char *uuid, const char *xml)
 		idevice_free(device);
 		return FALSE;
 	}
-	dest_directory = g_build_filename("iTunes_Control", "Device", NULL);
+	dest_directory = g_build_filename(G_DIR_SEPARATOR_S,
+					  "iTunes_Control", "Device",
+					  NULL);
 	afc_ret = afc_make_directory(afc, dest_directory);
 	if ((AFC_E_SUCCESS != ret) && (AFC_E_OBJECT_EXISTS != ret)) {
 		g_free (dest_directory);
