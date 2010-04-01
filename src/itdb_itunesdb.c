@@ -5883,6 +5883,11 @@ gboolean itdb_start_sync (Itdb_iTunesDB *itdb)
     g_return_val_if_fail (itdb->device->iphone_sync_context == NULL, FALSE);
     if (itdb_device_is_iphone_family (itdb->device)) {
 	int sync_status;
+
+	if (itdb->device->iphone_sync_context != NULL) {
+	    /* already locked */
+	    return TRUE;
+	}
 	sync_status = itdb_iphone_start_sync (itdb->device,
 		                              &itdb->device->iphone_sync_context);
 	if (sync_status == 0) {
@@ -5912,6 +5917,10 @@ gboolean itdb_stop_sync (Itdb_iTunesDB *itdb)
 #ifdef HAVE_LIBIMOBILEDEVICE
     if (itdb_device_is_iphone_family (itdb->device)) {
 	int sync_status;
+	if (itdb->device->iphone_sync_context == NULL) {
+	    g_warning ("Trying to unlock an already unlocked device");
+	    return FALSE;
+	}
 	sync_status = itdb_iphone_stop_sync (itdb->device->iphone_sync_context);
 	itdb->device->iphone_sync_context = NULL;
 	if (sync_status != 0) {
