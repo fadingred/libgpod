@@ -121,10 +121,10 @@ iphone_write_sysinfo_extended (const char *uuid, const char *xml)
 	idevice_error_t ret = IDEVICE_E_UNKNOWN_ERROR;
 	afc_error_t afc_ret;
 	uint16_t afcport = 0;
-	char *dest_filename;
-	char *dest_directory;
 	uint64_t handle;
 	uint32_t bytes_written;
+	const char device_dir[] = "/iTunes_Control/Device";
+	const char sysinfoextended_path[] = "/iTunes_Control/Device/SysInfoExtended";
 
 	ret = idevice_new(&device, uuid);
 	if (IDEVICE_E_SUCCESS != ret) {
@@ -148,27 +148,20 @@ iphone_write_sysinfo_extended (const char *uuid, const char *xml)
 		idevice_free(device);
 		return FALSE;
 	}
-	dest_directory = g_build_filename(G_DIR_SEPARATOR_S,
-					  "iTunes_Control", "Device",
-					  NULL);
-	afc_ret = afc_make_directory(afc, dest_directory);
+	afc_ret = afc_make_directory(afc, device_dir);
 	if ((AFC_E_SUCCESS != ret) && (AFC_E_OBJECT_EXISTS != ret)) {
-		g_free (dest_directory);
 		afc_client_free(afc);
 		lockdownd_client_free(client);
 		idevice_free(device);
 		return FALSE;
 	}
-	dest_filename = g_build_filename(dest_directory, "SysInfoExtended", NULL);
-	g_free (dest_directory);
-	if (AFC_E_SUCCESS != afc_file_open(afc, dest_filename, AFC_FOPEN_WRONLY, &handle)) {
-		g_free (dest_filename);
+	if (AFC_E_SUCCESS != afc_file_open(afc, sysinfoextended_path,
+					   AFC_FOPEN_WRONLY, &handle)) {
 		afc_client_free(afc);
 		lockdownd_client_free(client);
 		idevice_free(device);
 		return FALSE;
 	}
-	g_free (dest_filename);
 
 	if (AFC_E_SUCCESS != afc_file_write(afc, handle, xml, strlen(xml), &bytes_written)) {
 		afc_file_close(afc, handle);
