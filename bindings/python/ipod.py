@@ -80,8 +80,9 @@ class Database:
                 raise DatabaseException("Unable to parse iTunes database at mount point %s" % mountpoint)
             else:
                 self._itdb.mountpoint = mountpoint
-            self._itdb_file    = os.path.join(self._itdb.mountpoint,
-                                              "iPod_Control","iTunes","iTunesDB")
+            self._itdb_file = gpod.itdb_get_itunesdb_path(
+                                gpod.itdb_get_mountpoint(self._itdb)
+                              )
         self._load_gtkpod_extended_info()
 
     def __str__(self):
@@ -109,11 +110,8 @@ class Database:
 
         """
 
-        if not gpod.itdb_write_file(self._itdb, self._itdb_file, None):
+        if not gpod.itdb_write(self._itdb, None):
             raise DatabaseException("Unable to save iTunes database %s" % self)
-        if gpod.itdb_get_mountpoint(self._itdb):
-            if not gpod.itdb_shuffle_write(self._itdb, None):
-                raise DatabaseException("Unable to save shuffle database on %s" % self._itdb.mountpoint)
         itdbext_file = "%s.ext" % (self._itdb_file)
         gtkpod.write(itdbext_file, self, self._itdb_file)
 
