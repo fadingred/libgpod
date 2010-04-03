@@ -769,7 +769,8 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
 
     { "4NZ", "B867" }, /* 4GB Silver Shuffle 4g */
     { "891", "C164" }, /* 4GB Black Shuffle 4g */
-    
+
+    { "W4N", "A623" }, /* 16GB Silver iPod Touch (1st gen) */
     { "W4T", "A627" }, /* 16GB Silver iPod Touch (1st gen) */
     { "0JW", "B376" }, /* 32GB Silver iPod Touch (1st gen) */
     { "201", "B528" }, /* 8GB Silver iPod Touch (2nd gen) */
