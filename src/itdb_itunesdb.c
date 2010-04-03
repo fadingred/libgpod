@@ -5806,14 +5806,20 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
     g_return_val_if_fail (itdb, FALSE);
     g_return_val_if_fail (itdb_get_mountpoint (itdb), FALSE);
 
+    if (itdb_device_is_shuffle (itdb->device)) {
+        /* iPod Shuffle uses a totally different database */
+        return itdb_shuffle_write (itdb, error);
+    }
+
+
+    /* Now handling regular iPod or iPhone/iPod Touch */
+
     /* First, let's try to write the .ithmb files containing the artwork data
      * since this operation modifies the 'artwork_count' and 'artwork_size' 
      * field in the Itdb_Track contained in the database.
      * Errors happening during that operation are considered non fatal since
      * they shouldn't corrupt the main database.
      */
-
-
     itunes_path = itdb_get_itunes_dir (itdb_get_mountpoint (itdb));
 
     if(!itunes_path)
