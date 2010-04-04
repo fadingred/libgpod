@@ -289,6 +289,7 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     /* iPhone 3GS */
     {"C131",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
     {"C133",  32, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
+    {"C134",  32, ITDB_IPOD_MODEL_IPHONE_WHITE,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
 
     /* No known model number -- create a Device/SysInfo file with
      * one entry, e.g.:
@@ -768,7 +769,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "4NZ", "B867" }, /* 4GB Silver Shuffle 4g */
     { "891", "C164" }, /* 4GB Black Shuffle 4g */
 
-    { "W4N", "A623" }, /* 16GB Silver iPod Touch (1st gen) */
+    { "W4N", "A623" }, /* 8GB Silver iPod Touch (1st gen) */
     { "W4T", "A627" }, /* 16GB Silver iPod Touch (1st gen) */
     { "0JW", "B376" }, /* 32GB Silver iPod Touch (1st gen) */
     { "201", "B528" }, /* 8GB Silver iPod Touch (2nd gen) */
@@ -784,6 +785,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "Y7K", "B496" }, /* 16GB Black iPhone 3G */
     { "3NP", "C131" }, /* 16GB Black iPhone 3GS */
     { "3NR", "C133" }, /* 32GB Black iPhone 3GS */
+    { "3NS", "C134" }, /* 32GB White iPhone 3GS */
     { NULL ,  NULL  }
 };
 
