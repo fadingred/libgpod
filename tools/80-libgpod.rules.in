@@ -6,4 +6,10 @@
 ACTION=="add|change", SUBSYSTEM=="block", ENV{ID_FS_USAGE}=="filesystem", ENV{DEVTYPE}=="partition", ATTRS{idVendor}=="05ac", ENV{ID_MODEL}=="iPod", IMPORT{program}="@udevdir@/ipod-set-info $tempnode $attr{busnum} $attr{devnum}"
 
 # "iPods" using the afc protocol (iPhone, iPod Touch, ...)
-ACTION=="add|change", SUBSYSTEM=="usb", ATTR{idVendor}=="05ac", ATTR{idProduct}=="129[0-9]", IMPORT{program}+="@udevdir@/iphone-set-info"
+ACTION=="add|change", ENV{USBMUX_SUPPORTED}=="1", IMPORT{program}+="@udevdir@/iphone-set-info", GOTO="libgpod_end"
+# with a new enough usbmuxd, the rule below is not useful since it will
+# take care of setting USBMUX_SUPPORTED for all supported devices. Keep
+# this rule for now until distros ship a new enough usbmuxd
+ACTION=="add|change", SUBSYSTEM=="usb", ATTR{idVendor}=="05ac", ATTR{idProduct}=="129[0-9a]", IMPORT{program}+="@udevdir@/iphone-set-info"
+
+LABEL="libgpod_end"
