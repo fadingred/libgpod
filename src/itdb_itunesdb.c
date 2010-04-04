@@ -5652,6 +5652,32 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 
     mk_mhbd (fexp, 7);  /* seven mhsds */
 
+    /* write tracklist (mhsd type 1) */
+    if (!fexp->error && !write_mhsd_tracks (fexp)) {
+	g_set_error (&fexp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Error writing list of tracks (mhsd type 1)"));
+	goto err;
+    }
+
+    /* write special podcast version mhsd (mhsd type 3) */
+    if (!fexp->error && !write_mhsd_playlists (fexp, 3)) {
+	g_set_error (&fexp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Error writing special podcast playlists (mhsd type 3)"));
+	goto err;
+    }
+    /* write standard playlist mhsd (mhsd type 2) */
+    if (!fexp->error && !write_mhsd_playlists (fexp, 2)) {
+	g_set_error (&fexp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Error writing standard playlists (mhsd type 2)"));
+	goto err;
+    }
+
     /* write albums (mhsd type 4) */
     if (!write_mhsd_albums (fexp)) {
 	g_set_error (&fexp->error,
@@ -5669,38 +5695,12 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 	goto err;
     }
 
-    /* write tracklist (mhsd type 1) */
-    if (!fexp->error && !write_mhsd_tracks (fexp)) {
-    	g_set_error (&fexp->error,
-		     ITDB_FILE_ERROR,
-		     ITDB_FILE_ERROR_ITDB_CORRUPT,
-		     _("Error writing list of tracks (mhsd type 1)"));
-	goto err;
-    }
-
     /* write empty mhsd type 6, whatever it is */
     if (!fexp->error && !write_mhsd_type6 (fexp)) {
 	g_set_error (&fexp->error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_ITDB_CORRUPT,
 		     _("Error writing mhsd type 6"));
-	goto err;
-    }
-
-    /* write special podcast version mhsd (mhsd type 3) */
-    if (!fexp->error && !write_mhsd_playlists (fexp, 3)) {
-        g_set_error (&fexp->error,
-		     ITDB_FILE_ERROR,
-		     ITDB_FILE_ERROR_ITDB_CORRUPT,
-		     _("Error writing special podcast playlists (mhsd type 3)"));
-	goto err;
-    }
-    /* write standard playlist mhsd (mhsd type 2) */
-    if (!fexp->error && !write_mhsd_playlists (fexp, 2)) {
-        g_set_error (&fexp->error,
-		     ITDB_FILE_ERROR,
-		     ITDB_FILE_ERROR_ITDB_CORRUPT,
-		     _("Error writing standard playlists (mhsd type 2)"));
 	goto err;
     }
 
