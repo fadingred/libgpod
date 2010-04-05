@@ -48,7 +48,20 @@ read_sysinfo_extended_by_uuid (const char *uuid)
 	plist_t value = NULL;
 	plist_t global = NULL;
 	plist_t ptr = NULL;
-	ret = idevice_new(&device, uuid);
+	int cnt = 0;
+
+	/* usbmuxd needs some time to start up so we try several times
+	 * to open the device before finally returning with an error */ 
+	while (cnt++ < 20) {
+		ret = idevice_new(&device, uuid);
+		if (ret == IDEVICE_E_SUCCESS) {
+			break;
+		}
+		if (ret != IDEVICE_E_NO_DEVICE) {
+			break;
+		}
+		g_usleep (G_USEC_PER_SEC / 2);
+	}
 	if (ret != IDEVICE_E_SUCCESS) {
 		printf("No device found with uuid %s, is it plugged in?\n", uuid);
 		return NULL;
