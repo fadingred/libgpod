@@ -291,6 +291,15 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"C133",  32, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
     {"C134",  32, ITDB_IPOD_MODEL_IPHONE_WHITE,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
 
+    /* iPad */
+    {"B292",  16, ITDB_IPOD_MODEL_IPAD,           ITDB_IPOD_GENERATION_IPAD_1,   50},
+    {"B293",  32, ITDB_IPOD_MODEL_IPAD,           ITDB_IPOD_GENERATION_IPAD_1,   50},
+    {"B294",  64, ITDB_IPOD_MODEL_IPAD,           ITDB_IPOD_GENERATION_IPAD_1,   50},
+    /* iPad with 3G */
+    {"C349",  16, ITDB_IPOD_MODEL_IPAD,           ITDB_IPOD_GENERATION_IPAD_1,   50},
+    {"C496",  32, ITDB_IPOD_MODEL_IPAD,           ITDB_IPOD_GENERATION_IPAD_1,   50},
+    {"C497",  64, ITDB_IPOD_MODEL_IPAD,           ITDB_IPOD_GENERATION_IPAD_1,   50},
+
     /* No known model number -- create a Device/SysInfo file with
      * one entry, e.g.:
        ModelNumStr: Mmobile1
@@ -345,6 +354,7 @@ static const gchar *ipod_model_name_table [] = {
 	N_("iPhone (Black)"),
 	N_("Shuffle (Gold)"),
 	N_("Shuffle (Stainless)"),
+	N_("iPad"),
 	NULL
 };
 
@@ -379,6 +389,7 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Classic"),
 	N_("Nano with camera (5th Gen.)"),
 	N_("Touch (3rd Gen.)"),
+	N_("iPad"),
 	NULL
 };
 
@@ -787,6 +798,8 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "3NP", "C131" }, /* 16GB Black iPhone 3GS */
     { "3NR", "C133" }, /* 32GB Black iPhone 3GS */
     { "3NS", "C134" }, /* 32GB White iPhone 3GS */
+
+    { "Z3A", "B294" }, /* 64GB iPad with Wifi */
     { NULL ,  NULL  }
 };
 
@@ -1305,6 +1318,7 @@ itdb_device_supports_sqlite_db (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPAD_1:
 		/* FIXME: needs to check firmware version */
 		return TRUE;
 	}
@@ -1360,10 +1374,11 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
             case ITDB_IPOD_GENERATION_CLASSIC_3:
             case ITDB_IPOD_GENERATION_TOUCH_1:
             case ITDB_IPOD_GENERATION_TOUCH_2:
-	    case ITDB_IPOD_GENERATION_TOUCH_3:
+            case ITDB_IPOD_GENERATION_TOUCH_3:
             case ITDB_IPOD_GENERATION_IPHONE_1:
             case ITDB_IPOD_GENERATION_IPHONE_2:
             case ITDB_IPOD_GENERATION_IPHONE_3:
+            case ITDB_IPOD_GENERATION_IPAD_1:
                 supports_sparse_artwork = TRUE;
                 break;
         }
@@ -1672,6 +1687,7 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 	case ITDB_IPOD_GENERATION_IPHONE_2:
 	case ITDB_IPOD_GENERATION_IPHONE_3:
+	case ITDB_IPOD_GENERATION_IPAD_1:
             return TRUE;
     }
     g_return_val_if_reached (FALSE);
@@ -1787,6 +1803,7 @@ ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPAD_1:
 		return ITDB_CHECKSUM_HASH72;
 
 	    case ITDB_IPOD_GENERATION_UNKNOWN:
@@ -2026,6 +2043,7 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPAD_1:
 		return TRUE;
 	}
 	g_return_val_if_reached (FALSE);
@@ -2068,6 +2086,7 @@ gboolean itdb_device_is_shuffle (const Itdb_Device *device)
         case ITDB_IPOD_GENERATION_IPHONE_1:
         case ITDB_IPOD_GENERATION_IPHONE_2:
         case ITDB_IPOD_GENERATION_IPHONE_3:
+        case ITDB_IPOD_GENERATION_IPAD_1:
             return FALSE;
         case ITDB_IPOD_GENERATION_SHUFFLE_1:
         case ITDB_IPOD_GENERATION_SHUFFLE_2:
@@ -2117,6 +2136,7 @@ gboolean itdb_device_is_iphone_family (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPAD_1:
 		return TRUE;
 	}
 	g_return_val_if_reached (FALSE);

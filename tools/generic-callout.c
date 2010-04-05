@@ -145,6 +145,8 @@ get_model_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_GENERATION_IPHONE_2:
 	case ITDB_IPOD_GENERATION_IPHONE_3:
 		return g_strdup ("phone");
+	case ITDB_IPOD_GENERATION_IPAD_1:
+		return g_strdup ("ipad");
 	case ITDB_IPOD_GENERATION_MOBILE:
 		return g_strdup ("rokr");
 	}
@@ -214,6 +216,8 @@ get_generation (const Itdb_IpodInfo *info)
 		return 2.0;
 	case ITDB_IPOD_GENERATION_IPHONE_3:
 		return 3.0;
+	case ITDB_IPOD_GENERATION_IPAD_1:
+		return 1.0;
 	case ITDB_IPOD_GENERATION_MOBILE:
 		return 1.0;
 	}
@@ -247,6 +251,7 @@ get_color_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_MODEL_CLASSIC_SILVER:
 	case ITDB_IPOD_MODEL_TOUCH_SILVER:
 	case ITDB_IPOD_MODEL_IPHONE_1:
+	case ITDB_IPOD_MODEL_IPAD:
 		return g_strdup ("silver");
 	case ITDB_IPOD_MODEL_VIDEO_U2:
 	case ITDB_IPOD_MODEL_NANO_BLACK:
@@ -411,6 +416,8 @@ get_icon_name (const Itdb_IpodInfo *info)
 		return g_strdup ("phone-apple-iphone-3g");
 	case ITDB_IPOD_GENERATION_IPHONE_3:
 		return g_strdup ("phone-apple-iphone-3gs");
+	case ITDB_IPOD_GENERATION_IPAD_1:
+		return g_strdup ("computer-apple-ipad");
 	case ITDB_IPOD_GENERATION_MOBILE:
 		return g_strconcat (prefix, "ipod", NULL);
 	}
