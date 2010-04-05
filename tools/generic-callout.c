@@ -592,9 +592,9 @@ static gboolean write_sysinfo_extended (const char *mountpoint,
         gboolean result;
 
         devdirpath = itdb_get_device_dir (mountpoint);
-        if (devdirpath == NULL) {
-                return FALSE;
-        }
+        /* Make sure the device dir exists (not necessarily true on
+         * Shuffles */
+        g_mkdir (devdirpath, 0777);
         filename = g_build_filename (devdirpath, "SysInfoExtended", NULL);
         g_free (devdirpath);
         if (filename == NULL) {
