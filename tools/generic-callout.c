@@ -281,6 +281,8 @@ get_color_name (const Itdb_IpodInfo *info)
 		return g_strdup ("purple");
 	case ITDB_IPOD_MODEL_NANO_YELLOW:
 		return g_strdup ("yellow");
+	case ITDB_IPOD_MODEL_SHUFFLE_STAINLESS:
+		return g_strdup ("stainless");
 	}
 
 	g_assert_not_reached ();

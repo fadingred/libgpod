@@ -344,6 +344,7 @@ static const gchar *ipod_model_name_table [] = {
 	N_("iPhone (White)"),
 	N_("iPhone (Black)"),
 	N_("Shuffle (Gold)"),
+	N_("Shuffle (Stainless)"),
 	NULL
 };
 
