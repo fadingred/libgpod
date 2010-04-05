@@ -149,7 +149,7 @@ iphone_write_sysinfo_extended (const char *uuid, const char *xml)
 		return FALSE;
 	}
 	afc_ret = afc_make_directory(afc, device_dir);
-	if ((AFC_E_SUCCESS != ret) && (AFC_E_OBJECT_EXISTS != ret)) {
+	if ((AFC_E_SUCCESS != afc_ret) && (AFC_E_OBJECT_EXISTS != afc_ret)) {
 		afc_client_free(afc);
 		lockdownd_client_free(client);
 		idevice_free(device);
