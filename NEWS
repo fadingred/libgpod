@@ -1,3 +1,22 @@
+Overview of changes in libgpod 0.7.93
+=====================================
+
+For information about iPhone/iPod Touch/iPod Nano 5g support, please read
+carefully the overview of libgpod 0.7.90 below.
+This release mainly contain bugfixes that should polish iPhone use.
+
+* various bug fixes in HAL/udev iPhone callout which would make it fail
+  to dump SysInfoExtended more often than not.
+* fix iPod Classic 80GB support (Joeny Ang).
+* handle TV Shows, Movies and Music Videos on iPhone better (Joel Smith)
+* fix python bindings for the iPhone (Adrian Sampson).
+* fix OnTheGo playlist parsing (the 1st on-the-go playlist was always
+  ignored).
+* automatically call itdb_shuffle_write when itdb_write is called if needed.
+* some gint32/guint32 changes were made in the public API, this shouldn't
+  break anything, but please report a bug if it's an annoyance for you.
+* lower udev rule priority so that it runs after the usbmux udev rule.
+
 Overview of changes in libgpod 0.7.92
 =====================================
 
