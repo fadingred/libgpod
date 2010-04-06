@@ -1251,6 +1251,7 @@ typedef enum
     ITDB_MEDIATYPE_ITUNES_EXTRA = 0x010000,
     ITDB_MEDIATYPE_MEMO         = 0x100000,
     ITDB_MEDIATYPE_ITUNES_U     = 0x200000,
+    ITDB_MEDIATYPE_EPUB_BOOK    = 0x400000
 } Itdb_Mediatype;
 
 typedef struct _Itdb_Track_Private Itdb_Track_Private;
