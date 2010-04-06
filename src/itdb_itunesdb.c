@@ -5726,10 +5726,21 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 				(unsigned char *)fexp->wcontents->contents,
 				fexp->wcontents->pos,
 				&fexp->error);
+    if (fexp->error) {
+	    goto err;
+    }
 
     if (itdb_device_supports_sqlite_db (itdb->device)) {
 	if (itdb_sqlite_generate_itdbs(fexp) != 0) {
 	    goto err;
+	}
+    }
+
+    if (itdb_device_is_shuffle (itdb->device)) {
+        /* iPod Shuffle uses a simplified database in addition to the
+	 * iTunesDB */
+        if (itdb_shuffle_write (itdb, &fexp->error) != 0) {
+		goto err;
 	}
     }
 
@@ -5805,12 +5816,6 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
 
     g_return_val_if_fail (itdb, FALSE);
     g_return_val_if_fail (itdb_get_mountpoint (itdb), FALSE);
-
-    if (itdb_device_is_shuffle (itdb->device)) {
-        /* iPod Shuffle uses a totally different database */
-        return itdb_shuffle_write (itdb, error);
-    }
-
 
     /* Now handling regular iPod or iPhone/iPod Touch */
 
