@@ -799,6 +799,8 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "3NR", "C133" }, /* 32GB Black iPhone 3GS */
     { "3NS", "C134" }, /* 32GB White iPhone 3GS */
 
+    { "Z38", "B292" }, /* 16GB iPad with Wifi */
+    { "Z39", "B293" }, /* 32GB iPad with Wifi */
     { "Z3A", "B294" }, /* 64GB iPad with Wifi */
     { NULL ,  NULL  }
 };
