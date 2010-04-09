@@ -318,6 +318,8 @@ static guint32 raw_get32bint (FContents *cts, glong seek);
 static guint64 raw_get64bint (FContents *cts, glong seek);
 static float raw_get32bfloat (FContents *cts, glong seek);
 
+static gboolean is_shuffle_2g (Itdb_Device *device);
+
 static const ByteReader LITTLE_ENDIAN_READER =
 {
     raw_get16lint, raw_get24lint, raw_get32lint, raw_get64lint, raw_get32lfloat
@@ -6385,6 +6387,25 @@ static gboolean write_bdhs (FExport *fexp)
 	return TRUE;
 }
 
+static gboolean is_shuffle_2g (Itdb_Device *device)
+{
+    const Itdb_IpodInfo *shuffle_info;
+    Itdb_IpodGeneration generation;
+
+    if (!itdb_device_is_shuffle (device)) {
+        return FALSE;
+    }
+
+    shuffle_info = itdb_device_get_ipod_info (device);
+
+    if (!shuffle_info) {
+        return FALSE;
+    }
+    generation = shuffle_info->ipod_generation;
+    return ((generation == ITDB_IPOD_GENERATION_SHUFFLE_1)
+            || (generation == ITDB_IPOD_GENERATION_SHUFFLE_2));
+}
+
 /**
  * itdb_shuffle_write_file:
  * @itdb:       the #Itdb_iTunesDB to write to disk
@@ -6420,89 +6441,89 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
     cts->reversed = (itdb->device->byte_order == G_BIG_ENDIAN);
 
     prepare_itdb_for_write (fexp);
-    
-    if(0)/*Old Shuffle Format*/
-    {
-	    put24bint (cts, itdb_tracks_number (itdb));
-	    put24bint (cts, 0x010600);
-	    put24bint (cts, 0x12);	/* size of header */
-	    put24bint (cts, 0x0);	/* padding? */
-	    put24bint (cts, 0x0);
-	    put24bint (cts, 0x0);
 
-	    for (gl=itdb->tracks; gl; gl=gl->next)
-	    {
-		Itdb_Track *tr = gl->data;
-		gchar *path;
-		gunichar2 *path_utf16;
-		glong pathlen;
+    if (is_shuffle_2g (itdb->device)) {
+	/* Older iTunesSD format */
+	put24bint (cts, itdb_tracks_number (itdb));
+	put24bint (cts, 0x010600);
+	put24bint (cts, 0x12);	/* size of header */
+	put24bint (cts, 0x0);	/* padding? */
+	put24bint (cts, 0x0);
+	put24bint (cts, 0x0);
 
-		g_return_val_if_fail (tr, FALSE);
+	for (gl=itdb->tracks; gl; gl=gl->next)
+	{
+	    Itdb_Track *tr = gl->data;
+	    gchar *path;
+	    gunichar2 *path_utf16;
+	    glong pathlen;
 
-		put24bint (cts, 0x00022e);
-		put24bint (cts, 0x5aa501);
-		/* starttime is in 256 ms incr. for shuffle */
-		put24bint (cts, tr->starttime / 256);
-		put24bint (cts, 0);
-		put24bint (cts, 0);
-		put24bint (cts, tr->stoptime / 256);
-		put24bint (cts, 0);
-		put24bint (cts, 0);
-		/* track->volume ranges from -255 to +255 */
-		/* we want 0 - 200 */
-		put24bint (cts, ((tr->volume + 255) * 201) / 511);
+	    g_return_val_if_fail (tr, FALSE);
 
-		/* The next one should be 0x01 for MP3,
-		** 0x02 for AAC, and 0x04 for WAV, but I can't find
-		** a suitable indicator within the track structure? */
-		/* JCS: let's do heuristic on tr->filetype which would contain
-		   "MPEG audio file", "AAC audio file", "Protected AAC audio
-		   file", "AAC audio book file", "WAV audio file" (or similar
-		   if not written by gtkpod) */
+	    put24bint (cts, 0x00022e);
+	    put24bint (cts, 0x5aa501);
+	    /* starttime is in 256 ms incr. for shuffle */
+	    put24bint (cts, tr->starttime / 256);
+	    put24bint (cts, 0);
+	    put24bint (cts, 0);
+	    put24bint (cts, tr->stoptime / 256);
+	    put24bint (cts, 0);
+	    put24bint (cts, 0);
+	    /* track->volume ranges from -255 to +255 */
+	    /* we want 0 - 200 */
+	    put24bint (cts, ((tr->volume + 255) * 201) / 511);
 
-		put24bint (cts, convert_filetype (tr->filetype));
+	    /* The next one should be 0x01 for MP3,
+	     ** 0x02 for AAC, and 0x04 for WAV, but I can't find
+	     ** a suitable indicator within the track structure? */
+	    /* JCS: let's do heuristic on tr->filetype which would contain
+	       "MPEG audio file", "AAC audio file", "Protected AAC audio
+	       file", "AAC audio book file", "WAV audio file" (or similar
+	       if not written by gtkpod) */
 
-		put24bint (cts, 0x200);
-		
-		path = g_strdup (tr->ipod_path);
-		/* shuffle uses forward slash separator, not colon */
-	        g_strdelimit (path, ":", '/');
-		path_utf16 = g_utf8_to_utf16 (path, -1, NULL, &pathlen, NULL);
-		if (pathlen > 261) pathlen = 261;
-			fixup_little_utf16 (path_utf16);
-		put_data (cts, (gchar *)path_utf16, sizeof (gunichar2)*pathlen);
-		/* pad to 522 bytes */
-		put16_n0 (cts, 261-pathlen);
-		g_free(path);
-		g_free(path_utf16);
+	    put24bint (cts, convert_filetype (tr->filetype));
 
-		/* XXX FIXME: should depend on something, not hardcoded */
-		put8int (cts, 0x1); /* song used in shuffle mode */
-		put8int (cts, 0);   /* song will not be bookmarkable */
-		put8int (cts, 0);
-	    }
-    } else {
+	    put24bint (cts, 0x200);
+
+	    path = g_strdup (tr->ipod_path);
+	    /* shuffle uses forward slash separator, not colon */
+	    g_strdelimit (path, ":", '/');
+	    path_utf16 = g_utf8_to_utf16 (path, -1, NULL, &pathlen, NULL);
+	    if (pathlen > 261) pathlen = 261;
+	    fixup_little_utf16 (path_utf16);
+	    put_data (cts, (gchar *)path_utf16, sizeof (gunichar2)*pathlen);
+	    /* pad to 522 bytes */
+	    put16_n0 (cts, 261-pathlen);
+	    g_free(path);
+	    g_free(path_utf16);
+
+	    /* XXX FIXME: should depend on something, not hardcoded */
+	    put8int (cts, 0x1); /* song used in shuffle mode */
+	    put8int (cts, 0);   /* song will not be bookmarkable */
+	    put8int (cts, 0);
+	}
+    }else {
+	    /* Newer iTunesSD format */
+	    /* Add the main Header */
 	    write_bdhs(fexp);
-
 
 	    /* Add the Tracks Header */
 	    if (!write_hths(fexp)){
-		    g_set_error(&fexp->error,
-			        ITDB_FILE_ERROR,
-				ITDB_FILE_ERROR_CORRUPT,
-				_("Error writing list of tracks (hths)"));
-		    goto serr;
+		g_set_error(&fexp->error,
+			    ITDB_FILE_ERROR,
+			    ITDB_FILE_ERROR_CORRUPT,
+			    _("Error writing list of tracks (hths)"));
+		goto serr;
 	    }
 
 	    /* Add the Playlist Header */
 	    if(!fexp->error && !write_hphs(fexp)){
-		    g_set_error(&fexp->error,
-			        ITDB_FILE_ERROR,
-				ITDB_FILE_ERROR_CORRUPT,
-				_("Error writing playlists (hphs)"));
-		    goto serr;
-	    }
-
+		g_set_error(&fexp->error,
+			    ITDB_FILE_ERROR,
+			    ITDB_FILE_ERROR_CORRUPT,
+			    _("Error writing playlists (hphs)"));
+		goto serr;
+	}
     }
      if (!fexp->error)
     {
