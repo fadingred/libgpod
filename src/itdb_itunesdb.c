@@ -6305,7 +6305,6 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 
 	g_return_val_if_fail (pl, FALSE);
 	g_return_val_if_fail (pl->itdb, FALSE);
-	g_return_val_if_fail (pl->itdb->tracks, FALSE);
 	g_return_val_if_fail (cts, FALSE);
 
 	lphs_seek=cts->pos;
@@ -6328,23 +6327,26 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 
 	put32lint (cts, stype); /* Type of playlist */
 	put32_n0 (cts, 4); /* Unknown */
-	/* Walk the playlist and find and write out the track number
-	   of each track in it */
-	for( tl = pl -> members; tl; tl = tl->next)
+	if (tracks) /* It makes no sense to do the following if there is no tracks */
 	{
-		tracknum = 0;
-		current_track= tracks;
-		tr = tl->data;
-		id = tr->dbid;
-		ctr = current_track->data;
-		while( id != ctr->dbid)
+		/* Walk the playlist and find and write out the track number
+		   of each track in it */
+		for( tl = pl -> members; tl; tl = tl->next)
 		{
-			tracknum ++;
-			current_track = current_track->next;
-			g_return_val_if_fail (current_track, FALSE);
+			tracknum = 0;
+			current_track= tracks;
+			tr = tl->data;
+			id = tr->dbid;
 			ctr = current_track->data;
+			while( id != ctr->dbid)
+			{
+				tracknum ++;
+				current_track = current_track->next;
+				g_return_val_if_fail (current_track, FALSE);
+				ctr = current_track->data;
+			}
+			put32lint (cts, tracknum);
 		}
-		put32lint (cts, tracknum);
 	}
 
 	fix_short_header (cts, lphs_seek);
