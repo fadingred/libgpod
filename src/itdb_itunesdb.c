@@ -5739,7 +5739,7 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
     if (itdb_device_is_shuffle (itdb->device)) {
         /* iPod Shuffle uses a simplified database in addition to the
 	 * iTunesDB */
-        if (itdb_shuffle_write (itdb, &fexp->error) != 0) {
+        if (!itdb_shuffle_write (itdb, &fexp->error)) {
 		goto err;
 	}
     }
