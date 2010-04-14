@@ -6165,9 +6165,8 @@ static gboolean write_rths (WContents *cts, Itdb_Track *track)
 
 	/* Prep the path */
 	/* Correct this if the path field changes length */
-	path = g_strndup (track->ipod_path, 64);
+	path = g_strndup (track->ipod_path, 256);
 	g_strdelimit (path, ":", '/');
-	padlength = 256-strlen(path);
 
 	put_header (cts, "rths");
 	put32lint (cts, -1); /* Length of header to be added later */
@@ -6180,7 +6179,7 @@ static gboolean write_rths (WContents *cts, Itdb_Track *track)
 	/* If the length of this field changes make sure to correct the
 	   g_strndup above */
 	put_string (cts, path); /* Path to the song */
-	for (; padlength > 0; padlength--)
+	for (padlength = 256-strlen (path); padlength > 0; padlength--)
 		put8int (cts, 0);
 
 	put32_n0 (cts, 1); /* Unknown */
