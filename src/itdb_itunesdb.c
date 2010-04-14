@@ -1019,56 +1019,97 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 {
     GList* playcounts = NULL;
-    guint32 entry_num, i=0;
-    glong seek;
+    guint32 entry_num, entry_length, i=0;
+    struct playcount *playcount;
+    glong seek = 0;
 
     g_return_val_if_fail (fimp, FALSE);
     g_return_val_if_fail (cts, FALSE);
+    g_return_val_if_fail (fimp->itdb, FALSE);
+    g_return_val_if_fail (fimp->itdb->device, FALSE);
 
-    /* number of entries */
-    entry_num = get32lint (cts, 0);
-    CHECK_ERROR (fimp, FALSE);
-
-    seek = 6;
-    for (i=0; i<entry_num; ++i)
+    if ( is_shuffle_2g (fimp->itdb->device))
     {
-	struct playcount *playcount;
-	guint32 entry_length = get24lint (cts, seek+0);
-	CHECK_ERROR (fimp, FALSE);
-	if (entry_length < 18)
-	{
-	    g_set_error (&fimp->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_CORRUPT,
-			 _("iTunesStats file ('%s'): entry length smaller than expected (%d<18)."),
-			 cts->filename, entry_length);
-	    return FALSE;
-	}
-	playcount = g_new0 (struct playcount, 1);
-	playcounts = g_list_prepend (playcounts, playcount);
-	/* NOTE:
-	 *
-	 * The iPod (firmware 1.3, 2.0, ...?) doesn't seem to use the
-	 * timezone information correctly -- no matter what you set
-	 * iPod's timezone to, it will always record as if it were set
-	 * to UTC -- we need to subtract the difference between
-	 * current timezone and UTC to get a correct
-	 * display. -- this should be done by the application were
-	 * necessary */
-	playcount->bookmark_time = get24lint (cts, seek+3);
-	CHECK_ERROR (fimp, FALSE);
-	playcount->st_unk06 = get24lint (cts, seek+6);
-	CHECK_ERROR (fimp, FALSE);
-	playcount->st_unk09 = get24lint (cts, seek+9);
-	CHECK_ERROR (fimp, FALSE);
-	playcount->playcount = get24lint (cts, seek+12);
-	CHECK_ERROR (fimp, FALSE);
-	playcount->skipped = get24lint (cts, seek+15);
-	CHECK_ERROR (fimp, FALSE);
-	
-	playcount->rating = NO_PLAYCOUNT;
+	    /* Old iTunesStats format */
 
-	seek += entry_length;
+	    /* number of entries */
+	    entry_num = get24lint (cts, seek);
+	    CHECK_ERROR (fimp, FALSE);
+	    seek = 6;
+	    for (i=0; i<entry_num; ++i)
+	    {
+		    entry_length = get24lint (cts, seek+0);
+		    CHECK_ERROR (fimp, FALSE);
+		    if (entry_length < 18)
+		    {
+			    g_set_error (&fimp->error,
+					    ITDB_FILE_ERROR,
+					    ITDB_FILE_ERROR_CORRUPT,
+					    _("iTunesStats file ('%s'): entry length smaller than expected (%d<18)."),
+					    cts->filename, entry_length);
+			    return FALSE;
+		    }
+		    playcount = g_new0 (struct playcount, 1);
+		    playcounts = g_list_prepend (playcounts, playcount);
+		    /* NOTE:
+		     *
+		     * The iPod (firmware 1.3, 2.0, ...?) doesn't seem to use the
+		     * timezone information correctly -- no matter what you set
+		     * iPod's timezone to, it will always record as if it were set
+		     * to UTC -- we need to subtract the difference between
+		     * current timezone and UTC to get a correct
+		     * display. -- this should be done by the application were
+		     * necessary */
+		    playcount->bookmark_time = get24lint (cts, seek+3);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->st_unk06 = get24lint (cts, seek+6);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->st_unk09 = get24lint (cts, seek+9);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->playcount = get24lint (cts, seek+12);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->skipped = get24lint (cts, seek+15);
+		    CHECK_ERROR (fimp, FALSE);
+
+		    playcount->rating = NO_PLAYCOUNT;
+
+		    seek += entry_length;
+	    }
+    } else {
+	    /* New iTunesStats format */
+	    entry_num = get32lint (cts, seek); /* Number of entries */
+	    CHECK_ERROR (fimp, FALSE);
+
+	    seek = 8;
+	    for (i=0; i<entry_num; ++i)
+	    {
+		    entry_length = get32lint (cts, seek+0);
+		    CHECK_ERROR (fimp, FALSE);
+		    if (entry_length < 32)
+		    {
+			    g_set_error (&fimp->error,
+					    ITDB_FILE_ERROR,
+					    ITDB_FILE_ERROR_CORRUPT,
+					    _("iTunesStats file ('%s'): entry length smaller than expected (%d<32)."),
+					    cts->filename, entry_length);
+			    return FALSE;
+		    }
+		    playcount = g_new0 (struct playcount, 1);
+		    playcounts = g_list_prepend (playcounts, playcount);
+
+		    playcount->playcount = get32lint (cts, seek+8);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->time_played = get32lint (cts, seek+12);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->skipped = get32lint (cts, seek+16);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->last_skipped = get32lint (cts, seek+20);
+		    CHECK_ERROR (fimp, FALSE);
+		    /* 8 unknown bytes follow but it is unlikely they are
+		     * the same as the unknown fields in the old format.
+		     * I have only seen zeros in those spots so far so I'm
+		     * ignoring them for now. */
+	    }
     }
     fimp->playcounts = g_list_reverse(playcounts);
     return TRUE;
