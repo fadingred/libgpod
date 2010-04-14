@@ -5525,8 +5525,10 @@ static gboolean itdb_composer_equal (gconstpointer v1, gconstpointer v2)
 static void prepare_itdb_for_write (FExport *fexp)
 {
     GList *gl;
+    GList *pl;
     Itdb_iTunesDB *itdb;
     Itdb_Playlist *mpl;
+    Itdb_Playlist *playlist;
     guint album_id = 1;
     guint artist_id = 1;
     guint composer_id = 1;
@@ -5613,6 +5615,13 @@ static void prepare_itdb_for_write (FExport *fexp)
 		    composer_id++;
 		}
 	}
+    }
+
+    /* Make sure playlist->num is correct */
+    for (pl = itdb->playlists; pl; pl = pl->next) {
+	playlist = pl->data;
+	g_return_if_fail (playlist);
+	playlist->num = itdb_playlist_tracks_number (playlist);
     }
 }
 
