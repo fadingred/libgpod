@@ -1530,26 +1530,33 @@ static MHODData get_mhod (FImport *fimp, glong mhod_seek, guint32 *ml)
 	      if (check_header_seek (cts, "chap", seek+4))
 	      {
 		  guint32 length;
+		  guint32 childlength;
 		  guint32 startpos;
+		  guint32 children;
+		  gint j;
 		  gunichar2 *string_utf16;
 		  startpos = get32bint (cts, seek+8);
+		  children = get32bint (cts, seek+12);
 		  seek += 20;
-		  if (check_header_seek (cts, "name", seek+4))
+		  for (j=0; j<children; ++j)
 		  {
-		      length = get16bint (cts, seek+20);
-		      string_utf16 = g_new0 (gunichar2, (length+1));
-		      if (!seek_get_n_bytes (cts, (gchar *)string_utf16,
-				  seek+22, length*2))
+		      childlength = get32bint (cts, seek);
+		      if (check_header_seek (cts, "name", seek+4))
 		      {
+			  length = get16bint (cts, seek+20);
+			  string_utf16 = g_new0 (gunichar2, (length+1));
+			  if (!seek_get_n_bytes (cts, (gchar *)string_utf16, seek+22, length*2))
+			  {
+				g_free (string_utf16);
+				itdb_chapterdata_free (result.data.chapterdata);
+				return result;  /* *ml==-1, result.valid==FALSE */
+			  }
+			  fixup_big_utf16 (string_utf16);
+			  itdb_chapterdata_add_chapter(result.data.chapterdata,startpos,g_utf16_to_utf8 (
+				string_utf16, -1, NULL, NULL, NULL));
 			  g_free (string_utf16);
-			  itdb_chapterdata_free (result.data.chapterdata);
-			  return result;  /* *ml==-1, result.valid==FALSE */
 		      }
-		      fixup_big_utf16 (string_utf16);
-		      itdb_chapterdata_add_chapter(result.data.chapterdata,startpos,g_utf16_to_utf8 (
-				  string_utf16, -1, NULL, NULL, NULL));
-		      g_free (string_utf16);
-		      seek += length * 2 + 22;
+		      seek += childlength;
 		  }
 	      }
 	  }
