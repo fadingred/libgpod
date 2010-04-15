@@ -111,6 +111,7 @@
 #include "itdb_device.h"
 #include "itdb_private.h"
 #include "itdb_zlib.h"
+#include "itdb_plist.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -905,7 +906,7 @@ static void playcounts_free (FImport *fimp)
 }
 
 
-/* called by init_playcounts */
+/* called by playcounts_init */
 static gboolean playcounts_read (FImport *fimp, FContents *cts)
 {
     GList* playcounts = NULL;
@@ -1016,7 +1017,7 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 }
 
 
-/* called by init_playcounts */
+/* called by playcounts_init */
 static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 {
     GList* playcounts = NULL;
@@ -1118,6 +1119,85 @@ static gboolean itunesstats_read (FImport *fimp, FContents *cts)
     return TRUE;
 }
 
+static gint64 playcounts_plist_get_gint64 (GHashTable *track_dict,
+                                           const char *key)
+{
+    GValue *value;
+
+    value = g_hash_table_lookup (track_dict, key);
+    if (value && G_VALUE_HOLDS (value, G_TYPE_INT64)) {
+        return g_value_get_int64 (value);
+    }
+
+    return 0;
+}
+
+/* called by playcounts_init */
+static gboolean playcounts_plist_read (FImport *fimp, GValue *plist_data)
+{
+    GHashTable *playcounts;
+    struct playcount *playcount;
+    GHashTable *pc_dict, *track_dict;
+    GValue *to_parse;
+    GValueArray *array;
+    gint i;
+    guint32 mac_time;
+    guint64 *dbid;
+
+    g_return_val_if_fail (G_VALUE_HOLDS (plist_data, G_TYPE_HASH_TABLE), FALSE);
+    pc_dict = g_value_get_boxed (plist_data);
+
+    to_parse = g_hash_table_lookup (pc_dict, "tracks");
+    if (to_parse == NULL) {
+        return FALSE;
+    }
+    if (!G_VALUE_HOLDS (to_parse, G_TYPE_VALUE_ARRAY)) {
+        return FALSE;
+    }
+
+    playcounts = g_hash_table_new_full (g_int64_hash, g_int64_equal, g_free, g_free);
+
+    array = (GValueArray*)g_value_get_boxed (to_parse);
+    for (i = 0; i < array->n_values; i++) {
+       if (!G_VALUE_HOLDS (g_value_array_get_nth (array, i), G_TYPE_HASH_TABLE)) {
+          continue;
+       }
+
+       track_dict = g_value_get_boxed (g_value_array_get_nth (array, i));
+       if (track_dict == NULL)
+           continue;
+
+       to_parse = g_hash_table_lookup (track_dict, "persistentID");
+       if (!to_parse)
+           continue;
+
+       dbid = g_new0 (guint64, 1);
+       if (!G_VALUE_HOLDS (to_parse, G_TYPE_INT64))
+           continue;
+       *dbid = g_value_get_int64 (to_parse);
+       playcount = g_new0 (struct playcount, 1);
+       g_hash_table_insert (playcounts, dbid, playcount);
+
+       playcount->bookmark_time = playcounts_plist_get_gint64 (track_dict, "bookmarkTimeInMS");
+       playcount->playcount = playcounts_plist_get_gint64 (track_dict, "playCount");
+       mac_time = playcounts_plist_get_gint64 (track_dict, "playMacOSDate");
+       playcount->time_played = device_time_mac_to_time_t (fimp->itdb->device, mac_time);
+       playcount->skipcount = playcounts_plist_get_gint64 (track_dict, "skipCount");
+       mac_time = playcounts_plist_get_gint64 (track_dict, "skipMacOSDate");
+       playcount->last_skipped = device_time_mac_to_time_t (fimp->itdb->device, mac_time);
+       playcount->rating = playcounts_plist_get_gint64 (track_dict, "userRating");
+       if (!playcount->rating)
+           playcount->rating = NO_PLAYCOUNT;
+
+       to_parse = g_hash_table_lookup (track_dict, "playedState");
+       if (to_parse && G_VALUE_HOLDS (to_parse, G_TYPE_BOOLEAN)) {
+           ; /* What do we do with this? */
+       }
+    }
+    fimp->pcounts2 = playcounts;
+    return TRUE;
+}
+
 /* Read the Play Count file (formed by adding "Play Counts" to the
  * directory component of fimp->itdb->itdb_filename) and set up the
  * GList *playcounts. If no Play Count file is present, attempt to
@@ -1131,10 +1211,12 @@ static gboolean playcounts_init (FImport *fimp)
 {
   const gchar *plc[] = {"Play Counts", NULL};
   const gchar *ist[] = {"iTunesStats", NULL};
-  gchar *plcname, *dirname, *istname;
+  const gchar *plcpl[] = {"PlayCounts.plist", NULL};
+  gchar *plcname, *dirname, *istname, *plcplname;
   gboolean result=TRUE;
   struct stat filestat;
   FContents *cts;
+  GValue *plist_data;
 
   g_return_val_if_fail (fimp, FALSE);
   g_return_val_if_fail (!fimp->error, FALSE);
@@ -1146,6 +1228,7 @@ static gboolean playcounts_init (FImport *fimp)
 
   plcname = itdb_resolve_path (dirname, plc);
   istname = itdb_resolve_path (dirname, ist);
+  plcplname = itdb_resolve_path (dirname, plcpl);
 
   g_free (dirname);
 
@@ -1188,9 +1271,28 @@ static gboolean playcounts_init (FImport *fimp)
 	  }
       }
   }
+  else if (plcplname)
+  {
+      /* skip if PlayCounts.plist file has zero-length */
+      stat (plcplname, &filestat);
+      if (filestat.st_size > 0)
+      {
+	  plist_data = itdb_plist_parse_from_file (plcplname, &fimp->error);
+	  if (plist_data)
+	  {
+	      result = playcounts_plist_read (fimp, plist_data);
+	      g_value_unset (plist_data);
+	  }
+	  else
+	  {
+	      result = FALSE;
+	  }
+      }
+  }
 
   g_free (plcname);
   g_free (istname);
+  g_free (plcplname);
 
   return result;
 }
@@ -1206,6 +1308,7 @@ static void itdb_free_fimp (FImport *fimp)
 	g_list_free (fimp->pos_glist);
 	g_list_free (fimp->tracks);
 	playcounts_free (fimp);
+	g_hash_table_destroy (fimp->pcounts2);
 	g_free (fimp);
     }
 }
@@ -2295,6 +2398,7 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
   guint32 i, mhod_nums;
   FContents *cts;
   glong seek = mhit_seek;
+  gboolean free_playcount;
 
 #if ITUNESDB_DEBUG
   fprintf(stderr, "get_mhit seek: %x\n", (int)seek);
@@ -2566,6 +2670,12 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
   }
 
   playcount = playcount_take_next (fimp);
+  free_playcount = TRUE;
+  if (!playcount && fimp->pcounts2)
+  {
+      playcount = g_hash_table_lookup (fimp->pcounts2, &track->dbid);
+      free_playcount = FALSE;
+  }
   if (playcount)
   {
       if (playcount->rating != NO_PLAYCOUNT)
@@ -2592,8 +2702,8 @@ static glong get_mhit (FImport *fimp, glong mhit_seek)
 
       track->skipcount += playcount->skipcount;
       track->recent_skipcount = playcount->skipcount;
-
-      g_free (playcount);
+      if (free_playcount)
+	  g_free (playcount);
   }
   fimp->tracks = g_list_prepend(fimp->tracks, track);
   return seek;

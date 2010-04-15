@@ -91,6 +91,7 @@ typedef struct
     GList *pos_glist;    /* temporary list to store position indicators */
     GList *tracks;       /* temporary list to store tracks */
     GList *playcounts;   /* contents of Play Counts file */
+    GHashTable *pcounts2;/* contents of the PlayCounts.plist file */
     GTree *idtree;       /* temporary tree with track id tree */
     GError *error;       /* where to report errors to */
 } FImport;
