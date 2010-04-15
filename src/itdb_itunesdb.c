@@ -6286,7 +6286,7 @@ static gboolean write_hths (FExport *fexp)
 
 		/* Add this tracks offset then add the track */
 		put32lint_seek(cts, cts->pos, track_seek);
-		write_rths(cts, track);
+		g_return_val_if_fail (write_rths(cts, track), FALSE);
 
 		/* Go to the offset for the next track */
 		track_seek += 4;
@@ -6389,7 +6389,7 @@ static gboolean write_hphs (FExport *fexp)
 		
 		/* Write this headers offset */
 		put32lint_seek (cts, cts->pos, playlist_seek);
-		write_lphs (cts, pl);
+		g_return_val_if_fail (write_lphs (cts, pl),FALSE);
 
 		/* Move to the field for the next header */
 		playlist_seek += 4;
