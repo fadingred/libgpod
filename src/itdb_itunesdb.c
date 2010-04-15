@@ -6226,7 +6226,10 @@ static gboolean write_rths (WContents *cts, Itdb_Track *track)
 		put8int (cts, 0);
 
 	put32lint (cts, track->bookmark_time); /* Bookmark time */
-	put8int (cts, track->skip_when_shuffling); /* Don't Skip on Shuffle */
+	/* Don't Skip on shuffle */
+	/* This field has the exact opposite value as in the iTunesDB */
+	/* 1 when you want to skip, 0 when you don't want to skip */
+	put8int (cts, !track->skip_when_shuffling);
 	put8int (cts, track->remember_playback_position); /* Remember playing pos */
 	/* put8int (cts, ); In uninterruptable album */
 	put8int (cts, 0); /* Best guess its gapless album */
