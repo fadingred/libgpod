@@ -1296,11 +1296,11 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	    /* series_name TEXT */
 	    sqlite3_bind_text(stmt_video_info, ++idx, track->tvshow, -1, SQLITE_STATIC);
 	    /* sort_series_name TEXT */
-	    sqlite3_bind_text(stmt_video_info, ++idx, track->sort_tvshow, -1, SQLITE_STATIC);
+	    bind_first_text(stmt_item, ++idx, 2, track->sort_tvshow, track->tvshow);
 	    /* episode_id TEXT */
 	    sqlite3_bind_text(stmt_video_info, ++idx, track->tvepisode, -1, SQLITE_STATIC);
 	    /* episode_sort_id INTEGER */
-	    sqlite3_bind_int(stmt_video_info, ++idx, track->episode_nr);
+	    sqlite3_bind_int(stmt_video_info, ++idx, track->season_nr << 16 | track->episode_nr);
 	    /* network_name TEXT */
 	    sqlite3_bind_text(stmt_video_info, ++idx, track->tvnetwork, -1, SQLITE_STATIC);
 	    /* extended_content_rating TEXT */
