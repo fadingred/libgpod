@@ -37,7 +37,7 @@
  * in GValue. The types are mapped in the following way:
  *      - <string> => G_TYPE_STRING (char*)
  *      - <real> => G_TYPE_DOUBLE (double)
- *      - <integer> => G_TYPE_INT (gint)
+ *      - <integer> => G_TYPE_INT64 (gint64)
  *      - <true/>, <false/> => G_TYPE_BOOLEAN (gboolean)
  *      - <data> => G_TYPE_GSTRING (GString *)
  *      - <array> => G_TYPE_VALUE_ARRAY (GValueArray *)
@@ -82,11 +82,11 @@ parse_integer(xmlNode *a_node, GError **error)
 {
     char *str_val;
     char *end_ptr;
-    gint int_val;
+    gint64 int_val;
     GValue *value;
 
     str_val = (char *)xmlNodeGetContent(a_node);
-    int_val = strtol (str_val, &end_ptr, 0);
+    int_val = strtoll (str_val, &end_ptr, 0);
     if (*end_ptr != '\0') {
         g_set_error (error, ITDB_DEVICE_ERROR, ITDB_DEVICE_ERROR_XML_PARSING,
                      "invalid integer value: %s", str_val);
@@ -96,8 +96,8 @@ parse_integer(xmlNode *a_node, GError **error)
     xmlFree (str_val);
 
     value = g_new0(GValue, 1);
-    g_value_init(value, G_TYPE_INT);
-    g_value_set_int (value, int_val);
+    g_value_init(value, G_TYPE_INT64);
+    g_value_set_int64 (value, int_val);
 
     return value;
 }

@@ -111,7 +111,7 @@ struct _SysInfoIpodProperties {
 	gboolean sqlite_db;
 };
 
-static gint get_int (GHashTable *dict, const char *key)
+static gint64 get_int64 (GHashTable *dict, const char *key)
 {
         GValue *val;
 
@@ -119,10 +119,10 @@ static gint get_int (GHashTable *dict, const char *key)
         if (val == NULL) {
                 return 0;
         }
-        if (!G_VALUE_HOLDS_INT (val)) {
+        if (!G_VALUE_HOLDS_INT64 (val)) {
                 return 0;
         }
-        return g_value_get_int (val);
+        return g_value_get_int64 (val);
 }
 
 static gdouble get_double (GHashTable *dict, const char *key)
@@ -177,8 +177,8 @@ typedef struct _DictFieldMapping DictFieldMapping;
 static const DictFieldMapping sysinfo_ipod_properties_fields_mapping[] = {
     { "BuildID",                       G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, build_id) },
     { "ConnectedBus",                  G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties,  connected_bus) },
-    { "MaxTransferSpeed",              G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, max_transfer_speed) },
-    { "FamilyID",                      G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, family_id) },
+    { "MaxTransferSpeed",              G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, max_transfer_speed) },
+    { "FamilyID",                      G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, family_id) },
     { "ProductType",                   G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, product_type) },
     { "FireWireGUID",                  G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, firewire_guid) },
     { "FireWireVersion",               G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, firewire_version) },
@@ -186,17 +186,17 @@ static const DictFieldMapping sysinfo_ipod_properties_fields_mapping[] = {
     { "MinITunesVersion",              G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, min_itunes_version) },
     { "PlaylistFoldersSupported",      G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, playlist_folders_supported) },
     { "SerialNumber",                  G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, serial_number) },
-    { "UpdaterFamilyID",               G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, updater_family_id) },
+    { "UpdaterFamilyID",               G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, updater_family_id) },
     { "VisibleBuildID",                G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, visible_build_id) },
-    { "OEMID",                         G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, oem_id) },
-    { "OEMU",                          G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, oem_u) },
-    { "DBVersion",                     G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, db_version) },
+    { "OEMID",                         G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, oem_id) },
+    { "OEMU",                          G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, oem_u) },
+    { "DBVersion",                     G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, db_version) },
     { "MinBuildID",                    G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, min_build_id) },
     { "Language",                      G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, language) },
     { "VoiceMemosSupported",           G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, voice_memos_supported) },
-    { "UpdateMethod",                  G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, update_method) },
-    { "MaxFWBlocks",                   G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, max_fw_blocks) },
-    { "FWPartSize",                    G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, fw_part_size) },
+    { "UpdateMethod",                  G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, update_method) },
+    { "MaxFWBlocks",                   G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, max_fw_blocks) },
+    { "FWPartSize",                    G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, fw_part_size) },
     { "AutoRebootAfterFirmwareUpdate", G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, auto_reboot_after_firmware_update) },
     { "VolumeFormat",                  G_TYPE_STRING,  G_STRUCT_OFFSET (SysInfoIpodProperties, volume_format) },
     { "ForcedDiskMode",                G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, forced_disk_mode) },
@@ -207,27 +207,27 @@ static const DictFieldMapping sysinfo_ipod_properties_fields_mapping[] = {
     { "CanHibernate",                  G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, can_hibernate) },
     { "CameWithCD",                    G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, came_with_cd) },
     { "SupportsSparseArtwork",         G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, supports_sparse_artwork) },
-    { "MaxThumbFileSize",              G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, max_thumb_file_size) },
-    { "RAM",                           G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, ram) },
-    { "HotPlugState",                  G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, hotplug_state) },
-    { "BatteryPollInterval",           G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, battery_poll_interval) },
+    { "MaxThumbFileSize",              G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, max_thumb_file_size) },
+    { "RAM",                           G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, ram) },
+    { "HotPlugState",                  G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, hotplug_state) },
+    { "BatteryPollInterval",           G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, battery_poll_interval) },
     { "SortFieldsSupported",           G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, sort_fields_supported) },
     { "vCardWithJPEGSupported",        G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, vcard_with_jpeg_supported) },
-    { "MaxFileSizeInGB",               G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, max_file_size_in_gb) },
-    { "MaxTracks",                     G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, max_tracks) },
-    { "GamesPlatformID",               G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, games_platform_id) },
-    { "GamesPlatformVersion",          G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, games_platform_version) },
-    { "RentalClockBias",               G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, rental_clock_bias) },
+    { "MaxFileSizeInGB",               G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, max_file_size_in_gb) },
+    { "MaxTracks",                     G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, max_tracks) },
+    { "GamesPlatformID",               G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, games_platform_id) },
+    { "GamesPlatformVersion",          G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, games_platform_version) },
+    { "RentalClockBias",               G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, rental_clock_bias) },
     { "SQLiteDB",                      G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, sqlite_db) },
-    { "ShadowDBVersion",               G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, shadowdb_version) },
+    { "ShadowDBVersion",               G_TYPE_INT64,   G_STRUCT_OFFSET (SysInfoIpodProperties, shadowdb_version) },
     { NULL,                            G_TYPE_NONE,    0 }
 };
 
 static const DictFieldMapping sysinfo_image_format_fields_mapping[] = {
-    { "FormatId",         G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, format_id) },
-    { "DisplayWidth",     G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, display_width) },
-    { "RenderWidth",      G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, width) },
-    { "RenderHeight",     G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, height) },
+    { "FormatId",         G_TYPE_INT64,   G_STRUCT_OFFSET (Itdb_ArtworkFormat, format_id) },
+    { "DisplayWidth",     G_TYPE_INT64,   G_STRUCT_OFFSET (Itdb_ArtworkFormat, display_width) },
+    { "RenderWidth",      G_TYPE_INT64,   G_STRUCT_OFFSET (Itdb_ArtworkFormat, width) },
+    { "RenderHeight",     G_TYPE_INT64,   G_STRUCT_OFFSET (Itdb_ArtworkFormat, height) },
 /*  PixelFormat needs to be converted to ItdbThumbFormat, this is special-cased
  *  in g_value_to_image_format */
 /*  { "PixelFormat",      G_TYPE_STRING,  G_STRUCT_OFFSET (Itdb_ArtworkFormat, format) },*/
@@ -236,14 +236,14 @@ static const DictFieldMapping sysinfo_image_format_fields_mapping[] = {
 /* AlignRowBytes is an older version of RowBytesAlignment, it's equivalent
  * to a value of 4 for RowBytesAlignemnt */
 /*    { "AlignRowBytes",    G_TYPE_BOOLEAN, G_STRUCT_OFFSET (Itdb_ArtworkFormat, align_row_bytes) },*/
-    { "Rotation",         G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, rotation) },
+    { "Rotation",         G_TYPE_INT64,   G_STRUCT_OFFSET (Itdb_ArtworkFormat, rotation) },
 /* BackColor needs to be converted to a gint, this is special-cased
  * in g_value_to_image_format */
-/*    { "BackColor",        G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, back_color) }, */
-    { "ColorAdjustment",  G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, color_adjustment) },
+/*    { "BackColor",        G_TYPE_INT64   G_STRUCT_OFFSET (Itdb_ArtworkFormat, back_color) }, */
+    { "ColorAdjustment",  G_TYPE_INT64,   G_STRUCT_OFFSET (Itdb_ArtworkFormat, color_adjustment) },
     { "GammaAdjustment",  G_TYPE_DOUBLE,  G_STRUCT_OFFSET (Itdb_ArtworkFormat, gamma) },
-    { "AssociatedFormat", G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, associated_format) },
-    { "RowBytesAlignment", G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, row_bytes_alignment) },
+    { "AssociatedFormat", G_TYPE_INT64,   G_STRUCT_OFFSET (Itdb_ArtworkFormat, associated_format) },
+    { "RowBytesAlignment", G_TYPE_INT64,   G_STRUCT_OFFSET (Itdb_ArtworkFormat, row_bytes_alignment) },
     { NULL,               G_TYPE_NONE,    0 }
 };
 
@@ -262,10 +262,10 @@ static void dict_to_struct (GHashTable *dict,
     g_return_if_fail (it != NULL);
     while (it->name != NULL) {
         switch (it->type) {
-            case G_TYPE_INT: {
+            case G_TYPE_INT64: {
                 gint *field;
                 field = G_STRUCT_MEMBER_P (struct_ptr, it->offset);
-                *field = get_int (dict, it->name);
+                *field = get_int64 (dict, it->name);
                 break;
             }
 
@@ -340,7 +340,7 @@ static void dump_struct (const DictFieldMapping *mapping,
     g_return_if_fail (it != NULL);
     while (it->name != NULL) {
         switch (it->type) {
-            case G_TYPE_INT: {
+            case G_TYPE_INT64: {
                 gint *field;
                 field = G_STRUCT_MEMBER_P (struct_ptr, it->offset);
                 g_print ("%s: %d\n", it->name, *field);

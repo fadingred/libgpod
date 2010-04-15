@@ -1118,8 +1118,6 @@ static gboolean itunesstats_read (FImport *fimp, FContents *cts)
     return TRUE;
 }
 
-
-
 /* Read the Play Count file (formed by adding "Play Counts" to the
  * directory component of fimp->itdb->itdb_filename) and set up the
  * GList *playcounts. If no Play Count file is present, attempt to
