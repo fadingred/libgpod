@@ -1097,6 +1097,8 @@ static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 		    playcount = g_new0 (struct playcount, 1);
 		    playcounts = g_list_prepend (playcounts, playcount);
 
+		    playcount->bookmark_time = get32lint (cts, seek+4);
+		    CHECK_ERROR (fimp, FALSE);
 		    playcount->playcount = get32lint (cts, seek+8);
 		    CHECK_ERROR (fimp, FALSE);
 		    playcount->time_played = get32lint (cts, seek+12);
@@ -6223,7 +6225,7 @@ static gboolean write_rths (WContents *cts, Itdb_Track *track)
 	for (padlength = 256-strlen (path); padlength > 0; padlength--)
 		put8int (cts, 0);
 
-	put32_n0 (cts, 1); /* Unknown */
+	put32lint (cts, track->bookmark_time); /* Bookmark time */
 	put8int (cts, track->skip_when_shuffling); /* Don't Skip on Shuffle */
 	put8int (cts, track->remember_playback_position); /* Remember playing pos */
 	/* put8int (cts, ); In uninterruptable album */
@@ -6309,17 +6311,29 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 
 	lphs_seek=cts->pos;
 	tracks = pl->itdb->tracks;
+
 	/* Change the playlist itunesDB into a itunesSD type */
-	/* If numbers other than 1 and 0 show up in itunesDB this
-	   may need to be changed */
-	stype = 1;
-	if (pl->type != 1)
+	/* 1 is for the master playlist
+	   2 is for a normal playlist
+	   3 is for the podcast playlist */
+	if (itdb_playlist_is_mpl (pl)) 
+		stype = 1;
+	else if (itdb_playlist_is_podcasts (pl)) 
+		stype = 3;
+	else /* If we dont know what it is act like its normal */
 		stype = 2;
 	
 	put_header (cts, "lphs");
 	put32lint (cts, -1); /* Length of header to be written later */
-	put32lint (cts, pl->num); /* Number of songs in this playlist */
-	put32lint (cts, pl->num); /* The number of songs again */
+	put32lint (cts, pl->num); /* Number of tracks in this playlist */
+	/* I don't know enough to know how to compute this number in general
+	   so I'll do it the stupid way for now */
+	/* The number of non podcast tracks */
+	if ( stype == 3 )  /* If this is the podcast playlist */
+		put32_n0 (cts, 1); /* There should be no normal tracks */
+	else 
+		put32lint (cts, pl->num); /* Otherwise everything is normal */
+
 	if (stype == 1)
 		put32_n0 (cts, 2); /* The voiceover for the master is at 0 */
 	else
@@ -6359,7 +6373,8 @@ static gboolean write_hphs (FExport *fexp)
 	gulong hphs_seek, playlist_seek;
 	WContents *cts;
 	GList *gl;
-	guint32 playlistcnt;
+	guint16 allplaylistcnt;
+	guint16 stdplaylistcnt;
 
 	g_return_val_if_fail (fexp, FALSE);
 	g_return_val_if_fail (fexp->itdb, FALSE);
@@ -6367,18 +6382,35 @@ static gboolean write_hphs (FExport *fexp)
 
 	cts = fexp->wcontents;
 	hphs_seek = cts->pos;
-	playlistcnt = itdb_playlists_number (fexp->itdb);
+	allplaylistcnt = itdb_playlists_number (fexp->itdb);
+
+	/* If there is no podcasts playlist stdplaylistcnt
+	   should be 0xffff, otherwise it is allplaylistcnt-1 */
+	/* This will probably change once it is know how the suffle
+	   handles audiobook playlists */
+
+	if (itdb_playlist_podcasts (fexp->itdb)) {
+		stdplaylistcnt = allplaylistcnt -1;
+	} else {
+		stdplaylistcnt = 0xffff;
+	}
+
 	
 	/* Add the Playlist Header Offset */
 	put32lint_seek (cts, cts->pos, 40);
 
 	put_header (cts, "hphs");
 	put32lint (cts, -1); /* Length of header to be added later */
-	put32lint (cts, playlistcnt); /* Number of playlists */
-	put64lint (cts, 0x0000ffff0001ffff); /* Unknown */
+	put16lint (cts, allplaylistcnt); /* Number of playlists */
+	put16_n0 (cts, 1); /* Unknown */
+	put16lint (cts, stdplaylistcnt); /* Number of non podcast playlists see the
+					    comment when the variable is assigned */
+	put16lint (cts, 0x0100); /* Unknown */
+	put16lint (cts, 0xffff); /* Unknown */
+	put16_n0 (cts, 1);
 
 	playlist_seek = cts->pos;
-	put32_n0 (cts, playlistcnt); /* Offsets for each playlist */
+	put32_n0 (cts, allplaylistcnt); /* Offsets for each playlist */
 
 	fix_short_header (cts, hphs_seek);
 
@@ -6403,7 +6435,8 @@ static gboolean write_bdhs (FExport *fexp)
 {
 	WContents *cts;
 	gulong bdhs_seek;
-	guint32 trackcnt, playlistcnt;
+	guint32 alltrackcnt, playlistcnt;
+	guint32 stdtrackcnt;
 
 	g_return_val_if_fail (fexp, FALSE);
 	g_return_val_if_fail (fexp->itdb, FALSE);
@@ -6411,27 +6444,30 @@ static gboolean write_bdhs (FExport *fexp)
 
 	cts = fexp->wcontents;
 	bdhs_seek = cts->pos;
-	trackcnt = itdb_tracks_number(fexp->itdb);
-	playlistcnt = itdb_playlists_number(fexp->itdb);
+	alltrackcnt = itdb_tracks_number (fexp->itdb);
+	playlistcnt = itdb_playlists_number (fexp->itdb);
+
+	/* This will yield 0 if there is no master play list */
+	stdtrackcnt = itdb_playlist_tracks_number (itdb_playlist_mpl (fexp->itdb));
 
 	put_header (cts, "bdhs");
 	put32lint (cts, 0x02000003); /* Unknown */
 	put32lint (cts, -1); /* Length of header to be added later*/
-	put32lint (cts, trackcnt); /* Number of tracks */
+	put32lint (cts, alltrackcnt); /* Number of tracks */
 	put32lint (cts, playlistcnt); /* Number of playlists */
-	put32_n0 (cts, 2); /* Unknown likely other counts */
+	put32_n0 (cts, 2); /* Unknown */
 	/* TODO: Parse the max volume */
 	put8int (cts, 0); /* Max Volume currently ignored and set to max */
 	/* TODO: Find another source of the voiceover option */
 	put8int (cts, 1); /* Voiceover currently ignored and set to on */
 	put16_n0 (cts, 1); /* Unknown */
-	put32lint (cts, trackcnt); /* Number of tracks again */
+	put32lint (cts, stdtrackcnt); /* Number of tracks excluding podcasts */
 
 	/* If the bdhs header changes the offsets of these fields may change
 	   make sure you correct the field offset in their respective tags */
 	put32lint (cts, -1); /* Track Header Offset added in write_hths */
 	put32lint (cts, -1); /* Playlist Header Offset added in write_hphs */
-	put32_n0 (cts, 5); /* Unknown likely other offsets */
+	put32_n0 (cts, 5); /* Unknown */
 
 	fix_header(cts, bdhs_seek);
 
