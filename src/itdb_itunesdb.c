@@ -3322,6 +3322,13 @@ static void raw_put16lint (WContents *cts, guint16 n)
     put_data (cts, (gchar *)&n, 2);
 }
 
+/* Write 2-byte integer @n to @cts at position @seek in
+   little endian order */
+static void raw_put16lint_seek (WContents *cts, guint32 n, gulong seek)
+{
+	n = GUINT16_TO_LE (n);
+	put_data_seek (cts, (gchar *)&n, 2, seek);
+}
 
 /* Write 3-byte integer @n to @cts in big endian order. */
 static void raw_put24lint (WContents *cts, guint32 n)
@@ -3389,6 +3396,13 @@ static void raw_put16bint (WContents *cts, guint16 n)
     put_data (cts, (gchar *)&n, 2);
 }
 
+/* Write a 2-byte integer @n to @cts at position @seek in big
+   endian order. */
+static void raw_put16bint_seek (WContents *cts, guint16 n, gulong seek)
+{
+	n = GUINT16_TO_BE (n);
+	put_data_seek (cts, (gchar *)&n, 2, seek);
+}
 
 /* Write 3-byte integer @n to @cts in big endian order. */
 static void raw_put24bint (WContents *cts, guint32 n)
@@ -3494,6 +3508,15 @@ static void put16lint (WContents *cts, guint16 n)
     else
 	raw_put16bint (cts, n);
 }
+
+static void put16lint_seek (WContents *cts, guint16 n, gulong seek)
+{
+	if(!cts->reversed)
+		raw_put16lint_seek (cts, n, seek);
+	else
+		raw_put16bint_seek (cts, n, seek);
+}
+
 #if 0
 static void put24lint (WContents *cts, guint32 n)
 {
@@ -3547,6 +3570,15 @@ static void put16bint (WContents *cts, guint16 n)
 	raw_put16bint (cts, n);
 }
 
+#if 0
+static void put16bint_seek (WContents *cts, guint16 n, gulong seek)
+{
+	if (cts->reversed)
+		raw_put16lint_seek (cts, n, seek);
+	else
+		raw_put16bint_seek (cts, n, seek);
+}
+#endif
 static void put24bint (WContents *cts, guint32 n)
 {
     if (cts->reversed)
