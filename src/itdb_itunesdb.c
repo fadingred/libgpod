@@ -6344,7 +6344,7 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 	gulong lphs_seek;
 	GList *tl, *tracks, *current_track;
 	Itdb_Track *tr, *ctr;
-	gulong id;
+	guint64 id;
 	guint32 stype;
 	guint32 tracknum;
 	guint32 podcastcnt;
