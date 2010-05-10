@@ -99,7 +99,7 @@ get_utf16_string (void* buffer, gint length, guint byte_order)
 }
 
 struct ParsedMhodString {
-        enum MhodType mhod_type;
+        enum MhodArtworkType mhod_type;
         char *mhod_string;
 };
 
