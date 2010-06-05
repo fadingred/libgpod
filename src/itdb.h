@@ -1873,6 +1873,9 @@ Itdb_Playlist *itdb_playlist_podcasts (Itdb_iTunesDB *itdb);
 gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl);
 void itdb_playlist_set_podcasts (Itdb_Playlist *pl);
 
+/* playlist functions for audiobooks playlist */
+gboolean itdb_playlist_is_audiobooks (Itdb_Playlist *pl);
+
 /* smart playlist functions */
 ItdbSPLFieldType itdb_splr_get_field_type (const Itdb_SPLRule *splr);
 ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr);

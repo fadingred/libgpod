@@ -6294,7 +6294,7 @@ static gboolean write_hths (FExport *fexp)
 	WContents *cts;
 	GList *gl;
 	guint32 trackcnt;
-	guint32 podcastcnt;
+	guint32 nonstdtrackcnt;
 
 	g_return_val_if_fail (fexp, FALSE);
 	g_return_val_if_fail (fexp->itdb, FALSE);
@@ -6303,7 +6303,7 @@ static gboolean write_hths (FExport *fexp)
 	cts = fexp->wcontents;
 	hths_seek = cts->pos;
 	trackcnt = itdb_tracks_number(fexp->itdb);
-	podcastcnt = 0;
+	nonstdtrackcnt = 0; /* Counts the number of audiobook and podcast tracks */
 
 	/* Add Track list offset to bdhs header */
 	/* If the bdhs header changes make sure the seek value is still correct */
@@ -6327,15 +6327,16 @@ static gboolean write_hths (FExport *fexp)
 		put32lint_seek(cts, cts->pos, track_seek);
 		g_return_val_if_fail (write_rths(cts, track), FALSE);
 
-		if (track->mediatype == ITDB_MEDIATYPE_PODCAST)
-			podcastcnt++;
+		if (track->mediatype == ITDB_MEDIATYPE_AUDIOBOOK ||
+		    track->mediatype == ITDB_MEDIATYPE_PODCAST)
+			nonstdtrackcnt++;
 
 		/* Go to the offset for the next track */
 		track_seek += 4;
 	}
 	/* Add the number of nonpodcasts to bdhs header */
 	/* If the bdhs header changes make sure the seek value is still correct */
-	put32lint_seek(cts, trackcnt-podcastcnt, 32);
+	put32lint_seek(cts, trackcnt-nonstdtrackcnt, 32);
 	return TRUE;
 }
 
@@ -6348,7 +6349,7 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 	guint64 id;
 	guint32 stype;
 	guint32 tracknum;
-	guint32 podcastcnt;
+	guint32 nonstdtrackcnt;
 
 	g_return_val_if_fail (pl, FALSE);
 	g_return_val_if_fail (pl->itdb, FALSE);
@@ -6356,22 +6357,25 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 
 	lphs_seek = cts->pos;
 	tracks = pl->itdb->tracks;
-	podcastcnt = 0;
+	nonstdtrackcnt = 0; /* The number of audiobook and podcast tracks*/
 	/* Change the playlist itunesDB type into a itunesSD type */
 	/* 1 is for the master playlist
 	   2 is for a normal playlist
-	   3 is for the podcast playlist */
+	   3 is for the podcast playlist
+	   4 is for an audiobook playlist */
 	if (itdb_playlist_is_mpl (pl)) 
 		stype = 1;
 	else if (itdb_playlist_is_podcasts (pl)) 
 		stype = 3;
-	else /* If we dont know what it is act like its normal */
+	else if (itdb_playlist_is_audiobooks (pl))
+		stype = 4;
+	else /* Everything else we treat as normal */
 		stype = 2;
 	
 	put_header (cts, "lphs");
 	put32lint (cts, -1); /* Length of header to be written later */
 	put32lint (cts, pl->num); /* Number of tracks in this playlist */
-	put32lint (cts, -1); /* The number of nonpodcasts to be added later */
+	put32lint (cts, -1); /* The number of non podcasts or audiobooks to be added later */
 
 	if (stype == 1)
 		put32_n0 (cts, 2); /* The voiceover for the master is at 0 */
@@ -6391,9 +6395,10 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 			tr = tl->data;
 			id = tr->dbid;
 			ctr = current_track->data;
-			/* Count the number of podcasts for later use */
-			if (tr->mediatype == ITDB_MEDIATYPE_PODCAST)
-				podcastcnt++;
+			/* Count the number of podcasts and audiobooks for later use */
+			if (tr->mediatype == ITDB_MEDIATYPE_AUDIOBOOK ||
+			    tr->mediatype == ITDB_MEDIATYPE_PODCAST)
+				nonstdtrackcnt++;
 
 			while( id != ctr->dbid)
 			{
@@ -6406,7 +6411,7 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 		}
 	}
 
-	put32lint_seek (cts, pl->num - podcastcnt, lphs_seek+12);
+	put32lint_seek (cts, pl->num - nonstdtrackcnt, lphs_seek+12);
 	fix_short_header (cts, lphs_seek);
 	return TRUE;
 
@@ -6420,6 +6425,7 @@ static gboolean write_hphs (FExport *fexp)
 	GList *gl;
 	guint16 playlistcnt;
 	guint16 podcastscnt;
+	guint16 audiobookscnt;
 
 	g_return_val_if_fail (fexp, FALSE);
 	g_return_val_if_fail (fexp->itdb, FALSE);
@@ -6428,8 +6434,8 @@ static gboolean write_hphs (FExport *fexp)
 	cts = fexp->wcontents;
 	hphs_seek = cts->pos;
 	playlistcnt = itdb_playlists_number (fexp->itdb);
-	podcastscnt = 0; /* Number of podcast playlists should be 1
-			    but may also include audiobooks eventually */
+	podcastscnt = 0; /* Number of podcast playlists should be 1 if one exists*/
+	audiobookscnt = 0;
 
 	/* Add the Playlist Header Offset */
 	put32lint_seek (cts, cts->pos, 40);
@@ -6440,10 +6446,12 @@ static gboolean write_hphs (FExport *fexp)
 	put16_n0 (cts, 1); /* Unknown */
 	put16lint (cts, 0xffff); /* Number of non podcast playlists if there
 				    isn't a podcast playlist leave this
-				    current value. If there is a podcast 
-				    playlist the number should be playlistcnt-1 */
+				    current value. There should be at most 1
+				    podcast playlist. */
 	put16lint (cts, 0x0100); /* Unknown */
-	put16lint (cts, 0xffff); /* Unknown */
+	put16lint (cts, 0xffff); /* Number of non audiobook playlists if there
+				    isn't a audiobook playlist leave this field
+				    the current value. */
 	put16_n0 (cts, 1);
 
 	playlist_seek = cts->pos;
@@ -6459,6 +6467,8 @@ static gboolean write_hphs (FExport *fexp)
 		put32lint_seek (cts, cts->pos, playlist_seek);
 		if (itdb_playlist_is_podcasts (pl))
 			podcastscnt++;
+		else if (itdb_playlist_is_audiobooks (pl))
+			audiobookscnt++;
 
 		g_return_val_if_fail (write_lphs (cts, pl),FALSE);
 
@@ -6469,6 +6479,11 @@ static gboolean write_hphs (FExport *fexp)
 	   first 0xffff from before */
 	if (podcastscnt != 0)
 	  put16lint_seek (cts, playlistcnt-podcastscnt, hphs_seek+12);
+	
+	/* Is there at least 1 audiobook playlist? If so correct the
+	   second 0xffff from before */
+	if (audiobookscnt != 0)
+	  put16lint_seek (cts, playlistcnt-audiobookscnt, hphs_seek+16);
 
 	return TRUE;
 }
@@ -6505,7 +6520,8 @@ static gboolean write_bdhs (FExport *fexp)
 	/* If the bdhs header changes the offsets of these fields may change
 	   make sure you correct the field offset in their respective tags */
 
-	put32lint (cts, -1); /* Number of tracks excluding podcasts added in write_hths */
+	put32lint (cts, -1); /* Number of tracks excluding podcasts and audiobooks
+				added in write_hths */
 	put32lint (cts, -1); /* Track Header Offset added in write_hths */
 	put32lint (cts, -1); /* Playlist Header Offset added in write_hphs */
 
