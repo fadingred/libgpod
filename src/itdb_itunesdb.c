@@ -6246,8 +6246,7 @@ static gboolean write_rths (WContents *cts, Itdb_Track *track)
 	put_header (cts, "rths");
 	put32lint (cts, -1); /* Length of header to be added later */
 	put32lint (cts, track->starttime); /* Start pos in ms */
-	/* TODO: Find a song with nonzero stoptime */
-	put32lint (cts, track->tracklen); /* Stop pos in ms */
+	put32lint (cts, track->stoptime); /* Stop pos in ms */
 	put32lint (cts, track->volume); /* Volume gain */
 	put32lint (cts, convert_filetype (track->filetype)); /* Filetype see 
 								convert filetype*/
