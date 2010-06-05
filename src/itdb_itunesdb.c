@@ -6465,7 +6465,8 @@ static gboolean write_hphs (FExport *fexp)
 	}
 	/* Is there at least 1 podcast playlist? If so correct the 
 	   first 0xffff from before */
-	put16lint_seek (cts, playlistcnt-podcastscnt, hphs_seek+12);
+	if (podcastscnt != 0)
+	  put16lint_seek (cts, playlistcnt-podcastscnt, hphs_seek+12);
 
 	return TRUE;
 }
