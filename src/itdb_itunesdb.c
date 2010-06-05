@@ -6335,7 +6335,7 @@ static gboolean write_hths (FExport *fexp)
 	}
 	/* Add the number of nonpodcasts to bdhs header */
 	/* If the bdhs header changes make sure the seek value is still correct */
-	put32lint_seek(cts, trackcnt-podcastcnt, 28);
+	put32lint_seek(cts, trackcnt-podcastcnt, 32);
 	return TRUE;
 }
 
