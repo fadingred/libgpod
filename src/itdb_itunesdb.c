@@ -6227,6 +6227,7 @@ static guint convert_filetype (gchar *filetype)
 	return stype;
 }
 
+/* Write out the rths header, the iTunesSD track header */
 static gboolean write_rths (WContents *cts, Itdb_Track *track)
 {
 	gulong rths_seek;
@@ -6286,7 +6287,7 @@ static gboolean write_rths (WContents *cts, Itdb_Track *track)
 	return TRUE;
 }
 
-/* Write out the hths header, the itunesSD track list header*/
+/* Write out the hths header, the iTunesSD track list header*/
 static gboolean write_hths (FExport *fexp)
 {
 	gulong hths_seek, track_seek;
@@ -6338,6 +6339,7 @@ static gboolean write_hths (FExport *fexp)
 	return TRUE;
 }
 
+/* Write out the lphs header, the iTunesSD playlist header */
 static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 {
 	gulong lphs_seek;
@@ -6355,7 +6357,7 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 	lphs_seek = cts->pos;
 	tracks = pl->itdb->tracks;
 	podcastcnt = 0;
-	/* Change the playlist itunesDB into a itunesSD type */
+	/* Change the playlist itunesDB type into a itunesSD type */
 	/* 1 is for the master playlist
 	   2 is for a normal playlist
 	   3 is for the podcast playlist */
@@ -6410,6 +6412,7 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 
 }
 
+/* Write out the hphs header, the iTunesSD playlist list header */
 static gboolean write_hphs (FExport *fexp)
 {
 	gulong hphs_seek, playlist_seek;
@@ -6448,7 +6451,6 @@ static gboolean write_hphs (FExport *fexp)
 
 	fix_short_header (cts, hphs_seek);
 
-
 	for (gl = fexp->itdb->playlists; gl; gl = gl->next)
 	{
 		Itdb_Playlist *pl = gl->data;
@@ -6471,7 +6473,7 @@ static gboolean write_hphs (FExport *fexp)
 	return TRUE;
 }
 
-/* Write out the bdhs header, the main itunesSD header */
+/* Write out the bdhs header, the main iTunesSD header */
 static gboolean write_bdhs (FExport *fexp)
 {
 	WContents *cts;
