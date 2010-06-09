@@ -61,13 +61,13 @@ namespace GPod {
 		}
 	}
 	
-	public class ChapterData : GPodBase<Itdb_ChapterData> {	
+	public unsafe class ChapterData : GPodBase<Itdb_ChapterData> {	
 		public ChapterData(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
 		public ChapterData(IntPtr handle) : base(handle) {}
 		public ChapterData() : this(Itdb_ChapterData.itdb_chapterdata_new(), false) {}
 		public ChapterData(ChapterData other) : this(Itdb_ChapterData.itdb_chapterdata_duplicate(other.Handle), false) {}
 		protected override void Destroy() { Itdb_ChapterData.itdb_chapterdata_free(Handle); }
 		
-		public IList<Chapter> Chapters { get { return new ChapterList(true, Handle, Struct.chapters); } }
+		public IList<Chapter> Chapters { get { return new ChapterList(true, Handle, ((Itdb_ChapterData *) Native)->chapters); } }
 	}
 }

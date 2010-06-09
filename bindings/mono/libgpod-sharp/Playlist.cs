@@ -26,7 +26,7 @@ namespace GPod {
 	namespace native {
 		public struct Itdb_Playlist {
 		    public IntPtr itdb;
-		    public string name;
+		    public IntPtr name;
 		    public byte   type;
 		    public byte   flag1;
 		    public byte   flag2;
@@ -96,23 +96,32 @@ namespace GPod {
 		protected override void DoUnlink(int index) { Itdb_Playlist.itdb_playlist_remove_track(this.handle, this[index].Handle); }
 	}
 	
-	public class Playlist : GPodBase<Itdb_Playlist> {
-		public ITDB   				ITDB				{ get { return new ITDB(Struct.itdb, true); } }
-		public IList<Track>			Tracks				{ get { return new PlaylistTrackList(Handle, Struct.members); } }
-		public string 				Name 				{ get { return Struct.name; }
-														  set { Struct.name = value; } }
-		public bool 				IsSmartPlaylist		{ get { return Struct.is_spl; }
-														  set { Struct.is_spl = value; } }
-		public DateTime				TimeCreated			{ get { return Artwork.time_tToDateTime(Struct.timestamp); }
-														  set { Struct.timestamp = Artwork.DateTimeTotime_t(value); } }
-		public ulong 				ID					{ get { return Struct.id; }
-														  set { Struct.id = value; } }
-		public PlaylistSortOrder	SortOrder			{ get { return Struct.sortorder; }
-														  set { Struct.sortorder = value; } }
-		public bool					IsPodcast			{ get { return Struct.podcastflag == 1; }
-														  set { Struct.podcastflag = (uint) (value ? 1 : 0); } }
-		public bool					IsMaster			{ get { return (Struct.type & 0xff) == 1; }
-														  set { Struct.type = (byte) (value ? 1 : 0); } }
+	public unsafe class Playlist : GPodBase<Itdb_Playlist> {
+		public ITDB ITDB {
+			get { return new ITDB(((Itdb_Playlist *) Native)->itdb, true); }
+		}
+		
+		public IList<Track> Tracks {
+			get { return new PlaylistTrackList(Handle, ((Itdb_Playlist *) Native)->members); }
+		}
+		
+		public string Name {
+			get { return PtrToStringUTF8 (((Itdb_Playlist *) Native)->name); }
+			set { var x = (Itdb_Playlist *) Native; ReplaceStringUTF8 (ref x->name, value); }
+		}
+		
+		public bool 				IsSmartPlaylist		{ get { return ((Itdb_Playlist *) Native)->is_spl; }
+														  set { ((Itdb_Playlist *) Native)->is_spl = value; } }
+		public DateTime				TimeCreated			{ get { return Artwork.time_tToDateTime(((Itdb_Playlist *) Native)->timestamp); }
+														  set { ((Itdb_Playlist *) Native)->timestamp = Artwork.DateTimeTotime_t(value); } }
+		public ulong 				ID					{ get { return ((Itdb_Playlist *) Native)->id; }
+														  set { ((Itdb_Playlist *) Native)->id = value; } }
+		public PlaylistSortOrder	SortOrder			{ get { return ((Itdb_Playlist *) Native)->sortorder; }
+														  set { ((Itdb_Playlist *) Native)->sortorder = value; } }
+		public bool					IsPodcast			{ get { return ((Itdb_Playlist *) Native)->podcastflag == 1; }
+														  set { ((Itdb_Playlist *) Native)->podcastflag = (uint) (value ? 1 : 0); } }
+		public bool					IsMaster			{ get { return (((Itdb_Playlist *) Native)->type & 0xff) == 1; }
+														  set { ((Itdb_Playlist *) Native)->type = (byte) (value ? 1 : 0); } }
 
 		public Playlist(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
 		public Playlist(IntPtr handle) : base(handle) {}

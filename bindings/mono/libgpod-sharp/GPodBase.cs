@@ -53,6 +53,29 @@ namespace GPod {
 	public abstract class GPodBase<T> : IGPodBase, IDisposable {
 		//protected static Dictionary<IntPtr, int> RefCounter = new RefCounter();
 		
+		protected static IntPtr StringToPtrUTF8 (string s)
+		{
+			if (s == null)
+				return IntPtr.Zero;
+			// We should P/Invoke g_strdup with 's' and return that pointer.
+			return Marshal.StringToHGlobalAuto (s);
+		}
+		
+		protected static string PtrToStringUTF8 (IntPtr ptr)
+		{
+			// FIXME: Enforce this to be UTF8, this actually uses platform encoding
+			// which is probably going to be utf8 on most linuxes.
+			return Marshal.PtrToStringAuto (ptr);
+		}
+		
+		protected static void ReplaceStringUTF8 (ref IntPtr ptr, string str)
+		{
+			if (ptr != IntPtr.Zero) {
+				// FIXME: g_free it
+			}
+			ptr = StringToPtrUTF8 (str);
+		}
+		
 		protected static IntPtr DateTimeTotime_t (DateTime time) {
 			DateTime epoch = new DateTime (1970, 1, 1, 0, 0, 0);
 			return new IntPtr (((int) time.ToUniversalTime().Subtract(epoch).TotalSeconds));
@@ -64,15 +87,17 @@ namespace GPod {
 			return epoch.AddSeconds((int)time_t + utc_offset);
 		}
 		
+		internal IntPtr Native {
+			get { return HandleRef.ToIntPtr (Handle); }
+		}
+		
 		public    HandleRef Handle;
-		protected T			Struct;
 		protected bool		Borrowed;
 		
 		public GPodBase(IntPtr handle) : this(handle, true) {}
 		public GPodBase(IntPtr handle, bool borrowed) {
 			Borrowed = borrowed;
 			Handle   = new HandleRef (this, handle);
-			Struct   = (T) Marshal.PtrToStructure(HandleRef.ToIntPtr(Handle), typeof(T));
 		}
 		~GPodBase() { if (!Borrowed) Destroy(); }
 		

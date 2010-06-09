@@ -27,7 +27,7 @@ namespace GPod {
 		public struct Itdb_iTunesDB {
 			public IntPtr tracks;
     		public IntPtr playlists;
-    		public string filename;
+    		public IntPtr filename;
     		public IntPtr device;
 			// Ignore everything else
 					
@@ -99,7 +99,7 @@ namespace GPod {
 		protected override void DoUnlink(int index) { Itdb_iTunesDB.itdb_playlist_unlink(this[index].Handle); }
 	}
 
-	public class ITDB : GPodBase<Itdb_iTunesDB> {
+	public unsafe class ITDB : GPodBase<Itdb_iTunesDB> {
 		public static bool InitIpod(string mountpoint, string model_number, string ipod_name) {
 			IntPtr gerror;
 			bool res = Itdb_iTunesDB.itdb_init_ipod(mountpoint, model_number, ipod_name, out gerror);
@@ -123,13 +123,13 @@ namespace GPod {
 			return Itdb_iTunesDB.itdb_get_music_dir (mountpoint);
 		}
 		
-		public IList<Track>		Tracks						{ get { return new ITDBTrackList(true, Handle, Struct.tracks); } }
-		public IList<Playlist>	Playlists					{ get { return new ITDBPlaylistList(true, Handle, Struct.playlists); } }
+		public IList<Track>		Tracks						{ get { return new ITDBTrackList(true, Handle, ((Itdb_iTunesDB *) Native)->tracks); } }
+		public IList<Playlist>	Playlists					{ get { return new ITDBPlaylistList(true, Handle, ((Itdb_iTunesDB *) Native)->playlists); } }
 		public Playlist			MasterPlaylist				{ get { return new Playlist(Itdb_iTunesDB.itdb_playlist_mpl(Handle)); } }
 		public Playlist			PodcastsPlaylist			{ get { return new Playlist(Itdb_iTunesDB.itdb_playlist_podcasts(Handle)); } }
-		public Device			Device						{ get { return new Device(Struct.device, true); } }
+		public Device			Device						{ get { return new Device(((Itdb_iTunesDB *) Native)->device, true); } }
 		public uint				NonTransferredTrackCount	{ get { return Itdb_iTunesDB.itdb_tracks_number_nontransferred(Handle); } }
-		public string			Mountpoint					{ get { return Marshal.PtrToStringAuto(Itdb_iTunesDB.itdb_get_mountpoint(Handle)); }
+		public string			Mountpoint					{ get { return PtrToStringUTF8 (Itdb_iTunesDB.itdb_get_mountpoint(Handle)); }
 															  set { Itdb_iTunesDB.itdb_set_mountpoint(Handle, value); } }
 		
 		public ITDB(IntPtr handle, bool borrowed)	: base(handle, borrowed) {}

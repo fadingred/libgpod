@@ -18,7 +18,7 @@ all: $(ASSEMBLY_FILE)
 $(ASSEMBLY_FILE).mdb: $(ASSEMBLY_FILE)
 
 $(ASSEMBLY_FILE): $(SOURCES_BUILD)
-	$(MCS) -debug -target:$(TARGET) -out:$@ $(LINK) $(SOURCES_BUILD)
+	$(MCS) -debug -unsafe -target:$(TARGET) -out:$@ $(LINK) $(SOURCES_BUILD)
 	@if [ -e $(srcdir)/$(notdir $@.config) ]; then \
 		cp $(srcdir)/$(notdir $@.config) $(top_builddir)/bin; \
 	fi;

@@ -63,17 +63,17 @@ namespace GPod {
 		}
 	}
 
-	public class Artwork : GPodBase<Itdb_Artwork> {
-		public Thumbnail	Thumbnail		{ get { return new Thumbnail(Struct.thumbnail); }
-											  set { Struct.thumbnail = HandleRef.ToIntPtr(value.Handle); } }
-		public uint			Rating			{ get { return Struct.rating / 20; }
-											  set { Struct.rating = (value > 5 ? 5 : value) * 20; } }
-		public DateTime		TimeCreated		{ get { return Artwork.time_tToDateTime (Struct.creation_date); }
-											  set { Struct.creation_date = Artwork.DateTimeTotime_t(value); } }
-		public DateTime		TimeDigitized	{ get { return Artwork.time_tToDateTime (Struct.digitized_date); }
-											  set { Struct.digitized_date = Artwork.DateTimeTotime_t(value); } }
-		public uint			Size			{ get { return Struct.artwork_size; }
-											  set { Struct.artwork_size = value; } }
+	public unsafe class Artwork : GPodBase<Itdb_Artwork> {
+		public Thumbnail	Thumbnail		{ get { return new Thumbnail(((Itdb_Artwork *) Native)->thumbnail); }
+											  set { ((Itdb_Artwork *) Native)->thumbnail = HandleRef.ToIntPtr(value.Handle); } }
+		public uint			Rating			{ get { return ((Itdb_Artwork *) Native)->rating / 20; }
+											  set { ((Itdb_Artwork *) Native)->rating = (value > 5 ? 5 : value) * 20; } }
+		public DateTime		TimeCreated		{ get { return Artwork.time_tToDateTime (((Itdb_Artwork *) Native)->creation_date); }
+											  set { ((Itdb_Artwork *) Native)->creation_date = Artwork.DateTimeTotime_t(value); } }
+		public DateTime		TimeDigitized	{ get { return Artwork.time_tToDateTime (((Itdb_Artwork *) Native)->digitized_date); }
+											  set { ((Itdb_Artwork *) Native)->digitized_date = Artwork.DateTimeTotime_t(value); } }
+		public uint			Size			{ get { return ((Itdb_Artwork *) Native)->artwork_size; }
+											  set { ((Itdb_Artwork *) Native)->artwork_size = value; } }
 
 		public Artwork(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
 		public Artwork(IntPtr handle) : base(handle) {}

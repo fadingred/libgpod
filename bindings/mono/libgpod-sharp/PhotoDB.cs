@@ -83,14 +83,14 @@ namespace GPod {
 		protected override void DoUnlink(int index) { Itdb_PhotoDB.itdb_photodb_photoalbum_unlink(this[index].Handle); }
 	}
 	
-	public class PhotoDB : GPodBase<Itdb_PhotoDB> {
+	public unsafe class PhotoDB : GPodBase<Itdb_PhotoDB> {
 		public static PhotoDB Create(string mountpoint) {
 			return new PhotoDB(Itdb_PhotoDB.itdb_photodb_create(mountpoint), false);
 		}
 		
-		public IList<Artwork>		Photos						{ get { return new PhotoDBArtworkList(true, Handle, Struct.photos); } }
-		public IList<PhotoAlbum>	PhotoAlbums					{ get { return new PhotoDBPhotoAlbumList(true, Handle, Struct.photoalbums); } }
-		public Device				Device						{ get { return new Device(Struct.device, true); } }
+		public IList<Artwork>		Photos						{ get { return new PhotoDBArtworkList(true, Handle, ((Itdb_PhotoDB *) Native)->photos); } }
+		public IList<PhotoAlbum>	PhotoAlbums					{ get { return new PhotoDBPhotoAlbumList(true, Handle, ((Itdb_PhotoDB *) Native)->photoalbums); } }
+		public Device				Device						{ get { return new Device(((Itdb_PhotoDB *) Native)->device, true); } }
 		
 		public PhotoDB(IntPtr handle, bool borrowed)	: base(handle, borrowed) {}
 		public PhotoDB(string mountpoint)				: base(itdb_photodb_parse_wrapped(mountpoint), false) {}

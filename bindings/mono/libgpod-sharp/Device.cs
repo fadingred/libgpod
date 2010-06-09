@@ -24,7 +24,7 @@ namespace GPod {
 	
 	namespace native {
 		public struct Itdb_Device {
-			public string mountpoint;
+			public IntPtr mountpoint;
 			// Ignore the rest
 	
 			[DllImport ("gpod")]
@@ -84,7 +84,7 @@ namespace GPod {
 		}
 	}*/
 	
-	public class Device : GPodBase<Itdb_Device> {
+	public unsafe class Device : GPodBase<Itdb_Device> {
 		public bool		SupportsArtwork 		{ get { return Itdb_Device.itdb_device_supports_artwork(Handle); } }
 		public bool		SupportsChapterImage	{ get { return Itdb_Device.itdb_device_supports_chapter_image(Handle); } }
 		public bool		SupportsPhoto			{ get { return Itdb_Device.itdb_device_supports_photo(Handle); } }
@@ -92,7 +92,7 @@ namespace GPod {
 		public bool		SupportsVideo			{ get { return Itdb_Device.itdb_device_supports_video(Handle); } }
 		//public SysInfo	SysInfo					{ get { return new SysInfo(Handle); } }
 		public IpodInfo	IpodInfo				{ get { return new IpodInfo(Itdb_Device.itdb_device_get_ipod_info(Handle), true); } }
-		public string	Mountpoint				{ get { return Struct.mountpoint; }
+		public string	Mountpoint				{ get { return PtrToStringUTF8 (((Itdb_Device *)Native)->mountpoint); }
 												  set { Itdb_Device.itdb_device_set_mountpoint(Handle, value); } }
 		
 		public Device(IntPtr handle, bool borrowed) : base(handle, borrowed) {}

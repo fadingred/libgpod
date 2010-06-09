@@ -23,7 +23,7 @@ namespace GPod {
 	
 	namespace native {
 		public struct Itdb_IpodInfo {
-			public string         model_number;
+			public IntPtr         model_number;
 			public double         capacity;
 			public IpodModel      ipod_model;
 			public IpodGeneration ipod_generation;
@@ -115,7 +115,7 @@ namespace GPod {
 	    IphoneBlack,
 	}
 
-	public class IpodInfo : GPodBase<Itdb_IpodInfo> {		
+	public unsafe class IpodInfo : GPodBase<Itdb_IpodInfo> {		
 		public static IpodInfo[] GetTable() {
 			IntPtr table = Itdb_IpodInfo.itdb_info_get_ipod_info_table();
 			
@@ -133,12 +133,29 @@ namespace GPod {
 			return retval;
 		}
 		
-		public string			ModelNumber			{ get { return Struct.model_number; } }
-		public double			Capacity			{ get { return Struct.capacity; } }
-		public IpodModel		Model				{ get { return Struct.ipod_model; } }
-		public IpodGeneration	Generation			{ get { return Struct.ipod_generation; } }
-		public string			ModelString			{ get { return Marshal.PtrToStringAnsi(Itdb_IpodInfo.itdb_info_get_ipod_model_name_string(this.Model)); } }
-		public string			GenerationString	{ get { return Marshal.PtrToStringAnsi(Itdb_IpodInfo.itdb_info_get_ipod_generation_string(this.Generation)); } }
+		public double Capacity {
+			get { return ((Itdb_IpodInfo *) Native)->capacity; }
+		}
+		
+		public IpodGeneration Generation {
+			get { return ((Itdb_IpodInfo *) Native)->ipod_generation; }
+		}
+		
+		public string GenerationString {
+			get { return PtrToStringUTF8 (Itdb_IpodInfo.itdb_info_get_ipod_generation_string(this.Generation)); }
+		}
+		
+		public IpodModel Model {
+			get { return ((Itdb_IpodInfo *) Native)->ipod_model; }
+		}
+		
+		public string ModelNumber {
+			get { return PtrToStringUTF8 (((Itdb_IpodInfo *) Native)->model_number); }
+		}
+		
+		public string ModelString {
+			get { return PtrToStringUTF8 (Itdb_IpodInfo.itdb_info_get_ipod_model_name_string(this.Model)); }
+		}
 		
 		public IpodInfo(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
 		public IpodInfo(IntPtr handle)                : base(handle) {}

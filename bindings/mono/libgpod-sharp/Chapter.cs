@@ -25,7 +25,7 @@ namespace GPod {
 		[StructLayout (LayoutKind.Sequential)]
 		public struct Itdb_Chapter {
 		    public uint   startpos;
-		    public string chaptertitle;
+		    public IntPtr chaptertitle;
 		    // Ignore the rest
 			
 			[DllImport ("gpod")]
@@ -39,7 +39,7 @@ namespace GPod {
 		}
 	}
 
-	public class Chapter : GPodBase<Itdb_Chapter> {	
+	public unsafe class Chapter : GPodBase<Itdb_Chapter> {
 		public Chapter(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
 		public Chapter(IntPtr handle) : base(handle) {}
 		public Chapter() : this(Itdb_Chapter.itdb_chapter_new(), false) {}
@@ -51,13 +51,13 @@ namespace GPod {
 		protected override void Destroy() { Itdb_Chapter.itdb_chapter_free(Handle); }
 		
 		public uint StartPosition {
-			get { return Struct.startpos; }
-			set { Struct.startpos = value; }
+			get { return ((Itdb_Chapter *) Native)->startpos; }
+			set { ((Itdb_Chapter *) Native)->startpos = value; }
 		}
 		
 		public string Title {
-			get { return Struct.chaptertitle; }
-			set { Struct.chaptertitle = value; }
+			get { return PtrToStringUTF8 (((Itdb_Chapter *) Native)->chaptertitle); }
+			set { var x = (Itdb_Chapter *) Native; ReplaceStringUTF8 (ref x->chaptertitle, value); }
 		}
 	}
 }
