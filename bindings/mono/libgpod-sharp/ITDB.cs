@@ -108,6 +108,12 @@ namespace GPod {
 			return res;
 		}
 		
+		public static string GetLocalPath (string mountPoint, Track track)
+		{
+			string ipodPath = track.IpodPath.Replace (":", "/").Substring (1);
+			return System.IO.Path.Combine (mountPoint, ipodPath);
+		}
+		
 		public static string GetDestFileName (string mountpoint, string localFile)
 		{
 			//  itdb_cp_get_dest_filename (HandleRef track, string mountpoint, string filename, ref IntPtr error);

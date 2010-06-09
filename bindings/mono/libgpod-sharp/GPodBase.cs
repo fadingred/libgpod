@@ -47,6 +47,7 @@ namespace GPod {
 	}*/
 	
 	interface IGPodBase {
+		IntPtr Native { get; }
 		void SetBorrowed(bool borrowed);
 	}
 
@@ -89,6 +90,10 @@ namespace GPod {
 		
 		internal IntPtr Native {
 			get { return HandleRef.ToIntPtr (Handle); }
+		}
+		
+		IntPtr IGPodBase.Native {
+			get { return Native; }
 		}
 		
 		public    HandleRef Handle;

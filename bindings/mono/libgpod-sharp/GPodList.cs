@@ -55,16 +55,13 @@ namespace GPod {
 		IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
 		public bool Contains(T item) {
-			foreach (object o in list)
-				if (o.Equals(item))
-					return true;
-			return false;
+			return IndexOf (item) != -1;
 		}
 		
 		public int IndexOf(T item) {
 			int i = 0;
 			foreach (T t in this) {
-				if (t.Equals(item))
+				if (object.ReferenceEquals (t, item) || t.Native == item.Native)
 					return i;
 				i++;
 			}
