@@ -35,7 +35,16 @@ namespace GPod {
 			public static extern IntPtr itdb_new();
 			
 			[DllImport ("gpod")]
+			public static extern string itdb_cp_get_dest_filename (IntPtr track, string mountpoint, string filename, ref IntPtr error);
+			
+			[DllImport ("gpod")]
+			public static extern bool   itdb_cp_track_to_ipod (HandleRef track, string filename, ref IntPtr error);
+			
+			[DllImport ("gpod")]
 			public static extern void   itdb_free(HandleRef itdb);
+			
+			[DllImport ("gpod")]
+			public static extern string itdb_get_music_dir (string mountpoint);
 			
 			[DllImport ("gpod")]
 			public static extern IntPtr itdb_parse(string mountpoint, out IntPtr gerror);
@@ -99,6 +108,21 @@ namespace GPod {
 			return res;
 		}
 		
+		public static string GetDestFileName (string mountpoint, string localFile)
+		{
+			//  itdb_cp_get_dest_filename (HandleRef track, string mountpoint, string filename, ref IntPtr error);
+			IntPtr error = IntPtr.Zero;
+			string result = Itdb_iTunesDB.itdb_cp_get_dest_filename (IntPtr.Zero, mountpoint, localFile, ref error);
+			if (error != IntPtr.Zero)
+				throw new GException (error);
+			return result;
+		}
+		
+		public static string GetMusicPath (string mountpoint)
+		{
+			return Itdb_iTunesDB.itdb_get_music_dir (mountpoint);
+		}
+		
 		public IList<Track>		Tracks						{ get { return new ITDBTrackList(true, Handle, Struct.tracks); } }
 		public IList<Playlist>	Playlists					{ get { return new ITDBPlaylistList(true, Handle, Struct.playlists); } }
 		public Playlist			MasterPlaylist				{ get { return new Playlist(Itdb_iTunesDB.itdb_playlist_mpl(Handle)); } }
@@ -113,6 +137,14 @@ namespace GPod {
 		public ITDB()								: base(Itdb_iTunesDB.itdb_new(), false) {}
 		public ITDB(string mountpoint)				: base(itdb_parse_wrapped(mountpoint), false) {}
 		protected override void Destroy() { if (!Borrowed) Itdb_iTunesDB.itdb_free(Handle); }
+		public bool CopyTrackToIPod (Track track, string localPath)
+		{
+			IntPtr gerror = IntPtr.Zero;
+			bool result = Itdb_iTunesDB.itdb_cp_track_to_ipod (track.Handle, localPath, ref gerror);
+			if (gerror != IntPtr.Zero)
+				throw new GException(gerror);
+			return result;
+		}
 		
 		public bool Write() {
 			IntPtr gerror;
