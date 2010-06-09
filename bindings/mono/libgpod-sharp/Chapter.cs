@@ -22,6 +22,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
+		[StructLayout (LayoutKind.Sequential)]
 		public struct Itdb_Chapter {
 		    public uint   startpos;
 		    public string chaptertitle;

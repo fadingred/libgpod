@@ -24,6 +24,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
+		[StructLayout (LayoutKind.Sequential)]
 		public struct Itdb_Artwork {
 		    public IntPtr thumbnail;
 		    public uint   id;
