@@ -48,7 +48,7 @@ namespace GPod {
 		public T 	this[int index]	{ get { return (T) list[index]; }
 									  set { RemoveAt(index); Insert(index, value); } }
 		
-		public void Add(T item) { list.Append((object) item); if (owner) item.SetBorrowed(true); }
+		public void Add(T item) { DoAdd (-1, item); if (owner) item.SetBorrowed(true); }
 		public void Clear() { list.Empty(); }
 		public void CopyTo(T[] array, int arrayIndex) { list.CopyTo(array, arrayIndex); }
 		public IEnumerator<T> GetEnumerator() { return new GPodListEnumerator(list.GetEnumerator()); }
