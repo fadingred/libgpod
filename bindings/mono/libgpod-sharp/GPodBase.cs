@@ -50,7 +50,7 @@ namespace GPod {
 		void SetBorrowed(bool borrowed);
 	}
 
-	public abstract class GPodBase<T> : IGPodBase {
+	public abstract class GPodBase<T> : IGPodBase, IDisposable {
 		//protected static Dictionary<IntPtr, int> RefCounter = new RefCounter();
 		
 		protected static IntPtr DateTimeTotime_t (DateTime time) {
@@ -78,5 +78,10 @@ namespace GPod {
 		
 		public void SetBorrowed(bool borrowed) { Borrowed = borrowed; }
 		protected abstract void Destroy();
+		public void Dispose ()
+		{
+			if (!Borrowed)
+				Destroy ();
+		}
 	}
 }
