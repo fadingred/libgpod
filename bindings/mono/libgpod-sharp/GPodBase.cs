@@ -21,39 +21,12 @@ namespace GPod {
 	using System.Collections.Generic;
 	using System.Runtime.InteropServices;
 	
-/*	internal class RefCounter {
-		private Dictionary<IntPtr, int>	counter = new Dictionary<IntPtr, int>();
-		
-		public void Ref(HandleRef hr) { Ref(HandleRef.ToIntPtr(hr)); }
-		public void Ref(IntPtr p) {
-			if (counter.ContainsKey(p))
-				counter[p] += 1;
-			else
-				counter[p]  = 1;
-		}
-		
-		public void Unref(HandleRef hr) { Unref(HandleRef.ToIntPtr(hr)); }
-		public void Unref(IntPtr p) {
-			if (counter.ContainsKey(p))
-				counter[p] -= 1;
-		}
-		
-		public int Get(HandleRef hr) { Get(HandleRef.ToIntPtr(hr)); }
-		public int Get(HandleRef hr) {
-			if (counter.ContainsKey(p))
-				return counter[p];
-			return -1;
-		}
-	}*/
-	
 	interface IGPodBase {
 		IntPtr Native { get; }
 		void SetBorrowed(bool borrowed);
 	}
 
 	public abstract class GPodBase<T> : IGPodBase, IDisposable {
-		//protected static Dictionary<IntPtr, int> RefCounter = new RefCounter();
-		
 		protected static IntPtr StringToPtrUTF8 (string s)
 		{
 			if (s == null)
