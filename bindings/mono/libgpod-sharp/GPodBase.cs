@@ -27,38 +27,24 @@ namespace GPod {
 	}
 
 	public abstract class GPodBase<T> : IGPodBase, IDisposable {
-		protected static IntPtr StringToPtrUTF8 (string s)
-		{
-			if (s == null)
-				return IntPtr.Zero;
-			// We should P/Invoke g_strdup with 's' and return that pointer.
-			return Marshal.StringToHGlobalAuto (s);
-		}
 		
 		protected static string PtrToStringUTF8 (IntPtr ptr)
 		{
-			// FIXME: Enforce this to be UTF8, this actually uses platform encoding
-			// which is probably going to be utf8 on most linuxes.
-			return Marshal.PtrToStringAuto (ptr);
+			return GLib.Marshaller.Utf8PtrToString (ptr);
 		}
 		
 		protected static void ReplaceStringUTF8 (ref IntPtr ptr, string str)
 		{
-			if (ptr != IntPtr.Zero) {
-				// FIXME: g_free it
-			}
-			ptr = StringToPtrUTF8 (str);
+			GLib.Marshaller.Free (ptr);
+			ptr = GLib.Marshaller.StringToPtrGStrdup (str);
 		}
 		
 		protected static IntPtr DateTimeTotime_t (DateTime time) {
-			DateTime epoch = new DateTime (1970, 1, 1, 0, 0, 0);
-			return new IntPtr (((int) time.ToUniversalTime().Subtract(epoch).TotalSeconds));
+			return GLib.Marshaller.DateTimeTotime_t (time);
 		}
 		
 		protected static DateTime time_tToDateTime (IntPtr time_t) {
-			DateTime epoch = new DateTime (1970, 1, 1, 0, 0, 0);
-			int utc_offset = (int)(TimeZone.CurrentTimeZone.GetUtcOffset (DateTime.Now)).TotalSeconds;				
-			return epoch.AddSeconds((int)time_t + utc_offset);
+			return GLib.Marshaller.time_tToDateTime (time_t);
 		}
 		
 		internal IntPtr Native {
