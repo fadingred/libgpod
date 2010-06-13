@@ -23,7 +23,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
-		public struct Itdb_Device {
+		internal struct Itdb_Device {
 			public IntPtr mountpoint;
 			// Ignore the rest
 	
@@ -84,7 +84,7 @@ namespace GPod {
 		}
 	}*/
 	
-	public unsafe class Device : GPodBase<Itdb_Device> {
+	public unsafe class Device : GPodBase {
 		public bool		SupportsArtwork 		{ get { return Itdb_Device.itdb_device_supports_artwork(Handle); } }
 		public bool		SupportsChapterImage	{ get { return Itdb_Device.itdb_device_supports_chapter_image(Handle); } }
 		public bool		SupportsPhoto			{ get { return Itdb_Device.itdb_device_supports_photo(Handle); } }

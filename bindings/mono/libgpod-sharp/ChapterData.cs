@@ -24,7 +24,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
-		public struct Itdb_ChapterData {
+		internal struct Itdb_ChapterData {
 			public IntPtr chapters;
 		    // Ignore the rest
 				
@@ -61,7 +61,7 @@ namespace GPod {
 		}
 	}
 	
-	public unsafe class ChapterData : GPodBase<Itdb_ChapterData> {	
+	public unsafe class ChapterData : GPodBase {
 		public ChapterData(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
 		public ChapterData(IntPtr handle) : base(handle) {}
 		public ChapterData() : this(Itdb_ChapterData.itdb_chapterdata_new(), false) {}

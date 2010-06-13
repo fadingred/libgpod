@@ -24,7 +24,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
-		public struct Itdb_PhotoDB {
+		internal struct Itdb_PhotoDB {
 			public IntPtr photos;
 			public IntPtr photoalbums;
 			public IntPtr device;
@@ -83,7 +83,7 @@ namespace GPod {
 		protected override void DoUnlink(int index) { Itdb_PhotoDB.itdb_photodb_photoalbum_unlink(this[index].Handle); }
 	}
 	
-	public unsafe class PhotoDB : GPodBase<Itdb_PhotoDB> {
+	public unsafe class PhotoDB : GPodBase {
 		public static PhotoDB Create(string mountpoint) {
 			return new PhotoDB(Itdb_PhotoDB.itdb_photodb_create(mountpoint), false);
 		}

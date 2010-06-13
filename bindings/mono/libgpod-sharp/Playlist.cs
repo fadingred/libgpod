@@ -24,7 +24,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
-		public struct Itdb_Playlist {
+		internal struct Itdb_Playlist {
 		    public IntPtr itdb;
 		    public IntPtr name;
 		    public byte   type;
@@ -96,7 +96,7 @@ namespace GPod {
 		protected override void DoUnlink(int index) { Itdb_Playlist.itdb_playlist_remove_track(this.handle, this[index].Handle); }
 	}
 	
-	public unsafe class Playlist : GPodBase<Itdb_Playlist> {
+	public unsafe class Playlist : GPodBase {
 		public ITDB ITDB {
 			get { return new ITDB(((Itdb_Playlist *) Native)->itdb, true); }
 		}

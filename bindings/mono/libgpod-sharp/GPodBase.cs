@@ -26,7 +26,7 @@ namespace GPod {
 		void SetBorrowed(bool borrowed);
 	}
 
-	public abstract class GPodBase<T> : IGPodBase, IDisposable {
+	public abstract class GPodBase : IGPodBase, IDisposable {
 		
 		protected static string PtrToStringUTF8 (IntPtr ptr)
 		{

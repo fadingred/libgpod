@@ -25,7 +25,7 @@ namespace GPod {
 	
 	namespace native {
 		[StructLayout (LayoutKind.Sequential)]
-		public struct Itdb_Artwork {
+		internal struct Itdb_Artwork {
 		    public IntPtr thumbnail;
 		    public uint   id;
 		    public ulong  dbid;
@@ -63,7 +63,7 @@ namespace GPod {
 		}
 	}
 
-	public unsafe class Artwork : GPodBase<Itdb_Artwork> {
+	public unsafe class Artwork : GPodBase {
 		public Thumbnail	Thumbnail		{ get { return new Thumbnail(((Itdb_Artwork *) Native)->thumbnail); }
 											  set { ((Itdb_Artwork *) Native)->thumbnail = HandleRef.ToIntPtr(value.Handle); } }
 		public uint			Rating			{ get { return ((Itdb_Artwork *) Native)->rating / 20; }

@@ -24,7 +24,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
-		public struct Itdb_iTunesDB {
+		internal struct Itdb_iTunesDB {
 			public IntPtr tracks;
     		public IntPtr playlists;
     		public IntPtr filename;
@@ -99,7 +99,7 @@ namespace GPod {
 		protected override void DoUnlink(int index) { Itdb_iTunesDB.itdb_playlist_unlink(this[index].Handle); }
 	}
 
-	public unsafe class ITDB : GPodBase<Itdb_iTunesDB> {
+	public unsafe class ITDB : GPodBase {
 		public static bool InitIpod(string mountpoint, string model_number, string ipod_name) {
 			IntPtr gerror;
 			bool res = Itdb_iTunesDB.itdb_init_ipod(mountpoint, model_number, ipod_name, out gerror);

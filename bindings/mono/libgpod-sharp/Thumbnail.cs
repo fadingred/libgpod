@@ -24,7 +24,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
-		public struct Itdb_Thumb {
+		internal struct Itdb_Thumb {
 			// Ignore all fields (they are opaque)
 		
 			[DllImport ("gpod")]
@@ -41,7 +41,7 @@ namespace GPod {
 		}
 	}
 	
-	public class Thumbnail : GPodBase<Itdb_Thumb> {
+	public class Thumbnail : GPodBase {
 		public Thumbnail(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
 		public Thumbnail(IntPtr handle) : base(handle) {}
 		public Thumbnail(Thumbnail other) : this(Itdb_Thumb.itdb_thumb_duplicate(other.Handle), false) {}

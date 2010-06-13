@@ -25,7 +25,7 @@ namespace GPod {
 	
 	namespace native {
 		[StructLayout (LayoutKind.Sequential)]
-		public struct Itdb_Track {
+		internal struct Itdb_Track {
 			public IntPtr		itdb;
 			public IntPtr		title;
 			public IntPtr		ipod_path;
@@ -169,7 +169,7 @@ namespace GPod {
 		MusicTVShow = 0x0060,
 	}
 	
-	public unsafe class Track : GPodBase<Itdb_Track> {
+	public unsafe class Track : GPodBase {
 		public bool HasThumbnails {
 			get { return Itdb_Track.itdb_track_has_thumbnails (Handle); }
 		}

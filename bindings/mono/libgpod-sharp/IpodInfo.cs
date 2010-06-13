@@ -22,7 +22,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
-		public struct Itdb_IpodInfo {
+		internal struct Itdb_IpodInfo {
 			public IntPtr         model_number;
 			public double         capacity;
 			public IpodModel      ipod_model;
@@ -115,7 +115,7 @@ namespace GPod {
 	    IphoneBlack,
 	}
 
-	public unsafe class IpodInfo : GPodBase<Itdb_IpodInfo> {		
+	public unsafe class IpodInfo : GPodBase {
 		public static IpodInfo[] GetTable() {
 			IntPtr table = Itdb_IpodInfo.itdb_info_get_ipod_info_table();
 			

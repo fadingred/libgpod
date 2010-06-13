@@ -24,7 +24,7 @@ namespace GPod {
 	using native;
 	
 	namespace native {
-		public struct Itdb_PhotoAlbum {
+		internal struct Itdb_PhotoAlbum {
 			public IntPtr photodb;
 			public IntPtr name;
 			public IntPtr members;
@@ -67,7 +67,7 @@ namespace GPod {
 		protected override void DoUnlink(int index) { Itdb_PhotoDB.itdb_photodb_photoalbum_unlink(this[index].Handle); }
 	}
 	
-	public unsafe class PhotoAlbum : GPodBase<Itdb_PhotoAlbum> {
+	public unsafe class PhotoAlbum : GPodBase {
 		public PhotoAlbum(IntPtr handle, bool borrowed)	: base(handle, borrowed) {}
 		public PhotoAlbum(IntPtr handle)				: base(handle) {}
 		public PhotoAlbum(string albumname)				: base(Itdb_PhotoAlbum.itdb_photodb_photoalbum_new(albumname), false) {}

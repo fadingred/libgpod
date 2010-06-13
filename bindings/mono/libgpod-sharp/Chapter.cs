@@ -23,7 +23,7 @@ namespace GPod {
 	
 	namespace native {
 		[StructLayout (LayoutKind.Sequential)]
-		public struct Itdb_Chapter {
+		internal struct Itdb_Chapter {
 		    public uint   startpos;
 		    public IntPtr chaptertitle;
 		    // Ignore the rest
@@ -39,7 +39,7 @@ namespace GPod {
 		}
 	}
 
-	public unsafe class Chapter : GPodBase<Itdb_Chapter> {
+	public unsafe class Chapter : GPodBase {
 		public Chapter(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
 		public Chapter(IntPtr handle) : base(handle) {}
 		public Chapter() : this(Itdb_Chapter.itdb_chapter_new(), false) {}
