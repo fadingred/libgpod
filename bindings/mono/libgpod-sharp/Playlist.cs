@@ -43,19 +43,19 @@ namespace GPod {
 			// Ignore the rest
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_playlist_new(string title, bool spl);
+			internal static extern IntPtr itdb_playlist_new(string title, bool spl);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_playlist_free(HandleRef pl);
+			internal static extern void   itdb_playlist_free(HandleRef pl);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_playlist_duplicate(HandleRef pl);
+			internal static extern IntPtr itdb_playlist_duplicate(HandleRef pl);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_playlist_add_track(HandleRef pl, HandleRef track, int pos);
+			internal static extern void   itdb_playlist_add_track(HandleRef pl, HandleRef track, int pos);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_playlist_remove_track(HandleRef pl, HandleRef track);
+			internal static extern void   itdb_playlist_remove_track(HandleRef pl, HandleRef track);
 		}
 	}
 

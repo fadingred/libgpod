@@ -31,43 +31,43 @@ namespace GPod {
 			// Ignore the rest
 
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_photodb_create(string mountpoint);
+			internal static extern IntPtr itdb_photodb_create(string mountpoint);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_photodb_free(HandleRef photodb);
+			internal static extern void   itdb_photodb_free(HandleRef photodb);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_photodb_parse(string mountpoint, out IntPtr gerror);
+			internal static extern IntPtr itdb_photodb_parse(string mountpoint, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_photodb_write(HandleRef photodb, out IntPtr gerror);
+			internal static extern bool   itdb_photodb_write(HandleRef photodb, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_photodb_add_photo(HandleRef photodb, string filename, int position, int rotation, out IntPtr gerror);
+			internal static extern IntPtr itdb_photodb_add_photo(HandleRef photodb, string filename, int position, int rotation, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_photodb_add_photo_from_data(HandleRef photodb, IntPtr image_data, int image_data_len, int position, int rotation, out IntPtr gerror);
+			internal static extern IntPtr itdb_photodb_add_photo_from_data(HandleRef photodb, IntPtr image_data, int image_data_len, int position, int rotation, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_photodb_add_photo_from_pixbuf(HandleRef photodb, IntPtr pixbuf, int position, int rotation, out IntPtr gerror);
+			internal static extern IntPtr itdb_photodb_add_photo_from_pixbuf(HandleRef photodb, IntPtr pixbuf, int position, int rotation, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_photodb_remove_photo(HandleRef photodb, HandleRef album, HandleRef photo);
+			internal static extern void   itdb_photodb_remove_photo(HandleRef photodb, HandleRef album, HandleRef photo);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_photodb_photoalbum_create(HandleRef photodb, string albumname, int pos);
+			internal static extern IntPtr itdb_photodb_photoalbum_create(HandleRef photodb, string albumname, int pos);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_photodb_photoalbum_by_name(HandleRef photodb, string albumname);
+			internal static extern IntPtr itdb_photodb_photoalbum_by_name(HandleRef photodb, string albumname);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_photodb_photoalbum_remove(HandleRef photodb, HandleRef album, bool remove_pics);
+			internal static extern void   itdb_photodb_photoalbum_remove(HandleRef photodb, HandleRef album, bool remove_pics);
 			
 			[DllImport ("gpod")]
-			public static extern void itdb_photodb_photoalbum_add(HandleRef photodb, HandleRef album, int pos);
+			internal static extern void itdb_photodb_photoalbum_add(HandleRef photodb, HandleRef album, int pos);
 			
 			[DllImport ("gpod")]
-			public static extern void itdb_photodb_photoalbum_unlink(HandleRef album);
+			internal static extern void itdb_photodb_photoalbum_unlink(HandleRef album);
 		}
 	}
 

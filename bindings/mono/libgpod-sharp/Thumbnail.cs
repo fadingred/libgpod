@@ -28,16 +28,16 @@ namespace GPod {
 			// Ignore all fields (they are opaque)
 		
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_thumb_duplicate(HandleRef thumb);
+			internal static extern IntPtr itdb_thumb_duplicate(HandleRef thumb);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_thumb_free(HandleRef thumb);
+			internal static extern void   itdb_thumb_free(HandleRef thumb);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_thumb_to_pixbuf_at_size(HandleRef device, HandleRef thumb, int width, int height);
+			internal static extern IntPtr itdb_thumb_to_pixbuf_at_size(HandleRef device, HandleRef thumb, int width, int height);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_thumb_to_pixbufs(HandleRef device, HandleRef thumb);			
+			internal static extern IntPtr itdb_thumb_to_pixbufs(HandleRef device, HandleRef thumb);			
 		}
 	}
 	

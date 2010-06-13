@@ -29,22 +29,22 @@ namespace GPod {
 		    // Ignore the rest
 				
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_chapterdata_new();
+			internal static extern IntPtr itdb_chapterdata_new();
 
 			[DllImport ("gpod")]
-			public static extern bool   itdb_chapterdata_add_chapter(HandleRef chapterdata, uint startpos, string chaptertitle);
+			internal static extern bool   itdb_chapterdata_add_chapter(HandleRef chapterdata, uint startpos, string chaptertitle);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_chapterdata_duplicate(HandleRef chapterdata);
+			internal static extern IntPtr itdb_chapterdata_duplicate(HandleRef chapterdata);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_chapterdata_unlink_chapter(HandleRef chapterdata, HandleRef chapter);
+			internal static extern void   itdb_chapterdata_unlink_chapter(HandleRef chapterdata, HandleRef chapter);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_chapterdata_remove_chapters(HandleRef chapterdata);
+			internal static extern void   itdb_chapterdata_remove_chapters(HandleRef chapterdata);
 
 			[DllImport ("gpod")]
-			public static extern void   itdb_chapterdata_free(HandleRef chapterdata);
+			internal static extern void   itdb_chapterdata_free(HandleRef chapterdata);
 		}
 	}
 	

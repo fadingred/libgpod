@@ -30,13 +30,13 @@ namespace GPod {
 			// Ignore the rest
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_info_get_ipod_info_table();
+			internal static extern IntPtr itdb_info_get_ipod_info_table();
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_info_get_ipod_generation_string(IpodGeneration generation);
+			internal static extern IntPtr itdb_info_get_ipod_generation_string(IpodGeneration generation);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_info_get_ipod_model_name_string(IpodModel model);
+			internal static extern IntPtr itdb_info_get_ipod_model_name_string(IpodModel model);
 		}
 	}
 	

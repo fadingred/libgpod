@@ -29,13 +29,13 @@ namespace GPod {
 		    // Ignore the rest
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_chapter_new();
+			internal static extern IntPtr itdb_chapter_new();
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_chapter_duplicate(HandleRef chapter);
+			internal static extern IntPtr itdb_chapter_duplicate(HandleRef chapter);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_chapter_free(HandleRef chapter);
+			internal static extern void   itdb_chapter_free(HandleRef chapter);
 		}
 	}
 

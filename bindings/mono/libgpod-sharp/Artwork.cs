@@ -38,28 +38,28 @@ namespace GPod {
 			// Ignore the rest
 	
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_artwork_new();
+			internal static extern IntPtr itdb_artwork_new();
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_artwork_duplicate(HandleRef device);
+			internal static extern IntPtr itdb_artwork_duplicate(HandleRef device);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_artwork_free(HandleRef artwork);
+			internal static extern void   itdb_artwork_free(HandleRef artwork);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_artwork_get_pixbuf(HandleRef device, HandleRef artwork, int width, int height);
+			internal static extern IntPtr itdb_artwork_get_pixbuf(HandleRef device, HandleRef artwork, int width, int height);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_artwork_set_thumbnail(HandleRef artwork, string filename, int rotation, out IntPtr gerror);
+			internal static extern bool   itdb_artwork_set_thumbnail(HandleRef artwork, string filename, int rotation, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_artwork_set_thumbnail_from_data(HandleRef artwork, IntPtr image_data, int image_data_len, int rotation, out IntPtr gerror);
+			internal static extern bool   itdb_artwork_set_thumbnail_from_data(HandleRef artwork, IntPtr image_data, int image_data_len, int rotation, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_artwork_set_thumbnail_from_pixbuf(HandleRef artwork, IntPtr pixbuf, int rotation, out IntPtr gerror);
+			internal static extern bool   itdb_artwork_set_thumbnail_from_pixbuf(HandleRef artwork, IntPtr pixbuf, int rotation, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_artwork_remove_thumbnails(HandleRef artwork);
+			internal static extern void   itdb_artwork_remove_thumbnails(HandleRef artwork);
 		}
 	}
 

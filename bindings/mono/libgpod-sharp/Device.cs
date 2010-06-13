@@ -28,43 +28,43 @@ namespace GPod {
 			// Ignore the rest
 	
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_device_new();
+			internal static extern IntPtr itdb_device_new();
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_device_free(HandleRef device);
+			internal static extern void   itdb_device_free(HandleRef device);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_device_set_mountpoint(HandleRef device, string mountpoint);
+			internal static extern void   itdb_device_set_mountpoint(HandleRef device, string mountpoint);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_device_supports_artwork(HandleRef device);
+			internal static extern bool   itdb_device_supports_artwork(HandleRef device);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_device_supports_chapter_image(HandleRef device);
+			internal static extern bool   itdb_device_supports_chapter_image(HandleRef device);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_device_supports_photo(HandleRef device);
+			internal static extern bool   itdb_device_supports_photo(HandleRef device);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_device_supports_podcast(HandleRef device);
+			internal static extern bool   itdb_device_supports_podcast(HandleRef device);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_device_supports_video(HandleRef device);
+			internal static extern bool   itdb_device_supports_video(HandleRef device);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_device_get_ipod_info(HandleRef device);
+			internal static extern IntPtr itdb_device_get_ipod_info(HandleRef device);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_device_read_sysinfo(HandleRef device);
+			internal static extern bool   itdb_device_read_sysinfo(HandleRef device);
 			
 			[DllImport ("gpod")]
-			public static extern string itdb_device_get_sysinfo(HandleRef device, string field);
+			internal static extern string itdb_device_get_sysinfo(HandleRef device, string field);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_device_set_sysinfo(HandleRef device, string field, string value);
+			internal static extern void   itdb_device_set_sysinfo(HandleRef device, string field, string value);
 	
 			[DllImport ("gpod")]
-			public static extern bool   itdb_device_write_sysinfo(HandleRef device, out IntPtr gerror);
+			internal static extern bool   itdb_device_write_sysinfo(HandleRef device, out IntPtr gerror);
 		}
 	}
 

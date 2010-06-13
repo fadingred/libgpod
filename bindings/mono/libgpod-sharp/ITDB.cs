@@ -32,58 +32,58 @@ namespace GPod {
 			// Ignore everything else
 					
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_new();
+			internal static extern IntPtr itdb_new();
 			
 			[DllImport ("gpod")]
-			public static extern string itdb_cp_get_dest_filename (IntPtr track, string mountpoint, string filename, ref IntPtr error);
+			internal static extern string itdb_cp_get_dest_filename (IntPtr track, string mountpoint, string filename, ref IntPtr error);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_cp_track_to_ipod (HandleRef track, string filename, ref IntPtr error);
+			internal static extern bool   itdb_cp_track_to_ipod (HandleRef track, string filename, ref IntPtr error);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_free(HandleRef itdb);
+			internal static extern void   itdb_free(HandleRef itdb);
 			
 			[DllImport ("gpod")]
-			public static extern string itdb_get_music_dir (string mountpoint);
+			internal static extern string itdb_get_music_dir (string mountpoint);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_parse(string mountpoint, out IntPtr gerror);
+			internal static extern IntPtr itdb_parse(string mountpoint, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_write(HandleRef itdb, out IntPtr gerror);
+			internal static extern bool   itdb_write(HandleRef itdb, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_set_mountpoint(HandleRef itdb, string mountpoint);
+			internal static extern void   itdb_set_mountpoint(HandleRef itdb, string mountpoint);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_get_mountpoint(HandleRef itdb);
+			internal static extern IntPtr itdb_get_mountpoint(HandleRef itdb);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_init_ipod(string mountpoint, string model_number, string ipod_name, out IntPtr gerror);
+			internal static extern bool   itdb_init_ipod(string mountpoint, string model_number, string ipod_name, out IntPtr gerror);
 			
 			[DllImport ("gpod")]
-			public static extern uint   itdb_tracks_number_nontransferred(HandleRef itdb);
+			internal static extern uint   itdb_tracks_number_nontransferred(HandleRef itdb);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_track_add(HandleRef itdb, HandleRef track, int pos);
+			internal static extern void   itdb_track_add(HandleRef itdb, HandleRef track, int pos);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_track_unlink(HandleRef track);
+			internal static extern void   itdb_track_unlink(HandleRef track);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_playlist_add(HandleRef itdb, HandleRef pl, int pos);
+			internal static extern void   itdb_playlist_add(HandleRef itdb, HandleRef pl, int pos);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_playlist_unlink(HandleRef pl);
+			internal static extern void   itdb_playlist_unlink(HandleRef pl);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_playlist_mpl(HandleRef itdb);
+			internal static extern IntPtr itdb_playlist_mpl(HandleRef itdb);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_playlist_podcasts(HandleRef itdb);
+			internal static extern IntPtr itdb_playlist_podcasts(HandleRef itdb);
 
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_playlist_by_name(HandleRef itdb, string name);
+			internal static extern IntPtr itdb_playlist_by_name(HandleRef itdb, string name);
 		}
 	}
 	

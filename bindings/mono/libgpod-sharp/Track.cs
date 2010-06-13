@@ -130,31 +130,31 @@ namespace GPod {
 			// Ignore the rest
 						
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_track_new();
+			internal static extern IntPtr itdb_track_new();
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_track_free(HandleRef track);
+			internal static extern void   itdb_track_free(HandleRef track);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_track_duplicate(HandleRef track);
+			internal static extern IntPtr itdb_track_duplicate(HandleRef track);
 			
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_track_get_thumbnail(HandleRef track, int width, int height);
+			internal static extern IntPtr itdb_track_get_thumbnail(HandleRef track, int width, int height);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_track_has_thumbnails(HandleRef track);
+			internal static extern bool   itdb_track_has_thumbnails(HandleRef track);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_track_set_thumbnails(HandleRef track, string filename);
+			internal static extern bool   itdb_track_set_thumbnails(HandleRef track, string filename);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_track_set_thumbnails_from_data(HandleRef track, IntPtr image_data, int image_data_len);
+			internal static extern bool   itdb_track_set_thumbnails_from_data(HandleRef track, IntPtr image_data, int image_data_len);
 			
 			[DllImport ("gpod")]
-			public static extern bool   itdb_track_set_thumbnails_from_pixbuf(HandleRef track, IntPtr pixbuf);
+			internal static extern bool   itdb_track_set_thumbnails_from_pixbuf(HandleRef track, IntPtr pixbuf);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_track_remove_thumbnails(HandleRef track);
+			internal static extern void   itdb_track_remove_thumbnails(HandleRef track);
 		}
 	}
 

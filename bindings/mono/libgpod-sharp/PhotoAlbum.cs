@@ -40,13 +40,13 @@ namespace GPod {
 			// Ignore the rest
 
 			[DllImport ("gpod")]
-			public static extern IntPtr itdb_photodb_photoalbum_new(string albumname);
+			internal static extern IntPtr itdb_photodb_photoalbum_new(string albumname);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_photodb_photoalbum_free(HandleRef album);
+			internal static extern void   itdb_photodb_photoalbum_free(HandleRef album);
 			
 			[DllImport ("gpod")]
-			public static extern void   itdb_photodb_photoalbum_add_photo(IntPtr photodb, HandleRef album, HandleRef photo, int position);
+			internal static extern void   itdb_photodb_photoalbum_add_photo(IntPtr photodb, HandleRef album, HandleRef photo, int position);
 		}
 	}
 	
