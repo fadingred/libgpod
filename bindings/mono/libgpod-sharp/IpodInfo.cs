@@ -20,6 +20,7 @@ namespace GPod {
 	using System;
 	using System.Runtime.InteropServices;
 	using native;
+	using System.Collections.Generic;
 	
 	namespace native {
 		internal struct Itdb_IpodInfo {
@@ -27,7 +28,13 @@ namespace GPod {
 			public double         capacity;
 			public IpodModel      ipod_model;
 			public IpodGeneration ipod_generation;
-			// Ignore the rest
+			
+			/* We don't use these 5 fields but this struct must mirror the native one exactly */
+			uint musicdirs;
+			int reserved_int1;
+			int reserved_int2;
+			IntPtr reserved1;
+			IntPtr reserved2;
 			
 			[DllImport ("gpod")]
 			internal static extern IntPtr itdb_info_get_ipod_info_table();
@@ -115,24 +122,31 @@ namespace GPod {
 	    IphoneBlack,
 	}
 
-	public unsafe class IpodInfo : GPodBase {
-		public static IpodInfo[] GetTable() {
-			IntPtr table = Itdb_IpodInfo.itdb_info_get_ipod_info_table();
+	public sealed unsafe class IpodInfo : GPodBase {
+		public static IpodInfo[] Table = GetTable ();
+		
+		static unsafe IpodInfo[] GetTable() {
+			Itdb_IpodInfo *table = (Itdb_IpodInfo *) Itdb_IpodInfo.itdb_info_get_ipod_info_table();
 			
-			// Count the number of returned structs
-			int count=0;
-			while (Marshal.ReadIntPtr(table, count * IntPtr.Size) != IntPtr.Zero) count++;
-
-			// Create our array
-			IpodInfo[] retval = new IpodInfo[count];
-			
-			// Assign to the array
-			for (int i=0 ; i < count ; i++)
-				retval[i] = new IpodInfo(Marshal.ReadIntPtr(table, i * IntPtr.Size), true);
-			
-			return retval;
+			List <IpodInfo> retval = new List<IpodInfo> ();
+			while (true) {
+				Itdb_IpodInfo *item = &table [retval.Count];
+				if (item->model_number == IntPtr.Zero)
+					break;
+				retval.Add (new IpodInfo ((IntPtr)item, true));
+			}
+			return retval.ToArray ();
 		}
 		
+		internal static IpodInfo Find (IntPtr native)
+		{
+			for (int i = 0; i < Table.Length; i++)
+				if (Table [i].Native == native)
+					return Table [i];
+			return null;
+		}
+		
+		// Capacity is in gigabytes
 		public double Capacity {
 			get { return ((Itdb_IpodInfo *) Native)->capacity; }
 		}
@@ -157,8 +171,21 @@ namespace GPod {
 			get { return PtrToStringUTF8 (Itdb_IpodInfo.itdb_info_get_ipod_model_name_string(this.Model)); }
 		}
 		
-		public IpodInfo(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
-		public IpodInfo(IntPtr handle)                : base(handle) {}
-		protected override void Destroy() { }
+		IpodInfo (IntPtr handle, bool borrowed)
+			: base (handle, borrowed)
+		{
+			
+		}
+		
+		IpodInfo (IntPtr handle)
+			: base (handle)
+		{
+			
+		}
+		
+		protected override void Destroy()
+		{
+			// No need to free anything as it's a static array in native code.
+		}
 	}
 }

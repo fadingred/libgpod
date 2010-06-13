@@ -91,7 +91,7 @@ namespace GPod {
 		public bool		SupportsPodcast			{ get { return Itdb_Device.itdb_device_supports_podcast(Handle); } }
 		public bool		SupportsVideo			{ get { return Itdb_Device.itdb_device_supports_video(Handle); } }
 		//public SysInfo	SysInfo					{ get { return new SysInfo(Handle); } }
-		public IpodInfo	IpodInfo				{ get { return new IpodInfo(Itdb_Device.itdb_device_get_ipod_info(Handle), true); } }
+		public IpodInfo	IpodInfo				{ get { return IpodInfo.Find (Itdb_Device.itdb_device_get_ipod_info(Handle)); } }
 		public string	Mountpoint				{ get { return PtrToStringUTF8 (((Itdb_Device *)Native)->mountpoint); }
 												  set { Itdb_Device.itdb_device_set_mountpoint(Handle, value); } }
 		
