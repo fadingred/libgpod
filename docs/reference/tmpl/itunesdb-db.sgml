@@ -100,14 +100,32 @@ library _duplicate()/_free() functions.
 @device: 
 @version: 
 @id: 
-@reserved_int1: 
+@tzoffset: 
 @reserved_int2: 
-@reserved1: 
+@priv: 
 @reserved2: 
 @usertype: 
 @userdata: 
 @userdata_duplicate: 
 @userdata_destroy: 
+
+<!-- ##### STRUCT Itdb_iTunesDB_Private ##### -->
+<para>
+
+</para>
+
+@mhsd5_playlists: 
+@unk_0x22: 
+@id_0x24: 
+@lang: 
+@pid: 
+@unk_0x50: 
+@unk_0x54: 
+@audio_language: 
+@subtitle_language: 
+@unk_0xa4: 
+@unk_0xa6: 
+@unk_0xa8: 
 
 <!-- ##### ENUM ItdbFileError ##### -->
 <para>

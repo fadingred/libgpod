@@ -1,0 +1,30 @@
+SOURCES_BUILD = $(addprefix $(srcdir)/, $(SOURCES))
+
+ASSEMBLY_EXTENSION = $(strip $(patsubst library, dll, $(TARGET)))
+ASSEMBLY_FILE = $(ASSEMBLY).$(ASSEMBLY_EXTENSION)
+
+DEFAULT_INSTALL_DIR = $(pkglibdir)
+INSTALL_DIR_RESOLVED = $(firstword $(subst , $(DEFAULT_INSTALL_DIR), $(INSTALL_DIR)))
+
+OUTPUT_FILES = \
+	$(ASSEMBLY_FILE) \
+	$(ASSEMBLY_FILE).mdb
+
+moduledir = $(INSTALL_DIR_RESOLVED)
+module_SCRIPTS = $(OUTPUT_FILES)
+
+all: $(ASSEMBLY_FILE)
+
+$(ASSEMBLY_FILE).mdb: $(ASSEMBLY_FILE)
+
+$(ASSEMBLY_FILE): $(SOURCES_BUILD)
+	$(MCS) -debug -unsafe -target:$(TARGET) -out:$@ $(LINK) $(SOURCES_BUILD)
+	@if [ -e $(srcdir)/$(notdir $@.config) ]; then \
+		cp $(srcdir)/$(notdir $@.config) $(top_builddir)/bin; \
+	fi;
+
+EXTRA_DIST = $(SOURCES_BUILD)
+
+CLEANFILES = $(OUTPUT_FILES)
+DISTCLEANFILES = *.pidb
+MAINTAINERCLEANFILES = Makefile.in

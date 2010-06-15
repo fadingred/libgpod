@@ -1,3 +1,1 @@
-if HAVE_PYTHON
-SUBDIRS=python
-endif
+SUBDIRS=mono python

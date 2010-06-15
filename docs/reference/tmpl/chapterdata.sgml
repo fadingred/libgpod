@@ -114,6 +114,15 @@ points in the track are defined here, as well as the title for each chapter.
 @chapterdata: 
 
 
+<!-- ##### FUNCTION itdb_chapterdata_unlink_chapter ##### -->
+<para>
+
+</para>
+
+@chapterdata: 
+@chapter: 
+
+
 <!-- ##### FUNCTION itdb_chapterdata_free ##### -->
 <para>
 

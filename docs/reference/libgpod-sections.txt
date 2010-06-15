@@ -2,6 +2,7 @@
 <FILE>itunesdb-db</FILE>
 <TITLE>The Itdb_iTunesDB structure</TITLE>
 Itdb_iTunesDB
+Itdb_iTunesDB_Private
 ItdbFileError
 
 itdb_new
@@ -29,6 +30,9 @@ itdb_filename_ipod2fs
 itdb_filename_on_ipod
 itdb_musicdirs_number
 itdb_rename_files
+
+itdb_start_sync
+itdb_stop_sync
 </SECTION>
 
 <SECTION>
@@ -42,6 +46,7 @@ itdb_get_device_dir
 itdb_get_photos_dir
 itdb_get_itunesdb_path
 itdb_get_itunessd_path
+itdb_get_itunescdb_path
 itdb_get_artworkdb_path
 itdb_get_photodb_path
 itdb_get_photos_thumb_dir
@@ -71,6 +76,7 @@ itdb_time_host_to_mac
 <FILE>track</FILE>
 <TITLE>Tracks</TITLE>
 Itdb_Track
+Itdb_Track_Private
 Itdb_Mediatype
 ITDB_RATING_STEP
 itdb_track_new
@@ -96,6 +102,7 @@ itdb_track_remove_thumbnails
 <FILE>playlists</FILE>
 <TITLE>Playlists</TITLE>
 Itdb_Playlist
+Itdb_Playlist_Private
 ItdbPlaylistSortOrder
 itdb_playlist_new
 itdb_playlist_free
@@ -123,6 +130,7 @@ itdb_playlist_by_nr
 itdb_playlist_by_name
 
 itdb_playlist_randomize
+
 </SECTION>
 
 <SECTION>
@@ -168,6 +176,7 @@ itdb_chapterdata_add_chapter
 itdb_chapterdata_duplicate
 itdb_chapterdata_remove_chapter
 itdb_chapterdata_remove_chapters
+itdb_chapterdata_unlink_chapter
 itdb_chapterdata_free
 </SECTION>
 
@@ -231,10 +240,17 @@ itdb_photodb_add_photo_from_pixbuf
 itdb_photodb_remove_photo
 
 Itdb_PhotoAlbum
+
+itdb_photodb_photoalbum_free
+itdb_photodb_photoalbum_new
+itdb_photodb_photoalbum_add
+itdb_photodb_photoalbum_unlink
+
 itdb_photodb_photoalbum_create
 itdb_photodb_photoalbum_add_photo
 itdb_photodb_photoalbum_by_name
 itdb_photodb_photoalbum_remove
+
 </SECTION>
 
 <SECTION>
@@ -284,6 +300,7 @@ MhodHeaderSmartPlaylistData
 MhodHeaderSmartPlaylistRuleString
 MhodHeaderSmartPlaylistRuleNonString
 MhodHeaderSmartPlaylistRule
+Itdb_Playlist_Mhsd5_Type
 iTunesDB_MhsdHeader
 MhodHeader
 NO_PLAYCOUNT
@@ -302,6 +319,12 @@ DbType
 Itdb_DB
 ItdbChecksumType
 ItdbThumbDataType
+Itdb_Thumb_File
+Itdb_Thumb_Ipod
+Itdb_Thumb_Ipod_Item
+Itdb_Thumb_Memory
+Itdb_Thumb_Pixbuf
+Itdb_Item_Id
 
 GChecksum
 GChecksumType
@@ -378,4 +401,12 @@ sha_final
 sha_init
 sha_update
 itdb_compute_hash
+
+u32
+u64
+u8
+ROTL
+ROTL16
+ROTL24
+ROTL8
 </SECTION>

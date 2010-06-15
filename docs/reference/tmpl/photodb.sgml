@@ -227,6 +227,41 @@ directory of the libgpod source for an example of how to use the interface.
 @userdata_duplicate: 
 @userdata_destroy: 
 
+<!-- ##### FUNCTION itdb_photodb_photoalbum_free ##### -->
+<para>
+
+</para>
+
+@album: 
+
+
+<!-- ##### FUNCTION itdb_photodb_photoalbum_new ##### -->
+<para>
+
+</para>
+
+@albumname: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_photodb_photoalbum_add ##### -->
+<para>
+
+</para>
+
+@db: 
+@album: 
+@pos: 
+
+
+<!-- ##### FUNCTION itdb_photodb_photoalbum_unlink ##### -->
+<para>
+
+</para>
+
+@album: 
+
+
 <!-- ##### FUNCTION itdb_photodb_photoalbum_create ##### -->
 <para>
 

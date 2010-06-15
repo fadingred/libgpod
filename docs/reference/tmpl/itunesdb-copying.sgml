@@ -73,3 +73,21 @@ about the files and directories on the iPod.
 @Returns: 
 
 
+<!-- ##### FUNCTION itdb_start_sync ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+
+<!-- ##### FUNCTION itdb_stop_sync ##### -->
+<para>
+
+</para>
+
+@itdb: 
+@Returns: 
+
+

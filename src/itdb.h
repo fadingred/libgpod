@@ -1031,6 +1031,8 @@ struct _Itdb_iTunesDB
  * @unk028:               Unknown, seems to be always 0
  * @unk044:               Unknown, seems to always be 0
  * @unk048:               Unknown, seems to always be 0
+ * @album_id:             Unique integer for each playlist. This is set
+ *                        automatically when the PhotoDB is written.
  * @prev_album_id:        The id of the previous playlist.  This is set
  *                        automatically when the PhotoDB is written.
  * @reserved_int1:        Reserved for future use
@@ -1229,6 +1231,11 @@ typedef enum
  * @ITDB_MEDIATYPE_AUDIOBOOK:  Audio books
  * @ITDB_MEDIATYPE_MUSICVIDEO: Music videos
  * @ITDB_MEDIATYPE_TVSHOW:     TV Shows
+ * @ITDB_MEDIATYPE_RINGTONE:   Ringtone
+ * @ITDB_MEDIATYPE_RENTAL:     Rental
+ * @ITDB_MEDIATYPE_ITUNES_EXTRA: ?
+ * @ITDB_MEDIATYPE_MEMO:       Memo
+ * @ITDB_MEDIATYPE_ITUNES_U:   iTunes U
  *
  * Mediatype definitions
  *
@@ -1548,6 +1555,7 @@ typedef struct _Itdb_Track_Private Itdb_Track_Private;
  * @userdata:                   For use by application
  * @userdata_duplicate:         A function to duplicate #userdata
  * @userdata_destroy:           A function to free #userdata
+ * @priv:                       Private data
  *
  * Structure representing a track in an iTunesDB
  *
@@ -1917,6 +1925,9 @@ Itdb_PhotoAlbum *itdb_photodb_photoalbum_create (Itdb_PhotoDB *db,
 						 const gchar *albumname,
 						 gint pos);
 Itdb_PhotoDB *itdb_photodb_create (const gchar *mountpoint);
+Itdb_PhotoAlbum *itdb_photodb_photoalbum_new (const gchar *albumname);
+void itdb_photodb_photoalbum_free (Itdb_PhotoAlbum *album);
+void itdb_photodb_photoalbum_add (Itdb_PhotoDB *db, Itdb_PhotoAlbum *album, gint pos);
 void itdb_photodb_free (Itdb_PhotoDB *photodb);
 gboolean itdb_photodb_write (Itdb_PhotoDB *photodb, GError **error);
 void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
@@ -1925,6 +1936,7 @@ void itdb_photodb_remove_photo (Itdb_PhotoDB *db,
 void itdb_photodb_photoalbum_remove (Itdb_PhotoDB *db,
 				     Itdb_PhotoAlbum *album,
 				     gboolean remove_pics);
+void itdb_photodb_photoalbum_unlink (Itdb_PhotoAlbum *album);
 Itdb_PhotoAlbum *itdb_photodb_photoalbum_by_name(Itdb_PhotoDB *db,
 						 const gchar *albumname );
 
@@ -1964,6 +1976,7 @@ Itdb_Chapterdata *itdb_chapterdata_new (void);
 void itdb_chapterdata_free (Itdb_Chapterdata *chapterdata);
 Itdb_Chapterdata *itdb_chapterdata_duplicate (Itdb_Chapterdata *chapterdata);
 void itdb_chapterdata_remove_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *chapter);
+void itdb_chapterdata_unlink_chapter (Itdb_Chapterdata *chapterdata, Itdb_Chapter *chapter);
 void itdb_chapterdata_remove_chapters (Itdb_Chapterdata *chapterdata);
 Itdb_Chapter *itdb_chapter_new (void);
 void itdb_chapter_free (Itdb_Chapter *chapter);

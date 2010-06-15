@@ -43,12 +43,19 @@ a playlist, etc.
 @reserved101: 
 @reserved_int1: 
 @reserved_int2: 
-@reserved1: 
+@priv: 
 @reserved2: 
 @usertype: 
 @userdata: 
 @userdata_duplicate: 
 @userdata_destroy: 
+
+<!-- ##### STRUCT Itdb_Playlist_Private ##### -->
+<para>
+
+</para>
+
+@mhsd5_type: 
 
 <!-- ##### ENUM ItdbPlaylistSortOrder ##### -->
 <para>
