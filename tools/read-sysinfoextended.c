@@ -25,6 +25,7 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 #include <stdlib.h>
 
 #include "itdb.h"
@@ -37,6 +38,39 @@ extern char *read_sysinfo_extended_by_uuid (const char *uuid);
 #ifdef HAVE_LIBUSB
 extern char *read_sysinfo_extended_from_usb (guint bus_number, guint device_address);
 #endif
+
+static gboolean write_sysinfo_extended (const char *mountpoint,
+                                        const char *data)
+{
+        char *filename;
+        char *devdirpath;
+        gboolean result;
+
+        devdirpath = itdb_get_device_dir (mountpoint);
+        /* Make sure the device dir exists (not necessarily true on
+         * Shuffles */
+        if (devdirpath == NULL) {
+            gchar *itunesdirpath;
+
+            itunesdirpath = itdb_get_itunes_dir (mountpoint);
+            if (itunesdirpath == NULL) {
+                return FALSE;
+            }
+            devdirpath = g_build_filename (itunesdirpath, "Device", NULL);
+            g_free (itunesdirpath);
+            g_mkdir (devdirpath, 0777);
+        }
+        filename = g_build_filename (devdirpath, "SysInfoExtended", NULL);
+        g_free (devdirpath);
+        if (filename == NULL) {
+                return FALSE;
+        }
+
+        result = g_file_set_contents (filename, data, -1, NULL);
+        g_free (filename);
+
+        return result;
+}
 
 int
 main (int argc, char **argv)
@@ -86,34 +120,14 @@ main (int argc, char **argv)
       return 1;
     } else {
 	const char *mountpoint = argv[argc-1];
-	char *device_path;
-	char *filename;
-	gboolean success;
+        gboolean success;
 
-	device_path = itdb_get_device_dir (mountpoint);
-	if (device_path == NULL) {
-	    g_free (xml);
-	    g_print (_("Couldn't resolve Device directory path on %s\n"),
-		     mountpoint);
-	    return 1;
-	}
-
-	filename = g_build_filename (device_path, "SysInfoExtended", NULL);
-	g_free (device_path);
-	if (filename == NULL) {
-	    g_print (_("Couldn't resolve SysInfoExtended path on %s"),
-		     mountpoint);
-	    g_free (xml);
-	    return 1;
-	}
-
-	success = g_file_set_contents (filename, xml, -1, NULL);
-	g_free (xml);
-	g_free (filename);
-	if (!success) {
-	    g_print (_("Couldn't write SysInfoExtended to %s"), mountpoint);
-	    return 1;
-	}
+        success = write_sysinfo_extended (mountpoint, xml);
+        g_free (xml);
+        if (!success) {
+            g_print (_("Couldn't write SysInfoExtended to %s"), mountpoint);
+            return 1;
+        }
     }
 
     return 0;
