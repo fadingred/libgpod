@@ -209,7 +209,7 @@ dnl * mount the iPod to write out its extended info file.
 dnl ***********************************************************************
 
 temp_mount_dir="/tmp/"
-AC_ARG_WITH(temp_mount_dir, AC_HELP_STRING([--with-mount-dir=DIR],
+AC_ARG_WITH(temp_mount_dir, AC_HELP_STRING([--with-temp-mount-dir=DIR],
 	[Directory where HAL/udev will create a sub-directory to mount iPods]),,
 	with_temp_mount_dir="$temp_mount_dir")
 TMPMOUNTDIR="$with_temp_mount_dir"
