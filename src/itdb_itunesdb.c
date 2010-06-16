@@ -6534,21 +6534,7 @@ static gboolean write_bdhs (FExport *fexp)
 
 static gboolean is_shuffle_2g (Itdb_Device *device)
 {
-    const Itdb_IpodInfo *shuffle_info;
-    Itdb_IpodGeneration generation;
-
-    if (!itdb_device_is_shuffle (device)) {
-        return FALSE;
-    }
-
-    shuffle_info = itdb_device_get_ipod_info (device);
-
-    if (!shuffle_info) {
-        return FALSE;
-    }
-    generation = shuffle_info->ipod_generation;
-    return ((generation == ITDB_IPOD_GENERATION_SHUFFLE_1)
-            || (generation == ITDB_IPOD_GENERATION_SHUFFLE_2));
+    return (itdb_device_get_shadowdb_version (device) == ITDB_SHADOW_DB_V1);
 }
 
 /**

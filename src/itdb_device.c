@@ -2162,3 +2162,59 @@ gboolean itdb_device_is_iphone_family (const Itdb_Device *device)
 	g_return_val_if_reached (FALSE);
     }
 }
+
+enum ItdbShadowDBVersion itdb_device_get_shadowdb_version (const Itdb_Device *device)
+{
+    int version;
+
+    version = 0;
+    if (device->sysinfo_extended != NULL) {
+	version = itdb_sysinfo_properties_get_shadow_db_version (device->sysinfo_extended);
+    }
+
+    if (version == 0) {
+	const Itdb_IpodInfo *info;
+
+	info = itdb_device_get_ipod_info (device);
+	switch (info->ipod_generation) {
+	    case ITDB_IPOD_GENERATION_UNKNOWN:
+	    case ITDB_IPOD_GENERATION_FIRST:
+	    case ITDB_IPOD_GENERATION_SECOND:
+	    case ITDB_IPOD_GENERATION_THIRD:
+	    case ITDB_IPOD_GENERATION_MOBILE:
+	    case ITDB_IPOD_GENERATION_FOURTH:
+	    case ITDB_IPOD_GENERATION_PHOTO:
+	    case ITDB_IPOD_GENERATION_MINI_1:
+	    case ITDB_IPOD_GENERATION_MINI_2:
+	    case ITDB_IPOD_GENERATION_NANO_1:
+	    case ITDB_IPOD_GENERATION_NANO_2:
+	    case ITDB_IPOD_GENERATION_NANO_3:
+	    case ITDB_IPOD_GENERATION_NANO_4:
+	    case ITDB_IPOD_GENERATION_NANO_5:
+	    case ITDB_IPOD_GENERATION_VIDEO_1:
+	    case ITDB_IPOD_GENERATION_VIDEO_2:
+	    case ITDB_IPOD_GENERATION_CLASSIC_1:
+	    case ITDB_IPOD_GENERATION_CLASSIC_2:
+	    case ITDB_IPOD_GENERATION_CLASSIC_3:
+	    case ITDB_IPOD_GENERATION_TOUCH_1:
+	    case ITDB_IPOD_GENERATION_TOUCH_2:
+	    case ITDB_IPOD_GENERATION_TOUCH_3:
+	    case ITDB_IPOD_GENERATION_IPHONE_1:
+	    case ITDB_IPOD_GENERATION_IPHONE_2:
+	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPAD_1:
+		version = ITDB_SHADOW_DB_UNKNOWN;
+		break;
+	    case ITDB_IPOD_GENERATION_SHUFFLE_1:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_2:
+		version = ITDB_SHADOW_DB_V1;
+		break;
+	    case ITDB_IPOD_GENERATION_SHUFFLE_3:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_4:
+		version = ITDB_SHADOW_DB_V2;
+		break;
+	}
+    }
+
+    return version;
+}
