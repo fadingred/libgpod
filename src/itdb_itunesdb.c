@@ -1032,7 +1032,7 @@ static gboolean itunesstats_read (FImport *fimp, FContents *cts)
     seek = 6;
     for (i=0; i<entry_num; ++i)
     {
-	struct playcount *playcount = g_new0 (struct playcount, 1);
+	struct playcount *playcount;
 	guint32 entry_length = get24lint (cts, seek+0);
 	CHECK_ERROR (fimp, FALSE);
 	if (entry_length < 18)
@@ -1044,7 +1044,7 @@ static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 			 cts->filename, entry_length);
 	    return FALSE;
 	}
-
+	playcount = g_new0 (struct playcount, 1);
 	playcounts = g_list_prepend (playcounts, playcount);
 	/* NOTE:
 	 *
