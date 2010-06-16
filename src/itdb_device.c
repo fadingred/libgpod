@@ -139,8 +139,17 @@ static const Itdb_IpodInfo ipod_info_table [] = {
 
     /* Shuffle / Eigth Generation */
     /* Bar, button-less, speaking */
-    {"B867", 4,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C164", 4,  ITDB_IPOD_MODEL_SHUFFLE_BLACK,  ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C306", 2,  ITDB_IPOD_MODEL_SHUFFLE_SILVER,    ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C323", 2,  ITDB_IPOD_MODEL_SHUFFLE_BLACK,     ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C381", 2,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,     ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C384", 2,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C387", 2,  ITDB_IPOD_MODEL_SHUFFLE_PINK,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"B867", 4,  ITDB_IPOD_MODEL_SHUFFLE_SILVER,    ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C164", 4,  ITDB_IPOD_MODEL_SHUFFLE_BLACK,     ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C303", 4,  ITDB_IPOD_MODEL_SHUFFLE_STAINLESS, ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C307", 4,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,     ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C328", 4,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C331", 4,  ITDB_IPOD_MODEL_SHUFFLE_PINK,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
 
     /* Nano / Fifth Generation (first nano generation) */
     /* Buttons are integrated into the "touch wheel". */
@@ -778,8 +787,17 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "73A", "C074" }, /* 16GB Red Nano 5g */
     { "73B", "C075" }, /* 16GB Pink Nano 5g */
 
+    { "A1S", "C306" }, /* 2GB Silver Shuffle 4g */
+    { "A78", "C323" }, /* 2GB Black Shuffle 4g */
+    { "ALB", "C381" }, /* 2GB Green Shuffle 4g */
+    { "ALD", "C384" }, /* 2GB Blue Shuffle 4g */
+    { "ALG", "C387" }, /* 2GB Pink Shuffle 4g */
     { "4NZ", "B867" }, /* 4GB Silver Shuffle 4g */
     { "891", "C164" }, /* 4GB Black Shuffle 4g */
+    { "A1L", "C303" }, /* 4GB Stainless Shuffle 4g */
+    { "A1U", "C307" }, /* 4GB Green Shuffle 4g */
+    { "A7B", "C328" }, /* 4GB Blue Shuffle 4g */
+    { "A7D", "C331" }, /* 4GB Pink Shuffle 4g */
 
     { "W4N", "A623" }, /* 8GB Silver iPod Touch (1st gen) */
     { "W4T", "A627" }, /* 16GB Silver iPod Touch (1st gen) */
@@ -2143,4 +2161,60 @@ gboolean itdb_device_is_iphone_family (const Itdb_Device *device)
 	}
 	g_return_val_if_reached (FALSE);
     }
+}
+
+enum ItdbShadowDBVersion itdb_device_get_shadowdb_version (const Itdb_Device *device)
+{
+    int version;
+
+    version = 0;
+    if (device->sysinfo_extended != NULL) {
+	version = itdb_sysinfo_properties_get_shadow_db_version (device->sysinfo_extended);
+    }
+
+    if (version == 0) {
+	const Itdb_IpodInfo *info;
+
+	info = itdb_device_get_ipod_info (device);
+	switch (info->ipod_generation) {
+	    case ITDB_IPOD_GENERATION_UNKNOWN:
+	    case ITDB_IPOD_GENERATION_FIRST:
+	    case ITDB_IPOD_GENERATION_SECOND:
+	    case ITDB_IPOD_GENERATION_THIRD:
+	    case ITDB_IPOD_GENERATION_MOBILE:
+	    case ITDB_IPOD_GENERATION_FOURTH:
+	    case ITDB_IPOD_GENERATION_PHOTO:
+	    case ITDB_IPOD_GENERATION_MINI_1:
+	    case ITDB_IPOD_GENERATION_MINI_2:
+	    case ITDB_IPOD_GENERATION_NANO_1:
+	    case ITDB_IPOD_GENERATION_NANO_2:
+	    case ITDB_IPOD_GENERATION_NANO_3:
+	    case ITDB_IPOD_GENERATION_NANO_4:
+	    case ITDB_IPOD_GENERATION_NANO_5:
+	    case ITDB_IPOD_GENERATION_VIDEO_1:
+	    case ITDB_IPOD_GENERATION_VIDEO_2:
+	    case ITDB_IPOD_GENERATION_CLASSIC_1:
+	    case ITDB_IPOD_GENERATION_CLASSIC_2:
+	    case ITDB_IPOD_GENERATION_CLASSIC_3:
+	    case ITDB_IPOD_GENERATION_TOUCH_1:
+	    case ITDB_IPOD_GENERATION_TOUCH_2:
+	    case ITDB_IPOD_GENERATION_TOUCH_3:
+	    case ITDB_IPOD_GENERATION_IPHONE_1:
+	    case ITDB_IPOD_GENERATION_IPHONE_2:
+	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPAD_1:
+		version = ITDB_SHADOW_DB_UNKNOWN;
+		break;
+	    case ITDB_IPOD_GENERATION_SHUFFLE_1:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_2:
+		version = ITDB_SHADOW_DB_V1;
+		break;
+	    case ITDB_IPOD_GENERATION_SHUFFLE_3:
+	    case ITDB_IPOD_GENERATION_SHUFFLE_4:
+		version = ITDB_SHADOW_DB_V2;
+		break;
+	}
+    }
+
+    return version;
 }

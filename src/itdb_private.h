@@ -42,6 +42,12 @@ enum ItdbPlType { /* types for playlist->type */
 				    not visible in iPod */
 };
 
+enum ItdbShadowDBVersion {
+    ITDB_SHADOW_DB_UNKNOWN,
+    ITDB_SHADOW_DB_V1,
+    ITDB_SHADOW_DB_V2,
+};
+
 /* always use itdb_playlists_is_podcasts() to check for podcasts PL */
 enum ItdbPlFlag { /* types for playlist->podcastflag */
     ITDB_PL_FLAG_NORM = 0,       /* normal playlist, visible under

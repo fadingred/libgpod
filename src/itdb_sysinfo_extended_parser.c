@@ -80,6 +80,7 @@ struct _SysInfoIpodProperties {
         gint oem_id;
         gint oem_u;
         gint db_version;
+        int shadowdb_version;
         char *min_build_id;
         char *language;
         gboolean voice_memos_supported;
@@ -218,6 +219,7 @@ static const DictFieldMapping sysinfo_ipod_properties_fields_mapping[] = {
     { "GamesPlatformVersion",          G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, games_platform_version) },
     { "RentalClockBias",               G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, rental_clock_bias) },
     { "SQLiteDB",                      G_TYPE_BOOLEAN, G_STRUCT_OFFSET (SysInfoIpodProperties, sqlite_db) },
+    { "ShadowDBVersion",               G_TYPE_INT,     G_STRUCT_OFFSET (SysInfoIpodProperties, shadowdb_version) },
     { NULL,                            G_TYPE_NONE,    0 }
 };
 
@@ -711,4 +713,11 @@ itdb_sysinfo_properties_get_db_version (const SysInfoIpodProperties *props)
 {
     g_return_val_if_fail (props != NULL, FALSE);
     return props->db_version;
+}
+
+gint
+itdb_sysinfo_properties_get_shadow_db_version (const SysInfoIpodProperties *props)
+{
+   g_return_val_if_fail (props != NULL, 0);
+   return props->shadowdb_version;
 }

@@ -1576,6 +1576,34 @@ gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl)
 }
 
 /**
+ * itdb_playlist_is_audiobooks:
+ * @pl: an #Itdb_Playlist
+ *
+ * Checks if @pl is an audiobook playlist
+ *
+ * Returns: TRUE if all tracks in @pl have a mediatype of ITDB_MEDIATYPE_AUDIOBOOK,
+	    FALSE if there are no tracks or one track does not the correct type
+ *
+ */
+gboolean itdb_playlist_is_audiobooks (Itdb_Playlist *pl)
+{
+  GList *tl;
+  Itdb_Track *track;
+  
+  g_return_val_if_fail (pl, FALSE);
+  g_return_val_if_fail (pl->members, FALSE);
+  for (tl = pl->members; tl; tl = tl->next)
+  {
+    track = tl->data;
+    if (track->mediatype != ITDB_MEDIATYPE_AUDIOBOOK)
+    {
+      return FALSE;
+    }
+  }  
+  return TRUE;
+}
+
+/**
  * itdb_playlist_set_mpl:
  * @pl: an #Itdb_Playlist
  *

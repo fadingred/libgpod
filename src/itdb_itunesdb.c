@@ -318,6 +318,8 @@ static guint32 raw_get32bint (FContents *cts, glong seek);
 static guint64 raw_get64bint (FContents *cts, glong seek);
 static float raw_get32bfloat (FContents *cts, glong seek);
 
+static gboolean is_shuffle_2g (Itdb_Device *device);
+
 static const ByteReader LITTLE_ENDIAN_READER =
 {
     raw_get16lint, raw_get24lint, raw_get32lint, raw_get64lint, raw_get32lfloat
@@ -1017,56 +1019,99 @@ static gboolean playcounts_read (FImport *fimp, FContents *cts)
 static gboolean itunesstats_read (FImport *fimp, FContents *cts)
 {
     GList* playcounts = NULL;
-    guint32 entry_num, i=0;
-    glong seek;
+    guint32 entry_num, entry_length, i=0;
+    struct playcount *playcount;
+    glong seek = 0;
 
     g_return_val_if_fail (fimp, FALSE);
     g_return_val_if_fail (cts, FALSE);
+    g_return_val_if_fail (fimp->itdb, FALSE);
+    g_return_val_if_fail (fimp->itdb->device, FALSE);
 
-    /* number of entries */
-    entry_num = get32lint (cts, 0);
-    CHECK_ERROR (fimp, FALSE);
-
-    seek = 6;
-    for (i=0; i<entry_num; ++i)
+    if ( is_shuffle_2g (fimp->itdb->device))
     {
-	struct playcount *playcount = g_new0 (struct playcount, 1);
-	guint32 entry_length = get24lint (cts, seek+0);
-	CHECK_ERROR (fimp, FALSE);
-	if (entry_length < 18)
-	{
-	    g_set_error (&fimp->error,
-			 ITDB_FILE_ERROR,
-			 ITDB_FILE_ERROR_CORRUPT,
-			 _("iTunesStats file ('%s'): entry length smaller than expected (%d<18)."),
-			 cts->filename, entry_length);
-	    return FALSE;
-	}
+	    /* Old iTunesStats format */
 
-	playcounts = g_list_prepend (playcounts, playcount);
-	/* NOTE:
-	 *
-	 * The iPod (firmware 1.3, 2.0, ...?) doesn't seem to use the
-	 * timezone information correctly -- no matter what you set
-	 * iPod's timezone to, it will always record as if it were set
-	 * to UTC -- we need to subtract the difference between
-	 * current timezone and UTC to get a correct
-	 * display. -- this should be done by the application were
-	 * necessary */
-	playcount->bookmark_time = get24lint (cts, seek+3);
-	CHECK_ERROR (fimp, FALSE);
-	playcount->st_unk06 = get24lint (cts, seek+6);
-	CHECK_ERROR (fimp, FALSE);
-	playcount->st_unk09 = get24lint (cts, seek+9);
-	CHECK_ERROR (fimp, FALSE);
-	playcount->playcount = get24lint (cts, seek+12);
-	CHECK_ERROR (fimp, FALSE);
-	playcount->skipped = get24lint (cts, seek+15);
-	CHECK_ERROR (fimp, FALSE);
-	
-	playcount->rating = NO_PLAYCOUNT;
+	    /* number of entries */
+	    entry_num = get24lint (cts, seek);
+	    CHECK_ERROR (fimp, FALSE);
+	    seek = 6;
+	    for (i=0; i<entry_num; ++i)
+	    {
+		    entry_length = get24lint (cts, seek+0);
+		    CHECK_ERROR (fimp, FALSE);
+		    if (entry_length < 18)
+		    {
+			    g_set_error (&fimp->error,
+					    ITDB_FILE_ERROR,
+					    ITDB_FILE_ERROR_CORRUPT,
+					    _("iTunesStats file ('%s'): entry length smaller than expected (%d<18)."),
+					    cts->filename, entry_length);
+			    return FALSE;
+		    }
+		    playcount = g_new0 (struct playcount, 1);
+		    playcounts = g_list_prepend (playcounts, playcount);
+		    /* NOTE:
+		     *
+		     * The iPod (firmware 1.3, 2.0, ...?) doesn't seem to use the
+		     * timezone information correctly -- no matter what you set
+		     * iPod's timezone to, it will always record as if it were set
+		     * to UTC -- we need to subtract the difference between
+		     * current timezone and UTC to get a correct
+		     * display. -- this should be done by the application were
+		     * necessary */
+		    playcount->bookmark_time = get24lint (cts, seek+3);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->st_unk06 = get24lint (cts, seek+6);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->st_unk09 = get24lint (cts, seek+9);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->playcount = get24lint (cts, seek+12);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->skipped = get24lint (cts, seek+15);
+		    CHECK_ERROR (fimp, FALSE);
 
-	seek += entry_length;
+		    playcount->rating = NO_PLAYCOUNT;
+
+		    seek += entry_length;
+	    }
+    } else {
+	    /* New iTunesStats format */
+	    entry_num = get32lint (cts, seek); /* Number of entries */
+	    CHECK_ERROR (fimp, FALSE);
+
+	    seek = 8;
+	    for (i=0; i<entry_num; ++i)
+	    {
+		    entry_length = get32lint (cts, seek+0);
+		    CHECK_ERROR (fimp, FALSE);
+		    if (entry_length < 32)
+		    {
+			    g_set_error (&fimp->error,
+					    ITDB_FILE_ERROR,
+					    ITDB_FILE_ERROR_CORRUPT,
+					    _("iTunesStats file ('%s'): entry length smaller than expected (%d<32)."),
+					    cts->filename, entry_length);
+			    return FALSE;
+		    }
+		    playcount = g_new0 (struct playcount, 1);
+		    playcounts = g_list_prepend (playcounts, playcount);
+
+		    playcount->bookmark_time = get32lint (cts, seek+4);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->playcount = get32lint (cts, seek+8);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->time_played = get32lint (cts, seek+12);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->skipped = get32lint (cts, seek+16);
+		    CHECK_ERROR (fimp, FALSE);
+		    playcount->last_skipped = get32lint (cts, seek+20);
+		    CHECK_ERROR (fimp, FALSE);
+		    /* 8 unknown bytes follow but it is unlikely they are
+		     * the same as the unknown fields in the old format.
+		     * I have only seen zeros in those spots so far so I'm
+		     * ignoring them for now. */
+	    }
     }
     fimp->playcounts = g_list_reverse(playcounts);
     return TRUE;
@@ -2046,6 +2091,7 @@ static glong get_playlist (FImport *fimp, guint mhsd_type, glong mhyp_seek)
 
   plitem = itdb_playlist_new (NULL, FALSE);
 
+  plitem->num = mhipnum;
   /* Some Playlists have added 256 to their type -- I don't know what
      it's for, so we just ignore it for now -> & 0xff */
   plitem->type = get8int (cts, mhyp_seek+20);
@@ -2175,7 +2221,7 @@ static glong get_playlist (FImport *fimp, guint mhsd_type, glong mhyp_seek)
   }
 
 #if ITUNESDB_DEBUG
-  fprintf(stderr, "pln: %s(%d Itdb_Tracks) \n", plitem->name, (int)tracknum);
+  fprintf(stderr, "pln: %s(%d Itdb_Tracks) \n", plitem->name, (int)plitem->num);
 #endif
 
   /* add new playlist */
@@ -3276,6 +3322,13 @@ static void raw_put16lint (WContents *cts, guint16 n)
     put_data (cts, (gchar *)&n, 2);
 }
 
+/* Write 2-byte integer @n to @cts at position @seek in
+   little endian order */
+static void raw_put16lint_seek (WContents *cts, guint32 n, gulong seek)
+{
+	n = GUINT16_TO_LE (n);
+	put_data_seek (cts, (gchar *)&n, 2, seek);
+}
 
 /* Write 3-byte integer @n to @cts in big endian order. */
 static void raw_put24lint (WContents *cts, guint32 n)
@@ -3343,6 +3396,13 @@ static void raw_put16bint (WContents *cts, guint16 n)
     put_data (cts, (gchar *)&n, 2);
 }
 
+/* Write a 2-byte integer @n to @cts at position @seek in big
+   endian order. */
+static void raw_put16bint_seek (WContents *cts, guint16 n, gulong seek)
+{
+	n = GUINT16_TO_BE (n);
+	put_data_seek (cts, (gchar *)&n, 2, seek);
+}
 
 /* Write 3-byte integer @n to @cts in big endian order. */
 static void raw_put24bint (WContents *cts, guint32 n)
@@ -3448,6 +3508,15 @@ static void put16lint (WContents *cts, guint16 n)
     else
 	raw_put16bint (cts, n);
 }
+
+static void put16lint_seek (WContents *cts, guint16 n, gulong seek)
+{
+	if(!cts->reversed)
+		raw_put16lint_seek (cts, n, seek);
+	else
+		raw_put16bint_seek (cts, n, seek);
+}
+
 #if 0
 static void put24lint (WContents *cts, guint32 n)
 {
@@ -3501,6 +3570,15 @@ static void put16bint (WContents *cts, guint16 n)
 	raw_put16bint (cts, n);
 }
 
+#if 0
+static void put16bint_seek (WContents *cts, guint16 n, gulong seek)
+{
+	if (cts->reversed)
+		raw_put16lint_seek (cts, n, seek);
+	else
+		raw_put16bint_seek (cts, n, seek);
+}
+#endif
 static void put24bint (WContents *cts, guint32 n)
 {
     if (cts->reversed)
@@ -3634,6 +3712,11 @@ static void fix_header (WContents *cts, gulong header_seek)
   put32lint_seek (cts, cts->pos-header_seek, header_seek+8);
 }
 
+/* Fill in the length of a short header which are common in the itunesSD */
+static void fix_short_header (WContents *cts, gulong header_seek)
+{
+	put32lint_seek (cts, cts->pos-header_seek, header_seek+4);
+}
 
 /* Write out the mhsd header. Size will be written later */
 static void mk_mhsd (FExport *fexp, guint32 type)
@@ -5517,8 +5600,10 @@ static gboolean itdb_composer_equal (gconstpointer v1, gconstpointer v2)
 static void prepare_itdb_for_write (FExport *fexp)
 {
     GList *gl;
+    GList *pl;
     Itdb_iTunesDB *itdb;
     Itdb_Playlist *mpl;
+    Itdb_Playlist *playlist;
     guint album_id = 1;
     guint artist_id = 1;
     guint composer_id = 1;
@@ -5605,6 +5690,13 @@ static void prepare_itdb_for_write (FExport *fexp)
 		    composer_id++;
 		}
 	}
+    }
+
+    /* Make sure playlist->num is correct */
+    for (pl = itdb->playlists; pl; pl = pl->next) {
+	playlist = pl->data;
+	g_return_if_fail (playlist);
+	playlist->num = itdb_playlist_tracks_number (playlist);
     }
 }
 
@@ -6112,6 +6204,339 @@ static gboolean haystack (gchar *filetype, gchar **desclist)
     return FALSE;
 }
 
+/* Converts a standard itunesDB filetype to the one used in itunesSD */
+/* TODO: Find the values for other filetypes */
+static guint convert_filetype (gchar *filetype)
+{
+	guint32 stype;
+	/* Type 0x01 Default value */
+	/* gchar *mp3_desc[] = {"MPEG", "MP3", "mpeg", "mp3", NULL}; */
+	/* Type 0x02 */
+	gchar *mp4_desc[] = {"AAC", "MP4", "M4A", "aac", "mp4", "m4a", NULL};
+	/* Type 0x04 */
+	gchar *wav_desc[] = {"WAV", "wav", NULL};
+
+	/* Default to mp3 */
+	stype=0x01;
+
+	if (haystack (filetype, mp4_desc))
+		stype=0x02;
+	else if (haystack (filetype, wav_desc))
+		stype=0x04;
+
+	return stype;
+}
+
+/* Write out the rths header, the iTunesSD track header */
+static gboolean write_rths (WContents *cts, Itdb_Track *track)
+{
+	gulong rths_seek;
+	gint padlength;
+	gchar *path;
+
+	g_return_val_if_fail (cts, FALSE);
+	g_return_val_if_fail (track, FALSE);
+
+	rths_seek=cts->pos;
+
+	/* Prep the path */
+	/* Correct this if the path field changes length */
+	path = g_strndup (track->ipod_path, 256);
+	g_strdelimit (path, ":", '/');
+
+	put_header (cts, "rths");
+	put32lint (cts, -1); /* Length of header to be added later */
+	put32lint (cts, track->starttime); /* Start pos in ms */
+	put32lint (cts, track->stoptime); /* Stop pos in ms */
+	put32lint (cts, track->volume); /* Volume gain */
+	put32lint (cts, convert_filetype (track->filetype)); /* Filetype see 
+								convert filetype*/
+	/* If the length of this field changes make sure to correct the
+	   g_strndup above */
+	put_string (cts, path); /* Path to the song */
+	for (padlength = 256-strlen (path); padlength > 0; padlength--)
+		put8int (cts, 0);
+
+	put32lint (cts, track->bookmark_time); /* Bookmark time */
+	/* Don't Skip on shuffle */
+	/* This field has the exact opposite value as in the iTunesDB */
+	/* 1 when you want to skip, 0 when you don't want to skip */
+	put8int (cts, !track->skip_when_shuffling);
+	put8int (cts, track->remember_playback_position); /* Remember playing pos */
+	/* put8int (cts, ); In uninterruptable album */
+	put8int (cts, 0); /* Best guess its gapless album */
+	put8int (cts, 0); /* Unknown */
+	put32lint (cts, track->pregap); /* Pregap */
+	put32lint (cts, track->postgap); /* Postgap */
+	put32lint (cts, (guint32) track->samplecount); /* Number of Samples */
+	put32_n0 (cts, 1); /* Unknown */
+	put32lint (cts, track->gapless_data); /* Gapless Data */
+	put32_n0 (cts, 1); /* Unknown */
+	put32lint (cts, track->priv->album_id); /* Album ID */
+	put16lint (cts, track->track_nr); /* Track number */
+	put16lint (cts, track->cd_nr); /* Disk number */
+	put32_n0 (cts, 2); /* Unknown */
+	put64lint (cts, track->dbid); /* Voiceover Filename also dbid*/
+	put32lint (cts, track->priv->artist_id); /* Artist ID */
+	put32_n0 (cts, 8); /* Unknown */
+
+	fix_short_header (cts, rths_seek);
+
+	g_free (path);
+
+	return TRUE;
+}
+
+/* Write out the hths header, the iTunesSD track list header*/
+static gboolean write_hths (FExport *fexp)
+{
+	gulong hths_seek, track_seek;
+	WContents *cts;
+	GList *gl;
+	guint32 trackcnt;
+	guint32 nonstdtrackcnt;
+
+	g_return_val_if_fail (fexp, FALSE);
+	g_return_val_if_fail (fexp->itdb, FALSE);
+	g_return_val_if_fail (fexp->wcontents, FALSE);
+
+	cts = fexp->wcontents;
+	hths_seek = cts->pos;
+	trackcnt = itdb_tracks_number(fexp->itdb);
+	nonstdtrackcnt = 0; /* Counts the number of audiobook and podcast tracks */
+
+	/* Add Track list offset to bdhs header */
+	/* If the bdhs header changes make sure the seek value is still correct */
+	put32lint_seek(cts, cts->pos, 36);
+
+	put_header (cts, "hths");
+	put32lint (cts, -1); /* Length of header to be added later */
+	put32lint (cts, trackcnt); /* Number of tracks */
+	put32_n0 (cts, 2); /* Unknown */
+	track_seek=cts->pos; /* Put the offset of the first track here */
+	put32_n0 (cts, trackcnt); /* The offset for each track to be added later */
+
+	fix_short_header (cts, hths_seek);
+		
+	/* Add each tracks header */
+	for(gl=fexp->itdb->tracks;gl;gl=gl->next)
+	{
+		Itdb_Track *track = gl->data;
+
+		/* Add this tracks offset then add the track */
+		put32lint_seek(cts, cts->pos, track_seek);
+		g_return_val_if_fail (write_rths(cts, track), FALSE);
+
+		if (track->mediatype == ITDB_MEDIATYPE_AUDIOBOOK ||
+		    track->mediatype == ITDB_MEDIATYPE_PODCAST)
+			nonstdtrackcnt++;
+
+		/* Go to the offset for the next track */
+		track_seek += 4;
+	}
+	/* Add the number of nonpodcasts to bdhs header */
+	/* If the bdhs header changes make sure the seek value is still correct */
+	put32lint_seek(cts, trackcnt-nonstdtrackcnt, 32);
+	return TRUE;
+}
+
+/* Write out the lphs header, the iTunesSD playlist header */
+static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
+{
+	gulong lphs_seek;
+	GList *tl, *tracks, *current_track;
+	Itdb_Track *tr, *ctr;
+	guint64 id;
+	guint32 stype;
+	guint32 tracknum;
+	guint32 nonstdtrackcnt;
+
+	g_return_val_if_fail (pl, FALSE);
+	g_return_val_if_fail (pl->itdb, FALSE);
+	g_return_val_if_fail (cts, FALSE);
+
+	lphs_seek = cts->pos;
+	tracks = pl->itdb->tracks;
+	nonstdtrackcnt = 0; /* The number of audiobook and podcast tracks*/
+	/* Change the playlist itunesDB type into a itunesSD type */
+	/* 1 is for the master playlist
+	   2 is for a normal playlist
+	   3 is for the podcast playlist
+	   4 is for an audiobook playlist */
+	if (itdb_playlist_is_mpl (pl)) 
+		stype = 1;
+	else if (itdb_playlist_is_podcasts (pl)) 
+		stype = 3;
+	else if (itdb_playlist_is_audiobooks (pl))
+		stype = 4;
+	else /* Everything else we treat as normal */
+		stype = 2;
+	
+	put_header (cts, "lphs");
+	put32lint (cts, -1); /* Length of header to be written later */
+	put32lint (cts, pl->num); /* Number of tracks in this playlist */
+	put32lint (cts, -1); /* The number of non podcasts or audiobooks to be added later */
+
+	if (stype == 1)
+		put32_n0 (cts, 2); /* The voiceover for the master is at 0 */
+	else
+		put64lint (cts, pl->id); /* Voiceover filename also Playlist ID */
+
+	put32lint (cts, stype); /* Type of playlist */
+	put32_n0 (cts, 4); /* Unknown */
+	if (tracks) /* It makes no sense to do the following if there is no tracks */
+	{
+		/* Walk the playlist and find and write out the track number
+		   of each track in it */
+		for( tl = pl -> members; tl; tl = tl->next)
+		{
+			tracknum = 0;
+			current_track= tracks;
+			tr = tl->data;
+			id = tr->dbid;
+			ctr = current_track->data;
+			/* Count the number of podcasts and audiobooks for later use */
+			if (tr->mediatype == ITDB_MEDIATYPE_AUDIOBOOK ||
+			    tr->mediatype == ITDB_MEDIATYPE_PODCAST)
+				nonstdtrackcnt++;
+
+			while( id != ctr->dbid)
+			{
+				tracknum ++;
+				current_track = current_track->next;
+				g_return_val_if_fail (current_track, FALSE);
+				ctr = current_track->data;
+			}
+			put32lint (cts, tracknum);
+		}
+	}
+
+	put32lint_seek (cts, pl->num - nonstdtrackcnt, lphs_seek+12);
+	fix_short_header (cts, lphs_seek);
+	return TRUE;
+
+}
+
+/* Write out the hphs header, the iTunesSD playlist list header */
+static gboolean write_hphs (FExport *fexp)
+{
+	gulong hphs_seek, playlist_seek;
+	WContents *cts;
+	GList *gl;
+	guint16 playlistcnt;
+	guint16 podcastscnt;
+	guint16 audiobookscnt;
+
+	g_return_val_if_fail (fexp, FALSE);
+	g_return_val_if_fail (fexp->itdb, FALSE);
+	g_return_val_if_fail (fexp->wcontents, FALSE);
+
+	cts = fexp->wcontents;
+	hphs_seek = cts->pos;
+	playlistcnt = itdb_playlists_number (fexp->itdb);
+	podcastscnt = 0; /* Number of podcast playlists should be 1 if one exists*/
+	audiobookscnt = 0;
+
+	/* Add the Playlist Header Offset */
+	put32lint_seek (cts, cts->pos, 40);
+
+	put_header (cts, "hphs");
+	put32lint (cts, -1); /* Length of header to be added later */
+	put16lint (cts, playlistcnt); /* Number of playlists */
+	put16_n0 (cts, 1); /* Unknown */
+	put16lint (cts, 0xffff); /* Number of non podcast playlists if there
+				    isn't a podcast playlist leave this
+				    current value. There should be at most 1
+				    podcast playlist. */
+	put16lint (cts, 0x0100); /* Unknown */
+	put16lint (cts, 0xffff); /* Number of non audiobook playlists if there
+				    isn't a audiobook playlist leave this field
+				    the current value. */
+	put16_n0 (cts, 1);
+
+	playlist_seek = cts->pos;
+	put32_n0 (cts, playlistcnt); /* Offsets for each playlist */
+
+	fix_short_header (cts, hphs_seek);
+
+	for (gl = fexp->itdb->playlists; gl; gl = gl->next)
+	{
+		Itdb_Playlist *pl = gl->data;
+		
+		/* Write this headers offset */
+		put32lint_seek (cts, cts->pos, playlist_seek);
+		if (itdb_playlist_is_podcasts (pl))
+			podcastscnt++;
+		else if (itdb_playlist_is_audiobooks (pl))
+			audiobookscnt++;
+
+		g_return_val_if_fail (write_lphs (cts, pl),FALSE);
+
+		/* Move to the field for the next header */
+		playlist_seek += 4;
+	}
+	/* Is there at least 1 podcast playlist? If so correct the 
+	   first 0xffff from before */
+	if (podcastscnt != 0)
+	  put16lint_seek (cts, playlistcnt-podcastscnt, hphs_seek+12);
+	
+	/* Is there at least 1 audiobook playlist? If so correct the
+	   second 0xffff from before */
+	if (audiobookscnt != 0)
+	  put16lint_seek (cts, playlistcnt-audiobookscnt, hphs_seek+16);
+
+	return TRUE;
+}
+
+/* Write out the bdhs header, the main iTunesSD header */
+static gboolean write_bdhs (FExport *fexp)
+{
+	WContents *cts;
+	gulong bdhs_seek;
+	guint32 trackcnt;
+	guint32 playlistcnt;
+
+	g_return_val_if_fail (fexp, FALSE);
+	g_return_val_if_fail (fexp->itdb, FALSE);
+	g_return_val_if_fail (fexp->wcontents, FALSE);
+
+	cts = fexp->wcontents;
+	bdhs_seek = cts->pos;
+	trackcnt = itdb_tracks_number (fexp->itdb);
+	playlistcnt = itdb_playlists_number (fexp->itdb);
+
+	put_header (cts, "bdhs");
+	put32lint (cts, 0x02000003); /* Unknown */
+	put32lint (cts, -1); /* Length of header to be added later*/
+	put32lint (cts, trackcnt); /* Number of tracks */
+	put32lint (cts, playlistcnt); /* Number of playlists */
+	put32_n0 (cts, 2); /* Unknown */
+	/* TODO: Parse the max volume */
+	put8int (cts, 0); /* Max Volume currently ignored and set to max */
+	/* TODO: Find another source of the voiceover option */
+	put8int (cts, 1); /* Voiceover currently ignored and set to on */
+	put16_n0 (cts, 1); /* Unknown */
+
+	/* If the bdhs header changes the offsets of these fields may change
+	   make sure you correct the field offset in their respective tags */
+
+	put32lint (cts, -1); /* Number of tracks excluding podcasts and audiobooks
+				added in write_hths */
+	put32lint (cts, -1); /* Track Header Offset added in write_hths */
+	put32lint (cts, -1); /* Playlist Header Offset added in write_hphs */
+
+	put32_n0 (cts, 5); /* Unknown */
+
+	fix_header(cts, bdhs_seek);
+
+	return TRUE;
+}
+
+static gboolean is_shuffle_2g (Itdb_Device *device)
+{
+    return (itdb_device_get_shadowdb_version (device) == ITDB_SHADOW_DB_V1);
+}
+
 /**
  * itdb_shuffle_write_file:
  * @itdb:       the #Itdb_iTunesDB to write to disk
@@ -6133,92 +6558,115 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 
     g_return_val_if_fail (itdb, FALSE);
     g_return_val_if_fail (filename, FALSE);
+    g_return_val_if_fail (itdb->device, FALSE);
+
+    /* Set endianess flag just in case */
+    if (!itdb->device->byte_order)
+	    itdb_device_autodetect_endianess (itdb->device);
 
     fexp = g_new0 (FExport, 1);
     fexp->itdb = itdb;
     fexp->wcontents = wcontents_new (filename);
     cts = fexp->wcontents;
 
+    cts->reversed = (itdb->device->byte_order == G_BIG_ENDIAN);
+
     prepare_itdb_for_write (fexp);
 
-    put24bint (cts, itdb_tracks_number (itdb));
-    put24bint (cts, 0x010600);
-    put24bint (cts, 0x12);	/* size of header */
-    put24bint (cts, 0x0);	/* padding? */
-    put24bint (cts, 0x0);
-    put24bint (cts, 0x0);
+    if (is_shuffle_2g (itdb->device)) {
+	/* Older iTunesSD format */
+	put24bint (cts, itdb_tracks_number (itdb));
+	put24bint (cts, 0x010600);
+	put24bint (cts, 0x12);	/* size of header */
+	put24bint (cts, 0x0);	/* padding? */
+	put24bint (cts, 0x0);
+	put24bint (cts, 0x0);
 
-    for (gl=itdb->tracks; gl; gl=gl->next)
-    {
-	Itdb_Track *tr = gl->data;
-	gchar *path;
-	gunichar2 *path_utf16;
-	glong pathlen;
-	gchar *mp3_desc[] = {"MPEG", "MP3", "mpeg", "mp3", NULL};
-	gchar *mp4_desc[] = {"AAC", "MP4", "aac", "mp4", NULL};
-	gchar *wav_desc[] = {"WAV", "wav", NULL};
+	for (gl=itdb->tracks; gl; gl=gl->next)
+	{
+	    Itdb_Track *tr = gl->data;
+	    gchar *path;
+	    gunichar2 *path_utf16;
+	    glong pathlen;
 
-	g_return_val_if_fail (tr, FALSE);
+	    g_return_val_if_fail (tr, FALSE);
 
-	put24bint (cts, 0x00022e);
-	put24bint (cts, 0x5aa501);
-	/* starttime is in 256 ms incr. for shuffle */
-	put24bint (cts, tr->starttime / 256);
-	put24bint (cts, 0);
-	put24bint (cts, 0);
-	put24bint (cts, tr->stoptime / 256);
-	put24bint (cts, 0);
-	put24bint (cts, 0);
-	/* track->volume ranges from -255 to +255 */
-	/* we want 0 - 200 */
-	put24bint (cts, ((tr->volume + 255) * 201) / 511);
+	    put24bint (cts, 0x00022e);
+	    put24bint (cts, 0x5aa501);
+	    /* starttime is in 256 ms incr. for shuffle */
+	    put24bint (cts, tr->starttime / 256);
+	    put24bint (cts, 0);
+	    put24bint (cts, 0);
+	    put24bint (cts, tr->stoptime / 256);
+	    put24bint (cts, 0);
+	    put24bint (cts, 0);
+	    /* track->volume ranges from -255 to +255 */
+	    /* we want 0 - 200 */
+	    put24bint (cts, ((tr->volume + 255) * 201) / 511);
 
-	/* The next one should be 0x01 for MP3,
-	** 0x02 for AAC, and 0x04 for WAV, but I can't find
-	** a suitable indicator within the track structure? */
-	/* JCS: let's do heuristic on tr->filetype which would contain
-	   "MPEG audio file", "AAC audio file", "Protected AAC audio
-	   file", "AAC audio book file", "WAV audio file" (or similar
-	   if not written by gtkpod) */
+	    /* The next one should be 0x01 for MP3,
+	     ** 0x02 for AAC, and 0x04 for WAV, but I can't find
+	     ** a suitable indicator within the track structure? */
+	    /* JCS: let's do heuristic on tr->filetype which would contain
+	       "MPEG audio file", "AAC audio file", "Protected AAC audio
+	       file", "AAC audio book file", "WAV audio file" (or similar
+	       if not written by gtkpod) */
 
-	if (haystack (tr->filetype, mp3_desc))
-	    put24bint (cts, 0x01);
-	else if (haystack (tr->filetype, mp4_desc))
-	    put24bint (cts, 0x02);
-	else if (haystack (tr->filetype, wav_desc))
-	    put24bint (cts, 0x04);
-	else
-	    put24bint (cts, 0x01);  /* default to mp3 */
+	    put24bint (cts, convert_filetype (tr->filetype));
 
-	put24bint (cts, 0x200);
-		
-	path = g_strdup (tr->ipod_path);
-	/* shuffle uses forward slash separator, not colon */
-        g_strdelimit (path, ":", '/');
-	path_utf16 = g_utf8_to_utf16 (path, -1, NULL, &pathlen, NULL);
-	if (pathlen > 261) pathlen = 261;
-	fixup_little_utf16 (path_utf16);
-	put_data (cts, (gchar *)path_utf16, sizeof (gunichar2)*pathlen);
-	/* pad to 522 bytes */
-	put16_n0 (cts, 261-pathlen);
-	g_free(path);
-	g_free(path_utf16);
+	    put24bint (cts, 0x200);
 
-	/* XXX FIXME: should depend on something, not hardcoded */
-	put8int (cts, 0x1); /* song used in shuffle mode */
-	put8int (cts, 0);   /* song will not be bookmarkable */
-	put8int (cts, 0);
+	    path = g_strdup (tr->ipod_path);
+	    /* shuffle uses forward slash separator, not colon */
+	    g_strdelimit (path, ":", '/');
+	    path_utf16 = g_utf8_to_utf16 (path, -1, NULL, &pathlen, NULL);
+	    if (pathlen > 261) pathlen = 261;
+	    fixup_little_utf16 (path_utf16);
+	    put_data (cts, (gchar *)path_utf16, sizeof (gunichar2)*pathlen);
+	    /* pad to 522 bytes */
+	    put16_n0 (cts, 261-pathlen);
+	    g_free(path);
+	    g_free(path_utf16);
+
+	    /* XXX FIXME: should depend on something, not hardcoded */
+	    put8int (cts, 0x1); /* song used in shuffle mode */
+	    put8int (cts, 0);   /* song will not be bookmarkable */
+	    put8int (cts, 0);
+	}
+    }else {
+	    /* Newer iTunesSD format */
+	    /* Add the main Header */
+	    write_bdhs(fexp);
+
+	    /* Add the Tracks Header */
+	    if (!write_hths(fexp)){
+		g_set_error(&fexp->error,
+			    ITDB_FILE_ERROR,
+			    ITDB_FILE_ERROR_CORRUPT,
+			    _("Error writing list of tracks (hths)"));
+		goto serr;
+	    }
+
+	    /* Add the Playlist Header */
+	    if(!fexp->error && !write_hphs(fexp)){
+		g_set_error(&fexp->error,
+			    ITDB_FILE_ERROR,
+			    ITDB_FILE_ERROR_CORRUPT,
+			    _("Error writing playlists (hphs)"));
+		goto serr;
+	}
     }
-    if (!fexp->error)
+     if (!fexp->error)
     {
 	if (!wcontents_write (cts))
 	    g_propagate_error (&fexp->error, cts->error);
-    }
-    if (fexp->error)
-    {
-	g_propagate_error (error, fexp->error);
-	result = FALSE;
-    }
+     }
+serr:
+     if (fexp->error)
+     {
+	  g_propagate_error (error, fexp->error);
+	  result = FALSE;
+     }
     wcontents_free (cts);
     g_free (fexp);
 

@@ -72,6 +72,8 @@ G_GNUC_INTERNAL gint
 itdb_sysinfo_properties_get_family_id (const SysInfoIpodProperties *props);
 G_GNUC_INTERNAL gint
 itdb_sysinfo_properties_get_db_version (const SysInfoIpodProperties *props);
+G_GNUC_INTERNAL gint
+itdb_sysinfo_properties_get_shadow_db_version (const SysInfoIpodProperties *props);
 
 G_END_DECLS
 
