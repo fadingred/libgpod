@@ -24,6 +24,8 @@ libgpod-sharp.dll.config: $(top_srcdir)/bindings/mono/libgpod-sharp/libgpod-shar
 
 all-local: libgpod-sharp.dll.config
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libgpod-sharp.pc
 EXTRAS = \
 	libgpod-sharp.pc.in
 
