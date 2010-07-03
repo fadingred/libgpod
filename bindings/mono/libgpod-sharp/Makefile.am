@@ -22,8 +22,6 @@ dlname := $(shell grep "^dlname=" $(top_builddir)/src/libgpod.la | sed "s/^dlnam
 libgpod-sharp.dll.config: $(top_srcdir)/bindings/mono/libgpod-sharp/libgpod-sharp.dll.config.in 
 	sed "s/@DLNAME@/$(dlname)/g" $< >$@
 
-all-local: libgpod-sharp.dll.config
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libgpod-sharp.pc
 EXTRAS = \
@@ -31,6 +29,10 @@ EXTRAS = \
 
 if HAVE_MONO
 include $(srcdir)/../Makefile.include
+module_SCRIPTS += libgpod-sharp.dll.config
+EXTRA_DIST += libgpod-sharp.dll.config.in
+DISTCLEANFILES += libgpod-sharp.dll.config
 else
-EXTRA_DIST = $(SOURCES)
+EXTRA_DIST = $(SOURCES) libgpod-sharp.dll.config.in
+DISTCLEANFILES = libgpod-sharp.dll.config
 endif
