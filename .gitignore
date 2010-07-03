@@ -46,10 +46,12 @@ cscope.out
 
 # /bindings/mono/
 bindings/mono/libgpod-sharp.userprefs
+bindings/mono/libgpod-sharp-test/libgpod-sharp-test
 bindings/mono/libgpod-sharp-test/libgpod-sharp-test.exe
 bindings/mono/libgpod-sharp-test/libgpod-sharp-test.exe.mdb
 bindings/mono/libgpod-sharp-test/libgpod-sharp-test.pidb
 bindings/mono/libgpod-sharp/libgpod-sharp.dll
+bindings/mono/libgpod-sharp/libgpod-sharp.dll.config
 bindings/mono/libgpod-sharp/libgpod-sharp.dll.mdb
 bindings/mono/libgpod-sharp/libgpod-sharp.pc
 bindings/mono/libgpod-sharp/libgpod-sharp.pidb
