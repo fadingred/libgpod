@@ -1,6 +1,8 @@
+Libraries=@expanded_libdir@/@PACKAGE@/libgpod-sharp.dll
+
 Name: libgpod-sharp
 Description: libgpod-sharp
 Version: 0.1
 
 Requires: glib-sharp-2.0 gtk-sharp-2.0
-Libs: -r:@expanded_libdir@/@PACKAGE@/libgpod-sharp.dll
+Libs: -r:${Libraries}
