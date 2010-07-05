@@ -93,6 +93,8 @@ AC_DEFUN([LIBGPOD_CHECK_MONO],
         CHECK_GLIB_GTK_SHARP
         if test "X$mono_detected" = "Xno"; then
                 with_mono="no"
+        else
+                with_mono="yes"
         fi
     fi
     AM_CONDITIONAL(HAVE_MONO, test x$with_mono = xyes)
