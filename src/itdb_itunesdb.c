@@ -5529,10 +5529,20 @@ static gboolean itdb_album_equal (gconstpointer v1, gconstpointer v2)
 {
   Itdb_Track *track1 = (Itdb_Track *)v1;
   Itdb_Track *track2 = (Itdb_Track *)v2;
+  gboolean same_show;
   gboolean same_album;
 
-  same_album = safe_str_equal (track1->album, track2->album);
+  /*album is the same if:
+   * tvshow is the same, and
+   * album and albumartist are the same, or
+   * albumartist is null and artist and album are the same
+   */ 
+  same_show = safe_str_equal (track1->tvshow, track2->tvshow);
+  if (!same_show) {
+      return FALSE;
+  }
 
+  same_album = safe_str_equal (track1->album, track2->album);
   if (!same_album) {
       return FALSE;
   }
