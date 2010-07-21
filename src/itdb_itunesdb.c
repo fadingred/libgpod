@@ -5538,11 +5538,9 @@ static gboolean itdb_album_equal (gconstpointer v1, gconstpointer v2)
   }
 
   if ((track1->albumartist != NULL) && (track2->albumartist != NULL)) {
-      return  safe_str_equal (track1->albumartist, track2->albumartist);
-  } else if ((track1->artist != NULL) && (track2->artist != NULL)) {
-      return safe_str_equal (track1->artist, track2->artist);
+      return safe_str_equal (track1->albumartist, track2->albumartist);
   } else {
-      return same_album;
+      return safe_str_equal (track1->artist, track2->artist);
   }
 }
 
