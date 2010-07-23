@@ -299,6 +299,9 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"C131",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
     {"C133",  32, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
     {"C134",  32, ITDB_IPOD_MODEL_IPHONE_WHITE,   ITDB_IPOD_GENERATION_IPHONE_3, 50},
+    /* iPhone 4G */
+    {"C603",  16, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_4, 50},
+    {"C605",  32, ITDB_IPOD_MODEL_IPHONE_BLACK,   ITDB_IPOD_GENERATION_IPHONE_4, 50},
 
     /* iPad */
     {"B292",  16, ITDB_IPOD_MODEL_IPAD,           ITDB_IPOD_GENERATION_IPAD_1,   50},
@@ -817,6 +820,8 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "3NP", "C131" }, /* 16GB Black iPhone 3GS */
     { "3NR", "C133" }, /* 32GB Black iPhone 3GS */
     { "3NS", "C134" }, /* 32GB White iPhone 3GS */
+    { "A4S", "C603" }, /* 16GB Black iPhone 4G */
+    { "A4T", "C605" }, /* 32GB Black iPhone 4G */
 
     { "Z38", "B292" }, /* 16GB iPad with Wifi */
     { "Z39", "B293" }, /* 32GB iPad with Wifi */
@@ -1339,6 +1344,7 @@ itdb_device_supports_sqlite_db (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPHONE_4:
 	    case ITDB_IPOD_GENERATION_IPAD_1:
 		/* FIXME: needs to check firmware version */
 		return TRUE;
@@ -1399,6 +1405,7 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
             case ITDB_IPOD_GENERATION_IPHONE_1:
             case ITDB_IPOD_GENERATION_IPHONE_2:
             case ITDB_IPOD_GENERATION_IPHONE_3:
+            case ITDB_IPOD_GENERATION_IPHONE_4:
             case ITDB_IPOD_GENERATION_IPAD_1:
                 supports_sparse_artwork = TRUE;
                 break;
@@ -1708,6 +1715,7 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 	case ITDB_IPOD_GENERATION_IPHONE_2:
 	case ITDB_IPOD_GENERATION_IPHONE_3:
+	case ITDB_IPOD_GENERATION_IPHONE_4:
 	case ITDB_IPOD_GENERATION_IPAD_1:
             return TRUE;
     }
@@ -1829,6 +1837,7 @@ ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
 		return ITDB_CHECKSUM_HASH72;
 
 	    case ITDB_IPOD_GENERATION_IPAD_1:
+	    case ITDB_IPOD_GENERATION_IPHONE_4:
 		return ITDB_CHECKSUM_HASHAB;
 
 	    case ITDB_IPOD_GENERATION_UNKNOWN:
@@ -2069,6 +2078,7 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPHONE_4:
 	    case ITDB_IPOD_GENERATION_IPAD_1:
 		return TRUE;
 	}
@@ -2112,6 +2122,7 @@ gboolean itdb_device_is_shuffle (const Itdb_Device *device)
         case ITDB_IPOD_GENERATION_IPHONE_1:
         case ITDB_IPOD_GENERATION_IPHONE_2:
         case ITDB_IPOD_GENERATION_IPHONE_3:
+        case ITDB_IPOD_GENERATION_IPHONE_4:
         case ITDB_IPOD_GENERATION_IPAD_1:
             return FALSE;
         case ITDB_IPOD_GENERATION_SHUFFLE_1:
@@ -2162,6 +2173,7 @@ gboolean itdb_device_is_iphone_family (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPHONE_4:
 	    case ITDB_IPOD_GENERATION_IPAD_1:
 		return TRUE;
 	}
@@ -2208,6 +2220,7 @@ enum ItdbShadowDBVersion itdb_device_get_shadowdb_version (const Itdb_Device *de
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
+	    case ITDB_IPOD_GENERATION_IPHONE_4:
 	    case ITDB_IPOD_GENERATION_IPAD_1:
 		version = ITDB_SHADOW_DB_UNKNOWN;
 		break;

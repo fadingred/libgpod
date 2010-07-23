@@ -144,6 +144,7 @@ get_model_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 	case ITDB_IPOD_GENERATION_IPHONE_2:
 	case ITDB_IPOD_GENERATION_IPHONE_3:
+	case ITDB_IPOD_GENERATION_IPHONE_4:
 		return g_strdup ("phone");
 	case ITDB_IPOD_GENERATION_IPAD_1:
 		return g_strdup ("ipad");
@@ -216,6 +217,8 @@ get_generation (const Itdb_IpodInfo *info)
 		return 2.0;
 	case ITDB_IPOD_GENERATION_IPHONE_3:
 		return 3.0;
+	case ITDB_IPOD_GENERATION_IPHONE_4:
+		return 4.0;
 	case ITDB_IPOD_GENERATION_IPAD_1:
 		return 1.0;
 	case ITDB_IPOD_GENERATION_MOBILE:
@@ -416,6 +419,8 @@ get_icon_name (const Itdb_IpodInfo *info)
 		return g_strdup ("phone-apple-iphone-3g");
 	case ITDB_IPOD_GENERATION_IPHONE_3:
 		return g_strdup ("phone-apple-iphone-3gs");
+	case ITDB_IPOD_GENERATION_IPHONE_4:
+		return g_strdup ("phone-apple-iphone-4g");
 	case ITDB_IPOD_GENERATION_IPAD_1:
 		return g_strdup ("computer-apple-ipad");
 	case ITDB_IPOD_GENERATION_MOBILE:

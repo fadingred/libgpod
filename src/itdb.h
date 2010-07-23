@@ -123,6 +123,7 @@ typedef struct _Itdb_Chapterdata Itdb_Chapterdata;
  * @ITDB_IPOD_GENERATION_IPHONE_1:  First Generation iPhone
  * @ITDB_IPOD_GENERATION_IPHONE_2:  Second Generation iPhone (aka iPhone 3G)
  * @ITDB_IPOD_GENERATION_IPHONE_3:  Third Generation iPhone (aka iPhone 3GS)
+ * @ITDB_IPOD_GENERATION_IPHONE_4:  Fourth Generation iPhone
  *
  * iPod generation information
  *
@@ -161,7 +162,8 @@ typedef enum {
     ITDB_IPOD_GENERATION_CLASSIC_3,
     ITDB_IPOD_GENERATION_NANO_5,
     ITDB_IPOD_GENERATION_TOUCH_3,
-    ITDB_IPOD_GENERATION_IPAD_1
+    ITDB_IPOD_GENERATION_IPAD_1,
+    ITDB_IPOD_GENERATION_IPHONE_4
 } Itdb_IpodGeneration;
 
 /**
