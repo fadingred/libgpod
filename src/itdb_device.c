@@ -1799,6 +1799,8 @@ ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
 		return ITDB_CHECKSUM_HASH58;
 	    case 4:
 		return ITDB_CHECKSUM_HASH72;
+	    case 5:
+		return ITDB_CHECKSUM_HASHAB;
 	    default:
 		return ITDB_CHECKSUM_UNKNOWN;
 	}
@@ -1824,8 +1826,10 @@ ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
-	    case ITDB_IPOD_GENERATION_IPAD_1:
 		return ITDB_CHECKSUM_HASH72;
+
+	    case ITDB_IPOD_GENERATION_IPAD_1:
+		return ITDB_CHECKSUM_HASHAB;
 
 	    case ITDB_IPOD_GENERATION_UNKNOWN:
 	    case ITDB_IPOD_GENERATION_FIRST:
@@ -1863,6 +1867,7 @@ G_GNUC_INTERNAL gboolean itdb_device_write_checksum (Itdb_Device *device,
 	    return itdb_hash58_write_hash (device, itdb_data, itdb_len, error);
 	case ITDB_CHECKSUM_HASH72:
 	    return itdb_hash72_write_hash (device, itdb_data, itdb_len, error);
+        case ITDB_CHECKSUM_HASHAB:
 	case ITDB_CHECKSUM_UNKNOWN:
             g_set_error (error, 0, -1, "Unsupported checksum type");
 	    return FALSE;
