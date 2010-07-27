@@ -1572,6 +1572,180 @@ leave:
     return res;
 }
 
+static void sort_key_get_buffer_boundaries(const char* sval, int *length, int *word_offset)
+{
+	int word_count = 0;
+	int i = 0;
+	int l = 0;
+	int o = 0;
+	char *sval_uppercase = NULL;
+	if (sval && strlen(sval)) {
+		sval_uppercase = g_ascii_strup(sval, strlen(sval));
+		while (sval_uppercase[i]) {
+			if (g_ascii_isalnum(sval_uppercase[i])) {
+				l++;
+			} else {
+				switch (sval_uppercase[i]) {
+					case ' ':
+						word_count++;
+						l++;
+						break;
+					case ':':
+					case '-':
+					case ',':
+					case '.':
+					case '\'':
+					default:
+						l += 2;
+						break;
+				}
+			}
+			i++;
+		}
+		free(sval_uppercase);
+
+		word_count++;
+		/* magic + transformed string + length + word weights + null */
+		o = 1 + l + 3;
+		l = o + (word_count*2) + 1;
+	} else {
+		l = 4;
+	}
+
+	*length = l;
+	*word_offset = o;
+}
+
+static void sqlite_func_iphone_sort_key(sqlite3_context *context, int argc, sqlite3_value **argv)
+{
+	const char *sval;
+	char *sval_uppercase = NULL;
+
+	char *buffer = NULL;
+
+	int word_count = 0;
+	int word_offset = 0;
+	int word_length = 0;
+	int i = 0;
+	int buffer_index = 0;
+	int buffer_size = 0;
+
+	if (argc != 1)
+		fprintf(stderr, "[%s] Error: Unexpected number of arguments: %d\n", __func__, argc);
+
+	switch (sqlite3_value_type(argv[0])) {
+		case SQLITE_TEXT:
+			sval = (const char*)sqlite3_value_text(argv[0]);
+			sort_key_get_buffer_boundaries(sval, &buffer_size, &word_offset);
+			buffer = (char*)malloc(buffer_size);
+			memset(buffer, '\0', buffer_size);
+			buffer[buffer_index] = 0x31;
+			if (sval) {
+				if (buffer_size > 4) {
+					buffer[buffer_index++] = 0x30;
+					/* transform text value */
+					/* uppercase the text */
+					sval_uppercase = g_ascii_strup(sval, strlen(sval));
+					while (sval_uppercase[i]) {
+						word_length++;
+						if (g_ascii_isalnum(sval_uppercase[i])) {
+							/* transform regular character */
+							buffer[buffer_index++] = sval_uppercase[i] - (0x55 - sval_uppercase[i]);
+						} else {
+							/* transform special chars (punctuation,special) */
+							switch (sval_uppercase[i]) {
+								case ' ':
+									buffer[buffer_index++] = 0x06;
+									word_length--;
+
+									/* since we reached word end, calculate word weight */
+									buffer[word_offset + word_count*2] = 0x8f;
+									buffer[word_offset + word_count*2 + 1] = (char)(0x86 - word_length);
+									word_count++;
+									word_length = 0;
+									break;
+								case ':':
+									buffer[buffer_index++] = 0x07;
+									buffer[buffer_index++] = 0xd8;
+									break;
+								case '-':
+									buffer[buffer_index++] = 0x07;
+									buffer[buffer_index++] = 0x90;
+									break;
+								case ',':
+									buffer[buffer_index++] = 0x07;
+									buffer[buffer_index++] = 0xb2;
+									break;
+								case '.':
+									buffer[buffer_index++] = 0x08;
+									buffer[buffer_index++] = 0x51;
+									break;
+								case '\'':
+									buffer[buffer_index++] = 0x07;
+									buffer[buffer_index++] = 0x31;
+									break;
+								default:
+									/* FIXME: We just simulate "-" for any other char, needs proper conversion */
+									buffer[buffer_index++] = 0x07;
+									buffer[buffer_index++] = 0x90;
+									break;
+							}
+						}
+						i++;
+					}
+					g_free(sval_uppercase);
+
+					/* calculate word weight for last word */
+					buffer[word_offset + word_count*2] = 0x8f;
+					buffer[word_offset + word_count*2 + 1] = 3 + word_length;
+					word_count++;
+					word_length = 0;
+
+					/* write length of input string */
+					buffer[word_offset - 3] = 0x01;
+					buffer[word_offset - 2] = i + 4; /* length of input string + 4 */
+					buffer[word_offset - 1] = 0x01;
+				} else {
+					buffer[0] = 0x31;
+					buffer[1] = 0x01;
+					buffer[2] = 0x01;
+				}
+			}
+			sqlite3_result_blob(context, buffer, buffer_size, free);
+			break;
+		case SQLITE_NULL:
+			buffer = (char*)malloc(4);
+			memcpy(buffer, "\x31\x01\x01\x00", 4);
+			sqlite3_result_blob(context, buffer, 4, free);
+			break;
+		default:
+			sqlite3_result_null(context);
+			break;
+	}
+}
+
+static void sqlite_func_iphone_sort_section(sqlite3_context *context, int argc, sqlite3_value **argv)
+{
+	const unsigned char *sval;
+	int res = 26;
+
+	if (argc != 1)
+		fprintf(stderr, "[%s] Error: Unexpected number of arguments: %d\n", __func__, argc);
+
+	switch (sqlite3_value_type(argv[0])) {
+		case SQLITE_BLOB:
+		case SQLITE_TEXT:
+			sval = sqlite3_value_text(argv[0]);
+			if (sval && (sval[0] == 0x30) && (sval[1] >= 0x2D) && (sval[1] <= 0x5F)) {
+				res = (sval[1] - 0x2D) / 2;
+			}
+			break;
+		default:
+			break;
+	}
+	sqlite3_result_int(context, res);
+}
+
 static void run_post_process_commands(Itdb_iTunesDB *itdb, const char *outpath, const char *uuid)
 {
     plist_t plist_node = NULL;
@@ -1742,6 +1916,10 @@ static void run_post_process_commands(Itdb_iTunesDB *itdb, const char *outpath, 
 			    }
 			    i++;
 			}
+
+			printf("[%s] binding functions\n", __func__);
+			sqlite3_create_function(db, "iPhoneSortKey", 1, SQLITE_ANY, NULL, &sqlite_func_iphone_sort_key, NULL, NULL);
+			sqlite3_create_function(db, "iPhoneSortSection", 1, SQLITE_ANY, NULL, &sqlite_func_iphone_sort_section, NULL, NULL);
 
 			cnt = plist_array_get_size(user_ver_cmds);
 			printf("[%s] Running %d post process commands now\n", __func__, cnt);
