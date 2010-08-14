@@ -42,6 +42,9 @@ namespace GPod {
 			
 			[DllImport ("gpod")]
 			internal static extern void   itdb_free(HandleRef itdb);
+
+			[DllImport ("gpod")]
+			internal static extern string itdb_get_control_dir (string mountpoint);
 			
 			[DllImport ("gpod")]
 			internal static extern string itdb_get_music_dir (string mountpoint);
@@ -122,6 +125,11 @@ namespace GPod {
 			if (error != IntPtr.Zero)
 				throw new GException (error);
 			return result;
+		}
+
+		public static string GetControlPath (string mountpoint)
+		{
+			return Itdb_iTunesDB.itdb_get_control_dir (mountpoint);
 		}
 		
 		public static string GetMusicPath (string mountpoint)
