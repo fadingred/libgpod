@@ -111,30 +111,30 @@ namespace GPod {
 			return res;
 		}
 		
-		public static string GetLocalPath (string mountPoint, Track track)
+		public static string GetLocalPath (Device device, Track track)
 		{
 			string ipodPath = track.IpodPath.Replace (":", "/").Substring (1);
-			return System.IO.Path.Combine (mountPoint, ipodPath);
+			return System.IO.Path.Combine (device.Mountpoint, ipodPath);
 		}
 		
-		public static string GetDestFileName (string mountpoint, string localFile)
+		public static string GetDestFileName (Device device, string localFile)
 		{
 			//  itdb_cp_get_dest_filename (HandleRef track, string mountpoint, string filename, ref IntPtr error);
 			IntPtr error = IntPtr.Zero;
-			string result = Itdb_iTunesDB.itdb_cp_get_dest_filename (IntPtr.Zero, mountpoint, localFile, ref error);
+			string result = Itdb_iTunesDB.itdb_cp_get_dest_filename (IntPtr.Zero, device.Mountpoint, localFile, ref error);
 			if (error != IntPtr.Zero)
 				throw new GException (error);
 			return result;
 		}
 
-		public static string GetControlPath (string mountpoint)
+		public static string GetControlPath (Device device)
 		{
-			return Itdb_iTunesDB.itdb_get_control_dir (mountpoint);
+			return Itdb_iTunesDB.itdb_get_control_dir (device.Mountpoint);
 		}
 		
-		public static string GetMusicPath (string mountpoint)
+		public static string GetMusicPath (Device device)
 		{
-			return Itdb_iTunesDB.itdb_get_music_dir (mountpoint);
+			return Itdb_iTunesDB.itdb_get_music_dir (device.Mountpoint);
 		}
 		
 		public IList<Track>		Tracks						{ get { return new ITDBTrackList(true, Handle, ((Itdb_iTunesDB *) Native)->tracks); } }
