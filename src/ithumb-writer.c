@@ -109,16 +109,11 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	g_return_val_if_fail (((width + horizontal_padding) <= img_info->width), NULL);
 	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
-        if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
-            /* each pixel is 2 bytes, to align rows on 4 bytes boundaries,
-             * width must be a multiple of 2 */
-            dest_width = img_info->width + 1;
-        } else {
-            dest_width = img_info->width;
-        }
 
         if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
             dest_width = img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment));
+        } else {
+            dest_width = img_info->width;
         }
 
 	/* Make sure thumb size calculation won't overflow */
@@ -221,16 +216,10 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	g_return_val_if_fail (((width + horizontal_padding) <= img_info->width), NULL);
 	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
-        if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
-            /* each pixel is 2 bytes, to align rows on 4 bytes boundaries,
-             * width must be a multiple of 2 */
-            dest_width = img_info->width + 1;
-        } else {
-            dest_width = img_info->width;
-        }
-
         if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
             dest_width = img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment));
+        } else {
+            dest_width = img_info->width;
         }
 
 	/* Make sure thumb size calculation won't overflow */
@@ -440,14 +429,11 @@ pack_rec_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
     if (pixels)
     {
         gint row_stride;
-        if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
-            row_stride = img_info->width + 1;
-        } else {
-            row_stride = img_info->width;
-        }
 
         if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
             row_stride = img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment));
+        } else {
+            row_stride = img_info->width;
         }
 
 	deranged_pixels = derange_pixels (NULL, pixels,
