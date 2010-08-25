@@ -435,8 +435,6 @@ unpack_rec_RGB_555 (guint16 *pixels, guint bytes_len, guint byte_order,
 	gboolean free_use_pixels = FALSE;
 	guint16 *pixels_arranged;
 
-	guint i;
-
 	g_return_val_if_fail (bytes_len < 2*(G_MAXUINT/3), NULL);
 	g_return_val_if_fail (2*width*height < G_MAXUINT, NULL);
 	g_return_val_if_fail (width==height, NULL);
@@ -460,22 +458,7 @@ unpack_rec_RGB_555 (guint16 *pixels, guint bytes_len, guint byte_order,
 	    return NULL;
 	}
 
-	result = g_malloc ((bytes_len/2) * 3);
-
-	for (i = 0; i < bytes_len/2; i++) {
-		guint16 cur_pixel;
-		/* FIXME: endianness */
-		cur_pixel = get_gint16 (pixels_arranged[i], byte_order);
-		/* Unpack pixels */
-		result[3*i] = (cur_pixel & RED_MASK_555) >> RED_SHIFT_555;
-		result[3*i+1] = (cur_pixel & GREEN_MASK_555) >> GREEN_SHIFT_555;
-		result[3*i+2] = (cur_pixel & BLUE_MASK_555) >> BLUE_SHIFT_555;
-
-		/* Normalize color values so that they use a [0..255] range */
-		result[3*i] <<= (8 - RED_BITS_555);
-		result[3*i+1] <<= (8 - GREEN_BITS_555);
-		result[3*i+2] <<= (8 - BLUE_BITS_555);
-	}
+	result = unpack_RGB_555 (pixels_arranged, bytes_len, byte_order);
 
 	g_free (pixels_arranged);
 	if (free_use_pixels)
