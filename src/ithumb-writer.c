@@ -917,25 +917,6 @@ static gboolean write_pixels (iThumbWriter *writer, Itdb_Thumb_Ipod_Item *thumb,
     return TRUE;
 }
 
-static void set_thumb_padding (iThumbWriter *writer, 
-                               Itdb_Thumb_Ipod_Item *thumb, 
-                               gint width, gint height)
-{
-    switch (writer->db_type)
-    {
-    case DB_TYPE_PHOTO:
-	thumb->horizontal_padding = (writer->img_info->width - width)/2;
-	thumb->vertical_padding = (writer->img_info->height - height)/2;
-	break;
-    case DB_TYPE_ITUNES:
-	thumb->horizontal_padding = 0;
-	thumb->vertical_padding = 0;
-	break;
-    default:
-	g_return_if_reached ();
-    }
-}
-
 static GdkPixbuf *pixbuf_from_image_data (guchar *image_data, gsize len)
 {
     GdkPixbuf *pixbuf;
@@ -1025,8 +1006,9 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     thumb_ipod = itdb_thumb_new_item_from_ipod (writer->img_info);
     g_assert (thumb_ipod != NULL);
 
-    set_thumb_padding (writer, thumb_ipod, width, height);
 
+    thumb_ipod->horizontal_padding = (writer->img_info->width - width)/2;
+    thumb_ipod->vertical_padding = (writer->img_info->height - height)/2;
     /* The thumbnail width/height is inclusive padding */
     thumb_ipod->width = thumb_ipod->horizontal_padding + width;
     thumb_ipod->height = thumb_ipod->vertical_padding + height;
