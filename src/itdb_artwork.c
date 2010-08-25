@@ -808,6 +808,24 @@ itdb_thumb_get_rgb_data (Itdb_Device *device, Itdb_Thumb_Ipod_Item *item)
 
 }
 
+static guint get_aligned_width (const Itdb_ArtworkFormat *img_info,
+                                gsize pixel_size)
+{
+    guint width;
+    guint alignment = img_info->row_bytes_alignment/pixel_size;
+
+    if (alignment * pixel_size != img_info->row_bytes_alignment) {
+        g_warning ("RowBytesAlignment (%d) not a multiple of pixel size (%"G_GSIZE_FORMAT")",
+                   img_info->row_bytes_alignment, pixel_size);
+    }
+
+    width = img_info->width;
+    if ((alignment != 0) && ((img_info->width % alignment) != 0)) {
+        width += alignment - (img_info->width % alignment);
+    }
+    return width;
+}
+
 gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
                                          Itdb_Thumb_Ipod_Item *item)
 {
@@ -836,11 +854,8 @@ gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
 	    return NULL;
 	}
 
-	if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
-	    rowstride = (img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment)))*3;
-	} else {
-	    rowstride = img_info->width*3;
-	}
+	/* FIXME: this is broken for non-16bpp image formats :-/ */
+	rowstride = get_aligned_width (img_info, sizeof(guint16))*3;
 	pixbuf_full =
 	    gdk_pixbuf_new_from_data (pixels,
 				      GDK_COLORSPACE_RGB,
