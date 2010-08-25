@@ -147,11 +147,6 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 result[line + w] = get_RGB_565_pixel (img_info->back_color, 
                                                       byte_order);
             }
-            line += (height+vertical_padding)*dest_width;
-            for (w = 0 ; w < dest_width; w++) {
-                result[line + w] = get_RGB_565_pixel (img_info->back_color, 
-                                                      byte_order);
-            }
         }
 
 	for (h = 0; h < height; h++) {
@@ -174,6 +169,15 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 }
                 result[line + w] = packed_pixel;
             }
+	}
+
+	for (h = height + vertical_padding; h < img_info->height; h++) {
+	    gint line = h * dest_width;
+	    gint w;
+	    for (w = 0 ; w < dest_width; w++) {
+		result[line + w] = get_RGB_565_pixel (img_info->back_color, 
+						      byte_order);
+	    }
 	}
 	return result;
 }
@@ -249,11 +253,6 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 result[line + w] = get_RGB_555_pixel (img_info->back_color, 
                                                       byte_order, TRUE);
             }
-            line += (height+vertical_padding)*dest_width;
-            for (w = 0 ; w < dest_width; w++) {
-                result[line + w] = get_RGB_555_pixel (img_info->back_color, 
-                                                      byte_order, TRUE);
-            }
         }
 
 	for (h = 0; h < height; h++) {
@@ -277,6 +276,15 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 }
                 result[line + w] = packed_pixel;
             }
+	}
+
+	for (h = height + vertical_padding; h < img_info->height; h++) {
+	    gint line = h * dest_width;
+	    gint w;
+	    for (w = 0 ; w < dest_width; w++) {
+		result[line + w] = get_RGB_555_pixel (img_info->back_color, 
+						      byte_order, TRUE);
+	    }
 	}
 	return result;
 }
@@ -349,11 +357,6 @@ pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 result[line + w] = get_RGB_888_pixel (img_info->back_color, 
                                                       byte_order, TRUE);
             }
-            line += (height+vertical_padding)*img_info->width;
-            for (w = 0 ; w < img_info->width; w++) {
-                result[line + w] = get_RGB_888_pixel (img_info->back_color, 
-                                                      byte_order, TRUE);
-            }
         }
 
 	for (h = 0; h < height; h++) {
@@ -377,6 +380,16 @@ pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 }
                 result[line + w] = packed_pixel;
             }
+	}
+
+	for (h = height + vertical_padding; h < img_info->height; h++) {
+	    gint line = h*img_info->width;
+	    gint w;
+
+	    for (w = 0 ; w < img_info->width; w++) {
+		result[line + w] = get_RGB_888_pixel (img_info->back_color, 
+						      byte_order, TRUE);
+	    }
 	}
 	return (guint16 *)result;
 }
