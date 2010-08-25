@@ -87,6 +87,17 @@ static guint16 get_RGB_565_pixel (const guchar *pixel, gint byte_order)
     return get_gint16 (r | g | b, byte_order);
 }
 
+static guint get_aligned_width (const Itdb_ArtworkFormat *img_info)
+{
+    guint width;
+
+    width = img_info->width;
+    if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
+        width += img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment);
+    }
+    return width;
+}
+
 static guint16 *
 pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	      gint horizontal_padding, gint vertical_padding,
@@ -110,11 +121,7 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
 
-        if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
-            dest_width = img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment));
-        } else {
-            dest_width = img_info->width;
-        }
+	dest_width = get_aligned_width (img_info);
 
 	/* Make sure thumb size calculation won't overflow */
 	g_return_val_if_fail (dest_width != 0, NULL);
@@ -216,11 +223,7 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	g_return_val_if_fail (((width + horizontal_padding) <= img_info->width), NULL);
 	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
-        if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
-            dest_width = img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment));
-        } else {
-            dest_width = img_info->width;
-        }
+	dest_width = get_aligned_width (img_info);
 
 	/* Make sure thumb size calculation won't overflow */
 	g_return_val_if_fail (dest_width != 0, NULL);
@@ -430,11 +433,7 @@ pack_rec_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
     {
         gint row_stride;
 
-        if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
-            row_stride = img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment));
-        } else {
-            row_stride = img_info->width;
-        }
+	row_stride = get_aligned_width (img_info);
 
 	deranged_pixels = derange_pixels (NULL, pixels,
 					  img_info->width, img_info->height,
