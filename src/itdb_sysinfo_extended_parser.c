@@ -241,6 +241,7 @@ static const DictFieldMapping sysinfo_image_format_fields_mapping[] = {
     { "ColorAdjustment",  G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, color_adjustment) },
     { "GammaAdjustment",  G_TYPE_DOUBLE,  G_STRUCT_OFFSET (Itdb_ArtworkFormat, gamma) },
     { "AssociatedFormat", G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, associated_format) },
+    { "RowBytesAlignment", G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, row_bytes_alignment) },
     { NULL,               G_TYPE_NONE,    0 }
 };
 

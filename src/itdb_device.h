@@ -137,6 +137,7 @@ struct _Itdb_Device
  * @gamma:              Gamma value for the thumbails
  *                      (not currently used)
  * @associated_format:  Unknown (not currently used)
+ * @row_bytes_alignment: Specifies the number of bytes a pixel row must be aligned to
  *
  * Structure representing the characteristics of the thumbnails to
  * write to a given .ithmb file. The format of the structure is based
@@ -158,6 +159,7 @@ struct _Itdb_ArtworkFormat {
         gint color_adjustment;
         gdouble gamma;
         gint associated_format;
+        gint row_bytes_alignment;
 };
 
 /* Error domain */
