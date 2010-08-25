@@ -819,6 +819,7 @@ gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
 	gint pad_y = item->vertical_padding;
 	gint width = item->width;
 	gint height = item->height;
+	guint rowstride;
         const Itdb_ArtworkFormat *img_info = item->format;
         guchar *pixels;
 
@@ -835,12 +836,17 @@ gpointer itdb_thumb_ipod_item_to_pixbuf (Itdb_Device *device,
 	    return NULL;
 	}
 
+	if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
+	    rowstride = (img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment)))*3;
+	} else {
+	    rowstride = img_info->width*3;
+	}
 	pixbuf_full =
 	    gdk_pixbuf_new_from_data (pixels,
 				      GDK_COLORSPACE_RGB,
 				      FALSE, 8,
 				      img_info->width, img_info->height,
-				      img_info->width*3,
+				      rowstride,
 				      (GdkPixbufDestroyNotify)g_free,
 				      NULL);
 

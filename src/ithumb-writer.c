@@ -117,6 +117,10 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
             dest_width = img_info->width;
         }
 
+        if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
+            dest_width = img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment));
+        }
+
 	/* Make sure thumb size calculation won't overflow */
 	g_return_val_if_fail (dest_width != 0, NULL);
 	g_return_val_if_fail (dest_width < G_MAXUINT/2, NULL);
@@ -223,6 +227,10 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
             dest_width = img_info->width + 1;
         } else {
             dest_width = img_info->width;
+        }
+
+        if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
+            dest_width = img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment));
         }
 
 	/* Make sure thumb size calculation won't overflow */
@@ -437,6 +445,11 @@ pack_rec_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
         } else {
             row_stride = img_info->width;
         }
+
+        if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
+            row_stride = img_info->width + (img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment));
+        }
+
 	deranged_pixels = derange_pixels (NULL, pixels,
 					  img_info->width, img_info->height,
 					  row_stride);
