@@ -87,13 +87,20 @@ static guint16 get_RGB_565_pixel (const guchar *pixel, gint byte_order)
     return get_gint16 (r | g | b, byte_order);
 }
 
-static guint get_aligned_width (const Itdb_ArtworkFormat *img_info)
+static guint get_aligned_width (const Itdb_ArtworkFormat *img_info,
+                                gsize pixel_size)
 {
     guint width;
+    guint alignment = img_info->row_bytes_alignment/pixel_size;
+
+    if (alignment * pixel_size != img_info->row_bytes_alignment) {
+        g_warning ("RowBytesAlignment (%d) not a multiple of pixel size (%"G_GSIZE_FORMAT")",
+                   img_info->row_bytes_alignment, pixel_size);
+    }
 
     width = img_info->width;
-    if ((img_info->row_bytes_alignment > 0) && ((img_info->width % img_info->row_bytes_alignment) != 0)) {
-        width += img_info->row_bytes_alignment - (img_info->width % img_info->row_bytes_alignment);
+    if ((alignment != 0) && ((img_info->width % alignment) != 0)) {
+        width += alignment - (img_info->width % alignment);
     }
     return width;
 }
@@ -121,7 +128,7 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
 
-	dest_width = get_aligned_width (img_info);
+	dest_width = get_aligned_width (img_info, sizeof(guint16));
 
 	/* Make sure thumb size calculation won't overflow */
 	g_return_val_if_fail (dest_width != 0, NULL);
@@ -223,7 +230,7 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	g_return_val_if_fail (((width + horizontal_padding) <= img_info->width), NULL);
 	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
-	dest_width = get_aligned_width (img_info);
+	dest_width = get_aligned_width (img_info, sizeof(guint16));
 
 	/* Make sure thumb size calculation won't overflow */
 	g_return_val_if_fail (dest_width != 0, NULL);
@@ -433,7 +440,7 @@ pack_rec_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
     {
         gint row_stride;
 
-	row_stride = get_aligned_width (img_info);
+	row_stride = get_aligned_width (img_info, sizeof(guint16));
 
 	deranged_pixels = derange_pixels (NULL, pixels,
 					  img_info->width, img_info->height,
