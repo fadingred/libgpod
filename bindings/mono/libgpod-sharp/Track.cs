@@ -74,7 +74,7 @@ namespace GPod {
 			public uint    	 playcount;
 			public uint    	 playcount2;
 			public uint    	 recent_playcount;
-			public bool    	 transferred;
+			public int 	     transferred;
 			public short   	 BPM;
 			public byte    	 app_rating;
 			public byte    	 type1;
@@ -348,8 +348,8 @@ namespace GPod {
 														  set { ((Itdb_Track *) Native)->playcount2 = value; } }
 		public uint			RecentPlayCount				{ get { return ((Itdb_Track *) Native)->recent_playcount; }
 														  set { ((Itdb_Track *) Native)->recent_playcount = value; } }
-		public bool			Transferred					{ get { return ((Itdb_Track *) Native)->transferred; }
-														  set { ((Itdb_Track *) Native)->transferred = value; } }
+		public bool			Transferred					{ get { return ((Itdb_Track *) Native)->transferred != 0; }
+														  set { ((Itdb_Track *) Native)->transferred = value ? 1 : 0; } }
 		public short		BPM							{ get { return ((Itdb_Track *) Native)->BPM; }
 														  set { ((Itdb_Track *) Native)->BPM = value; } }
 		public byte 		AppRating 					{ get { return ((Itdb_Track *) Native)->app_rating; }
