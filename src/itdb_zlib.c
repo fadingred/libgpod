@@ -112,8 +112,8 @@ gboolean itdb_zlib_check_decompress_fimp (FImport *fimp)
 
     cts = fimp->fcontents;
 
-    cSize = *(guint32*)(cts->contents+8);
-    headerSize = *(guint32*)(cts->contents+4);
+    cSize = GUINT32_FROM_LE (*(guint32*)(cts->contents+8));
+    headerSize = GUINT32_FROM_LE (*(guint32*)(cts->contents+4));
     uSize = 0;
 
     if (headerSize < 0xA9) {
