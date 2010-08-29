@@ -87,6 +87,12 @@ namespace GPod {
 
 			[DllImport ("gpod")]
 			internal static extern IntPtr itdb_playlist_by_name(HandleRef itdb, string name);
+			
+			[DllImport ("gpod")]
+			internal static extern bool itdb_start_sync (IntPtr itdb);
+			
+			[DllImport ("gpod")]
+			internal static extern bool itdb_stop_sync (IntPtr itdb);
 		}
 	}
 	
@@ -158,6 +164,16 @@ namespace GPod {
 			if (gerror != IntPtr.Zero)
 				throw new GException(gerror);
 			return result;
+		}
+		
+		public bool StartSync ()
+		{
+			return Itdb_iTunesDB.itdb_start_sync (Native);
+		}
+		
+		public bool StopSync ()
+		{
+			return Itdb_iTunesDB.itdb_stop_sync (Native);
 		}
 		
 		public bool Write() {
