@@ -33,7 +33,7 @@ namespace GPod {
 		    public byte   flag3;
 		    public int    num;
 		    public IntPtr members;
-		    public bool   is_spl;
+		    public int   is_spl;
 		    public IntPtr timestamp;
 		    public ulong  id;
 		    public PlaylistSortOrder sortorder;
@@ -110,8 +110,8 @@ namespace GPod {
 			set { var x = (Itdb_Playlist *) Native; ReplaceStringUTF8 (ref x->name, value); }
 		}
 		
-		public bool 				IsSmartPlaylist		{ get { return ((Itdb_Playlist *) Native)->is_spl; }
-														  set { ((Itdb_Playlist *) Native)->is_spl = value; } }
+		public bool 				IsSmartPlaylist		{ get { return ((Itdb_Playlist *) Native)->is_spl != 0; }
+														  set { ((Itdb_Playlist *) Native)->is_spl = value ? 1 : 0; } }
 		public DateTime				TimeCreated			{ get { return Artwork.time_tToDateTime(((Itdb_Playlist *) Native)->timestamp); }
 														  set { ((Itdb_Playlist *) Native)->timestamp = Artwork.DateTimeTotime_t(value); } }
 		public ulong 				ID					{ get { return ((Itdb_Playlist *) Native)->id; }
