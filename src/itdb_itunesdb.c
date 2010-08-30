@@ -3671,7 +3671,7 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
   /* 0x20 */
-  put16lint (cts, 1);
+  put16lint (cts, 1); /* OS type, 1 = MacOS X, 2 = Windows */
 
   /* 0x22 */
   put16lint (cts, fexp->itdb->priv->unk_0x22);  /* unknown */
