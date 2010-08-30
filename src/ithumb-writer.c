@@ -87,6 +87,24 @@ static guint16 get_RGB_565_pixel (const guchar *pixel, gint byte_order)
     return get_gint16 (r | g | b, byte_order);
 }
 
+static guint get_aligned_width (const Itdb_ArtworkFormat *img_info,
+                                gsize pixel_size)
+{
+    guint width;
+    guint alignment = img_info->row_bytes_alignment/pixel_size;
+
+    if (alignment * pixel_size != img_info->row_bytes_alignment) {
+        g_warning ("RowBytesAlignment (%d) not a multiple of pixel size (%"G_GSIZE_FORMAT")",
+                   img_info->row_bytes_alignment, pixel_size);
+    }
+
+    width = img_info->width;
+    if ((alignment != 0) && ((img_info->width % alignment) != 0)) {
+        width += alignment - (img_info->width % alignment);
+    }
+    return width;
+}
+
 static guint16 *
 pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	      gint horizontal_padding, gint vertical_padding,
@@ -109,13 +127,8 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	g_return_val_if_fail (((width + horizontal_padding) <= img_info->width), NULL);
 	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
-        if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
-            /* each pixel is 2 bytes, to align rows on 4 bytes boundaries,
-             * width must be a multiple of 2 */
-            dest_width = img_info->width + 1;
-        } else {
-            dest_width = img_info->width;
-        }
+
+	dest_width = get_aligned_width (img_info, sizeof(guint16));
 
 	/* Make sure thumb size calculation won't overflow */
 	g_return_val_if_fail (dest_width != 0, NULL);
@@ -130,11 +143,6 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
             gint w;
             gint line = h * dest_width;
 
-            for (w = 0 ; w < dest_width; w++) {
-                result[line + w] = get_RGB_565_pixel (img_info->back_color, 
-                                                      byte_order);
-            }
-            line += (height+vertical_padding)*dest_width;
             for (w = 0 ; w < dest_width; w++) {
                 result[line + w] = get_RGB_565_pixel (img_info->back_color, 
                                                       byte_order);
@@ -161,6 +169,15 @@ pack_RGB_565 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 }
                 result[line + w] = packed_pixel;
             }
+	}
+
+	for (h = height + vertical_padding; h < img_info->height; h++) {
+	    gint line = h * dest_width;
+	    gint w;
+	    for (w = 0 ; w < dest_width; w++) {
+		result[line + w] = get_RGB_565_pixel (img_info->back_color, 
+						      byte_order);
+	    }
 	}
 	return result;
 }
@@ -217,13 +234,7 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
 	g_return_val_if_fail (((width + horizontal_padding) <= img_info->width), NULL);
 	g_return_val_if_fail (((height + vertical_padding) <= img_info->height), NULL);
 
-        if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
-            /* each pixel is 2 bytes, to align rows on 4 bytes boundaries,
-             * width must be a multiple of 2 */
-            dest_width = img_info->width + 1;
-        } else {
-            dest_width = img_info->width;
-        }
+	dest_width = get_aligned_width (img_info, sizeof(guint16));
 
 	/* Make sure thumb size calculation won't overflow */
 	g_return_val_if_fail (dest_width != 0, NULL);
@@ -238,11 +249,6 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
             gint w;
             gint line = h * dest_width;
 
-            for (w = 0 ; w < dest_width; w++) {
-                result[line + w] = get_RGB_555_pixel (img_info->back_color, 
-                                                      byte_order, TRUE);
-            }
-            line += (height+vertical_padding)*dest_width;
             for (w = 0 ; w < dest_width; w++) {
                 result[line + w] = get_RGB_555_pixel (img_info->back_color, 
                                                       byte_order, TRUE);
@@ -270,6 +276,15 @@ pack_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 }
                 result[line + w] = packed_pixel;
             }
+	}
+
+	for (h = height + vertical_padding; h < img_info->height; h++) {
+	    gint line = h * dest_width;
+	    gint w;
+	    for (w = 0 ; w < dest_width; w++) {
+		result[line + w] = get_RGB_555_pixel (img_info->back_color, 
+						      byte_order, TRUE);
+	    }
 	}
 	return result;
 }
@@ -342,11 +357,6 @@ pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 result[line + w] = get_RGB_888_pixel (img_info->back_color, 
                                                       byte_order, TRUE);
             }
-            line += (height+vertical_padding)*img_info->width;
-            for (w = 0 ; w < img_info->width; w++) {
-                result[line + w] = get_RGB_888_pixel (img_info->back_color, 
-                                                      byte_order, TRUE);
-            }
         }
 
 	for (h = 0; h < height; h++) {
@@ -370,6 +380,16 @@ pack_RGB_888 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
                 }
                 result[line + w] = packed_pixel;
             }
+	}
+
+	for (h = height + vertical_padding; h < img_info->height; h++) {
+	    gint line = h*img_info->width;
+	    gint w;
+
+	    for (w = 0 ; w < img_info->width; w++) {
+		result[line + w] = get_RGB_888_pixel (img_info->back_color, 
+						      byte_order, TRUE);
+	    }
 	}
 	return (guint16 *)result;
 }
@@ -432,11 +452,9 @@ pack_rec_RGB_555 (GdkPixbuf *pixbuf, const Itdb_ArtworkFormat *img_info,
     if (pixels)
     {
         gint row_stride;
-        if ((img_info->align_row_bytes) && ((img_info->width % 2) != 0)) {
-            row_stride = img_info->width + 1;
-        } else {
-            row_stride = img_info->width;
-        }
+
+	row_stride = get_aligned_width (img_info, sizeof(guint16));
+
 	deranged_pixels = derange_pixels (NULL, pixels,
 					  img_info->width, img_info->height,
 					  row_stride);
@@ -899,25 +917,6 @@ static gboolean write_pixels (iThumbWriter *writer, Itdb_Thumb_Ipod_Item *thumb,
     return TRUE;
 }
 
-static void set_thumb_padding (iThumbWriter *writer, 
-                               Itdb_Thumb_Ipod_Item *thumb, 
-                               gint width, gint height)
-{
-    switch (writer->db_type)
-    {
-    case DB_TYPE_PHOTO:
-	thumb->horizontal_padding = (writer->img_info->width - width)/2;
-	thumb->vertical_padding = (writer->img_info->height - height)/2;
-	break;
-    case DB_TYPE_ITUNES:
-	thumb->horizontal_padding = 0;
-	thumb->vertical_padding = 0;
-	break;
-    default:
-	g_return_if_reached ();
-    }
-}
-
 static GdkPixbuf *pixbuf_from_image_data (guchar *image_data, gsize len)
 {
     GdkPixbuf *pixbuf;
@@ -1007,8 +1006,9 @@ ithumb_writer_write_thumbnail (iThumbWriter *writer,
     thumb_ipod = itdb_thumb_new_item_from_ipod (writer->img_info);
     g_assert (thumb_ipod != NULL);
 
-    set_thumb_padding (writer, thumb_ipod, width, height);
 
+    thumb_ipod->horizontal_padding = (writer->img_info->width - width)/2;
+    thumb_ipod->vertical_padding = (writer->img_info->height - height)/2;
     /* The thumbnail width/height is inclusive padding */
     thumb_ipod->width = thumb_ipod->horizontal_padding + width;
     thumb_ipod->height = thumb_ipod->vertical_padding + height;

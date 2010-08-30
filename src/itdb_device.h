@@ -131,12 +131,12 @@ struct _Itdb_Device
  *                      (not currently used)
  * @interlaced:         If TRUE, the thumbnails are interlaced
  *                      (not currently used)
- * @align_row_bytes:    If TRUE, each pixel row must be aligned a 2-byte boundary
  * @color_adjustment:   Color adjustment for the thumbnails
  *                      (not currently used)
  * @gamma:              Gamma value for the thumbails
  *                      (not currently used)
  * @associated_format:  Unknown (not currently used)
+ * @row_bytes_alignment: Specifies the number of bytes a pixel row must be aligned to
  *
  * Structure representing the characteristics of the thumbnails to
  * write to a given .ithmb file. The format of the structure is based
@@ -154,10 +154,10 @@ struct _Itdb_ArtworkFormat {
 
         gint display_width;
         gboolean interlaced;
-        gboolean align_row_bytes;
         gint color_adjustment;
         gdouble gamma;
         gint associated_format;
+        gint row_bytes_alignment;
 };
 
 /* Error domain */

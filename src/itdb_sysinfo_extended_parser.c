@@ -233,7 +233,9 @@ static const DictFieldMapping sysinfo_image_format_fields_mapping[] = {
 /*  { "PixelFormat",      G_TYPE_STRING,  G_STRUCT_OFFSET (Itdb_ArtworkFormat, format) },*/
     { "Interlaced",       G_TYPE_BOOLEAN, G_STRUCT_OFFSET (Itdb_ArtworkFormat, interlaced) },
     { "Crop",             G_TYPE_BOOLEAN, G_STRUCT_OFFSET (Itdb_ArtworkFormat, crop) },
-    { "AlignRowBytes",    G_TYPE_BOOLEAN, G_STRUCT_OFFSET (Itdb_ArtworkFormat, align_row_bytes) },
+/* AlignRowBytes is an older version of RowBytesAlignment, it's equivalent
+ * to a value of 4 for RowBytesAlignemnt */
+/*    { "AlignRowBytes",    G_TYPE_BOOLEAN, G_STRUCT_OFFSET (Itdb_ArtworkFormat, align_row_bytes) },*/
     { "Rotation",         G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, rotation) },
 /* BackColor needs to be converted to a gint, this is special-cased
  * in g_value_to_image_format */
@@ -241,6 +243,7 @@ static const DictFieldMapping sysinfo_image_format_fields_mapping[] = {
     { "ColorAdjustment",  G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, color_adjustment) },
     { "GammaAdjustment",  G_TYPE_DOUBLE,  G_STRUCT_OFFSET (Itdb_ArtworkFormat, gamma) },
     { "AssociatedFormat", G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, associated_format) },
+    { "RowBytesAlignment", G_TYPE_INT,     G_STRUCT_OFFSET (Itdb_ArtworkFormat, row_bytes_alignment) },
     { NULL,               G_TYPE_NONE,    0 }
 };
 
@@ -458,6 +461,14 @@ static Itdb_ArtworkFormat *g_value_to_image_format (GValue *value)
     set_back_color (img_spec, dict);
 
     dict_to_struct (dict, sysinfo_image_format_fields_mapping, img_spec);
+
+    if (get_boolean (dict, "AlignRowBytes")
+            && (img_spec->row_bytes_alignment == 0)) {
+        /* at least the nano3g has the AlignRowBytes key with no
+         * RowBytesAlignment key.
+         */
+        img_spec->row_bytes_alignment = 4;
+    }
 
     return img_spec;
 }
