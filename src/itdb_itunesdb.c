@@ -5761,6 +5761,15 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 	goto err;
     }
 
+    /* write albums (mhsd type 4) */
+    if (!write_mhsd_albums (fexp)) {
+        g_set_error (&fexp->error,
+                    ITDB_FILE_ERROR,
+                    ITDB_FILE_ERROR_ITDB_CORRUPT,
+                    _("Error writing list of albums (mhsd type 4)"));
+        goto err;
+    }
+
     /* write special podcast version mhsd (mhsd type 3) */
     if (!fexp->error && !write_mhsd_playlists (fexp, 3)) {
 	g_set_error (&fexp->error,
@@ -5778,14 +5787,6 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 	goto err;
     }
 
-    /* write albums (mhsd type 4) */
-    if (!write_mhsd_albums (fexp)) {
-	g_set_error (&fexp->error,
-		     ITDB_FILE_ERROR,
-		     ITDB_FILE_ERROR_ITDB_CORRUPT,
-		     _("Error writing list of albums (mhsd type 4)"));
-	goto err;
-    }
     /* write artists (mhsd type 8) */
     if (!fexp->error && !write_mhsd_artists (fexp)) {
 	g_set_error (&fexp->error,
