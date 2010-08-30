@@ -3178,8 +3178,8 @@ Itdb_iTunesDB *itdb_parse (const gchar *mp, GError **error)
 	g_set_error (error,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_NOTFOUND,
-		     _("File not found: '%s'."),
-		     filename);
+		     _("Couldn't find an iPod database on %s."),
+		     mp);
     }
     g_free (filename);
     return itdb;
