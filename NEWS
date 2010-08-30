@@ -1,3 +1,9 @@
+* Shuffle 3g and 4g support (Adam Broschinski)
+* CLI bindings (Nathaniel McCallum, Alan McGovern, Bertrand Lorentz)
+* artwork fixes (Nikias Bassen)
+* various bug fixes (Todd Zullinger, Olivier Crête, Cédric Bellegarde, Alex
+  Mauer, Christophe Fergeau)
+
 Overview of changes in libgpod 0.7.93
 =====================================
 
