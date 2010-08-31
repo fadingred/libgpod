@@ -1,3 +1,12 @@
+Overview of changes in libgpod 0.7.93
+=====================================
+
+For information about iPhone/iPod Touch/iPod Nano 5g support, please read
+carefully the overview of libgpod 0.7.90 below. The iPhone 4 and the iPad
+aren't supported, other iOS4 devices might work.
+This release adds support for the button-less iPod Shuffles (without voice
+over) and CLI (mono/C# bindings), as well as various bug fixes.
+
 * Shuffle 3g and 4g support (Adam Broschinski)
 * CLI bindings (Nathaniel McCallum, Alan McGovern, Bertrand Lorentz)
 * artwork fixes (Nikias Bassen)
