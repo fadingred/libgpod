@@ -361,8 +361,10 @@ static int mk_Extras(Itdb_iTunesDB *itdb, const char *outpath)
     int rebuild = 0;
     gchar *dbf = NULL;
     sqlite3 *db = NULL;
+    sqlite3_stmt *stmt_chapter = NULL;
     char *errmsg = NULL;
     struct stat fst;
+    GList *gl = NULL;
 
     dbf = g_build_filename(outpath, "Extras.itdb", NULL);
     printf("[%s] Processing '%s'\n", __func__, dbf);
@@ -398,10 +400,13 @@ static int mk_Extras(Itdb_iTunesDB *itdb, const char *outpath)
     }
 
     sqlite3_exec(db, "BEGIN;", NULL, NULL, NULL);
+    if (SQLITE_OK != sqlite3_prepare_v2(db, "INSERT INTO \"chapter\" VALUES(?,?);", -1, &stmt_chapter, NULL)) {
+	fprintf(stderr, "[%s] sqlite3_prepare error: %s\n", __func__, sqlite3_errmsg(db));
+	goto leave;
+    }
 
     /* kill all entries in 'chapter' as they will be re-inserted */
-    /* TODO: we do not support this in the moment, so don't touch this */
-    /*if (SQLITE_OK != sqlite3_exec(db, "DELETE FROM chapter;", NULL, NULL, &errmsg)) {
+    if (SQLITE_OK != sqlite3_exec(db, "DELETE FROM chapter;", NULL, NULL, &errmsg)) {
 	fprintf(stderr, "[%s] sqlite3_exec error: %s\n", __func__, sqlite3_errmsg(db));
 	if (errmsg) {
 	    fprintf(stderr, "[%s] additional error information: %s\n", __func__, errmsg);
@@ -409,7 +414,7 @@ static int mk_Extras(Itdb_iTunesDB *itdb, const char *outpath)
 	    errmsg = NULL;
 	}
 	goto leave;
-    }*/
+    }
 
     /* kill all entries in 'lyrics' as they will be re-inserted */
     /* TODO: we do not support this in the moment, so don't touch this */
@@ -423,11 +428,38 @@ static int mk_Extras(Itdb_iTunesDB *itdb, const char *outpath)
 	goto leave;
     }*/
 
+    for (gl = itdb->tracks; gl; gl = gl->next) {
+	Itdb_Track *track = gl->data;
+	if (track->chapterdata) {
+	    int idx = 0;
+	    GByteArray *chapter_blob = itdb_chapterdata_build_chapter_blob(track->chapterdata, FALSE);
+	    /* printf("[%s] -- inserting into \"chapter\"\n", __func__); */
+	    res = sqlite3_reset(stmt_chapter);
+	    if (res != SQLITE_OK) {
+		fprintf(stderr, "[%s] 1 sqlite3_reset returned %d\n", __func__, res);
+	    }
+	    /* item_pid INTEGER NOT NULL */
+	    sqlite3_bind_int64(stmt_chapter, ++idx, track->dbid);
+	    /* data BLOB */
+	    sqlite3_bind_blob(stmt_chapter, ++idx, chapter_blob->data, chapter_blob->len, SQLITE_TRANSIENT);
+
+	    res = sqlite3_step(stmt_chapter);
+	    if (res == SQLITE_DONE) {
+		/* expected result */
+	    } else {
+		fprintf(stderr, "[%s] 8 sqlite3_step returned %d\n", __func__, res);
+	    }
+	    g_byte_array_free(chapter_blob, TRUE);
+	}
+    }
     sqlite3_exec(db, "COMMIT;", NULL, NULL, NULL);
 
     res = 0;
     printf("[%s] done.\n", __func__);
 leave:
+    if (stmt_chapter) {
+	sqlite3_finalize(stmt_chapter);
+    }
     if (db) {
 	sqlite3_close(db);
     }

@@ -7907,6 +7907,9 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
  * @chapterdata: Itdb_Chapterdata pointer of chapter data to be encoded
  *
  * Creates an iTunesDB binary blob of chapter data from @chapterdata.
+ * This helper function is used by both mk_mhod() in itdb_itunesdb.c
+ * and mk_Extras() in itdb_sqlite.c, so take care when updating to
+ * maintain compatibility with both chapterdata blobs.
  *
  * NOTE: Caller must call g_byte_array_free(chapter_blob, TRUE) on the
  * returned chapter_blob
