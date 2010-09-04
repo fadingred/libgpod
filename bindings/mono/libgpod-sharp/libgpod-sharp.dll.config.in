@@ -1,4 +1,4 @@
 <configuration>
-  <dllmap dll="libgpod" target="@DLNAME@"/>
+  <dllmap dll="gpod" target="@DLNAME@"/>
 </configuration>
 
