@@ -117,6 +117,7 @@
 #include <glib-object.h>
 #include <glib/gi18n-lib.h>
 #include <glib/gstdio.h>
+#include <glib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -7901,6 +7902,35 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 	return TRUE;
 }
 
+/**
+ * itdb_chapterdata_build_chapter_blob:
+ * @chapterdata: Itdb_Chapterdata pointer of chapter data to be encoded
+ *
+ * Creates an iTunesDB binary blob of chapter data from @chapterdata.
+ *
+ * NOTE: Caller must call g_byte_array_free(chapter_blob, TRUE) on the
+ * returned chapter_blob
+ *
+ * Returns: a binary itdb blob of chapter data (to be freed by the caller)
+ *
+ * Since: 0.7.95
+ */
+G_GNUC_INTERNAL GByteArray *itdb_chapterdata_build_chapter_blob(Itdb_Chapterdata *chapterdata, gboolean reversed)
+{
+    WContents *cts;
+    GByteArray * chapter_blob = NULL;
+
+    cts = wcontents_new("");
+    cts->reversed = reversed;
+    cts->pos = 0;
+
+    itdb_chapterdata_build_chapter_blob_internal (cts, chapterdata);
+
+    chapter_blob = g_byte_array_sized_new(cts->pos);
+    g_byte_array_append(chapter_blob, (guint8 *)cts->contents, cts->pos);
+    wcontents_free(cts);
+    return chapter_blob;
+}
 
 
 /*------------------------------------------------------------------*\

@@ -241,6 +241,10 @@ G_GNUC_INTERNAL gboolean itdb_hash58_write_hash (Itdb_Device *device,
 G_GNUC_INTERNAL gboolean itdb_hash72_compute_hash_for_sha1 (const Itdb_Device *device, 
 							    const guchar sha1[20],
 							    guchar signature[46]);
+
+G_GNUC_INTERNAL GByteArray *itdb_chapterdata_build_chapter_blob(Itdb_Chapterdata *chapterdata,
+								gboolean reversed);
+
 #ifdef HAVE_LIBIMOBILEDEVICE
 G_GNUC_INTERNAL int itdb_iphone_start_sync(Itdb_Device *device, void **prepdata);
 G_GNUC_INTERNAL int itdb_iphone_stop_sync(void *sync_ctx);
