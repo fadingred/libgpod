@@ -4202,6 +4202,56 @@ static void mhod52_free_collate_keys (GList *coltracks)
     g_list_free (coltracks);
 }
 
+static void
+itdb_chapterdata_build_chapter_blob_internal (WContents *cts,
+                                              Itdb_Chapterdata *chapterdata)
+{
+    gulong atom_len_seek;
+    gint numchapters;
+    GList *ch_gl = NULL;
+    /* printf("[%s] -- inserting into \"chapter\"\n", __func__); */
+
+    numchapters = g_list_length (chapterdata->chapters);
+
+    put32lint (cts, chapterdata->unk024); /* unknown */
+    put32lint (cts, chapterdata->unk028); /* unknown */
+    put32lint (cts, chapterdata->unk032); /* unknown */
+    atom_len_seek = cts->pos; /* needed to fix length */
+    put32bint (cts, -1);            /* total length of sean atom, fix later  */
+    put_header (cts, "sean");
+    put32bint (cts, 1);             /* unknown     */
+    put32bint (cts, numchapters+1); /* children    */
+    put32bint (cts, 0);             /* unknown     */
+    for (ch_gl=chapterdata->chapters; ch_gl; ch_gl=ch_gl->next)
+    {
+	gunichar2 *title_utf16;
+	Itdb_Chapter *chapter = ch_gl->data;
+	glong len;
+	title_utf16 = g_utf8_to_utf16 (chapter->chaptertitle, -1, NULL, &len, NULL);
+	fixup_big_utf16 (title_utf16);
+	put32bint (cts, 42+2*len); /* total length  */
+	put_header (cts, "chap");
+	put32bint (cts, chapter->startpos); /* should we check if startpos=0 here? */
+	put32bint (cts, 1);        /* children */
+	put32bint (cts, 0);        /* unknown  */
+	put32bint (cts, 22+2*len); /* length   */
+	put_header (cts, "name");
+	put32bint (cts, 1);        /* unknown  */
+	put32_n0 (cts, 2);         /* unknown  */
+	put16bint (cts, len);
+	put_data (cts, (gchar *)title_utf16, 2*len);
+	g_free (title_utf16);
+    }
+    put32bint (cts, 28); /* size     */
+    put_header (cts, "hedr");
+    put32bint (cts, 1);  /* unknown  */
+    put32bint (cts, 0);  /* children */
+    put32_n0 (cts, 2);   /* unknown  */
+    put32bint (cts, 1);  /* unknown  */
+
+    put32bint_seek (cts, cts->pos-atom_len_seek, atom_len_seek); /* size     */
+}
+
 /* Write out one mhod header.
      type: see enum of MHMOD_IDs;
      data: utf8 string for text items
@@ -4313,54 +4363,12 @@ static void mk_mhod (FExport *fexp, MHODData *mhod)
       g_return_if_fail (mhod->data.chapterdata);
       {
 	  gulong header_seek = cts->pos; /* needed to fix length */
-	  GList *gl;
-	  gint numchapters = g_list_length (mhod->data.chapterdata->chapters);
 	  put_header (cts, "mhod");       /* header      */
 	  put32lint (cts, 24);            /* header size */
 	  put32lint (cts, -1);            /* total length, fix later  */
 	  put32lint (cts, mhod->type);    /* entry type  */
 	  put32_n0 (cts, 2);              /* unknown     */
-	  put32lint (cts, mhod->data.chapterdata->unk024); /* unknown */
-	  put32lint (cts, mhod->data.chapterdata->unk028); /* unknown */
-	  put32lint (cts, mhod->data.chapterdata->unk032); /* unknown */
-	  put32bint (cts, -1);            /* total length of sean atom, fix later  */
-	  put_header (cts, "sean");
-	  put32bint (cts, 1);             /* unknown     */
-	  put32bint (cts, numchapters+1); /* children    */
-	  put32bint (cts, 0);             /* unknown     */
-	  for (gl=mhod->data.chapterdata->chapters; gl; gl=gl->next)
-	  {
-	      gunichar2 *title_utf16;
-	      Itdb_Chapter *chapter = gl->data;
-/*	      gint len = strlen(chapter->chaptertitle); */
-		  glong len;
-	      title_utf16 = NULL;
-	      title_utf16 = g_utf8_to_utf16 (chapter->chaptertitle,
-		      -1,NULL,&len,NULL);
-	      fixup_big_utf16 (title_utf16);
-	      put32bint (cts, 42+2*len); /* total length  */
-	      put_header (cts, "chap");
-	      put32bint (cts, chapter->startpos); /* should we check if startpos=0 here? */
-	      put32bint (cts, 1);        /* children */
-	      put32bint (cts, 0);        /* unknown  */
-	      put32bint (cts, 22+2*len); /* length   */
-	      put_header (cts, "name");
-	      put32bint (cts, 1);        /* unknown  */
-	      put32_n0 (cts, 2);         /* unknown  */
-	      put16bint (cts, len);
-	      put_data (cts, (gchar *)title_utf16, 2*len);
-	      g_free (title_utf16);
-
-	  }
-	  put32bint (cts, 28); /* size     */
-	  put_header (cts, "hedr");
-	  put32bint (cts, 1);  /* unknown  */
-	  put32bint (cts, 0);  /* children */
-	  put32_n0 (cts, 2);   /* unknown  */
-	  put32bint (cts, 1);  /* unknown  */
-	  
-	  
-	  put32bint_seek (cts, cts->pos-(header_seek+36), header_seek+36); /* fix length of sean atom */
+	  itdb_chapterdata_build_chapter_blob_internal (cts, mhod->data.chapterdata);
 	  fix_header (cts, header_seek);
       }
       break;
