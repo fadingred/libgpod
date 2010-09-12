@@ -59,6 +59,12 @@ namespace GPod {
 			this[index].SetBorrowed(false); // We're creating a new object here, so just deallocate the old one
 			Itdb_ChapterData.itdb_chapterdata_add_chapter(handle, item.StartPosition, item.Title);
 		}
+		
+		protected unsafe override GLib.List List {
+			get {
+				return new GLib.List (((Itdb_ChapterData *) handle.Handle)->chapters, typeof (Chapter));
+			}
+		}
 	}
 	
 	public unsafe class ChapterData : GPodBase {

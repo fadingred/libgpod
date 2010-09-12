@@ -94,6 +94,12 @@ namespace GPod {
 		public PlaylistTrackList(HandleRef handle, IntPtr list) : base(handle, list) {}
 		protected override void DoAdd(int index, Track item) { Itdb_Playlist.itdb_playlist_add_track(this.handle, item.Handle, index); }
 		protected override void DoUnlink(int index) { Itdb_Playlist.itdb_playlist_remove_track(this.handle, this[index].Handle); }
+		
+		protected unsafe override GLib.List List {
+			get {
+				return new GLib.List (((Itdb_Playlist *) handle.Handle)->members, typeof (Track));
+			}
+		}
 	}
 	
 	public unsafe class Playlist : GPodBase {

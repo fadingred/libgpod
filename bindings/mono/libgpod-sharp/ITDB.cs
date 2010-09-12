@@ -100,12 +100,24 @@ namespace GPod {
 		public ITDBTrackList(bool owner, HandleRef handle, IntPtr list) : base(owner, handle, list) {}
 		protected override void DoAdd(int index, Track item) { Itdb_iTunesDB.itdb_track_add(this.handle, item.Handle, index); }
 		protected override void DoUnlink(int index) { Itdb_iTunesDB.itdb_track_unlink(this[index].Handle); }
+		 protected unsafe override GLib.List List {
+			get {
+				return new GLib.List (((Itdb_iTunesDB *) handle.Handle)->tracks, typeof (Track));
+			}
+		}
+		
 	}
 	
 	internal class ITDBPlaylistList : GPodList<Playlist> {
 		public ITDBPlaylistList(bool owner, HandleRef handle, IntPtr list) : base(owner, handle, list) {}
 		protected override void DoAdd(int index, Playlist item) { Itdb_iTunesDB.itdb_playlist_add(this.handle, item.Handle, index); }
 		protected override void DoUnlink(int index) { Itdb_iTunesDB.itdb_playlist_unlink(this[index].Handle); }
+		
+		protected unsafe override GLib.List List {
+			get {
+				return new GLib.List(((Itdb_iTunesDB *) handle.Handle)->playlists, typeof (Playlist));
+			}
+		}
 	}
 
 	public unsafe class ITDB : GPodBase {

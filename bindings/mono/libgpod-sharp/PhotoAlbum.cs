@@ -65,6 +65,11 @@ namespace GPod {
 			Itdb_PhotoAlbum.itdb_photodb_photoalbum_add_photo(photodb, this.handle, item.Handle, index);
 		}
 		protected override void DoUnlink(int index) { Itdb_PhotoDB.itdb_photodb_photoalbum_unlink(this[index].Handle); }
+		protected unsafe override GLib.List List {
+			get {
+				return new GLib.List (((Itdb_PhotoAlbum *) handle.Handle)->members, typeof (Artwork));
+			}
+		}
 	}
 	
 	public unsafe class PhotoAlbum : GPodBase {

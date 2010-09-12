@@ -75,12 +75,22 @@ namespace GPod {
 		public PhotoDBArtworkList(bool owner, HandleRef handle, IntPtr list) : base(owner, handle, list) {}
 		protected override void DoAdd(int index, Artwork item) { } // TODO: How do I make itdb_photodb_add_photo() fit this convention?
 		protected override void DoUnlink(int index) { } // TODO: How do I make itdb_photodb_remove_photo() fit this convention?
+		protected unsafe override GLib.List List {
+			get {
+				return new GLib.List (((Itdb_PhotoDB *) handle.Handle)->photos, typeof (Artwork));
+			}
+		}
 	}
 	
 	internal class PhotoDBPhotoAlbumList : GPodList<PhotoAlbum> {
 		public PhotoDBPhotoAlbumList(bool owner, HandleRef handle, IntPtr list) : base(owner, handle, list) {}
 		protected override void DoAdd(int index, PhotoAlbum item) { Itdb_PhotoDB.itdb_photodb_photoalbum_add(this.handle, item.Handle, index); }
 		protected override void DoUnlink(int index) { Itdb_PhotoDB.itdb_photodb_photoalbum_unlink(this[index].Handle); }
+		protected unsafe override GLib.List List {
+			get {
+				return new GLib.List (((Itdb_PhotoDB *) handle.Handle)->photoalbums, typeof (PhotoAlbum));
+			}
+		}
 	}
 	
 	public unsafe class PhotoDB : GPodBase {

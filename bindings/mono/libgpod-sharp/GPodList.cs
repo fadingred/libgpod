@@ -20,38 +20,43 @@ namespace GPod {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Runtime.InteropServices;
 	using GLib;
 	
 	internal abstract class GPodList<T> : IList<T> where T : IGPodBase {
-		private class GPodListEnumerator : IEnumerator<T> {
-			private System.Collections.IEnumerator enumerator;
-			public GPodListEnumerator(System.Collections.IEnumerator enumerator) { this.enumerator = enumerator; }
-			public T                  Current		{ get { return (T) enumerator.Current; } }
-			       object IEnumerator.Current		{ get { return enumerator.Current; } }
-			public bool               MoveNext()	{ return enumerator.MoveNext(); }
-			public void               Reset()		{ enumerator.Reset(); }
-			public void               Dispose()		{ }
-		}
 		
 		protected HandleRef handle;
-		protected List list;
+		protected abstract GLib.List List {
+			get;
+		}
 		protected bool owner;
 		
-		public GPodList(bool owner, HandleRef handle, List list) { this.handle = handle; this.list = list; this.owner = owner; }
+		public GPodList(bool owner, HandleRef handle, List list) { this.handle = handle; this.owner = owner; }
 		public GPodList(HandleRef handle, List list)    : this(false, handle, list) {}
-		public GPodList(bool owner, HandleRef handle, IntPtr listp) : this(owner, handle, new List(listp, typeof(T))) {}
+		public GPodList(bool owner, HandleRef handle, IntPtr listp) : this(owner, handle, null) {}
 		public GPodList(HandleRef handle, IntPtr listp) : this(false, handle, listp) {}
 		
-		public int	Count			{ get { return list.Count; } }
+		public int	Count			{ get { return List.Count; } }
 		public bool IsReadOnly		{ get { return false; } }
-		public T 	this[int index]	{ get { return (T) list[index]; }
+		public T 	this[int index]	{ get { return (T) List[index]; }
 									  set { RemoveAt(index); Insert(index, value); } }
 		
 		public void Add(T item) { DoAdd (-1, item); if (owner) item.SetBorrowed(true); }
-		public void Clear() { list.Empty(); }
-		public void CopyTo(T[] array, int arrayIndex) { list.CopyTo(array, arrayIndex); }
-		public IEnumerator<T> GetEnumerator() { return new GPodListEnumerator(list.GetEnumerator()); }
+		public void Clear() { /* Ensure we invoke DoUnlink */ while (Count > 0) RemoveAt (0); }
+		public void CopyTo(T[] array, int arrayIndex) { List.CopyTo(array, arrayIndex); }
+		public IEnumerator<T> GetEnumerator()
+		{
+			// Make an explicit copy of the list here to avoid  memory
+			// corruption issues. What was happening is that managed land was
+			// instantiating a GLib.List from the native pointer, then if an
+			// item was unlinked from the native list, the GList in managed
+			// land would now be pointing at freed memory and would randomly
+			// blow up or crash. We work around this by instantiating a
+			// GLib.List every time and copying everything out immediately.
+			foreach (T t in List.Cast<T> ().ToArray ())
+				yield return t;
+		}
 		IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
 		public bool Contains(T item) {
