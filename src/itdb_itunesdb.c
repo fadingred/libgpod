@@ -7579,12 +7579,20 @@ gboolean itdb_cp (const gchar *from_file, const gchar *to_file,
  */
 gchar *itdb_get_control_dir (const gchar *mountpoint)
 {
+    gchar *p_iphone[] = {"iTunes_Control", NULL};
     gchar *p_ipod[] = {"iPod_Control", NULL};
     gchar *p_mobile[] = {"iTunes", "iTunes_Control", NULL};
-    gchar *p_iphone[] = {"iTunes_Control", NULL};
     /* Use an array with all possibilities, so further extension will
-       be easy */
-    gchar **paths[] = {p_ipod, p_mobile, p_iphone, NULL};
+       be easy. It is important that checking for the iTunes_Control
+       directory be done before the iPod_Control directory because
+       some devices actually have both directories. The iTunes_Control
+       directory is correct in these cases. This happens for devices
+       that Apple shipped with the iPod_Control as the control directory
+       and later switched to iTunes_Control instead. iTunes appears to
+       remove files from the old iPod_Control directory but leave the
+       directory structure intact. Finding this empty directory structure
+       first will result in a failure to find files. */
+    gchar **paths[] = {p_iphone, p_ipod, p_mobile, NULL};
     gchar ***ptr;
     gchar *result = NULL;
 
