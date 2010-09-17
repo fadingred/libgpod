@@ -39,12 +39,23 @@ namespace GPod {
 			ptr = GLib.Marshaller.StringToPtrGStrdup (str);
 		}
 		
-		protected static IntPtr DateTimeTotime_t (DateTime time) {
-			return GLib.Marshaller.DateTimeTotime_t (time);
+		static DateTime local_epoch = new DateTime (1970, 1, 1, 0, 0, 0);
+		static int utc_offset = (int) (TimeZone.CurrentTimeZone.GetUtcOffset (DateTime.Now)).TotalSeconds;
+
+		public static IntPtr DateTimeTotime_t (DateTime time)
+		{
+			// The itunes database uses a 32bit signed value, so enforce that here to avoid
+			// overflow issues. We still need to represent time with an IntPtr though as
+			// that's what libgpod publicly exposes
+			return new IntPtr (((int)time.Subtract (local_epoch).TotalSeconds) - utc_offset);
 		}
-		
-		protected static DateTime time_tToDateTime (IntPtr time_t) {
-			return GLib.Marshaller.time_tToDateTime (time_t);
+
+		public static DateTime time_tToDateTime (IntPtr time_t)
+		{
+			// The itunes database uses a 32bit signed value, so enforce that here to avoid
+			// overflow issues. We still need to represent time with an IntPtr though as
+			// that's what libgpod publicly exposes
+			return local_epoch.AddSeconds (time_t.ToInt32 () + utc_offset);
 		}
 		
 		internal IntPtr Native {
