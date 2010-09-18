@@ -286,6 +286,11 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"C008",  32, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_3, 50},
     {"C011",  64, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_3, 50},
 
+    /* iPod Touch 4th gen */
+    {"C540",   8, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_4, 50},
+    {"C544",  32, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_4, 50},
+    {"C547",  64, ITDB_IPOD_MODEL_TOUCH_SILVER,   ITDB_IPOD_GENERATION_TOUCH_4, 50},
+
     /* iPhone */
     {"A501",   4, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 50},
     {"A712",   8, ITDB_IPOD_MODEL_IPHONE_1,       ITDB_IPOD_GENERATION_IPHONE_1, 50},
@@ -808,9 +813,10 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "0JW", "B376" }, /* 32GB Silver iPod Touch (1st gen) */
     { "201", "B528" }, /* 8GB Silver iPod Touch (2nd gen) */
     { "203", "B531" }, /* 16GB Silver iPod Touch (2nd gen) */
-    { "75J", "C086" }, /* 8GB Silver iPod Touch (3rd gen) */
-    { "6K2", "C008" }, /* 32GB Silver iPod Touch (3rd gen) */
-    { "6K4", "C011" }, /* 64GB Silver iPod Touch (3rd gen) */
+    { "75J", "C086" }, /* 8GB iPod Touch (3rd gen) */
+    { "6K2", "C008" }, /* 32GB iPod Touch (3rd gen) */
+    { "6K4", "C011" }, /* 64GB iPod Touch (3rd gen) */
+    { "CP9", "C544" }, /* 32GB iPod Touch (4th gen) */
 
     { "VR0", "A501" }, /* 4GB Silver iPhone 1st gen */
     { "WH8", "A712" }, /* 8GB Silver iPhone */
@@ -1341,6 +1347,7 @@ itdb_device_supports_sqlite_db (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_TOUCH_1:
 	    case ITDB_IPOD_GENERATION_TOUCH_2:
 	    case ITDB_IPOD_GENERATION_TOUCH_3:
+	    case ITDB_IPOD_GENERATION_TOUCH_4:
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
@@ -1402,6 +1409,7 @@ itdb_device_supports_sparse_artwork (const Itdb_Device *device)
             case ITDB_IPOD_GENERATION_TOUCH_1:
             case ITDB_IPOD_GENERATION_TOUCH_2:
             case ITDB_IPOD_GENERATION_TOUCH_3:
+            case ITDB_IPOD_GENERATION_TOUCH_4:
             case ITDB_IPOD_GENERATION_IPHONE_1:
             case ITDB_IPOD_GENERATION_IPHONE_2:
             case ITDB_IPOD_GENERATION_IPHONE_3:
@@ -1712,6 +1720,7 @@ gboolean itdb_device_supports_video (const Itdb_Device *device)
 	case ITDB_IPOD_GENERATION_TOUCH_1:
 	case ITDB_IPOD_GENERATION_TOUCH_2:
 	case ITDB_IPOD_GENERATION_TOUCH_3:
+	case ITDB_IPOD_GENERATION_TOUCH_4:
 	case ITDB_IPOD_GENERATION_IPHONE_1:
 	case ITDB_IPOD_GENERATION_IPHONE_2:
 	case ITDB_IPOD_GENERATION_IPHONE_3:
@@ -1838,6 +1847,7 @@ ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
 
 	    case ITDB_IPOD_GENERATION_IPAD_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_4:
+	    case ITDB_IPOD_GENERATION_TOUCH_4:
 		return ITDB_CHECKSUM_HASHAB;
 
 	    case ITDB_IPOD_GENERATION_UNKNOWN:
@@ -2075,6 +2085,7 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_TOUCH_1:
 	    case ITDB_IPOD_GENERATION_TOUCH_2:
 	    case ITDB_IPOD_GENERATION_TOUCH_3:
+	    case ITDB_IPOD_GENERATION_TOUCH_4:
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
@@ -2119,6 +2130,7 @@ gboolean itdb_device_is_shuffle (const Itdb_Device *device)
         case ITDB_IPOD_GENERATION_TOUCH_1:
         case ITDB_IPOD_GENERATION_TOUCH_2:
         case ITDB_IPOD_GENERATION_TOUCH_3:
+        case ITDB_IPOD_GENERATION_TOUCH_4:
         case ITDB_IPOD_GENERATION_IPHONE_1:
         case ITDB_IPOD_GENERATION_IPHONE_2:
         case ITDB_IPOD_GENERATION_IPHONE_3:
@@ -2170,6 +2182,7 @@ gboolean itdb_device_is_iphone_family (const Itdb_Device *device)
 	    case ITDB_IPOD_GENERATION_TOUCH_1:
 	    case ITDB_IPOD_GENERATION_TOUCH_2:
 	    case ITDB_IPOD_GENERATION_TOUCH_3:
+	    case ITDB_IPOD_GENERATION_TOUCH_4:
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
@@ -2217,6 +2230,7 @@ enum ItdbShadowDBVersion itdb_device_get_shadowdb_version (const Itdb_Device *de
 	    case ITDB_IPOD_GENERATION_TOUCH_1:
 	    case ITDB_IPOD_GENERATION_TOUCH_2:
 	    case ITDB_IPOD_GENERATION_TOUCH_3:
+	    case ITDB_IPOD_GENERATION_TOUCH_4:
 	    case ITDB_IPOD_GENERATION_IPHONE_1:
 	    case ITDB_IPOD_GENERATION_IPHONE_2:
 	    case ITDB_IPOD_GENERATION_IPHONE_3:
