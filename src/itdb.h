@@ -1749,9 +1749,19 @@ typedef enum
     ITDB_FILE_ERROR_ITDB_CORRUPT
 } ItdbFileError;
 
+typedef enum
+{
+    ITDB_ERROR_SEEK,
+    ITDB_ERROR_CORRUPT,
+    ITDB_ERROR_NOTFOUND,
+    ITDB_ERROR_RENAME,
+    ITDB_ERROR_ITDB_CORRUPT,
+} ItdbError;
+
 
 /* Error domain */
-#define ITDB_FILE_ERROR itdb_file_error_quark ()
+#define ITDB_ERROR itdb_file_error_quark ()
+#define ITDB_FILE_ERROR ITDB_ERROR
 GQuark     itdb_file_error_quark      (void);
 
 
