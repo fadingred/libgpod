@@ -6107,6 +6107,9 @@ gboolean itdb_write (Itdb_iTunesDB *itdb, GError **error)
  * but on iPhones and iPod Touch this makes sure the "Sync in progress" screen
  * is shown for the whole duration of the writing process.
  *
+ * Calls to itdb_start_sync must be paired with calls to itdb_stop_sync. Nesting
+ * is allowed.
+ *
  * Returns: TRUE on success, FALSE on error
  */
 gboolean itdb_start_sync (Itdb_iTunesDB *itdb)
@@ -6115,14 +6118,12 @@ gboolean itdb_start_sync (Itdb_iTunesDB *itdb)
     g_return_val_if_fail (itdb->device != NULL, FALSE);
 
 #ifdef HAVE_LIBIMOBILEDEVICE
-    g_return_val_if_fail (itdb->device->iphone_sync_context == NULL, FALSE);
+    if (itdb->device->iphone_sync_context != NULL) {
+	itdb->device->iphone_sync_nest_level++;
+	return TRUE;
+    }
     if (itdb_device_is_iphone_family (itdb->device)) {
 	int sync_status;
-
-	if (itdb->device->iphone_sync_context != NULL) {
-	    /* already locked */
-	    return TRUE;
-	}
 	sync_status = itdb_iphone_start_sync (itdb->device,
 		                              &itdb->device->iphone_sync_context);
 	if (sync_status == 0) {
@@ -6145,11 +6146,21 @@ gboolean itdb_start_sync (Itdb_iTunesDB *itdb)
  * (but is safe to be used). On iPhones and iPod Touch this will hide the
  * "Sync in progress" screen.
  *
+ * Calls to itdb_stop_sync must be paired with calls to itdb_start_sync. Nesting
+ * is allowed, and only the final itdb_stop_sync will actually stop the sync.
+ *
  * Returns: TRUE on success, FALSE on error
  */
 gboolean itdb_stop_sync (Itdb_iTunesDB *itdb)
 {
+    g_return_val_if_fail (itdb != NULL, FALSE);
+    g_return_val_if_fail (itdb->device != NULL, FALSE);
+
 #ifdef HAVE_LIBIMOBILEDEVICE
+    if (itdb->device->iphone_sync_nest_level) {
+	itdb->device->iphone_sync_nest_level--;
+	return TRUE;
+    }
     if (itdb_device_is_iphone_family (itdb->device)) {
 	int sync_status;
 	if (itdb->device->iphone_sync_context == NULL) {

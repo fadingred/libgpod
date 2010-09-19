@@ -98,6 +98,8 @@ enum _ItdbChecksumType {
  *                      and UTC
  * @iphone_sync_context:Private data passed as is to libimobiledevice by 
  *                      itdb_start/stop_sync
+ * @iphone_sync_nest_level: Nesting count for itdb_start/stop_sync calls
+ *                      itdb_start/stop_sync
  *
  * Structure representing an iPod device
  *
@@ -113,6 +115,7 @@ struct _Itdb_Device
     gboolean sysinfo_changed;
     gint timezone_shift;
     void *iphone_sync_context;
+    int iphone_sync_nest_level;
 };
 
 /**
