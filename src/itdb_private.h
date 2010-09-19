@@ -241,7 +241,8 @@ G_GNUC_INTERNAL gboolean itdb_hash58_write_hash (Itdb_Device *device,
 						 GError **error);
 G_GNUC_INTERNAL gboolean itdb_hash72_compute_hash_for_sha1 (const Itdb_Device *device, 
 							    const guchar sha1[20],
-							    guchar signature[46]);
+							    guchar signature[46],
+							    GError **error);
 
 G_GNUC_INTERNAL GByteArray *itdb_chapterdata_build_chapter_blob(Itdb_Chapterdata *chapterdata,
 								gboolean reversed);

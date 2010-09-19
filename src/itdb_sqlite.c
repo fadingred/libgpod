@@ -1908,7 +1908,7 @@ static gboolean mk_Locations_cbk(Itdb_iTunesDB *itdb, const char *dirname)
     final_sha1 = &g_array_index(cbk, guchar, CBK_HEADER_SIZE);
     cbk_hash72 = &g_array_index(cbk, guchar, 0);
     success = itdb_hash72_compute_hash_for_sha1 (itdb->device, final_sha1,
-						 cbk_hash72);
+						 cbk_hash72, NULL);
     if (!success) {
 	g_array_free(cbk, TRUE);
 	return FALSE;

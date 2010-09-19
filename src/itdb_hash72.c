@@ -311,12 +311,17 @@ gboolean itdb_hash72_extract_hash_info (const Itdb_Device *device,
 
 gboolean itdb_hash72_compute_hash_for_sha1 (const Itdb_Device *device, 
 					    const guchar sha1[20],
-					    guchar signature[46])
+					    guchar signature[46],
+                                            GError **error)
 {
     struct Hash78Info *hash_info;
 
     hash_info = read_hash_info (device);
     if (hash_info == NULL) {
+        if (error != NULL) {
+            g_set_error (error, ITDB_FILE_ERROR, ITDB_FILE_ERROR_NOTFOUND,
+                         "Can't write iPod database because of missing HashInfo file");
+        }
 	return FALSE;
     }
     hash_generate (signature, sha1, hash_info->iv, hash_info->rndpart);
@@ -341,5 +346,5 @@ gboolean itdb_hash72_write_hash (const Itdb_Device *device,
     header = (MhbdHeader *)itdb_data;
     header->hashing_scheme = GUINT16_FROM_LE (ITDB_CHECKSUM_HASH72);
     itdb_hash72_compute_itunesdb_sha1 (itdb_data, itdb_len, sha1);
-    return itdb_hash72_compute_hash_for_sha1 (device, sha1, header->hash72);
+    return itdb_hash72_compute_hash_for_sha1 (device, sha1, header->hash72, error);
 }
