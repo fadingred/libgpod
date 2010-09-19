@@ -1956,38 +1956,41 @@ static int build_itdb_files(Itdb_iTunesDB *itdb,
     return 0;
 }
 
-static int ensure_itlp_dir_exists(const char *itlpdir)
+static int ensure_itlp_dir_exists(const char *itlpdir, GError **error)
 {
     /* check if directory exists */
     if (!g_file_test(itlpdir, G_FILE_TEST_EXISTS)) {
 	if (g_mkdir(itlpdir, 0755) != 0) {
-		fprintf(stderr, "Could not create directory '%s': %s\n", itlpdir, strerror(errno));
-		return FALSE;
+	    g_set_error (error, G_FILE_ERROR,
+			 g_file_error_from_errno(errno),
+			 "Could not create directory '%s': %s",
+			 itlpdir, strerror(errno));
+	    return FALSE;
 	}
     } else if (!g_file_test(itlpdir, G_FILE_TEST_IS_DIR)) {
-	    fprintf(stderr, "'%s' is not a directory as it should be!\n", itlpdir);
-	    return FALSE;
+	g_set_error (error, G_FILE_ERROR, G_FILE_ERROR_NOTDIR,
+		     "'%s' is not a directory as it should be",
+		     itlpdir);
+	return FALSE;
     }
 
     return TRUE;
 }
 
-static int copy_itdb_file(gchar *from_dir, gchar *to_dir, gchar *fname)
+static int copy_itdb_file(const gchar *from_dir, const gchar *to_dir,
+			  const gchar *fname, GError **error)
 {
     int res = 0;
 
     gchar *srcname = g_build_filename(from_dir, fname, NULL);
     gchar *dstname = g_build_filename(to_dir, fname, NULL);
-    GError *error = NULL;
 
-    if (itdb_cp(srcname, dstname, &error)) {
+    if (itdb_cp(srcname, dstname, error)) {
 	fprintf(stderr, "itdbprep: copying '%s'\n", fname);
 	res++;
     }
-
     if (error) {
-	fprintf(stderr, "Error copying '%s' to '%s': %s\n", srcname, dstname, error->message);
-	g_error_free(error);
+	fprintf(stderr, "Error copying '%s' to '%s': %s\n", srcname, dstname, (*error)->message);
     }
 
     if (srcname) {
@@ -2041,7 +2044,7 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
 
     printf("itlp directory='%s'\n", itlpdir);
 
-    if (!ensure_itlp_dir_exists(itlpdir)) {
+    if (!ensure_itlp_dir_exists(itlpdir, &fexp->error)) {
 	res = -1;
 	goto leave;
     }
@@ -2055,7 +2058,9 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
 
     tmpdir = g_build_path(g_get_tmp_dir(), tmpnam(NULL), NULL);
     if (g_mkdir(tmpdir, 0755) != 0) {
-	fprintf(stderr, "Could not create temporary directory '%s': %s\n", tmpdir, strerror(errno));
+	g_set_error (&fexp->error, G_FILE_ERROR, g_file_error_from_errno(errno),
+		     "Could not create temporary directory '%s': %s",
+		     tmpdir, strerror(errno));
 	res = -1;
 	goto leave;
     }
@@ -2063,20 +2068,23 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
     /* generate itdb files in temporary directory */
     if (build_itdb_files(fexp->itdb, fexp->albums, fexp->artists, fexp->composers, tmpdir,
 		     itdb_device_get_uuid(fexp->itdb->device)) != 0) {
+	g_set_error (&fexp->error, ITDB_ERROR, ITDB_ERROR_SQLITE,
+		     "Failed to generate sqlite database");
 	res = -1;
 	goto leave;
     } else {
 	/* copy files */
-	int cpcnt = 0;
-	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Dynamic.itdb");
-	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Extras.itdb");
-	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Genius.itdb");
-	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Library.itdb");
-	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Locations.itdb");
-	cpcnt += copy_itdb_file(tmpdir, itlpdir, "Locations.itdb.cbk");
-	if (cpcnt != 6) {
-	    res = -1;
-	    goto leave;
+	const char *itdb_files[] = { "Dynamic.itdb", "Extras.itdb",
+				     "Genius.itdb", "Library.itdb",
+				     "Locations.itdb",
+				     NULL };
+	const char **file;
+	for (file = itdb_files; *file != NULL; file++) {
+	    copy_itdb_file(tmpdir, itlpdir, *file, &fexp->error);
+	    if (fexp->error) {
+		res = -1;
+		goto leave;
+	    }
 	}
     }
 
