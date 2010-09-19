@@ -8128,8 +8128,9 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     gchar *pbuf;
     gint i, dirnum;
     Itdb_IpodInfo const *info = NULL;
-    gboolean calconnotes, devicefile;
+    gboolean calconnotes;
     gchar *podpath;
+    gchar *model_number;
 
     g_return_val_if_fail (device, FALSE);
 
@@ -8286,33 +8287,28 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     }
 
     /* Construct a Device directory file for special models */
-    if (devicefile)
+    pbuf = g_build_filename (mp, podpath, "Device", NULL);
+    if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
     {
-	gchar *model_number;
-
-	pbuf = g_build_filename (mp, podpath, "Device", NULL);
-	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
-	{
-	    if((g_mkdir(pbuf, 0777) != 0))
-	    {
-		goto error_dir;
-	    }
-	}
-	g_free (pbuf);
-
-	model_number = itdb_device_get_sysinfo (device, "ModelNumStr");
-	/* Construct a SysInfo file */
-	if (model_number && (strlen (model_number) != 0))
-	{
-	    pbuf = NULL;
-	    if (!itdb_device_write_sysinfo (device, error))
-	    {
-		g_free (model_number);
-		goto error_dir;
-	    }
-	}
-	g_free (model_number);
+        if((g_mkdir(pbuf, 0777) != 0))
+        {
+            goto error_dir;
+        }
     }
+    g_free (pbuf);
+
+    model_number = itdb_device_get_sysinfo (device, "ModelNumStr");
+    /* Construct a SysInfo file */
+    if (model_number && (strlen (model_number) != 0))
+    {
+        pbuf = NULL;
+        if (!itdb_device_write_sysinfo (device, error))
+        {
+            g_free (model_number);
+            goto error_dir;
+        }
+    }
+    g_free (model_number);
     pbuf = NULL;
 
   error_dir:
