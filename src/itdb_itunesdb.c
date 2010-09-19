@@ -8114,6 +8114,35 @@ gchar *db_get_mountpoint(Itdb_DB *db)
     return device->mountpoint;
 }
 
+static gchar *itdb_device_get_control_dir (const Itdb_Device *device)
+{
+    Itdb_IpodInfo const *info = NULL;
+    char *podpath;
+
+    podpath = itdb_get_control_dir (device->mountpoint);
+    if (podpath != NULL) {
+        return podpath;
+    }
+
+    /* The device doesn't already have an iPod_Control directory, let's try
+     * to get which one is appropriate to use
+     */
+    info = itdb_device_get_ipod_info (device);
+
+    if (itdb_device_is_shuffle (device)) {
+        podpath = g_build_filename (device->mountpoint, "iPod_Control", NULL);
+    } else if (itdb_device_is_iphone_family (device)) {
+        podpath = g_build_filename (device->mountpoint,"iTunes_Control", NULL);
+    } else if (info->ipod_model == ITDB_IPOD_MODEL_MOBILE_1) {
+        podpath = g_build_filename (device->mountpoint,
+                                    "iTunes", "iTunes_Control",
+                                    NULL);
+    } else {
+        podpath = g_build_filename (device->mountpoint, "iPod_Control", NULL);
+    }
+
+    return podpath;
+}
 
 
 /*------------------------------------------------------------------*\
@@ -8127,39 +8156,19 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     gboolean result;
     gchar *pbuf;
     gint i, dirnum;
-    Itdb_IpodInfo const *info = NULL;
-    gboolean calconnotes;
     gchar *podpath;
     gchar *model_number;
+    Itdb_IpodInfo const *info = NULL;
 
     g_return_val_if_fail (device, FALSE);
 
     mp = device->mountpoint;
+    info = itdb_device_get_ipod_info (device);
+
     g_return_val_if_fail (mp, FALSE);
 
-    /* Retrieve the model from the device information */
-    info = itdb_device_get_ipod_info(device);
-
-    if (itdb_device_is_shuffle (device)) {
-	podpath = g_strdup ("iPod_Control");
-	calconnotes = FALSE;
-	devicefile = TRUE;
-    } else if (itdb_device_is_iphone_family (device)) {
-	podpath = g_strdup ("iTunes_Control");
-	calconnotes = FALSE;
-	devicefile = TRUE;
-    } else if (info->ipod_model == ITDB_IPOD_MODEL_MOBILE_1) {
-	podpath = g_build_filename ("iTunes", "iTunes_Control", NULL);
-	calconnotes = FALSE;
-	devicefile = TRUE;
-    } else {
-	podpath = g_strdup ("iPod_Control");
-	calconnotes = TRUE;
-	devicefile = TRUE;
-    }
-
     /* Construct the Control directory */
-    pbuf = g_build_filename (mp, podpath, NULL);
+    pbuf = itdb_device_get_control_dir (device);
     if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
     {
 	if (g_mkdir_with_parents(pbuf, 0777) != 0)
@@ -8168,9 +8177,13 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
 	}
     }
     g_free (pbuf);
+    podpath = itdb_get_control_dir (mp);
+    if (!podpath) {
+        goto error_dir;
+    }
 
     /* Construct the Music directory inside the Control directory */
-    pbuf = g_build_filename (mp, podpath, "Music", NULL);
+    pbuf = g_build_filename (podpath, "Music", NULL);
     if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
     {
 	if((g_mkdir(pbuf, 0777) != 0))
@@ -8181,7 +8194,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     g_free (pbuf);
 
     /* Construct the iTunes directory inside the Control directory */
-    pbuf = g_build_filename (mp, podpath, "iTunes", NULL);
+    pbuf = g_build_filename (podpath, "iTunes", NULL);
     if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
     {
 	if((g_mkdir(pbuf, 0777) != 0))
@@ -8197,7 +8210,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     if (itdb_device_supports_artwork(device) ||
 	(info->ipod_model == ITDB_IPOD_MODEL_UNKNOWN))
     {
-	pbuf = g_build_filename (mp, podpath, "Artwork", NULL);
+	pbuf = g_build_filename (podpath, "Artwork", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
 	    if((g_mkdir(pbuf, 0777) != 0)) {
@@ -8239,7 +8252,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     for(i = 0; i < dirnum; i++)
     {
 	gchar *num = g_strdup_printf ("F%02d", i);
-	pbuf = g_build_filename (mp, podpath, "Music", num, NULL);
+	pbuf = g_build_filename (podpath, "Music", num, NULL);
 	g_free (num);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
 	{
@@ -8252,7 +8265,8 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     }
 
     /* Build Calendar directory for models requiring it */
-    if (calconnotes)
+    if (!itdb_device_is_iphone_family (device)
+        && !itdb_device_is_shuffle (device))
     {
 	pbuf = g_build_filename (mp, "Calendars", NULL);
 	if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
@@ -8287,7 +8301,7 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     }
 
     /* Construct a Device directory file for special models */
-    pbuf = g_build_filename (mp, podpath, "Device", NULL);
+    pbuf = g_build_filename (podpath, "Device", NULL);
     if (!g_file_test (pbuf, G_FILE_TEST_EXISTS))
     {
         if((g_mkdir(pbuf, 0777) != 0))
