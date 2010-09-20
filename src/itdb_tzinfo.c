@@ -47,6 +47,7 @@
 static gboolean parse_tzdata (const char *tzname, time_t start, time_t end,
 			      int *offset, gboolean *has_dst, int *dst_offset);
 
+/* Mac epoch is 1st January 1904 00:00 in local time */
 G_GNUC_INTERNAL time_t device_time_mac_to_time_t (Itdb_Device *device, guint64 mactime)
 {
     g_return_val_if_fail (device, 0);
