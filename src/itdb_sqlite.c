@@ -1256,6 +1256,8 @@ static int mk_Library(Itdb_iTunesDB *itdb,
 	/* if it's a movie, music video or tv show */
 	if ((track->mediatype & ITDB_MEDIATYPE_MOVIE)
 		|| (track->mediatype & ITDB_MEDIATYPE_MUSICVIDEO)
+		|| (track->mediatype & ITDB_MEDIATYPE_VIDEO_PODCAST)
+		|| (track->mediatype & ITDB_MEDIATYPE_MUSIC_TVSHOW)
 		|| (track->mediatype & ITDB_MEDIATYPE_TVSHOW)) {
 	    /* printf("[%s] -- inserting into \"video_info\"\n", __func__); */
 	    res = sqlite3_reset(stmt_video_info);

@@ -6473,6 +6473,7 @@ static gboolean write_hths (FExport *fexp)
 		g_return_val_if_fail (write_rths(cts, track), FALSE);
 
 		if (track->mediatype == ITDB_MEDIATYPE_AUDIOBOOK ||
+		    track->mediatype == ITDB_MEDIATYPE_VIDEO_PODCAST ||
 		    track->mediatype == ITDB_MEDIATYPE_PODCAST)
 			nonstdtrackcnt++;
 
@@ -6542,6 +6543,7 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 			ctr = current_track->data;
 			/* Count the number of podcasts and audiobooks for later use */
 			if (tr->mediatype == ITDB_MEDIATYPE_AUDIOBOOK ||
+			    tr->mediatype == ITDB_MEDIATYPE_VIDEO_PODCAST ||
 			    tr->mediatype == ITDB_MEDIATYPE_PODCAST)
 				nonstdtrackcnt++;
 
