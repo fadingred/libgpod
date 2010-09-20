@@ -1308,7 +1308,9 @@ static void itdb_free_fimp (FImport *fimp)
 	g_list_free (fimp->pos_glist);
 	g_list_free (fimp->tracks);
 	playcounts_free (fimp);
-	g_hash_table_destroy (fimp->pcounts2);
+	if (fimp->pcounts2 != NULL) {
+	    g_hash_table_destroy (fimp->pcounts2);
+	}
 	g_free (fimp);
     }
 }
