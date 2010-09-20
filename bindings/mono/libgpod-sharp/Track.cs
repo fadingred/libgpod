@@ -163,10 +163,17 @@ namespace GPod {
 		Audio       = 0x0001,
 		Movie       = 0x0002,
 		Podcast     = 0x0004,
+		VideoPodcast= 0x0006,
 		Audiobook   = 0x0008,
 		MusicVideo  = 0x0020,
 		TVShow      = 0x0040,
 		MusicTVShow = 0x0060,
+		RingTone    = 0x004000,
+		Rental      = 0x008000,
+		ItunesExtra = 0x010000,
+		Memo        = 0x100000,
+		ITunesU     = 0x200000,
+		EpubBook    = 0x400000
 	}
 	
 	public unsafe class Track : GPodBase {
