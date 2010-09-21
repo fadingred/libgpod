@@ -26,28 +26,28 @@ namespace GPod {
 	namespace native {
 		internal struct Itdb_iTunesDB {
 			public IntPtr tracks;
-    		public IntPtr playlists;
-    		public IntPtr filename;
-    		public IntPtr device;
+			public IntPtr playlists;
+			public IntPtr filename;
+			public IntPtr device;
 			// Ignore everything else
 					
 			[DllImport ("gpod")]
 			internal static extern IntPtr itdb_new();
 			
 			[DllImport ("gpod")]
-			internal static extern string itdb_cp_get_dest_filename (IntPtr track, string mountpoint, string filename, ref IntPtr error);
+			internal static extern string itdb_cp_get_dest_filename(IntPtr track, string mountpoint, string filename, ref IntPtr error);
 			
 			[DllImport ("gpod")]
-			internal static extern bool   itdb_cp_track_to_ipod (HandleRef track, string filename, ref IntPtr error);
+			internal static extern bool   itdb_cp_track_to_ipod(HandleRef track, string filename, ref IntPtr error);
 			
 			[DllImport ("gpod")]
 			internal static extern void   itdb_free(HandleRef itdb);
 
 			[DllImport ("gpod")]
-			internal static extern string itdb_get_control_dir (string mountpoint);
+			internal static extern string itdb_get_control_dir(string mountpoint);
 			
 			[DllImport ("gpod")]
-			internal static extern string itdb_get_music_dir (string mountpoint);
+			internal static extern string itdb_get_music_dir(string mountpoint);
 			
 			[DllImport ("gpod")]
 			internal static extern IntPtr itdb_parse(string mountpoint, out IntPtr gerror);
@@ -89,10 +89,10 @@ namespace GPod {
 			internal static extern IntPtr itdb_playlist_by_name(HandleRef itdb, string name);
 			
 			[DllImport ("gpod")]
-			internal static extern bool itdb_start_sync (IntPtr itdb);
+			internal static extern bool itdb_start_sync(IntPtr itdb);
 			
 			[DllImport ("gpod")]
-			internal static extern bool itdb_stop_sync (IntPtr itdb);
+			internal static extern bool itdb_stop_sync(IntPtr itdb);
 		}
 	}
 	
@@ -100,12 +100,11 @@ namespace GPod {
 		public ITDBTrackList(bool owner, HandleRef handle, IntPtr list) : base(owner, handle, list) {}
 		protected override void DoAdd(int index, Track item) { Itdb_iTunesDB.itdb_track_add(this.handle, item.Handle, index); }
 		protected override void DoUnlink(int index) { Itdb_iTunesDB.itdb_track_unlink(this[index].Handle); }
-		 protected unsafe override GLib.List List {
+		protected unsafe override GLib.List List {
 			get {
-				return new GLib.List (((Itdb_iTunesDB *) handle.Handle)->tracks, typeof (Track));
+				return new GLib.List(((Itdb_iTunesDB *) handle.Handle)->tracks, typeof(Track));
 			}
 		}
-		
 	}
 	
 	internal class ITDBPlaylistList : GPodList<Playlist> {
@@ -115,7 +114,7 @@ namespace GPod {
 		
 		protected unsafe override GLib.List List {
 			get {
-				return new GLib.List(((Itdb_iTunesDB *) handle.Handle)->playlists, typeof (Playlist));
+				return new GLib.List(((Itdb_iTunesDB *) handle.Handle)->playlists, typeof(Playlist));
 			}
 		}
 	}
@@ -129,63 +128,56 @@ namespace GPod {
 			return res;
 		}
 		
-		public static string GetLocalPath (Device device, Track track)
-		{
-			string ipodPath = track.IpodPath.Replace (":", "/").Substring (1);
-			return System.IO.Path.Combine (device.Mountpoint, ipodPath);
+		public static string GetLocalPath(Device device, Track track) {
+			string ipodPath = track.IpodPath.Replace(":", "/").Substring(1);
+			return System.IO.Path.Combine(device.Mountpoint, ipodPath);
 		}
 		
-		public static string GetDestFileName (Device device, string localFile)
-		{
-			//  itdb_cp_get_dest_filename (HandleRef track, string mountpoint, string filename, ref IntPtr error);
+		public static string GetDestFileName(Device device, string localFile) {
+			//  itdb_cp_get_dest_filename(HandleRef track, string mountpoint, string filename, ref IntPtr error);
 			IntPtr error = IntPtr.Zero;
-			string result = Itdb_iTunesDB.itdb_cp_get_dest_filename (IntPtr.Zero, device.Mountpoint, localFile, ref error);
+			string result = Itdb_iTunesDB.itdb_cp_get_dest_filename(IntPtr.Zero, device.Mountpoint, localFile, ref error);
 			if (error != IntPtr.Zero)
-				throw new GException (error);
+				throw new GException(error);
 			return result;
 		}
 
-		public static string GetControlPath (Device device)
-		{
-			return Itdb_iTunesDB.itdb_get_control_dir (device.Mountpoint);
+		public static string GetControlPath(Device device) {
+			return Itdb_iTunesDB.itdb_get_control_dir(device.Mountpoint);
 		}
 		
-		public static string GetMusicPath (Device device)
-		{
-			return Itdb_iTunesDB.itdb_get_music_dir (device.Mountpoint);
+		public static string GetMusicPath(Device device) {
+			return Itdb_iTunesDB.itdb_get_music_dir(device.Mountpoint);
 		}
 		
-		public IList<Track>		Tracks						{ get { return new ITDBTrackList(true, Handle, ((Itdb_iTunesDB *) Native)->tracks); } }
-		public IList<Playlist>	Playlists					{ get { return new ITDBPlaylistList(true, Handle, ((Itdb_iTunesDB *) Native)->playlists); } }
-		public Playlist			MasterPlaylist				{ get { return new Playlist(Itdb_iTunesDB.itdb_playlist_mpl(Handle)); } }
-		public Playlist			PodcastsPlaylist			{ get { return new Playlist(Itdb_iTunesDB.itdb_playlist_podcasts(Handle)); } }
-		public Device			Device						{ get { return new Device(((Itdb_iTunesDB *) Native)->device, true); } }
-		public uint				NonTransferredTrackCount	{ get { return Itdb_iTunesDB.itdb_tracks_number_nontransferred(Handle); } }
-		public string			Mountpoint					{ get { return PtrToStringUTF8 (Itdb_iTunesDB.itdb_get_mountpoint(Handle)); }
-															  set { Itdb_iTunesDB.itdb_set_mountpoint(Handle, value); } }
+		public IList<Track>	Tracks				{ get { return new ITDBTrackList(true, Handle, ((Itdb_iTunesDB *) Native)->tracks); } }
+		public IList<Playlist>	Playlists			{ get { return new ITDBPlaylistList(true, Handle, ((Itdb_iTunesDB *) Native)->playlists); } }
+		public Playlist		MasterPlaylist			{ get { return new Playlist(Itdb_iTunesDB.itdb_playlist_mpl(Handle)); } }
+		public Playlist		PodcastsPlaylist		{ get { return new Playlist(Itdb_iTunesDB.itdb_playlist_podcasts(Handle)); } }
+		public Device		Device				{ get { return new Device(((Itdb_iTunesDB *) Native)->device, true); } }
+		public uint		NonTransferredTrackCount	{ get { return Itdb_iTunesDB.itdb_tracks_number_nontransferred(Handle); } }
+		public string		Mountpoint			{ get { return PtrToStringUTF8(Itdb_iTunesDB.itdb_get_mountpoint(Handle)); }
+									  set { Itdb_iTunesDB.itdb_set_mountpoint(Handle, value); } }
 		
 		public ITDB(IntPtr handle, bool borrowed)	: base(handle, borrowed) {}
-		public ITDB(IntPtr handle)					: base(handle) {}
-		public ITDB()								: base(Itdb_iTunesDB.itdb_new(), false) {}
-		public ITDB(string mountpoint)				: base(itdb_parse_wrapped(mountpoint), false) {}
+		public ITDB(IntPtr handle)			: base(handle) {}
+		public ITDB()					: base(Itdb_iTunesDB.itdb_new(), false) {}
+		public ITDB(string mountpoint)			: base(itdb_parse_wrapped(mountpoint), false) {}
 		protected override void Destroy() { if (!Borrowed) Itdb_iTunesDB.itdb_free(Handle); }
-		public bool CopyTrackToIPod (Track track, string localPath)
-		{
+		public bool CopyTrackToIPod(Track track, string localPath) {
 			IntPtr gerror = IntPtr.Zero;
-			bool result = Itdb_iTunesDB.itdb_cp_track_to_ipod (track.Handle, localPath, ref gerror);
+			bool result = Itdb_iTunesDB.itdb_cp_track_to_ipod(track.Handle, localPath, ref gerror);
 			if (gerror != IntPtr.Zero)
 				throw new GException(gerror);
 			return result;
 		}
 		
-		public bool StartSync ()
-		{
-			return Itdb_iTunesDB.itdb_start_sync (Native);
+		public bool StartSync() {
+			return Itdb_iTunesDB.itdb_start_sync(Native);
 		}
 		
-		public bool StopSync ()
-		{
-			return Itdb_iTunesDB.itdb_stop_sync (Native);
+		public bool StopSync() {
+			return Itdb_iTunesDB.itdb_stop_sync(Native);
 		}
 		
 		public bool Write() {

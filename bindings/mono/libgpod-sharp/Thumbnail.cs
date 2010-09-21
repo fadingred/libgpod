@@ -42,10 +42,10 @@ namespace GPod {
 	}
 	
 	public class Thumbnail : GPodBase {
-		public Thumbnail(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
-		public Thumbnail(IntPtr handle) : base(handle) {}
-		public Thumbnail(Thumbnail other) : this(Itdb_Thumb.itdb_thumb_duplicate(other.Handle), false) {}
-		protected override void Destroy() { Itdb_Thumb.itdb_thumb_free(Handle); }
+		public Thumbnail(IntPtr handle, bool borrowed)	: base(handle, borrowed) {}
+		public Thumbnail(IntPtr handle)			: base(handle) {}
+		public Thumbnail(Thumbnail other)		: this(Itdb_Thumb.itdb_thumb_duplicate(other.Handle), false) {}
+		protected override void Destroy()		{ Itdb_Thumb.itdb_thumb_free(Handle); }
 		
 		public Pixbuf ToPixbufAtSize(Device device, int width, int height) {
 			return new Pixbuf(Itdb_Thumb.itdb_thumb_to_pixbuf_at_size(device.Handle, Handle, width, height));

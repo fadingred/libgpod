@@ -26,7 +26,7 @@ namespace GPod {
 	namespace native {
 		internal struct Itdb_ChapterData {
 			public IntPtr chapters;
-		    // Ignore the rest
+			// Ignore the rest
 				
 			[DllImport ("gpod")]
 			internal static extern IntPtr itdb_chapterdata_new();
@@ -62,7 +62,7 @@ namespace GPod {
 		
 		protected unsafe override GLib.List List {
 			get {
-				return new GLib.List (((Itdb_ChapterData *) handle.Handle)->chapters, typeof (Chapter));
+				return new GLib.List(((Itdb_ChapterData *) handle.Handle)->chapters, typeof(Chapter));
 			}
 		}
 	}

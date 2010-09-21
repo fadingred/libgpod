@@ -26,15 +26,15 @@ namespace GPod {
 	namespace native {
 		[StructLayout (LayoutKind.Sequential)]
 		internal struct Itdb_Artwork {
-		    public IntPtr thumbnail;
-		    public uint   id;
-		    public ulong  dbid;
-		    public int    unk028;
-		    public uint   rating;
-		    public int    unk036;
-		    public IntPtr creation_date;
-		    public IntPtr digitized_date;
-		    public uint   artwork_size;
+			public IntPtr thumbnail;
+			public uint   id;
+			public ulong  dbid;
+			public int    unk028;
+			public uint   rating;
+			public int    unk036;
+			public IntPtr creation_date;
+			public IntPtr digitized_date;
+			public uint   artwork_size;
 			// Ignore the rest
 	
 			[DllImport ("gpod")]
@@ -64,20 +64,20 @@ namespace GPod {
 	}
 
 	public unsafe class Artwork : GPodBase {
-		public Thumbnail	Thumbnail		{ get { return new Thumbnail(((Itdb_Artwork *) Native)->thumbnail); }
-											  set { ((Itdb_Artwork *) Native)->thumbnail = HandleRef.ToIntPtr(value.Handle); } }
-		public uint			Rating			{ get { return ((Itdb_Artwork *) Native)->rating / 20; }
-											  set { ((Itdb_Artwork *) Native)->rating = (value > 5 ? 5 : value) * 20; } }
-		public DateTime		TimeCreated		{ get { return Artwork.time_tToDateTime (((Itdb_Artwork *) Native)->creation_date); }
-											  set { ((Itdb_Artwork *) Native)->creation_date = Artwork.DateTimeTotime_t(value); } }
+		public Thumbnail	Thumbnail	{ get { return new Thumbnail(((Itdb_Artwork *) Native)->thumbnail); }
+							  set { ((Itdb_Artwork *) Native)->thumbnail = HandleRef.ToIntPtr(value.Handle); } }
+		public uint		Rating		{ get { return ((Itdb_Artwork *) Native)->rating / 20; }
+							  set { ((Itdb_Artwork *) Native)->rating = (value > 5 ? 5 : value) * 20; } }
+		public DateTime		TimeCreated	{ get { return Artwork.time_tToDateTime (((Itdb_Artwork *) Native)->creation_date); }
+							  set { ((Itdb_Artwork *) Native)->creation_date = Artwork.DateTimeTotime_t(value); } }
 		public DateTime		TimeDigitized	{ get { return Artwork.time_tToDateTime (((Itdb_Artwork *) Native)->digitized_date); }
-											  set { ((Itdb_Artwork *) Native)->digitized_date = Artwork.DateTimeTotime_t(value); } }
-		public uint			Size			{ get { return ((Itdb_Artwork *) Native)->artwork_size; }
-											  set { ((Itdb_Artwork *) Native)->artwork_size = value; } }
+							  set { ((Itdb_Artwork *) Native)->digitized_date = Artwork.DateTimeTotime_t(value); } }
+		public uint		Size		{ get { return ((Itdb_Artwork *) Native)->artwork_size; }
+							  set { ((Itdb_Artwork *) Native)->artwork_size = value; } }
 
 		public Artwork(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
 		public Artwork(IntPtr handle) : base(handle) {}
-		public Artwork() : base(Itdb_Artwork.itdb_artwork_new (), false) {}
+		public Artwork() : base(Itdb_Artwork.itdb_artwork_new(), false) {}
 		public Artwork(Artwork other) : base(Itdb_Artwork.itdb_artwork_duplicate(other.Handle), false) {}
 		protected override void Destroy() { Itdb_Artwork.itdb_artwork_free(Handle); }
 		

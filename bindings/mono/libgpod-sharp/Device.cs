@@ -71,11 +71,11 @@ namespace GPod {
 	/* According to teuf, SysInfo is crusty and probably not needed
 	 * public class SysInfo {
 		HandleRef Handle;
-		public SysInfo(HandleRef handle) { Handle = handle; }
-		public bool 	Read()							{ return Itdb_Device.itdb_device_read_sysinfo(Handle); }
-		public string	Get(string field)				{ return Itdb_Device.itdb_device_get_sysinfo(Handle, field); }
-		public void		Set(string field, string val)	{ Itdb_Device.itdb_device_set_sysinfo(Handle, field, val); }
-		public bool		Write() {
+		public SysInfo(HandleRef handle)		{ Handle = handle; }
+		public bool 	Read()				{ return Itdb_Device.itdb_device_read_sysinfo(Handle); }
+		public string	Get(string field)		{ return Itdb_Device.itdb_device_get_sysinfo(Handle, field); }
+		public void	Set(string field, string val)	{ Itdb_Device.itdb_device_set_sysinfo(Handle, field, val); }
+		public bool	Write() {
 			IntPtr gerror;
 			bool res = Itdb_Device.itdb_device_write_sysinfo(Handle, out gerror);
 			if (gerror != IntPtr.Zero)
@@ -85,20 +85,20 @@ namespace GPod {
 	}*/
 	
 	public unsafe class Device : GPodBase {
-		public bool		SupportsArtwork 		{ get { return Itdb_Device.itdb_device_supports_artwork(Handle); } }
-		public bool		SupportsChapterImage	{ get { return Itdb_Device.itdb_device_supports_chapter_image(Handle); } }
-		public bool		SupportsPhoto			{ get { return Itdb_Device.itdb_device_supports_photo(Handle); } }
-		public bool		SupportsPodcast			{ get { return Itdb_Device.itdb_device_supports_podcast(Handle); } }
-		public bool		SupportsVideo			{ get { return Itdb_Device.itdb_device_supports_video(Handle); } }
-		//public SysInfo	SysInfo					{ get { return new SysInfo(Handle); } }
-		public IpodInfo	IpodInfo				{ get { return IpodInfo.Find (Itdb_Device.itdb_device_get_ipod_info(Handle)); } }
-		public string	Mountpoint				{ get { return PtrToStringUTF8 (((Itdb_Device *)Native)->mountpoint); }
-												  set { Itdb_Device.itdb_device_set_mountpoint(Handle, value); } }
+		public bool	SupportsArtwork 	{ get { return Itdb_Device.itdb_device_supports_artwork(Handle); } }
+		public bool	SupportsChapterImage	{ get { return Itdb_Device.itdb_device_supports_chapter_image(Handle); } }
+		public bool	SupportsPhoto		{ get { return Itdb_Device.itdb_device_supports_photo(Handle); } }
+		public bool	SupportsPodcast		{ get { return Itdb_Device.itdb_device_supports_podcast(Handle); } }
+		public bool	SupportsVideo		{ get { return Itdb_Device.itdb_device_supports_video(Handle); } }
+		//public SysInfo	SysInfo			{ get { return new SysInfo(Handle); } }
+		public IpodInfo	IpodInfo		{ get { return IpodInfo.Find (Itdb_Device.itdb_device_get_ipod_info(Handle)); } }
+		public string	Mountpoint		{ get { return PtrToStringUTF8 (((Itdb_Device *)Native)->mountpoint); }
+							  set { Itdb_Device.itdb_device_set_mountpoint(Handle, value); } }
 		
-		public Device(IntPtr handle, bool borrowed) : base(handle, borrowed) {}
-		public Device(IntPtr handle) : base(handle) {}
-		public Device() : base(Itdb_Device.itdb_device_new(), false) {}
-		public Device(string mountpoint) : this() { Mountpoint = mountpoint; }
+		public Device(IntPtr handle, bool borrowed)	: base(handle, borrowed) {}
+		public Device(IntPtr handle)			: base(handle) {}
+		public Device()					: base(Itdb_Device.itdb_device_new(), false) {}
+		public Device(string mountpoint)		: this() { Mountpoint = mountpoint; }
 		protected override void Destroy() { Itdb_Device.itdb_device_free(Handle); }
 	}
 }

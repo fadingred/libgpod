@@ -123,23 +123,22 @@ namespace GPod {
 	}
 
 	public sealed unsafe class IpodInfo : GPodBase {
-		public static IpodInfo[] Table = GetTable ();
+		public static IpodInfo[] Table = GetTable();
 		
 		static unsafe IpodInfo[] GetTable() {
 			Itdb_IpodInfo *table = (Itdb_IpodInfo *) Itdb_IpodInfo.itdb_info_get_ipod_info_table();
 			
-			List <IpodInfo> retval = new List<IpodInfo> ();
+			List <IpodInfo> retval = new List<IpodInfo>();
 			while (true) {
 				Itdb_IpodInfo *item = &table [retval.Count];
 				if (item->model_number == IntPtr.Zero)
 					break;
-				retval.Add (new IpodInfo ((IntPtr)item, true));
+				retval.Add(new IpodInfo((IntPtr)item, true));
 			}
-			return retval.ToArray ();
+			return retval.ToArray();
 		}
 		
-		internal static IpodInfo Find (IntPtr native)
-		{
+		internal static IpodInfo Find(IntPtr native) {
 			for (int i = 0; i < Table.Length; i++)
 				if (Table [i].Native == native)
 					return Table [i];
@@ -156,7 +155,7 @@ namespace GPod {
 		}
 		
 		public string GenerationString {
-			get { return PtrToStringUTF8 (Itdb_IpodInfo.itdb_info_get_ipod_generation_string(this.Generation)); }
+			get { return PtrToStringUTF8(Itdb_IpodInfo.itdb_info_get_ipod_generation_string(this.Generation)); }
 		}
 		
 		public IpodModel Model {
@@ -164,27 +163,16 @@ namespace GPod {
 		}
 		
 		public string ModelNumber {
-			get { return PtrToStringUTF8 (((Itdb_IpodInfo *) Native)->model_number); }
+			get { return PtrToStringUTF8(((Itdb_IpodInfo *) Native)->model_number); }
 		}
 		
 		public string ModelString {
-			get { return PtrToStringUTF8 (Itdb_IpodInfo.itdb_info_get_ipod_model_name_string(this.Model)); }
+			get { return PtrToStringUTF8(Itdb_IpodInfo.itdb_info_get_ipod_model_name_string(this.Model)); }
 		}
 		
-		IpodInfo (IntPtr handle, bool borrowed)
-			: base (handle, borrowed)
-		{
-			
-		}
-		
-		IpodInfo (IntPtr handle)
-			: base (handle)
-		{
-			
-		}
-		
-		protected override void Destroy()
-		{
+		IpodInfo (IntPtr handle, bool borrowed)	: base (handle, borrowed) {}
+		IpodInfo (IntPtr handle)		: base (handle) {}
+		protected override void Destroy() 	{
 			// No need to free anything as it's a static array in native code.
 		}
 	}

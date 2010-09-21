@@ -32,21 +32,20 @@ namespace GPod {
 		}
 		protected bool owner;
 		
-		public GPodList(bool owner, HandleRef handle, List list) { this.handle = handle; this.owner = owner; }
-		public GPodList(HandleRef handle, List list)    : this(false, handle, list) {}
-		public GPodList(bool owner, HandleRef handle, IntPtr listp) : this(owner, handle, null) {}
-		public GPodList(HandleRef handle, IntPtr listp) : this(false, handle, listp) {}
+		public GPodList(bool owner, HandleRef handle, List list)	{ this.handle = handle; this.owner = owner; }
+		public GPodList(HandleRef handle, List list)    		: this(false, handle, list)  {}
+		public GPodList(bool owner, HandleRef handle, IntPtr listp)	: this(owner, handle, null)  {}
+		public GPodList(HandleRef handle, IntPtr listp)			: this(false, handle, listp) {}
 		
-		public int	Count			{ get { return List.Count; } }
+		public int	Count		{ get { return List.Count; } }
 		public bool IsReadOnly		{ get { return false; } }
 		public T 	this[int index]	{ get { return (T) List[index]; }
-									  set { RemoveAt(index); Insert(index, value); } }
+						  set { RemoveAt(index); Insert(index, value); } }
 		
-		public void Add(T item) { DoAdd (-1, item); if (owner) item.SetBorrowed(true); }
-		public void Clear() { /* Ensure we invoke DoUnlink */ while (Count > 0) RemoveAt (0); }
-		public void CopyTo(T[] array, int arrayIndex) { List.CopyTo(array, arrayIndex); }
-		public IEnumerator<T> GetEnumerator()
-		{
+		public void Add(T item) 			{ DoAdd (-1, item); if (owner) item.SetBorrowed(true); }
+		public void Clear()				{ /* Ensure we invoke DoUnlink */ while (Count > 0) RemoveAt (0); }
+		public void CopyTo(T[] array, int arrayIndex)	{ List.CopyTo(array, arrayIndex); }
+		public IEnumerator<T> GetEnumerator()		{
 			// Make an explicit copy of the list here to avoid  memory
 			// corruption issues. What was happening is that managed land was
 			// instantiating a GLib.List from the native pointer, then if an
@@ -60,13 +59,13 @@ namespace GPod {
 		IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
 		public bool Contains(T item) {
-			return IndexOf (item) != -1;
+			return IndexOf(item) != -1;
 		}
 		
 		public int IndexOf(T item) {
 			int i = 0;
 			foreach (T t in this) {
-				if (object.ReferenceEquals (t, item) || t.Native == item.Native)
+				if (object.ReferenceEquals(t, item) || t.Native == item.Native)
 					return i;
 				i++;
 			}

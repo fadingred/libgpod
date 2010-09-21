@@ -24,9 +24,9 @@ namespace GPod {
 	namespace native {
 		[StructLayout (LayoutKind.Sequential)]
 		internal struct Itdb_Chapter {
-		    public uint   startpos;
-		    public IntPtr chaptertitle;
-		    // Ignore the rest
+			public uint   startpos;
+			public IntPtr chaptertitle;
+			// Ignore the rest
 			
 			[DllImport ("gpod")]
 			internal static extern IntPtr itdb_chapter_new();

@@ -67,36 +67,36 @@ namespace GPod {
 		protected override void DoUnlink(int index) { Itdb_PhotoDB.itdb_photodb_photoalbum_unlink(this[index].Handle); }
 		protected unsafe override GLib.List List {
 			get {
-				return new GLib.List (((Itdb_PhotoAlbum *) handle.Handle)->members, typeof (Artwork));
+				return new GLib.List(((Itdb_PhotoAlbum *) handle.Handle)->members, typeof(Artwork));
 			}
 		}
 	}
 	
 	public unsafe class PhotoAlbum : GPodBase {
 		public PhotoAlbum(IntPtr handle, bool borrowed)	: base(handle, borrowed) {}
-		public PhotoAlbum(IntPtr handle)				: base(handle) {}
-		public PhotoAlbum(string albumname)				: base(Itdb_PhotoAlbum.itdb_photodb_photoalbum_new(albumname), false) {}
-		protected override void Destroy() { Itdb_PhotoAlbum.itdb_photodb_photoalbum_free(Handle); }
+		public PhotoAlbum(IntPtr handle)		: base(handle) {}
+		public PhotoAlbum(string albumname)		: base(Itdb_PhotoAlbum.itdb_photodb_photoalbum_new(albumname), false) {}
+		protected override void Destroy()		{ Itdb_PhotoAlbum.itdb_photodb_photoalbum_free(Handle); }
 		
-		public IList<Artwork>		Photos				{ get { return new PhotoAlbumArtworkList(Handle, ((Itdb_PhotoAlbum *) Native)->members); } }
-		public string				Name				{ get { return PtrToStringUTF8 (((Itdb_PhotoAlbum *) Native)->name); }
-														  set { var x = (Itdb_PhotoAlbum *) Native; ReplaceStringUTF8 (ref x->name, value); } }
-		public bool					PlayMusic 			{ get { return ((Itdb_PhotoAlbum *) Native)->playmusic == 1; }
-														  set { ((Itdb_PhotoAlbum *) Native)->playmusic = (byte) (value ? 1 : 0); } }
-		public bool					Repeat	 			{ get { return ((Itdb_PhotoAlbum *) Native)->repeat == 1; }
-														  set { ((Itdb_PhotoAlbum *) Native)->repeat = (byte) (value ? 1 : 0); } }
-		public bool					Random	 			{ get { return ((Itdb_PhotoAlbum *) Native)->random == 1; }
-														  set { ((Itdb_PhotoAlbum *) Native)->random = (byte) (value ? 1 : 0); } }
-		public bool					ShowTitles 			{ get { return ((Itdb_PhotoAlbum *) Native)->show_titles == 1; }
-														  set { ((Itdb_PhotoAlbum *) Native)->show_titles = (byte) (value ? 1 : 0); } }
+		public IList<Artwork>		Photos			{ get { return new PhotoAlbumArtworkList(Handle, ((Itdb_PhotoAlbum *) Native)->members); } }
+		public string			Name			{ get { return PtrToStringUTF8(((Itdb_PhotoAlbum *) Native)->name); }
+									  set { var x = (Itdb_PhotoAlbum *) Native; ReplaceStringUTF8 (ref x->name, value); } }
+		public bool			PlayMusic 		{ get { return ((Itdb_PhotoAlbum *) Native)->playmusic == 1; }
+									  set { ((Itdb_PhotoAlbum *) Native)->playmusic = (byte) (value ? 1 : 0); } }
+		public bool			Repeat	 		{ get { return ((Itdb_PhotoAlbum *) Native)->repeat == 1; }
+									  set { ((Itdb_PhotoAlbum *) Native)->repeat = (byte) (value ? 1 : 0); } }
+		public bool			Random	 		{ get { return ((Itdb_PhotoAlbum *) Native)->random == 1; }
+									  set { ((Itdb_PhotoAlbum *) Native)->random = (byte) (value ? 1 : 0); } }
+		public bool			ShowTitles 		{ get { return ((Itdb_PhotoAlbum *) Native)->show_titles == 1; }
+									  set { ((Itdb_PhotoAlbum *) Native)->show_titles = (byte) (value ? 1 : 0); } }
 		public TransitionDirection	TransitionDirection	{ get { return (TransitionDirection) ((Itdb_PhotoAlbum *) Native)->transition_direction; }
-														  set { ((Itdb_PhotoAlbum *) Native)->transition_direction = (byte) value; } }
-		public int					SlideDuration	 	{ get { return ((Itdb_PhotoAlbum *) Native)->slide_duration; }
-														  set { ((Itdb_PhotoAlbum *) Native)->slide_duration = value; } }
-		public int					TransitionDuration	{ get { return ((Itdb_PhotoAlbum *) Native)->transition_duration; }
-														  set { ((Itdb_PhotoAlbum *) Native)->transition_duration = value; } }
+									  set { ((Itdb_PhotoAlbum *) Native)->transition_direction = (byte) value; } }
+		public int			SlideDuration	 	{ get { return ((Itdb_PhotoAlbum *) Native)->slide_duration; }
+									  set { ((Itdb_PhotoAlbum *) Native)->slide_duration = value; } }
+		public int			TransitionDuration	{ get { return ((Itdb_PhotoAlbum *) Native)->transition_duration; }
+									  set { ((Itdb_PhotoAlbum *) Native)->transition_duration = value; } }
 		// TODO: Do I need to do this?
-		//public Track				Song				{ get { return ((Itdb_PhotoAlbum *) Native)->transition_duration; }
-		//												  set { ((Itdb_PhotoAlbum *) Native)->transition_duration = value; } }
+		//public Track			Song			{ get { return ((Itdb_PhotoAlbum *) Native)->transition_duration; }
+		//							  set { ((Itdb_PhotoAlbum *) Native)->transition_duration = value; } }
 	}
 }

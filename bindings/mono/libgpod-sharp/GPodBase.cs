@@ -28,38 +28,38 @@ namespace GPod {
 
 	public abstract class GPodBase : IGPodBase, IDisposable {
 		
-		protected static string PtrToStringUTF8 (IntPtr ptr)
+		protected static string PtrToStringUTF8(IntPtr ptr)
 		{
-			return GLib.Marshaller.Utf8PtrToString (ptr);
+			return GLib.Marshaller.Utf8PtrToString(ptr);
 		}
 		
-		protected static void ReplaceStringUTF8 (ref IntPtr ptr, string str)
+		protected static void ReplaceStringUTF8(ref IntPtr ptr, string str)
 		{
-			GLib.Marshaller.Free (ptr);
-			ptr = GLib.Marshaller.StringToPtrGStrdup (str);
+			GLib.Marshaller.Free(ptr);
+			ptr = GLib.Marshaller.StringToPtrGStrdup(str);
 		}
 		
-		static DateTime local_epoch = new DateTime (1970, 1, 1, 0, 0, 0);
-		static int utc_offset = (int) (TimeZone.CurrentTimeZone.GetUtcOffset (DateTime.Now)).TotalSeconds;
+		static DateTime local_epoch = new DateTime(1970, 1, 1, 0, 0, 0);
+		static int utc_offset = (int) (TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now)).TotalSeconds;
 
-		public static IntPtr DateTimeTotime_t (DateTime time)
+		public static IntPtr DateTimeTotime_t(DateTime time)
 		{
 			// The itunes database uses a 32bit signed value, so enforce that here to avoid
 			// overflow issues. We still need to represent time with an IntPtr though as
 			// that's what libgpod publicly exposes
-			return new IntPtr (((int)time.Subtract (local_epoch).TotalSeconds) - utc_offset);
+			return new IntPtr(((int)time.Subtract(local_epoch).TotalSeconds) - utc_offset);
 		}
 
-		public static DateTime time_tToDateTime (IntPtr time_t)
+		public static DateTime time_tToDateTime(IntPtr time_t)
 		{
 			// The itunes database uses a 32bit signed value, so enforce that here to avoid
 			// overflow issues. We still need to represent time with an IntPtr though as
 			// that's what libgpod publicly exposes
-			return local_epoch.AddSeconds (time_t.ToInt32 () + utc_offset);
+			return local_epoch.AddSeconds(time_t.ToInt32() + utc_offset);
 		}
 		
 		internal IntPtr Native {
-			get { return HandleRef.ToIntPtr (Handle); }
+			get { return HandleRef.ToIntPtr(Handle); }
 		}
 		
 		IntPtr IGPodBase.Native {
@@ -72,16 +72,16 @@ namespace GPod {
 		public GPodBase(IntPtr handle) : this(handle, true) {}
 		public GPodBase(IntPtr handle, bool borrowed) {
 			Borrowed = borrowed;
-			Handle   = new HandleRef (this, handle);
+			Handle   = new HandleRef(this, handle);
 		}
 		~GPodBase() { if (!Borrowed) Destroy(); }
 		
 		public void SetBorrowed(bool borrowed) { Borrowed = borrowed; }
 		protected abstract void Destroy();
-		public void Dispose ()
+		public void Dispose()
 		{
 			if (!Borrowed)
-				Destroy ();
+				Destroy();
 		}
 	}
 }
