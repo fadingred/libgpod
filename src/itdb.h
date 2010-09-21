@@ -1247,28 +1247,36 @@ typedef enum
  *
  * The mediatype is used to determine what menu a track appears under.  For
  * example, setting the mediatype to #ITDB_MEDIATYPE_PODCAST makes the track
- * appear on the Podcast menu.
+ * appear on the Podcast menu. Media type is a bitfield, so it can be a
+ * binary combination of these constants, make sure to use binary operators
+ * when you want to operate on media types (eg use a binary AND in
+ * preference over a straight == when you want to test if a track has a
+ * given media type).
  *
  * Since: 0.5.0
  */
 typedef enum
 {
-    ITDB_MEDIATYPE_AUDIO        = 0x000001,
-    ITDB_MEDIATYPE_MOVIE        = 0x000002,
-    ITDB_MEDIATYPE_PODCAST      = 0x000004,
-    ITDB_MEDIATYPE_VIDEO_PODCAST= 0x000006,
-    ITDB_MEDIATYPE_AUDIOBOOK    = 0x000008,
-    ITDB_MEDIATYPE_MUSICVIDEO   = 0x000020,
-    ITDB_MEDIATYPE_TVSHOW       = 0x000040,
-    ITDB_MEDIATYPE_MUSIC_TVSHOW = 0x000060,
-    ITDB_MEDIATYPE_RINGTONE     = 0x004000,
-    ITDB_MEDIATYPE_RENTAL       = 0x008000,
-    ITDB_MEDIATYPE_ITUNES_EXTRA = 0x010000,
-    ITDB_MEDIATYPE_MEMO         = 0x100000,
-    ITDB_MEDIATYPE_ITUNES_U     = 0x200000,
-    ITDB_MEDIATYPE_EPUB_BOOK    = 0x400000
+    ITDB_MEDIATYPE_AUDIO        = (1 << 0),
+    ITDB_MEDIATYPE_MOVIE        = (1 << 1),
+    ITDB_MEDIATYPE_PODCAST      = (1 << 2),
+    ITDB_MEDIATYPE_AUDIOBOOK    = (1 << 3),
+    ITDB_MEDIATYPE_MUSICVIDEO   = (1 << 5),
+    ITDB_MEDIATYPE_TVSHOW       = (1 << 6),
+    ITDB_MEDIATYPE_RINGTONE     = (1 << 14),
+    ITDB_MEDIATYPE_RENTAL       = (1 << 15),
+    ITDB_MEDIATYPE_ITUNES_EXTRA = (1 << 16),
+    ITDB_MEDIATYPE_MEMO         = (1 << 20),
+    ITDB_MEDIATYPE_ITUNES_U     = (1 << 21),
+    ITDB_MEDIATYPE_EPUB_BOOK    = (1 << 22)
 } Itdb_Mediatype;
 
+/* Known compound media types which have been observed in iPod databases.
+ * This list is in no way exhaustive, and these constants are only helpers,
+ * there's nothing wrong with not using them.
+ */
+#define ITDB_MEDIATYPE_VIDEO_PODCAST (ITDB_MEDIATYPE_MOVIE | ITDB_MEDIATYPE_PODCAST)
+#define ITDB_MEDIATYPE_MUSIC_TVSHOW (ITDB_MEDIATYPE_MUSICVIDEO | ITDB_MEDIATYPE_TVSHOW)
 typedef struct _Itdb_Track_Private Itdb_Track_Private;
 /**
  * Itdb_Track:

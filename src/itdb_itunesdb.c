@@ -6472,9 +6472,8 @@ static gboolean write_hths (FExport *fexp)
 		put32lint_seek(cts, cts->pos, track_seek);
 		g_return_val_if_fail (write_rths(cts, track), FALSE);
 
-		if (track->mediatype == ITDB_MEDIATYPE_AUDIOBOOK ||
-		    track->mediatype == ITDB_MEDIATYPE_VIDEO_PODCAST ||
-		    track->mediatype == ITDB_MEDIATYPE_PODCAST)
+		if ((track->mediatype & ITDB_MEDIATYPE_AUDIOBOOK) ||
+		    (track->mediatype & ITDB_MEDIATYPE_PODCAST))
 			nonstdtrackcnt++;
 
 		/* Go to the offset for the next track */
@@ -6542,9 +6541,8 @@ static gboolean write_lphs (WContents *cts, Itdb_Playlist *pl)
 			id = tr->dbid;
 			ctr = current_track->data;
 			/* Count the number of podcasts and audiobooks for later use */
-			if (tr->mediatype == ITDB_MEDIATYPE_AUDIOBOOK ||
-			    tr->mediatype == ITDB_MEDIATYPE_VIDEO_PODCAST ||
-			    tr->mediatype == ITDB_MEDIATYPE_PODCAST)
+			if ((tr->mediatype & ITDB_MEDIATYPE_AUDIOBOOK) ||
+			    (tr->mediatype & ITDB_MEDIATYPE_PODCAST))
 				nonstdtrackcnt++;
 
 			while( id != ctr->dbid)

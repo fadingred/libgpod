@@ -1595,7 +1595,7 @@ gboolean itdb_playlist_is_audiobooks (Itdb_Playlist *pl)
   for (tl = pl->members; tl; tl = tl->next)
   {
     track = tl->data;
-    if (track->mediatype != ITDB_MEDIATYPE_AUDIOBOOK)
+    if (!(track->mediatype & ITDB_MEDIATYPE_AUDIOBOOK))
     {
       return FALSE;
     }
