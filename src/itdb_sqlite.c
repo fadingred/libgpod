@@ -1991,7 +1991,7 @@ static int copy_itdb_file(const gchar *from_dir, const gchar *to_dir,
 	fprintf(stderr, "itdbprep: copying '%s'\n", fname);
 	res++;
     }
-    if (error) {
+    if (error && *error) {
 	fprintf(stderr, "Error copying '%s' to '%s': %s\n", srcname, dstname, (*error)->message);
     }
 
