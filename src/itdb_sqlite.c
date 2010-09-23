@@ -2076,7 +2076,7 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
 	/* copy files */
 	const char *itdb_files[] = { "Dynamic.itdb", "Extras.itdb",
 				     "Genius.itdb", "Library.itdb",
-				     "Locations.itdb",
+				     "Locations.itdb", "Locations.itdb.cbk",
 				     NULL };
 	const char **file;
 	for (file = itdb_files; *file != NULL; file++) {
