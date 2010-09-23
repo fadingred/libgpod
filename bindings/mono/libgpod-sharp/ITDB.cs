@@ -152,7 +152,13 @@ namespace GPod {
 		
 		public IList<Track>	Tracks				{ get { return new ITDBTrackList(true, Handle, ((Itdb_iTunesDB *) Native)->tracks); } }
 		public IList<Playlist>	Playlists			{ get { return new ITDBPlaylistList(true, Handle, ((Itdb_iTunesDB *) Native)->playlists); } }
-		public Playlist		MasterPlaylist			{ get { return new Playlist(Itdb_iTunesDB.itdb_playlist_mpl(Handle)); } }
+		public Playlist		MasterPlaylist {
+			get {
+				var pl_ptr = Itdb_iTunesDB.itdb_playlist_mpl(Handle);
+				return pl_ptr == IntPtr.Zero ? null : new Playlist(pl_ptr);
+			}
+		}
+
 		public Playlist		PodcastsPlaylist {
 			get {
 				var pl_ptr = Itdb_iTunesDB.itdb_playlist_podcasts(Handle);
