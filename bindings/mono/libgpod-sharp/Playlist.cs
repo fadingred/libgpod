@@ -129,6 +129,7 @@ namespace GPod {
 		public bool			IsMaster	{ get { return (((Itdb_Playlist *) Native)->type & 0xff) == 1; }
 								  set { ((Itdb_Playlist *) Native)->type = (byte) (value ? 1 : 0); } }
 
+		public Playlist(string name) : base (Itdb_Playlist.itdb_playlist_new (name, false)) {}
 		public Playlist(IntPtr handle, bool borrowed)	: base(handle, borrowed) {}
 		public Playlist(IntPtr handle)			: base(handle) {}
 		public Playlist(Playlist other)			: base(Itdb_Playlist.itdb_playlist_duplicate(other.Handle), false) {}
