@@ -129,6 +129,7 @@ get_model_name (const Itdb_IpodInfo *info)
 	case ITDB_IPOD_GENERATION_NANO_3:
 	case ITDB_IPOD_GENERATION_NANO_4:
 	case ITDB_IPOD_GENERATION_NANO_5:
+	case ITDB_IPOD_GENERATION_NANO_6:
 		return g_strdup ("nano");
 	case ITDB_IPOD_GENERATION_VIDEO_1:
 	case ITDB_IPOD_GENERATION_VIDEO_2:
@@ -197,6 +198,8 @@ get_generation (const Itdb_IpodInfo *info)
 		return 4.0;
 	case ITDB_IPOD_GENERATION_NANO_5:
 		return 5.0;
+	case ITDB_IPOD_GENERATION_NANO_6:
+		return 6.0;
 	case ITDB_IPOD_GENERATION_VIDEO_1:
 		return 5.0;
 	case ITDB_IPOD_GENERATION_VIDEO_2:
@@ -389,6 +392,7 @@ get_icon_name (const Itdb_IpodInfo *info)
 
 	case ITDB_IPOD_GENERATION_NANO_4:
 	case ITDB_IPOD_GENERATION_NANO_5:
+	case ITDB_IPOD_GENERATION_NANO_6:
 		/* FIXME: set the correct icon name once it's added to
 		 * gnome-icon-theme-extras 
 		 */
