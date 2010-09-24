@@ -2079,12 +2079,21 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
 				     "Locations.itdb", "Locations.itdb.cbk",
 				     NULL };
 	const char **file;
+	GError *error = NULL;
+	g_assert (fexp->error == NULL);
 	for (file = itdb_files; *file != NULL; file++) {
-	    copy_itdb_file(tmpdir, itlpdir, *file, &fexp->error);
-	    if (fexp->error) {
+	    copy_itdb_file(tmpdir, itlpdir, *file, &error);
+	    if (error) {
 		res = -1;
-		goto leave;
+		/* only the last error will be reported, but this way we
+		 * copy as many files as possible even when errors occur
+		 */
+		g_clear_error (&fexp->error);
+		g_propagate_error (&fexp->error, error);
 	    }
+	}
+	if (fexp->error) {
+	    goto leave;
 	}
     }
 
