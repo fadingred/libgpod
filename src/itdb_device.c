@@ -694,6 +694,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "YX7", "B228" }, /* 1GB Blue Shuffle 2g */
     { "YX9", "B225" }, /* 1GB Silver Shuffle 2g */
     { "8CQ", "C167" }, /* 1GB Gold Shuffle 2g */
+    { "1ZH", "B518" }, /* 2GB Silver Shuffle 2g */
     { "UNA", "A350" },
     { "UNB", "A350" },
     { "UPR", "A352" },
