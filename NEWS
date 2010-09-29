@@ -1,3 +1,29 @@
+Overview of changes in libgpod 0.7.95
+=====================================
+
+For information about iPhone/iPod Touch/iPod Nano 5g support, please read
+carefully the overview of libgpod 0.7.90 below. The iPhone 4, iPod Touch 4
+and the iPad aren't supported, other iOS4 devices might work. The Nano 6g
+(Touch Nano) isn't supported either.
+
+This release brings some improvements to the generation of the sqlite
+databases (used by iOS devices), in particular improved playcounts handling.
+It also adds some bug fixes to the mono bindings.
+
+* improved support for sqlite databases (Joel Smith)
+* bug fixes and playlist support for mono bindings (Alan McGovern, Gabriel
+  Burt, Nathaniel McCallum)
+* small itdb_start_sync/itdb_stop_sync behaviour change, now the calls need
+  to be paired, but itdb_start_sync can be called N times, and the "Sync in
+  Progress" screen will only go away after the Nth call to itdb_stop_sync
+  (Hector Martin)
+* be more smart when auto-guessing whether to use iPod_Control or
+  iTunes_Control (Whitney Young)
+* improve error handling in itdb_init and itdb_write, before that there
+  were error cases that were not properly reported to the caller (Christophe
+  Fergeau)
+
+
 Overview of changes in libgpod 0.7.94
 =====================================
 
