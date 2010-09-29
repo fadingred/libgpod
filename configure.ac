@@ -16,7 +16,7 @@ dnl libtool versioning
 LIBGPOD_SO_VERSION=7:0:3
 AC_SUBST(LIBGPOD_SO_VERSION)
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([dist-bzip2 no-dist-gzip])
 
 dnl make sure we keep ACLOCAL_FLAGS around for maintainer builds to work
 AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS")
