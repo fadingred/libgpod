@@ -1,24 +1,11 @@
 AC_PREREQ(2.65)
-AC_INIT
+AC_INIT([libgpod], [0.7.95])
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CONFIG_MACRO_DIR(m4)
 
 AM_CONFIG_HEADER(config.h)
 
-
-# Making releases:
-#   LIBGPOD_MICRO_VERSION += 1;
-#   LIBGPOD_SO_VERSION - see comments
-#
-LIBGPOD_MAJOR_VERSION=0
-LIBGPOD_MINOR_VERSION=7
-LIBGPOD_MICRO_VERSION=95
-# If you need a modifier for the version number. 
-# Normally empty, but can be used to make "fixup" releases.
-LIBGPOD_EXTRAVERSION=
-
-LIBGPOD_VERSION=$LIBGPOD_MAJOR_VERSION.$LIBGPOD_MINOR_VERSION.$LIBGPOD_MICRO_VERSION$LIBGPOD_EXTRAVERSION
 
 dnl libtool versioning
 # +1 : 0 : +1  == adds new functions to the interface
@@ -27,14 +14,9 @@ dnl libtool versioning
 #  ? :+1 : ?   == just internal changes
 # CURRENT : REVISION : AGE
 LIBGPOD_SO_VERSION=7:0:3
-
 AC_SUBST(LIBGPOD_SO_VERSION)
-AC_SUBST(LIBGPOD_MAJOR_VERSION)
-AC_SUBST(LIBGPOD_MINOR_VERSION)
-AC_SUBST(LIBGPOD_MICRO_VERSION)
-AC_SUBST(LIBGPOD_VERSION)
 
-AM_INIT_AUTOMAKE(libgpod, $LIBGPOD_VERSION)
+AM_INIT_AUTOMAKE
 
 dnl make sure we keep ACLOCAL_FLAGS around for maintainer builds to work
 AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS")
