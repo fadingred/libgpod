@@ -71,6 +71,7 @@ gboolean itdb_spl_action_known (ItdbSPLAction action)
     case ITDB_SPLACTION_IS_NOT:
     case ITDB_SPLACTION_DOES_NOT_CONTAIN:
     case ITDB_SPLACTION_BINARY_AND:
+    case ITDB_SPLACTION_NOT_BINARY_AND:
     case ITDB_SPLACTION_BINARY_UNKNOWN1:
     case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	result = TRUE;
@@ -189,6 +190,7 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 	case ITDB_SPLACTION_IS_IN_THE_LAST:
 	case ITDB_SPLACTION_IS_NOT_IN_THE_LAST:
 	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_NOT_BINARY_AND:
 	case ITDB_SPLACTION_BINARY_UNKNOWN1:
 	case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	    return ITDB_SPLAT_INVALID;
@@ -211,6 +213,7 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 	case ITDB_SPLACTION_IS_IN_THE_RANGE:
 	    return ITDB_SPLAT_RANGE_INT;
 	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_NOT_BINARY_AND:
 	case ITDB_SPLACTION_BINARY_UNKNOWN1:
 	case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	case ITDB_SPLACTION_IS_STRING:
@@ -257,6 +260,7 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 	case ITDB_SPLACTION_IS_NOT:
 	case ITDB_SPLACTION_DOES_NOT_CONTAIN:
 	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_NOT_BINARY_AND:
 	case ITDB_SPLACTION_BINARY_UNKNOWN1:
 	case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	    return ITDB_SPLAT_INVALID;
@@ -268,6 +272,7 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 	case ITDB_SPLACTION_BINARY_UNKNOWN2:
             return ITDB_SPLAT_UNKNOWN;
 	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_NOT_BINARY_AND:
 	    return ITDB_SPLAT_BINARY_AND;
 	case ITDB_SPLACTION_IS_INT:
 	case ITDB_SPLACTION_IS_NOT_INT:
@@ -317,6 +322,7 @@ ItdbSPLActionType itdb_splr_get_action_type (const Itdb_SPLRule *splr)
 	case ITDB_SPLACTION_IS_NOT:
 	case ITDB_SPLACTION_DOES_NOT_CONTAIN:
 	case ITDB_SPLACTION_BINARY_AND:
+	case ITDB_SPLACTION_NOT_BINARY_AND:
 	case ITDB_SPLACTION_BINARY_UNKNOWN1:
 	case ITDB_SPLACTION_BINARY_UNKNOWN2:
 	    return ITDB_SPLAT_INVALID;
@@ -559,6 +565,8 @@ gboolean itdb_splr_eval (Itdb_SPLRule *splr, Itdb_Track *track)
 	{
 	case ITDB_SPLACTION_BINARY_AND:
 	    return (intcomp & splr->fromvalue)? TRUE:FALSE;
+	case ITDB_SPLACTION_NOT_BINARY_AND:
+	    return (intcomp & splr->fromvalue)? FALSE:TRUE;
 	}
 	return FALSE;
     case ITDB_SPLFT_BOOLEAN:
