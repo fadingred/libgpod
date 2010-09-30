@@ -111,10 +111,10 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"9830", 60, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_PHOTO,  50},
     {"9586", 60, ITDB_IPOD_MODEL_COLOR,       ITDB_IPOD_GENERATION_PHOTO,  50},
 
-    /* Shuffle / Fourth Generation */
+    /* Shuffle / First Generation */
     {"9724", 0.5,ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_SHUFFLE_1, 3},
     {"9725", 1,  ITDB_IPOD_MODEL_SHUFFLE,     ITDB_IPOD_GENERATION_SHUFFLE_1, 3},
-    /* Shuffle / Sixth Generation */
+    /* Shuffle / Second Generation */
     /* Square, connected to computer via cable */
     {"A546", 1,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
     {"A947", 1,  ITDB_IPOD_MODEL_SHUFFLE_PINK,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
@@ -122,34 +122,34 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"A951", 1,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
     {"A953", 1,  ITDB_IPOD_MODEL_SHUFFLE_ORANGE, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
     {"C167", 1,  ITDB_IPOD_MODEL_SHUFFLE_GOLD,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
-    /* Shuffle / Seventh Generation */
-    /* Square, connected to computer via cable -- look identicaly to
-     * Sixth Generation*/
-    {"B225", 1,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B233", 1,  ITDB_IPOD_MODEL_SHUFFLE_PURPLE, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B231", 1,  ITDB_IPOD_MODEL_SHUFFLE_RED,    ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B227", 1,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B228", 1,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B229", 1,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B518", 2,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B520", 2,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B522", 2,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B524", 2,  ITDB_IPOD_MODEL_SHUFFLE_RED,    ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
-    {"B526", 2,  ITDB_IPOD_MODEL_SHUFFLE_PURPLE, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    /* Shuffle / Second Generation, reloaded, some kind of 2.5 generation */
+    /* Square, connected to computer via cable -- look identical to
+     * Second Generation*/
+    {"B225", 1,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B233", 1,  ITDB_IPOD_MODEL_SHUFFLE_PURPLE, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B231", 1,  ITDB_IPOD_MODEL_SHUFFLE_RED,    ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B227", 1,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B228", 1,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B229", 1,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B518", 2,  ITDB_IPOD_MODEL_SHUFFLE_SILVER, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B520", 2,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,   ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B522", 2,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,  ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B524", 2,  ITDB_IPOD_MODEL_SHUFFLE_RED,    ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
+    {"B526", 2,  ITDB_IPOD_MODEL_SHUFFLE_PURPLE, ITDB_IPOD_GENERATION_SHUFFLE_2, 3},
 
-    /* Shuffle / Eigth Generation */
+    /* Shuffle / Third Generation */
     /* Bar, button-less, speaking */
-    {"C306", 2,  ITDB_IPOD_MODEL_SHUFFLE_SILVER,    ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C323", 2,  ITDB_IPOD_MODEL_SHUFFLE_BLACK,     ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C381", 2,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,     ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C384", 2,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C387", 2,  ITDB_IPOD_MODEL_SHUFFLE_PINK,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"B867", 4,  ITDB_IPOD_MODEL_SHUFFLE_SILVER,    ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C164", 4,  ITDB_IPOD_MODEL_SHUFFLE_BLACK,     ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C303", 4,  ITDB_IPOD_MODEL_SHUFFLE_STAINLESS, ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C307", 4,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,     ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C328", 4,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
-    {"C331", 4,  ITDB_IPOD_MODEL_SHUFFLE_PINK,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C306", 2,  ITDB_IPOD_MODEL_SHUFFLE_SILVER,    ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"C323", 2,  ITDB_IPOD_MODEL_SHUFFLE_BLACK,     ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"C381", 2,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,     ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"C384", 2,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,      ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"C387", 2,  ITDB_IPOD_MODEL_SHUFFLE_PINK,      ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"B867", 4,  ITDB_IPOD_MODEL_SHUFFLE_SILVER,    ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"C164", 4,  ITDB_IPOD_MODEL_SHUFFLE_BLACK,     ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"C303", 4,  ITDB_IPOD_MODEL_SHUFFLE_STAINLESS, ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"C307", 4,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,     ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"C328", 4,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,      ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
+    {"C331", 4,  ITDB_IPOD_MODEL_SHUFFLE_PINK,      ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
 
     /* Nano / Fifth Generation (first nano generation) */
     /* Buttons are integrated into the "touch wheel". */
@@ -823,17 +823,17 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "CMP", "C526" }, /* 16GB Silver Nano 6g */
     { "DW9", "C699" }, /* 16GB Red Nano 6g */
 
-    { "A1S", "C306" }, /* 2GB Silver Shuffle 4g */
-    { "A78", "C323" }, /* 2GB Black Shuffle 4g */
-    { "ALB", "C381" }, /* 2GB Green Shuffle 4g */
-    { "ALD", "C384" }, /* 2GB Blue Shuffle 4g */
-    { "ALG", "C387" }, /* 2GB Pink Shuffle 4g */
-    { "4NZ", "B867" }, /* 4GB Silver Shuffle 4g */
-    { "891", "C164" }, /* 4GB Black Shuffle 4g */
-    { "A1L", "C303" }, /* 4GB Stainless Shuffle 4g */
-    { "A1U", "C307" }, /* 4GB Green Shuffle 4g */
-    { "A7B", "C328" }, /* 4GB Blue Shuffle 4g */
-    { "A7D", "C331" }, /* 4GB Pink Shuffle 4g */
+    { "A1S", "C306" }, /* 2GB Silver Shuffle 3g */
+    { "A78", "C323" }, /* 2GB Black Shuffle 3g */
+    { "ALB", "C381" }, /* 2GB Green Shuffle 3g */
+    { "ALD", "C384" }, /* 2GB Blue Shuffle 3g */
+    { "ALG", "C387" }, /* 2GB Pink Shuffle 3g */
+    { "4NZ", "B867" }, /* 4GB Silver Shuffle 3g */
+    { "891", "C164" }, /* 4GB Black Shuffle 3g */
+    { "A1L", "C303" }, /* 4GB Stainless Shuffle 3g */
+    { "A1U", "C307" }, /* 4GB Green Shuffle 3g */
+    { "A7B", "C328" }, /* 4GB Blue Shuffle 3g */
+    { "A7D", "C331" }, /* 4GB Pink Shuffle 3g */
 
     { "W4N", "A623" }, /* 8GB Silver iPod Touch (1st gen) */
     { "W4T", "A627" }, /* 16GB Silver iPod Touch (1st gen) */
