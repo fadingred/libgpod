@@ -77,6 +77,7 @@ namespace GPod {
 	    Classic3,
 	    Nano5,
 	    Touch3,
+	    Ipad,
 	    Iphone4,
 	    Touch4,
 	    Nano6,
