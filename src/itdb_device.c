@@ -424,6 +424,9 @@ static const gchar *ipod_generation_name_table [] = {
 	N_("Nano with camera (5th Gen.)"),
 	N_("Touch (3rd Gen.)"),
 	N_("iPad"),
+	N_("iPhone 4"),
+	N_("Touch (4th Gen.)"),
+	N_("Nano touch (6th Gen.)"),
 	NULL
 };
 
