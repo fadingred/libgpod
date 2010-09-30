@@ -1198,6 +1198,26 @@ static gboolean playcounts_plist_read (FImport *fimp, GValue *plist_data)
     return TRUE;
 }
 
+/* Delete the file containing the playcounts, once we saved the database,
+ * the recent playcounts will have been added to the database, so this
+ * file is no longer useful. */
+static void playcounts_reset (const char *mountpoint)
+{
+  const gchar *dirs[] = { "Play Counts", "iTunesStats",
+                          "PlayCounts.plist", NULL };
+  const gchar **it;
+
+  for (it = dirs; *it != NULL; it++) {
+      char *playcounts_path;
+      const gchar *components[] = { *it, NULL };
+      playcounts_path = itdb_resolve_path (mountpoint, components);
+      if (playcounts_path != NULL) {
+          g_unlink (playcounts_path);
+          g_free (playcounts_path);
+      }
+  }
+}
+
 /* Read the Play Count file (formed by adding "Play Counts" to the
  * directory component of fimp->itdb->itdb_filename) and set up the
  * GList *playcounts. If no Play Count file is present, attempt to
@@ -5972,8 +5992,11 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 
     if (!fexp->error)
     {
-	if (!wcontents_write (cts))
+	if (wcontents_write (cts)) {
+	    playcounts_reset (itdb_get_mountpoint (itdb));
+	} else {
 	    g_propagate_error (&fexp->error, cts->error);
+	}
     }
 err:
     if (fexp->error)
