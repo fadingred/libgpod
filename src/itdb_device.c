@@ -151,6 +151,14 @@ static const Itdb_IpodInfo ipod_info_table [] = {
     {"C328", 4,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,      ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
     {"C331", 4,  ITDB_IPOD_MODEL_SHUFFLE_PINK,      ITDB_IPOD_GENERATION_SHUFFLE_3, 3},
 
+    /* Shuffle / Fourth Generation */
+    /* Square, connected to computer via cable, voice-over */
+    {"C584", 2,  ITDB_IPOD_MODEL_SHUFFLE_SILVER,    ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C585", 2,  ITDB_IPOD_MODEL_SHUFFLE_PINK,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C749", 2,  ITDB_IPOD_MODEL_SHUFFLE_ORANGE,    ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C750", 2,  ITDB_IPOD_MODEL_SHUFFLE_GREEN,     ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+    {"C751", 2,  ITDB_IPOD_MODEL_SHUFFLE_BLUE,      ITDB_IPOD_GENERATION_SHUFFLE_4, 3},
+
     /* Nano / Fifth Generation (first nano generation) */
     /* Buttons are integrated into the "touch wheel". */
     {"A350",  1, ITDB_IPOD_MODEL_NANO_WHITE,  ITDB_IPOD_GENERATION_NANO_1,   3},
@@ -834,6 +842,12 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
     { "A1U", "C307" }, /* 4GB Green Shuffle 3g */
     { "A7B", "C328" }, /* 4GB Blue Shuffle 3g */
     { "A7D", "C331" }, /* 4GB Pink Shuffle 3g */
+
+    { "CMJ", "C584" }, /* 2GB Silver Shuffle 4g */
+    { "CMK", "C585" }, /* 2GB Pink Shuffle 4g */
+    { "FDM", "C749" }, /* 2GB Orange Shuffle 4g */
+    { "FDN", "C750" }, /* 2GB Green Shuffle 4g */
+    { "FDP", "C751" }, /* 2GB Blue Shuffle 4g */
 
     { "W4N", "A623" }, /* 8GB Silver iPod Touch (1st gen) */
     { "W4T", "A627" }, /* 16GB Silver iPod Touch (1st gen) */
