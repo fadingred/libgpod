@@ -76,7 +76,10 @@ namespace GPod {
 	    Iphone3,
 	    Classic3,
 	    Nano5,
-	    Touch3
+	    Touch3,
+	    Iphone4,
+	    Touch4,
+	    Nano6,
 	}
 	
 	public enum IpodModel {
@@ -120,6 +123,9 @@ namespace GPod {
 	    ShuffleBlack,
 	    IphoneWhite,
 	    IphoneBlack,
+	    ShuffleGold,
+	    ShuffleStainless,
+	    Ipad,
 	}
 
 	public sealed unsafe class IpodInfo : GPodBase {
