@@ -1270,7 +1270,8 @@ typedef enum
     ITDB_MEDIATYPE_ITUNES_EXTRA = (1 << 16),
     ITDB_MEDIATYPE_MEMO         = (1 << 20),
     ITDB_MEDIATYPE_ITUNES_U     = (1 << 21),
-    ITDB_MEDIATYPE_EPUB_BOOK    = (1 << 22)
+    ITDB_MEDIATYPE_EPUB_BOOK    = (1 << 22),
+    ITDB_MEDIATYPE_PDF_BOOK     = (1 << 23)
 } Itdb_Mediatype;
 
 /* Known compound media types which have been observed in iPod databases.

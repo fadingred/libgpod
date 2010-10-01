@@ -4011,7 +4011,15 @@ static void mk_mhit (WContents *cts, Itdb_Track *track)
   put64lint (cts, 0x808080808080LL);  /* what the heck is this?! */
   put32lint (cts, 0);
   /* +0x140 */
-  put32_n0 (cts, 8);
+  put32_n0 (cts, 2);
+  if ((track->mediatype & ITDB_MEDIATYPE_EPUB_BOOK)
+      || (track->mediatype & ITDB_MEDIATYPE_PDF_BOOK)) {
+      put16lint (cts, 1);
+      put16lint (cts, 1);
+  } else {
+      put32lint (cts, 0);
+  }
+  put32_n0 (cts, 5);
   /* +0x160 */
   /* mhii_link is needed on fat nanos/ipod classic to get artwork 
    * in the right sidepane. This matches mhii::song_id in the ArtworkDB */
