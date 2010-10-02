@@ -3081,7 +3081,7 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
     CHECK_ERROR (fimp, FALSE);
     fimp->itdb->priv->unk_0xa6 = get16lint (cts, seek+0xA6);
     CHECK_ERROR (fimp, FALSE);
-    fimp->itdb->priv->unk_0xa8 = get32lint (cts, seek+0xA8);
+    fimp->itdb->priv->unk_0xa8 = get16lint (cts, seek+0xA8);
     CHECK_ERROR (fimp, FALSE);
     if(fimp->itdb->priv->unk_0xa8 != 0) {
 	g_warning ("Unknown value for 0xa8 in header: should be 0 for uncompressed, is %d.\n", fimp->itdb->priv->unk_0xa8);
@@ -3823,7 +3823,8 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put16lint (cts, fexp->itdb->priv->subtitle_language); /* subtitle_language */
   put16lint (cts, fexp->itdb->priv->unk_0xa4); /* unknown */
   put16lint (cts, fexp->itdb->priv->unk_0xa6); /* unknown */
-  put32lint (cts, fexp->itdb->priv->unk_0xa8); /* unknown */
+  put16lint (cts, fexp->itdb->priv->unk_0xa8); /* unknown */
+  put16lint (cts, 0);
   put32_n0 (cts, 4); /* dummy space */
 }
 

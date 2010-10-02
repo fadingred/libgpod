@@ -197,7 +197,7 @@ struct _Itdb_iTunesDB_Private
     gint16 subtitle_language;
     gint16 unk_0xa4;
     gint16 unk_0xa6;
-    gint32 unk_0xa8;
+    gint16 unk_0xa8;
 };
 
 /* private data for Itdb_Track */
