@@ -291,11 +291,11 @@ gboolean itdb_hash58_write_hash (Itdb_Device *device,
     header = (MhbdHeader *)itdb_data;
     g_assert (strncmp (header->header_id, "mhbd", strlen ("mhbd")) == 0);
     memcpy (backup18, &header->db_id, sizeof (backup18));
-    memcpy (backup32, &header->unknown6, sizeof (backup32));
+    memcpy (backup32, &header->unk_0x32, sizeof (backup32));
 
     /* Those fields must be zero'ed out for the sha1 calculation */
     memset(&header->db_id, 0, sizeof (header->db_id));
-    memset(&header->unknown6, 0, sizeof (header->unknown6));
+    memset(&header->unk_0x32, 0, sizeof (header->unk_0x32));
     memset(&header->hash58, 0, sizeof (header->hash58));
 
     header->hashing_scheme = GUINT16_FROM_LE (ITDB_CHECKSUM_HASH58);
@@ -310,7 +310,7 @@ gboolean itdb_hash58_write_hash (Itdb_Device *device,
     g_free (checksum);
 
     memcpy (&header->db_id, backup18, sizeof (backup18));
-    memcpy (&header->unknown6, backup32, sizeof (backup32));
+    memcpy (&header->unk_0x32, backup32, sizeof (backup32));
 
     return TRUE;
 }

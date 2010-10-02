@@ -246,7 +246,7 @@ static void itdb_hash72_compute_itunesdb_sha1 (unsigned char *itdb_data,
     header = (MhbdHeader *)itdb_data;
     g_assert (strncmp (header->header_id, "mhbd", strlen ("mhbd")) == 0);
     memcpy (backup18, &header->db_id, sizeof (backup18));
-    memcpy (backup32, &header->unknown6, sizeof (backup32));
+    memcpy (backup32, &header->unk_0x32, sizeof (backup32));
     memcpy (hash72, &header->hash72, sizeof (hash72));
 
     /* Those fields must be zero'ed out for the sha1 calculation */
@@ -262,7 +262,7 @@ static void itdb_hash72_compute_itunesdb_sha1 (unsigned char *itdb_data,
     g_checksum_free (checksum);
 
     memcpy (&header->db_id, backup18, sizeof (backup18));
-    memcpy (&header->unknown6, backup32, sizeof (backup32));
+    memcpy (&header->unk_0x32, backup32, sizeof (backup32));
 }
 
 gboolean itdb_hash72_extract_hash_info (const Itdb_Device *device, 
