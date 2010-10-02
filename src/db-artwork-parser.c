@@ -543,14 +543,6 @@ mhfd_associate_itunesdb_artwork (DBParseContext *ctx)
 	}
 	else
 	{
-	    if ((track->artwork_size + track->artwork_count) !=
-		artwork->artwork_size)
-	    {
-		g_warning (_("iTunesDB and ArtworkDB artwork sizes inconsistent (%d+%d != %d)\n"),
-			   track->artwork_size,
-			   track->artwork_count,
-			   track->artwork->artwork_size);
-	    }
 	    itdb_artwork_free (track->artwork);
 	    track->artwork = itdb_artwork_duplicate (artwork);
 	}
