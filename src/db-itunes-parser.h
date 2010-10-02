@@ -83,7 +83,7 @@ struct _MhbdHeader {
 	guint32 version;
 	guint32 num_children;
 	guint64 db_id;
-	guint16 unknown2;
+	guint16 platform;
 	guint32 unknown3;
 	guint64 unknown4;
 	guint16 unknown5;

@@ -186,6 +186,7 @@ typedef enum _Itdb_Playlist_Mhsd5_Type Itdb_Playlist_Mhsd5_Type;
 struct _Itdb_iTunesDB_Private
 {
     GList *mhsd5_playlists;
+    guint16 platform;
     guint16 unk_0x22;
     guint64 id_0x24;
     guint16 lang;

@@ -732,10 +732,8 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     sqlite3_bind_int(stmt_version_info, ++idx, 0);
     /* device_update_level, default is 0 */
     sqlite3_bind_int(stmt_version_info, ++idx, 0);
-    /* platform */
-    /* TODO: this is a guess: 2 = Windows, 1 = MacOS */
-    /* FIXME: needs autoselection based on the itdb library (how to check?) */
-    sqlite3_bind_int(stmt_version_info, ++idx, 2);
+    /* platform, 1 = MacOS, 2 = Windows */
+    sqlite3_bind_int(stmt_version_info, ++idx, itdb->priv->platform);
 
     res = sqlite3_step(stmt_version_info);
     if (res == SQLITE_DONE) {

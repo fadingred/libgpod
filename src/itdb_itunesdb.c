@@ -1436,6 +1436,7 @@ Itdb_iTunesDB *itdb_new (void)
     itdb->priv->pid = ((guint64)g_random_int () << 32) |
 	((guint64)g_random_int ());
     itdb->priv->lang = 0x656e;
+    itdb->priv->platform = 1; /* Mac */
     return itdb;
 }
 
@@ -3056,6 +3057,8 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
     CHECK_ERROR (fimp, FALSE);
     fimp->itdb->id = get64lint (cts, seek+0x18);
     CHECK_ERROR (fimp, FALSE);
+    fimp->itdb->priv->platform = get16lint (cts, seek+0x20);
+    CHECK_ERROR (fimp, FALSE);
     fimp->itdb->priv->unk_0x22 = get16lint (cts, seek+0x22);
     CHECK_ERROR (fimp, FALSE);
     fimp->itdb->priv->id_0x24 = get64lint (cts, seek+0x24);
@@ -3789,7 +3792,7 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
   /* 0x20 */
-  put16lint (cts, 1); /* OS type, 1 = MacOS X, 2 = Windows */
+  put16lint (cts, fexp->itdb->priv->platform); /* OS type, 1 = MacOS X, 2 = Windows */
 
   /* 0x22 */
   put16lint (cts, fexp->itdb->priv->unk_0x22);  /* unknown */
