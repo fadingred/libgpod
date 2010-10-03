@@ -102,6 +102,8 @@ struct _MhbdHeader {
 	guint16 unk_0xa4;
 	guint16 unk_0xa6;
 	guint16 unk_0xa8;
+	guchar align_0xa9;
+	guchar hashAB[57];
 	guchar  padding[];
 } __attribute__((__packed__));
 

@@ -224,24 +224,32 @@ G_GNUC_INTERNAL gint itdb_get_max_photo_id ( Itdb_PhotoDB *db );
 G_GNUC_INTERNAL Itdb_iTunesDB *db_get_itunesdb (Itdb_DB *db);
 G_GNUC_INTERNAL Itdb_PhotoDB *db_get_photodb (Itdb_DB *db);
 G_GNUC_INTERNAL gint itdb_thumb_get_byteorder (ItdbThumbFormat format);
-G_GNUC_INTERNAL time_t device_time_mac_to_time_t (Itdb_Device *device, 
+G_GNUC_INTERNAL time_t device_time_mac_to_time_t (Itdb_Device *device,
 						guint64 mactime);
 G_GNUC_INTERNAL guint64 device_time_time_t_to_mac (Itdb_Device *device,
 						 time_t timet);
 G_GNUC_INTERNAL gint itdb_musicdirs_number_by_mountpoint (const gchar *mountpoint);
 G_GNUC_INTERNAL int itdb_sqlite_generate_itdbs(FExport *fexp);
-G_GNUC_INTERNAL gboolean itdb_hash72_extract_hash_info(const Itdb_Device *device, 
-						       unsigned char *itdb_data, 
+G_GNUC_INTERNAL gboolean itdb_hashAB_write_hash (const Itdb_Device *device,
+						 unsigned char *itdb_data,
+						 gsize itdb_len,
+						 GError **error);
+G_GNUC_INTERNAL gboolean itdb_hash72_extract_hash_info(const Itdb_Device *device,
+						       unsigned char *itdb_data,
 						       gsize itdb_len);
-G_GNUC_INTERNAL gboolean itdb_hash72_write_hash (const Itdb_Device *device, 
-						 unsigned char *itdb_data, 
+G_GNUC_INTERNAL gboolean itdb_hash72_write_hash (const Itdb_Device *device,
+						 unsigned char *itdb_data,
 						 gsize itdb_len,
 						 GError **error);
-G_GNUC_INTERNAL gboolean itdb_hash58_write_hash (Itdb_Device *device, 
-						 unsigned char *itdb_data, 
+G_GNUC_INTERNAL gboolean itdb_hash58_write_hash (Itdb_Device *device,
+						 unsigned char *itdb_data,
 						 gsize itdb_len,
 						 GError **error);
-G_GNUC_INTERNAL gboolean itdb_hash72_compute_hash_for_sha1 (const Itdb_Device *device, 
+G_GNUC_INTERNAL gboolean itdb_hashAB_compute_hash_for_sha1 (const Itdb_Device *device,
+							    const guchar sha1[20],
+							    guchar signature[57],
+							    GError **error);
+G_GNUC_INTERNAL gboolean itdb_hash72_compute_hash_for_sha1 (const Itdb_Device *device,
 							    const guchar sha1[20],
 							    guchar signature[46],
 							    GError **error);

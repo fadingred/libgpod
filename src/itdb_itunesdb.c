@@ -3801,7 +3801,7 @@ static void mk_mhbd (FExport *fexp, guint32 children)
   cts = fexp->wcontents;
 
   put_header (cts, "mhbd");
-  put32lint (cts, 188); /* header size */
+  put32lint (cts, 244); /* header size */
   put32lint (cts, -1);  /* size of whole mhdb -- fill in later */
   if (itdb_device_supports_compressed_itunesdb (fexp->itdb->device)) {
       /* 2 on iPhone 3.0 and Nano 5G, 1 on iPod Color and iPod Classic
@@ -3830,10 +3830,12 @@ static void mk_mhbd (FExport *fexp, guint32 children)
                      0x19 = iTunes 7.4
                      0x28 = iTunes 8.2.1
 		     0x2a = iTunes 9.0.1
+		     0x2e = iTunes 9.1
+		     0x30 = iTunes 9.2
     Be aware that newer ipods won't work if the library version number is too 
     old
   */
-  fexp->itdb->version = 0x2a;
+  fexp->itdb->version = 0x30;
   put32lint (cts, fexp->itdb->version);
   put32lint (cts, children);
   put64lint (cts, fexp->itdb->id);
@@ -3857,20 +3859,32 @@ static void mk_mhbd (FExport *fexp, guint32 children)
                                                 /* seen: 0x01 for iPod Color       */
   put32lint (cts, fexp->itdb->priv->unk_0x54);  /* unknown: seen: 0x4d for nano 3G */
   				         	/* seen: 0x0f for iPod Color       */
-  put32_n0 (cts, 5);    /* 20 bytes hash */
+  put32_n0 (cts, 5);    /* 20 bytes hash58 */
   put32lint (cts, fexp->itdb->tzoffset);   /* timezone offset in seconds */
   /* 0x70 */
-  put16lint (cts, 2);   /* without it, iTunes thinks iPhone databases
-			   are corrupted, 0 on iPod Color */
-  put16lint (cts, 0);
-  put32_n0 (cts, 11);   /* new hash */
+  switch (itdb_device_get_checksum_type(fexp->itdb->device)) {
+    case ITDB_CHECKSUM_HASHAB:
+      put16lint (cts, 4);   /* new on 4th gen iOS devices */
+      break;
+    case ITDB_CHECKSUM_HASH72:
+      put16lint (cts, 2);
+      break;
+    default:
+      put16lint (cts, 0);
+      break;
+  }
+  put16lint (cts, 0);   /* hash72 */
+  put32_n0 (cts, 11);   /* hash72 */
   /* 0xa0 */
   put16lint (cts, fexp->itdb->priv->audio_language); /* audio_language */
   put16lint (cts, fexp->itdb->priv->subtitle_language); /* subtitle_language */
   put16lint (cts, fexp->itdb->priv->unk_0xa4); /* unknown */
   put16lint (cts, fexp->itdb->priv->unk_0xa6); /* unknown */
   put16lint (cts, fexp->itdb->priv->unk_0xa8); /* unknown */
-  put16lint (cts, 0);
+  put8int (cts, 0);
+  /* 0xab */
+  put8int (cts, 0);   /* hashAB */
+  put32_n0 (cts, 14); /* hashAB */
   put32_n0 (cts, 4); /* dummy space */
 }
 

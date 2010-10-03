@@ -2041,24 +2041,22 @@ error:
     return FALSE;
 }
 
-static const guint CBK_HEADER_SIZE = 46;
-
-static void cbk_calc_sha1_of_sha1s(GArray *cbk)
+static void cbk_calc_sha1_of_sha1s(GArray *cbk, guint cbk_header_size)
 {
     GChecksum *checksum;
     unsigned char* final_sha1;
     unsigned char* sha1s;
     gsize final_sha1_len;
 
-    g_assert (cbk->len > CBK_HEADER_SIZE + 20);
+    g_assert (cbk->len > cbk_header_size + 20);
 
-    final_sha1 = &g_array_index(cbk, guchar, CBK_HEADER_SIZE);
-    sha1s = &g_array_index(cbk, guchar, CBK_HEADER_SIZE + 20);
+    final_sha1 = &g_array_index(cbk, guchar, cbk_header_size);
+    sha1s = &g_array_index(cbk, guchar, cbk_header_size + 20);
     final_sha1_len = g_checksum_type_get_length(G_CHECKSUM_SHA1);
     g_assert (final_sha1_len == 20);
 
     checksum = g_checksum_new(G_CHECKSUM_SHA1);
-    g_checksum_update(checksum, sha1s, cbk->len - (CBK_HEADER_SIZE + 20));
+    g_checksum_update(checksum, sha1s, cbk->len - (cbk_header_size + 20));
     g_checksum_get_digest(checksum, final_sha1, &final_sha1_len);
     g_checksum_free(checksum);
 }
@@ -2069,12 +2067,30 @@ static gboolean mk_Locations_cbk(Itdb_iTunesDB *itdb, const char *dirname)
     char *cbk_filename;
     GArray *cbk;
     gboolean success;
-    guchar *cbk_hash72;
+    guchar *cbk_hash;
     guchar *final_sha1;
+    guint cbk_header_size = 0;
+    guint checksum_type;
+
+    checksum_type = itdb_device_get_checksum_type(itdb->device);
+    switch (checksum_type) {
+	case ITDB_CHECKSUM_HASHAB:
+	    cbk_header_size = 57;
+	    break;
+	case ITDB_CHECKSUM_HASH72:
+	    cbk_header_size = 46;
+	    break;
+	default:
+	    break;
+    }
+    if (cbk_header_size == 0) {
+	fprintf(stderr, "ERROR: Unsupported checksum type '%d' in cbk file generation!\n", checksum_type);
+	return FALSE;
+    }
 
     cbk = g_array_sized_new(FALSE, TRUE, 1,
-			    CBK_HEADER_SIZE + 20);
-    g_array_set_size(cbk, CBK_HEADER_SIZE + 20);
+			    cbk_header_size + 20);
+    g_array_set_size(cbk, cbk_header_size + 20);
 
     locations_filename = g_build_filename(dirname, "Locations.itdb", NULL);
     success = cbk_calc_sha1s(locations_filename, cbk);
@@ -2083,11 +2099,19 @@ static gboolean mk_Locations_cbk(Itdb_iTunesDB *itdb, const char *dirname)
 	g_array_free(cbk, TRUE);
 	return FALSE;
     }
-    cbk_calc_sha1_of_sha1s(cbk);
-    final_sha1 = &g_array_index(cbk, guchar, CBK_HEADER_SIZE);
-    cbk_hash72 = &g_array_index(cbk, guchar, 0);
-    success = itdb_hash72_compute_hash_for_sha1 (itdb->device, final_sha1,
-						 cbk_hash72, NULL);
+    cbk_calc_sha1_of_sha1s(cbk, cbk_header_size);
+    final_sha1 = &g_array_index(cbk, guchar, cbk_header_size);
+    cbk_hash = &g_array_index(cbk, guchar, 0);
+    switch (checksum_type) {
+	case ITDB_CHECKSUM_HASHAB:
+	    success = itdb_hashAB_compute_hash_for_sha1 (itdb->device, final_sha1, cbk_hash, NULL);
+	    break;
+	case ITDB_CHECKSUM_HASH72:
+	    success = itdb_hash72_compute_hash_for_sha1 (itdb->device, final_sha1, cbk_hash, NULL);
+	    break;
+	default:
+	    break;
+    }
     if (!success) {
 	g_array_free(cbk, TRUE);
 	return FALSE;

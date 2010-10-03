@@ -192,6 +192,16 @@ AC_SUBST(TMPMOUNTDIR)
 AH_TEMPLATE([TMPMOUNTDIR], [Directory where HAL/udev will create a sub-directory to mount iPods])
 AC_DEFINE_UNQUOTED(TMPMOUNTDIR, "$with_temp_mount_dir", [Directory where HAL/udev will create a sub-directory to mount iPods])
 
+dnl ***********************************************************************
+dnl * provide a $l{ibdir}/libgpod directory for external modules
+dnl ***********************************************************************
+AC_ARG_WITH(libgpod-blob-dir, [AC_HELP_STRING([--with-libgpod-blob-dir=PATH],
+                                              [Load libgpod binary blobs from this directory [LIBDIR/libgpod]])],
+            [],
+            [with_libgpod_blob_dir='${libdir}/libgpod'])
+LIBGPOD_BLOB_DIR=$with_libgpod_blob_dir
+AC_SUBST(LIBGPOD_BLOB_DIR)
+
 dnl **************************************************
 dnl * TagLib is only used by test-rebuild-db 
 dnl **************************************************

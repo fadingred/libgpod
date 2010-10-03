@@ -11,6 +11,7 @@ libgpod_la_SOURCES = 		\
 	itdb_device.c  		\
 	itdb_hash58.c 		\
 	itdb_hash72.c		\
+	itdb_hashAB.c		\
 	itdb_iphone.c		\
 	itdb_itunesdb.c 	\
 	itdb_photoalbum.c 	\
@@ -32,6 +33,7 @@ libgpod_la_CFLAGS = -DWITH_INTERNAL_GCHECKSUM
 endif
 
 libgpod_la_LDFLAGS = -version-info $(LIBGPOD_SO_VERSION) -no-undefined
+libgpod_la_CPPFLAGS = -DLIBGPOD_BLOB_DIR=\"$(LIBGPOD_BLOB_DIR)\"
 
 libgpodincludebase = $(includedir)/gpod-1.0
 libgpodincludedir = $(libgpodincludebase)/gpod
