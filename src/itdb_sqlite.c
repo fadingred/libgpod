@@ -894,8 +894,11 @@ static int mk_Library(Itdb_iTunesDB *itdb,
     /*  this is +0xA2 */
     sqlite3_bind_int(stmt_db_info, ++idx, itdb->priv->subtitle_language);
     /* genius cuid */
-    /* TODO: unkown meaning, set to NULL */
-    sqlite3_bind_null(stmt_db_info, ++idx);
+    if (itdb->priv->genius_cuid) {
+	sqlite3_bind_text(stmt_db_info, ++idx, itdb->priv->genius_cuid, -1, SQLITE_STATIC);
+    } else {
+	sqlite3_bind_null(stmt_db_info, ++idx);
+    }
     /* bib */
     /* TODO: unkown meaning, set to NULL */
     sqlite3_bind_null(stmt_db_info, ++idx);

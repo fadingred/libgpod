@@ -198,6 +198,7 @@ struct _Itdb_iTunesDB_Private
     gint16 unk_0xa4;
     gint16 unk_0xa6;
     gint16 unk_0xa8;
+    gchar *genius_cuid;
 };
 
 /* private data for Itdb_Track */

@@ -1355,6 +1355,7 @@ void itdb_free (Itdb_iTunesDB *itdb)
 	itdb_device_free (itdb->device);
 	if (itdb->userdata && itdb->userdata_destroy)
 	    (*itdb->userdata_destroy) (itdb->userdata);
+	g_free (itdb->priv->genius_cuid);
 	g_free (itdb->priv);
 	g_free (itdb);
     }
@@ -3008,6 +3009,47 @@ static gboolean parse_playlists (FImport *fimp, glong mhsd_seek)
     return TRUE;
 }
 
+static gboolean parse_genius_mhsd(FImport *fimp, glong mhsd_seek)
+{
+    FContents *cts;
+    guint32 hdrlen, mhsdlen;
+    gint32 len;
+    gchar *genius_cuid;
+
+    g_return_val_if_fail (fimp, FALSE);
+    g_return_val_if_fail (fimp->itdb, FALSE);
+    g_return_val_if_fail (fimp->fcontents, FALSE);
+    g_return_val_if_fail (fimp->fcontents->filename, FALSE);
+    g_return_val_if_fail (mhsd_seek >= 0, FALSE);
+
+    cts = fimp->fcontents;
+
+    g_return_val_if_fail (check_header_seek (cts, "mhsd", mhsd_seek),
+			  FALSE);
+
+    hdrlen = get32lint (cts, mhsd_seek+4);
+    mhsdlen = get32lint (cts, mhsd_seek+8);
+
+    len = mhsdlen - hdrlen;
+    if (len < 0) {
+	return FALSE;
+    }
+
+    if (len != 32) {
+	g_warning(_("%s: Unexpected length %d for genius_cuid!\n"), __func__, len);
+    }
+
+    genius_cuid = g_new0(gchar, len+1);
+    if (!seek_get_n_bytes (cts, genius_cuid, mhsd_seek+hdrlen, len)) {
+	g_free (genius_cuid);
+	return FALSE;
+    }
+
+    fimp->itdb->priv->genius_cuid = genius_cuid;
+
+    return TRUE;
+}
+
 static gboolean looks_like_itunesdb (FImport *fimp)
 {
     FContents *cts;
@@ -3039,7 +3081,7 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
 {
     glong seek=0;
     FContents *cts;
-    glong mhsd_1, mhsd_2, mhsd_3, mhsd_5;
+    glong mhsd_1, mhsd_2, mhsd_3, mhsd_5, mhsd_9;
 
     g_return_val_if_fail (fimp, FALSE);
     g_return_val_if_fail (fimp->itdb, FALSE);
@@ -3071,6 +3113,10 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
 
     /* read smart playlists */
     mhsd_5 = find_mhsd (cts, 5);
+    CHECK_ERROR (fimp, FALSE);
+
+    /* read genius cuid mhsd */
+    mhsd_9 = find_mhsd (cts, 9);
     CHECK_ERROR (fimp, FALSE);
 
     fimp->itdb->version = get32lint (cts, seek+0x10);
@@ -3148,6 +3194,10 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
 
     if (mhsd_5 != -1) {
 	parse_playlists (fimp, mhsd_5);
+    }
+
+    if (mhsd_9 != -1) {
+	parse_genius_mhsd (fimp, mhsd_9);
     }
 
     return TRUE;
@@ -5599,6 +5649,26 @@ static gboolean write_mhsd_type6 (FExport *fexp)
     return TRUE;
 }
 
+static gboolean write_genius_mhsd (FExport *fexp)
+{
+    gulong mhsd_seek;
+    WContents *cts;
+
+    g_return_val_if_fail (fexp, FALSE);
+    g_return_val_if_fail (fexp->itdb, FALSE);
+    g_return_val_if_fail (fexp->wcontents, FALSE);
+
+    if (!fexp->itdb->priv->genius_cuid) {
+        return TRUE;
+    }
+    cts = fexp->wcontents;
+    mhsd_seek = cts->pos;      	/* get position of mhsd header */
+    mk_mhsd (fexp, 9); 		/* write header */
+    put_string (cts, fexp->itdb->priv->genius_cuid);
+    fix_header (cts, mhsd_seek);
+    return TRUE;
+}
+
 /* create a WContents structure */
 static WContents *wcontents_new (const gchar *filename)
 {
@@ -5850,6 +5920,7 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
     gulong mhbd_seek = 0;
     WContents *cts;
     gboolean result = TRUE;
+    guint32 num_mhsds;
 
     g_return_val_if_fail (itdb, FALSE);
     g_return_val_if_fail (itdb->device, FALSE);
@@ -5884,7 +5955,15 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
     }
 #endif
 
-    mk_mhbd (fexp, 7);  /* seven mhsds */
+    /* default mhsd count */
+    num_mhsds = 7; /* seven mhsds */
+
+    /* if genius_cuid present, we have one more */
+    if (fexp->itdb->priv->genius_cuid) {
+	num_mhsds++;
+    }
+
+    mk_mhbd (fexp, num_mhsds);
 
     /* write tracklist (mhsd type 1) */
     if (!fexp->error && !write_mhsd_tracks (fexp)) {
@@ -5945,6 +6024,17 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 		     ITDB_FILE_ERROR_ITDB_CORRUPT,
 		     _("Error writing mhsd5 playlists"));
 	goto err;
+    }
+
+    if (fexp->itdb->priv->genius_cuid) {
+	/* write genius cuid (mhsd type 9) */
+	if (!fexp->error && !write_genius_mhsd (fexp)) {
+	    g_set_error (&fexp->error,
+		    ITDB_FILE_ERROR,
+		    ITDB_FILE_ERROR_ITDB_CORRUPT,
+		    _("Error writing mhsd type 9"));
+	    goto err;
+	}
     }
 
     fix_header (cts, mhbd_seek);
