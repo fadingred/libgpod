@@ -5669,6 +5669,23 @@ static gboolean write_genius_mhsd (FExport *fexp)
     return TRUE;
 }
 
+static gboolean write_mhsd_type10 (FExport *fexp)
+{
+    gulong mhsd_seek;
+    WContents *cts;
+
+    g_return_val_if_fail (fexp, FALSE);
+    g_return_val_if_fail (fexp->itdb, FALSE);
+    g_return_val_if_fail (fexp->wcontents, FALSE);
+
+    cts = fexp->wcontents;
+    mhsd_seek = cts->pos;      	/* get position of mhsd header */
+    mk_mhsd (fexp, 10); 		/* write header */
+    mk_mhlt (fexp, 0);	/* for now, produce an empty set */
+    fix_header (cts, mhsd_seek);
+    return TRUE;
+}
+
 /* create a WContents structure */
 static WContents *wcontents_new (const gchar *filename)
 {
@@ -5956,7 +5973,7 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 #endif
 
     /* default mhsd count */
-    num_mhsds = 7; /* seven mhsds */
+    num_mhsds = 8; /* eight mhsds */
 
     /* if genius_cuid present, we have one more */
     if (fexp->itdb->priv->genius_cuid) {
@@ -6014,6 +6031,15 @@ static gboolean itdb_write_file_internal (Itdb_iTunesDB *itdb,
 		     ITDB_FILE_ERROR,
 		     ITDB_FILE_ERROR_ITDB_CORRUPT,
 		     _("Error writing mhsd type 6"));
+	goto err;
+    }
+
+    /* write empty mhsd type 10, whatever it is */
+    if (!fexp->error && !write_mhsd_type10 (fexp)) {
+	g_set_error (&fexp->error,
+		     ITDB_FILE_ERROR,
+		     ITDB_FILE_ERROR_ITDB_CORRUPT,
+		     _("Error writing mhsd type 10"));
 	goto err;
     }
 
