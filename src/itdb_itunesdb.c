@@ -6575,6 +6575,7 @@ static gboolean write_hphs (FExport *fexp)
 	GList *gl;
 	guint16 playlistcnt;
 	guint16 podcastscnt;
+	guint16 mastercnt;
 	guint16 audiobookscnt;
 
 	g_return_val_if_fail (fexp, FALSE);
@@ -6583,9 +6584,36 @@ static gboolean write_hphs (FExport *fexp)
 
 	cts = fexp->wcontents;
 	hphs_seek = cts->pos;
-	playlistcnt = itdb_playlists_number (fexp->itdb);
+	playlistcnt = 0; /* Number of nonempty playlists, this may not be the same 
+			    as what itdb_playlists_number returns*/
 	podcastscnt = 0; /* Number of podcast playlists should be 1 if one exists*/
-	audiobookscnt = 0;
+	mastercnt = 0; /* Number of master playlists should be 1 */
+	audiobookscnt = 0; /* Number of audiobook playlists */
+
+	/* We have to walk the playlist list before we can write the needed counts */
+	for (gl = fexp->itdb->playlists; gl; gl = gl->next) {
+		Itdb_Playlist *pl = gl->data;
+
+		if (!pl->members) {
+		  /* If the playlist has no members skip it */
+		  continue;
+		}
+		/* Otherwise count it and count its type */
+		playlistcnt++;
+
+		if (itdb_playlist_is_mpl (pl)){
+			mastercnt++;
+		}
+		else if (itdb_playlist_is_podcasts (pl)) {
+			podcastscnt++;
+		}
+		else if (itdb_playlist_is_audiobooks (pl)) {
+			audiobookscnt++;
+		}
+	}
+
+	/* Add nonempty playlist count to bdhs */
+	put32lint_seek (cts, playlistcnt, 16);
 
 	/* Add the Playlist Header Offset */
 	put32lint_seek (cts, cts->pos, 40);
@@ -6594,14 +6622,12 @@ static gboolean write_hphs (FExport *fexp)
 	put32lint (cts, -1); /* Length of header to be added later */
 	put16lint (cts, playlistcnt); /* Number of playlists */
 	put16_n0 (cts, 1); /* Unknown */
-	put16lint (cts, 0xffff); /* Number of non podcast playlists if there
-				    isn't a podcast playlist leave this
-				    current value. There should be at most 1
-				    podcast playlist. */
-	put16lint (cts, 0x0100); /* Unknown */
-	put16lint (cts, 0xffff); /* Number of non audiobook playlists if there
-				    isn't a audiobook playlist leave this field
-				    the current value. */
+	put16lint (cts, playlistcnt-podcastscnt); /* Number of non podcast playlists
+						    there should be a maximum of 1
+						    podcast playlist. */
+	put16lint (cts, mastercnt); /* Number of master playlists there should be a
+				       maximum of 1 master playlist */
+	put16lint (cts, playlistcnt-audiobookscnt); /* Number of non audiobook playlists */
 	put16_n0 (cts, 1);
 
 	playlist_seek = cts->pos;
@@ -6612,29 +6638,19 @@ static gboolean write_hphs (FExport *fexp)
 	for (gl = fexp->itdb->playlists; gl; gl = gl->next)
 	{
 		Itdb_Playlist *pl = gl->data;
-		
-		/* Write this headers offset */
+
+		if (!pl->members) {
+			continue;
+		}
+
+		/* Write this playlist's header offset */
 		put32lint_seek (cts, cts->pos, playlist_seek);
-		if (itdb_playlist_is_podcasts (pl))
-			podcastscnt++;
-		else if (itdb_playlist_is_audiobooks (pl))
-			audiobookscnt++;
 
 		g_return_val_if_fail (write_lphs (cts, pl),FALSE);
 
 		/* Move to the field for the next header */
 		playlist_seek += 4;
 	}
-	/* Is there at least 1 podcast playlist? If so correct the 
-	   first 0xffff from before */
-	if (podcastscnt != 0)
-	  put16lint_seek (cts, playlistcnt-podcastscnt, hphs_seek+12);
-	
-	/* Is there at least 1 audiobook playlist? If so correct the
-	   second 0xffff from before */
-	if (audiobookscnt != 0)
-	  put16lint_seek (cts, playlistcnt-audiobookscnt, hphs_seek+16);
-
 	return TRUE;
 }
 
@@ -6659,15 +6675,16 @@ static gboolean write_bdhs (FExport *fexp)
 	put32lint (cts, 0x02000003); /* Unknown */
 	put32lint (cts, -1); /* Length of header to be added later*/
 	put32lint (cts, trackcnt); /* Number of tracks */
-	put32lint (cts, playlistcnt); /* Number of playlists */
+	put32_n0 (cts, 1); /* Number of nonempty playlists to be written later
+			      in write_hphs see the note below! */
 	put32_n0 (cts, 2); /* Unknown */
 	/* TODO: Parse the max volume */
-	put8int (cts, 0); /* Max Volume currently ignored and set to max */
+	put8int (cts, 0); /* Limit max volume currently ignored and set to off */
 	/* TODO: Find another source of the voiceover option */
 	put8int (cts, 1); /* Voiceover currently ignored and set to on */
 	put16_n0 (cts, 1); /* Unknown */
 
-	/* If the bdhs header changes the offsets of these fields may change
+	/* NOTE: If the bdhs header changes the offsets of these fields may change
 	   make sure you correct the field offset in their respective tags */
 
 	put32lint (cts, -1); /* Number of tracks excluding podcasts and audiobooks
