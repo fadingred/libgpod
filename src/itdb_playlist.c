@@ -1590,7 +1590,7 @@ gboolean itdb_playlist_is_podcasts (Itdb_Playlist *pl)
  * Checks if @pl is an audiobook playlist
  *
  * Returns: TRUE if all tracks in @pl have a mediatype of ITDB_MEDIATYPE_AUDIOBOOK,
-	    FALSE if there are no tracks or one track does not the correct type
+	    FALSE if there are no tracks or one track is not the correct type
  *
  */
 gboolean itdb_playlist_is_audiobooks (Itdb_Playlist *pl)
@@ -1603,6 +1603,7 @@ gboolean itdb_playlist_is_audiobooks (Itdb_Playlist *pl)
   for (tl = pl->members; tl; tl = tl->next)
   {
     track = tl->data;
+    /* Don't check more tracks than necessary */
     if (!(track->mediatype & ITDB_MEDIATYPE_AUDIOBOOK))
     {
       return FALSE;

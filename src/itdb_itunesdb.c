@@ -6409,7 +6409,8 @@ static gboolean write_rths (WContents *cts, Itdb_Track *track)
 	put32lint (cts, track->bookmark_time); /* Bookmark time */
 	/* Don't Skip on shuffle */
 	/* This field has the exact opposite value as in the iTunesDB */
-	/* 1 when you want to skip, 0 when you don't want to skip */
+	/* 1 when you want to skip, 0 when you don't want to skip. Causes a
+         * playlist to be skipped if all songs in that playlist have this set */
 	put8int (cts, !track->skip_when_shuffling);
 	put8int (cts, track->remember_playback_position); /* Remember playing pos */
 	/* put8int (cts, ); In uninterruptable album */
@@ -6777,9 +6778,8 @@ gboolean itdb_shuffle_write_file (Itdb_iTunesDB *itdb,
 	    g_free(path);
 	    g_free(path_utf16);
 
-	    /* XXX FIXME: should depend on something, not hardcoded */
-	    put8int (cts, 0x1); /* song used in shuffle mode */
-	    put8int (cts, 0);   /* song will not be bookmarkable */
+	    put8int (cts, tr->skip_when_shuffling); /* Is the song used in shuffle mode */
+	    put8int (cts, tr->remember_playback_position);   /* Is the song bookmarkable */
 	    put8int (cts, 0);
 	}
     }else {
