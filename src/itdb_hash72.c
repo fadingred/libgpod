@@ -278,7 +278,7 @@ gboolean itdb_hash72_extract_hash_info (const Itdb_Device *device,
     struct Hash78Info *hash_info;
 
     if ((itdb_device_get_checksum_type (device) != ITDB_CHECKSUM_HASH72)
-		    && (!itdb_device_supports_sqlite_db (device))) {
+		    || (!itdb_device_supports_sqlite_db (device))) {
 	    /* No need to generate a HashInfo file */
 	    return FALSE;
     }
