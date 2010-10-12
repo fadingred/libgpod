@@ -11,8 +11,8 @@ AM_CONFIG_HEADER(config.h)
 #   LIBGPOD_SO_VERSION - see comments
 #
 LIBGPOD_MAJOR_VERSION=0
-LIBGPOD_MINOR_VERSION=7
-LIBGPOD_MICRO_VERSION=95
+LIBGPOD_MINOR_VERSION=8
+LIBGPOD_MICRO_VERSION=0
 # If you need a modifier for the version number. 
 # Normally empty, but can be used to make "fixup" releases.
 LIBGPOD_EXTRAVERSION=
@@ -25,7 +25,7 @@ dnl libtool versioning
 #                 changes to the signature and the semantic)
 #  ? :+1 : ?   == just internal changes
 # CURRENT : REVISION : AGE
-LIBGPOD_SO_VERSION=7:0:3
+LIBGPOD_SO_VERSION=7:1:3
 
 AC_SUBST(LIBGPOD_SO_VERSION)
 AC_SUBST(LIBGPOD_MAJOR_VERSION)

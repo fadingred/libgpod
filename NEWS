@@ -1,3 +1,19 @@
+Overview of changes in libgpod 0.8.0
+====================================
+
+For information about iPhone/iPod Touch/iPod Nano 5g support, please read
+carefully the overview of libgpod 0.7.90 below. The iPhone 4, iPod Touch 4
+and the iPad aren't supported, other iOS4 devices should work. The Nano 6g
+(Touch Nano) isn't supported either.
+
+This release is a quick release after 0.7.95, it brings some last minute
+bug fixes, and libgpod finally gets a stable 0.8.0 release.
+
+* shuffle 3g/4g bug fixes (Adam Broschinski)
+* bug fixes related to the addition of the new ipod models (Christophe
+  Fergeau)
+* silence some useless runtime warnings (Christophe Fergeau)
+
 Overview of changes in libgpod 0.7.95
 =====================================
 
