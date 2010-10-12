@@ -1,23 +1,10 @@
-AC_PREREQ(2.52)
-AC_INIT(src)
+AC_PREREQ(2.65)
+AC_INIT([libgpod], [0.7.95])
+AC_CONFIG_SRCDIR([src])
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CONFIG_MACRO_DIR(m4)
 
 AM_CONFIG_HEADER(config.h)
-
-
-# Making releases:
-#   LIBGPOD_MICRO_VERSION += 1;
-#   LIBGPOD_SO_VERSION - see comments
-#
-LIBGPOD_MAJOR_VERSION=0
-LIBGPOD_MINOR_VERSION=8
-LIBGPOD_MICRO_VERSION=0
-# If you need a modifier for the version number. 
-# Normally empty, but can be used to make "fixup" releases.
-LIBGPOD_EXTRAVERSION=
-
-LIBGPOD_VERSION=$LIBGPOD_MAJOR_VERSION.$LIBGPOD_MINOR_VERSION.$LIBGPOD_MICRO_VERSION$LIBGPOD_EXTRAVERSION
 
 dnl libtool versioning
 # +1 : 0 : +1  == adds new functions to the interface
@@ -26,21 +13,16 @@ dnl libtool versioning
 #  ? :+1 : ?   == just internal changes
 # CURRENT : REVISION : AGE
 LIBGPOD_SO_VERSION=7:1:3
-
 AC_SUBST(LIBGPOD_SO_VERSION)
-AC_SUBST(LIBGPOD_MAJOR_VERSION)
-AC_SUBST(LIBGPOD_MINOR_VERSION)
-AC_SUBST(LIBGPOD_MICRO_VERSION)
-AC_SUBST(LIBGPOD_VERSION)
 
-AM_INIT_AUTOMAKE(libgpod, $LIBGPOD_VERSION)
+AM_INIT_AUTOMAKE([dist-bzip2 no-dist-gzip])
 
 dnl make sure we keep ACLOCAL_FLAGS around for maintainer builds to work
 AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS")
 
 AM_MAINTAINER_MODE
 
-AC_GNU_SOURCE
+AC_USE_SYSTEM_EXTENSIONS
 AC_PROG_CC
 AM_PROG_CC_C_O
 
@@ -49,13 +31,13 @@ AM_PROG_CC_C_O
 # if you should run into problems.
 AC_PROG_CXX
 
-AC_PROG_LD
-AC_STDC_HEADERS
+LT_PATH_LD
+AC_HEADER_STDC
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
+LT_INIT
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_INTLTOOL([0.21])
+IT_PROG_INTLTOOL([0.21])
 
 AC_CHECK_FUNCS([localtime_r])
 AC_CHECK_MEMBERS([struct tm.tm_gmtoff],,,[#include <time.h>])
@@ -70,8 +52,7 @@ dnl provide it.
 dnl **************************************************
 
 AC_ARG_WITH(internal-gchecksum,
-            AC_HELP_STRING([--with-internal-gchecksum],
-                           [Build using internal copy of gchecksum]),,
+            AS_HELP_STRING([--with-internal-gchecksum],[Build using internal copy of gchecksum]),,
                            with_internal_gchecksum=no)
 
 if test "x$with_internal_gchecksum" = "xno"; then
@@ -136,19 +117,16 @@ dnl * when a recent iPod is plugged in
 dnl * libgpod by itself doesn't use HAL at all, HAL is just used to build a 
 dnl * helper program which is then installed as a HAL callout
 dnl ***********************************************************************
-AC_ARG_WITH(hal, AC_HELP_STRING([--without-hal],
-        [Disable HAL support]))
+AC_ARG_WITH(hal, AS_HELP_STRING([--without-hal],[Disable HAL support]))
 
 hal_callouts_dir="`$PKG_CONFIG --variable libdir hal`/hal/scripts"
-AC_ARG_WITH(hal_callouts_dir, AC_HELP_STRING([--with-hal-callouts-dir=DIR],
-	[Directory where HAL expects its callout scripts to be located]),,
+AC_ARG_WITH(hal_callouts_dir, AS_HELP_STRING([--with-hal-callouts-dir=DIR],[Directory where HAL expects its callout scripts to be located]),,
 	with_hal_callouts_dir="$hal_callouts_dir")
 HALCALLOUTSDIR="$with_hal_callouts_dir"
 AC_SUBST(HALCALLOUTSDIR)
 
 hal_fdi_dir="`$PKG_CONFIG --variable prefix hal`/share/hal/fdi"
-AC_ARG_WITH(hal_fdi_dir, AC_HELP_STRING([--with-hal-fdi-dir=DIR],
-	[Directory where HAL expects its fdi files to be located]),,
+AC_ARG_WITH(hal_fdi_dir, AS_HELP_STRING([--with-hal-fdi-dir=DIR],[Directory where HAL expects its fdi files to be located]),,
 	with_hal_fdi_dir="$hal_fdi_dir")
 HALFDIDIR="$with_hal_fdi_dir"
 AC_SUBST(HALFDIDIR)
@@ -170,8 +148,7 @@ AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal" = xyes)
 dnl ***********************************************************************
 dnl * libimobiledevice is optional, but is required for iPhone/iPod Touch support
 dnl ***********************************************************************
-AC_ARG_WITH(libimobiledevice, AC_HELP_STRING([--without-libimobiledevice],
-        [Disable iPhone/iPod Touch support]))
+AC_ARG_WITH(libimobiledevice, AS_HELP_STRING([--without-libimobiledevice],[Disable iPhone/iPod Touch support]))
 
 if test "x$with_libimobiledevice" != "xno"; then
   PKG_CHECK_MODULES(LIBIMOBILEDEVICE, libimobiledevice-1.0 >= 0.9.7, enable_libimobiledevice=yes, enable_libimobiledevice=no)
@@ -193,7 +170,7 @@ dnl * nowadays (2009), it's the recommended way of having callouts, so
 dnl * it should be preferred over HAL
 dnl ***********************************************************************
 AC_ARG_ENABLE(udev,
-             [AC_HELP_STRING([--enable-udev],[Enable udev callout])],
+             [AS_HELP_STRING([--enable-udev],[Enable udev callout])],
              [if test $enableval = "yes" ; then
                  enable_udev=yes
               else
@@ -209,8 +186,7 @@ dnl * mount the iPod to write out its extended info file.
 dnl ***********************************************************************
 
 temp_mount_dir="/tmp/"
-AC_ARG_WITH(temp_mount_dir, AC_HELP_STRING([--with-temp-mount-dir=DIR],
-	[Directory where HAL/udev will create a sub-directory to mount iPods]),,
+AC_ARG_WITH(temp_mount_dir, AS_HELP_STRING([--with-temp-mount-dir=DIR],[Directory where HAL/udev will create a sub-directory to mount iPods]),,
 	with_temp_mount_dir="$temp_mount_dir")
 TMPMOUNTDIR="$with_temp_mount_dir"
 AC_SUBST(TMPMOUNTDIR)
@@ -232,7 +208,7 @@ AM_CONDITIONAL(HAVE_TAGLIB, test x"$have_taglib" = xyes)
 dnl **************************************************
 dnl * libxml is used to parse the plist files (aka SysInfoExtended)
 dnl **************************************************
-AC_ARG_ENABLE(libxml, [AC_HELP_STRING([--disable-libxml],[SysInfoExtended won't be parsed])], 
+AC_ARG_ENABLE(libxml, [AS_HELP_STRING([--disable-libxml],[SysInfoExtended won't be parsed])], 
 [case "${enableval}" in
   no) enable_libxml=no ;;
   *) enable_libxml=yes;;
@@ -248,7 +224,7 @@ fi
 dnl **************************************************
 dnl * GDKPIXBUF is optional
 dnl **************************************************
-AC_ARG_ENABLE(gdk-pixbuf, [AC_HELP_STRING([--disable-gdk-pixbuf],[ArtworkDB will be disabled without gdk-pixbuf])], 
+AC_ARG_ENABLE(gdk-pixbuf, [AS_HELP_STRING([--disable-gdk-pixbuf],[ArtworkDB will be disabled without gdk-pixbuf])], 
 [case "${enableval}" in
   no) enable_gdkpixbuf=no ;;
   *) enable_gdkpixbuf=yes;;
@@ -276,7 +252,7 @@ dnl **************************************************
 dnl * PYGOBJECT is optional
 dnl **************************************************
 
-AC_ARG_ENABLE(pygobject, [AC_HELP_STRING([--disable-pygobject],[Python API will lack GdkPixbuf support without PyGOBJECT])], 
+AC_ARG_ENABLE(pygobject, [AS_HELP_STRING([--disable-pygobject],[Python API will lack GdkPixbuf support without PyGOBJECT])], 
 [case "${enableval}" in
   no) enable_pygobject=no ;;
   *) enable_pygobject=yes;;
@@ -358,9 +334,7 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 		SAVE_CFLAGS="$CFLAGS"
 		CFLAGS="$CFLAGS $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
-		AC_TRY_COMPILE([], [],
-			has_option=yes,
-			has_option=no,)
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[has_option=yes],[has_option=no])
 		if test $has_option = no; then
 			CFLAGS="$SAVE_CFLAGS"
 		fi
