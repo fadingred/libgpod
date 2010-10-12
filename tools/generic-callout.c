@@ -338,10 +338,11 @@ get_icon_name (const Itdb_IpodInfo *info)
 		}
 
 	case ITDB_IPOD_GENERATION_SHUFFLE_1:
+	case ITDB_IPOD_GENERATION_SHUFFLE_3:
 		return g_strconcat (prefix, "ipod-shuffle", NULL);
 
 	case ITDB_IPOD_GENERATION_SHUFFLE_2:
-	case ITDB_IPOD_GENERATION_SHUFFLE_3:
+	case ITDB_IPOD_GENERATION_SHUFFLE_4:
 		switch (info->ipod_model) {
 		case ITDB_IPOD_MODEL_SHUFFLE_SILVER:
 			return g_strconcat (prefix, "ipod-shuffle-clip-silver", NULL);
@@ -360,9 +361,6 @@ get_icon_name (const Itdb_IpodInfo *info)
 		default:
 			g_assert_not_reached ();
 		}
-
-	case ITDB_IPOD_GENERATION_SHUFFLE_4:
-		return g_strconcat (prefix, "ipod-shuffle", NULL);
 
 	case ITDB_IPOD_GENERATION_NANO_1:
 		if (info->ipod_model == ITDB_IPOD_MODEL_NANO_BLACK) {

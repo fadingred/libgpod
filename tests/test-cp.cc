@@ -115,7 +115,7 @@ int main (int argc, char **argv)
 
 	db = itdb_parse (argv[2], NULL);
 	if (db == NULL) {
-		return NULL;
+		exit (1);
 	}
 
 	if (db == NULL) {
