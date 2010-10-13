@@ -827,6 +827,7 @@ static const ItdbSerialToModel serial_to_model_mapping[] = {
 
     { "CMN", "C525" }, /* 8GB Silver Nano 6g */
     { "DVX", "C688" }, /* 8GB Black Nano 6g */
+    { "DW1", "C691" }, /* 8GB Orange Nano 6g */
     { "DW2", "C692" }, /* 8GB Pink Nano 6g */
     { "CMP", "C526" }, /* 16GB Silver Nano 6g */
     { "DW9", "C699" }, /* 16GB Red Nano 6g */
