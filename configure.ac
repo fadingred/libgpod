@@ -1,10 +1,9 @@
 AC_PREREQ(2.65)
 AC_INIT([libgpod], [0.7.95])
-AC_CONFIG_SRCDIR([src])
-AC_CONFIG_SRCDIR(configure.ac)
-AC_CONFIG_MACRO_DIR(m4)
+AC_CONFIG_SRCDIR([configure.ac])
+AC_CONFIG_MACRO_DIR([m4])
 
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER([config.h])
 
 dnl libtool versioning
 # +1 : 0 : +1  == adds new functions to the interface
