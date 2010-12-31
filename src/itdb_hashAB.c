@@ -118,7 +118,7 @@ gboolean itdb_hashAB_compute_hash_for_sha1 (const Itdb_Device *device,
 	}
     }
 
-    if (!get_uuid(device, uuid)) return FALSE;
+    if (!itdb_device_get_hex_uuid(device, uuid)) return FALSE;
 
     calc_hashAB(signature, sha1, uuid, rndpart);
 

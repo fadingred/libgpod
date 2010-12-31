@@ -186,6 +186,7 @@ G_GNUC_INTERNAL gboolean itdb_device_is_iphone_family (const Itdb_Device *device
 G_GNUC_INTERNAL gboolean itdb_device_is_shuffle (const Itdb_Device *device);
 G_GNUC_INTERNAL ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device);
 G_GNUC_INTERNAL enum ItdbShadowDBVersion itdb_device_get_shadowdb_version (const Itdb_Device *device);
+G_GNUC_INTERNAL gboolean itdb_device_get_hex_uuid (const Itdb_Device *device, unsigned char uuid[20]);
 
 const Itdb_IpodInfo *
 itdb_ipod_info_from_serial (const char *serial);

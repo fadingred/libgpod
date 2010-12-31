@@ -117,38 +117,6 @@ static const unsigned char fixed[18] = {
     0x21, 0x07, 0xC1, 0xD0, 0x12, 0xB2, 0xA1, 0x07, 0x81
 };
 
-static int ord_from_hex_char(const char c)
-{
-  if ('0' <= c && c <= '9')
-    return c - '0';
-  else if ('a' <= c && c <= 'f')
-    return 10 + (c - 'a');
-  else if ('A' <= c && c <= 'F')
-    return 10 + (c - 'A');
-  else
-    return -1;
-}
-
-static int string_to_hex(unsigned char *dest, const int array_size,
-			 const char *s)
-{
-  /* skip optional '0x' prefix */
-  if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
-    s += 2;
-
-  if (strlen(s) > array_size*2)
-    return -8;
-
-  do {
-    int low, high;
-    if((high = ord_from_hex_char(s[0])) == -1 ||
-       (low = ord_from_hex_char(s[1])) == -1)
-      return -9;
-    *dest++ = high<<4 | low;
-  } while(*(s+=2));
-  return 0;
-}
-
 static int gcd(int a, int b){
     while (TRUE)
     {
@@ -169,20 +137,13 @@ static int lcm(int a, int b)
     return (a*b)/gcd(a,b);
 }
 
-static unsigned char *generate_key (const char *fwid)
+static unsigned char *generate_key (const unsigned char *firewire_id)
 {
     unsigned char *key;
     unsigned char y[16];
     GChecksum *checksum;
     gsize checksum_len;
     int i;
-    unsigned char firewire_id[20];
-    int result;
-
-    result = string_to_hex (firewire_id, sizeof (firewire_id), fwid);
-    if (result < 0) {
-	return NULL;
-    }
 
     /* take LCM of each two bytes in the FWID in turn */
     for (i=0; i<4; i++){
@@ -212,7 +173,7 @@ static unsigned char *generate_key (const char *fwid)
     return key;
 }
 
-static unsigned char *itdb_compute_hash (const char *firewire_id,
+static unsigned char *itdb_compute_hash (const unsigned char *firewire_id,
 					 const unsigned char *itdb,
 					 unsigned long size, 
 					 gsize *len)
@@ -268,7 +229,7 @@ gboolean itdb_hash58_write_hash (Itdb_Device *device,
 				 gsize itdb_len,
 				 GError **error)
 {
-    const char *fwid;
+    unsigned char firewire_id[20];
     guchar backup18[8];
     guchar backup32[20];
     unsigned char *checksum;
@@ -277,8 +238,7 @@ gboolean itdb_hash58_write_hash (Itdb_Device *device,
    
     g_assert (itdb_device_get_checksum_type (device) == ITDB_CHECKSUM_HASH58);
 
-    fwid = itdb_device_get_firewire_id (device);
-    if (fwid == NULL) {
+    if (!itdb_device_get_hex_uuid(device, firewire_id)) {
 	g_set_error (error, 0, -1, "Couldn't find the iPod firewire ID");
 	return FALSE;
     }
@@ -300,7 +260,7 @@ gboolean itdb_hash58_write_hash (Itdb_Device *device,
 
     header->hashing_scheme = GUINT16_FROM_LE (ITDB_CHECKSUM_HASH58);
 
-    checksum = itdb_compute_hash (fwid, itdb_data, itdb_len, &len);
+    checksum = itdb_compute_hash (firewire_id, itdb_data, itdb_len, &len);
     if (checksum == NULL) {
 	g_set_error (error, 0, -1, "Failed to compute checksum");
 	return FALSE;

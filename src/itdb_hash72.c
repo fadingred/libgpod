@@ -100,56 +100,6 @@ static int hash_extract(const uint8_t signature[46],
 	return 0;
 }
 
-static int ord_from_hex_char(const char c)
-{
-  if ('0' <= c && c <= '9')
-    return c - '0';
-  else if ('a' <= c && c <= 'f')
-    return 10 + (c - 'a');
-  else if ('A' <= c && c <= 'F')
-    return 10 + (c - 'A');
-  else
-    return -1;
-}
-
-static int string_to_hex(unsigned char *dest, const int array_size,
-			 const char *s)
-{
-  /* skip optional '0x' prefix */
-  if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
-    s += 2;
-
-  if (strlen(s) > array_size*2)
-    return -8;
-
-  do {
-    int low, high;
-    if((high = ord_from_hex_char(s[0])) == -1 ||
-       (low = ord_from_hex_char(s[1])) == -1)
-      return -9;
-    *dest++ = high<<4 | low;
-  } while(*(s+=2));
-  return 0;
-}
-
-static gboolean get_uuid (const Itdb_Device *device, unsigned char uuid[20])
-{
-    const char *uuid_str;
-    int result;
-
-    uuid_str = itdb_device_get_uuid (device);
-    if (uuid_str == NULL) {
-	uuid_str = itdb_device_get_firewire_id (device);
-    }
-    if (uuid_str == NULL) {
-	return FALSE;
-    }
-    memset (uuid, 0, 20);
-    result = string_to_hex (uuid, 20, uuid_str);
-
-    return (result == 0);
-}
-
 struct Hash78Info {
     unsigned char header[6];
     unsigned char uuid[20];
@@ -179,7 +129,7 @@ static gboolean write_hash_info (const Itdb_Device *device,
     const char header[] = "HASHv0";
 
     memcpy (hash_info.header, header, sizeof (header));
-    success = get_uuid (device, hash_info.uuid);
+    success = itdb_device_get_hex_uuid (device, hash_info.uuid);
     if (!success) {
 	return FALSE;
     }
@@ -202,7 +152,7 @@ static struct Hash78Info *read_hash_info (const Itdb_Device *device)
     unsigned char uuid[20];
     struct Hash78Info *info;
 
-    if (!get_uuid (device, uuid)) {
+    if (!itdb_device_get_hex_uuid (device, uuid)) {
 	return NULL;
     }
 

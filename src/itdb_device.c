@@ -1847,6 +1847,58 @@ const char *itdb_device_get_firewire_id (const Itdb_Device *device)
     return g_hash_table_lookup (device->sysinfo, "FirewireGuid");
 }
 
+gchar *itdb_device_get_uuid(const Itdb_Device *device)
+{
+    return g_hash_table_lookup (device->sysinfo, "FirewireGuid");
+}
+
+static int ord_from_hex_char(const char c)
+{
+  if ('0' <= c && c <= '9')
+    return c - '0';
+  else if ('a' <= c && c <= 'f')
+    return 10 + (c - 'a');
+  else if ('A' <= c && c <= 'F')
+    return 10 + (c - 'A');
+  else
+    return -1;
+}
+
+static int
+itdb_hex_from_string(unsigned char *dest, const int array_size, const char *s)
+{
+  /* skip optional '0x' prefix */
+  if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
+    s += 2;
+
+  if (strlen(s) > array_size*2)
+    return -8;
+
+  do {
+    int low, high;
+    if((high = ord_from_hex_char(s[0])) == -1 ||
+       (low = ord_from_hex_char(s[1])) == -1)
+      return -9;
+    *dest++ = high<<4 | low;
+  } while(*(s+=2));
+  return 0;
+}
+
+gboolean itdb_device_get_hex_uuid (const Itdb_Device *device, unsigned char uuid[20])
+{
+    const char *uuid_str;
+    int result;
+
+    uuid_str = itdb_device_get_firewire_id (device);
+    if (uuid_str == NULL) {
+        return FALSE;
+    }
+    memset (uuid, 0, 20);
+    result = itdb_hex_from_string (uuid, 20, uuid_str);
+
+    return (result == 0);
+}
+
 ItdbChecksumType itdb_device_get_checksum_type (const Itdb_Device *device)
 {
 
@@ -2148,11 +2200,6 @@ itdb_device_supports_podcast (const Itdb_Device *device)
 	}
 	g_return_val_if_reached (FALSE);
     }
-}
-
-gchar *itdb_device_get_uuid(const Itdb_Device *device)
-{
-    return g_hash_table_lookup (device->sysinfo, "FirewireGuid");
 }
 
 gboolean itdb_device_is_shuffle (const Itdb_Device *device)
