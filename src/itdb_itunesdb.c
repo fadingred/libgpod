@@ -5560,8 +5560,14 @@ static gboolean write_playlist (FExport *fexp,
 	/* write special podcast playlist */
 	result = write_podcast_mhips (fexp, pl, mhyp_seek);
     }
+    else if (mhsd_type == 5)
+    {
+	/* set number of mhips to 0 for mhsd_type 5 */
+	put32lint_seek (cts, 0, mhyp_seek+16);
+    }
     else
-    {   /* write standard playlist hard-coded tracks */
+    {
+	/* write standard playlist hard-coded tracks */
 	result = write_playlist_mhips (fexp, pl, mhyp_seek);
     }
     fix_header (cts, mhyp_seek);
