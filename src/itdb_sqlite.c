@@ -2077,6 +2077,10 @@ static gboolean mk_Locations_cbk(Itdb_iTunesDB *itdb, const char *dirname)
 	case ITDB_CHECKSUM_HASHAB:
 	    cbk_header_size = 57;
 	    break;
+	case ITDB_CHECKSUM_HASH58:
+	    /* the nano 5g advertises DBVersion 3 but expects an hash72 on
+	     * its cbk file.
+	     */
 	case ITDB_CHECKSUM_HASH72:
 	    cbk_header_size = 46;
 	    break;
@@ -2106,6 +2110,10 @@ static gboolean mk_Locations_cbk(Itdb_iTunesDB *itdb, const char *dirname)
 	case ITDB_CHECKSUM_HASHAB:
 	    success = itdb_hashAB_compute_hash_for_sha1 (itdb->device, final_sha1, cbk_hash, NULL);
 	    break;
+	case ITDB_CHECKSUM_HASH58:
+	    /* the nano 5g advertises DBVersion 3 but expects an hash72 on
+	     * its cbk file.
+	     */
 	case ITDB_CHECKSUM_HASH72:
 	    success = itdb_hash72_compute_hash_for_sha1 (itdb->device, final_sha1, cbk_hash, NULL);
 	    break;
