@@ -1,5 +1,5 @@
 AC_PREREQ(2.65)
-AC_INIT([libgpod], [0.7.95])
+AC_INIT([libgpod], [0.8.0])
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_MACRO_DIR([m4])
 
