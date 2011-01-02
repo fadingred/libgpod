@@ -3279,12 +3279,13 @@ itdb_parse_internal (Itdb_iTunesDB *itdb, gboolean compressed, GError **error)
 				       fimp->fcontents->length);
 	if (playcounts_init (fimp))
 	{
-	    if (parse_fimp (fimp, compressed))
+	    g_warning ("Error parsing recent playcounts");
+	}
+	if (parse_fimp (fimp, compressed))
+	{
+	    if (read_OTG_playlists (fimp))
 	    {
-		if (read_OTG_playlists (fimp))
-		{
-		    success = TRUE;
-		}
+		success = TRUE;
 	    }
 	}
     }
