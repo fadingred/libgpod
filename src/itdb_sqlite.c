@@ -2135,35 +2135,43 @@ static gboolean mk_Locations_cbk(Itdb_iTunesDB *itdb, const char *dirname)
 static int build_itdb_files(Itdb_iTunesDB *itdb,
 			     GHashTable *album_ids, GHashTable *artist_ids,
 			     GHashTable *composer_ids,
-			     const char *outpath, const char *uuid)
+			     const char *outpath, const char *uuid,
+                             GError **error)
 {
-    int err = 0;
-
     if (mk_Dynamic(itdb, outpath) != 0) {
-	err++;
+	g_set_error (error, ITDB_ERROR, ITDB_ERROR_SQLITE,
+		     "an error occurred during Dynamic.itdb generation");
+	return -1;
     }
     if (mk_Extras(itdb, outpath) != 0) {
-	err++;
+	g_set_error (error, ITDB_ERROR, ITDB_ERROR_SQLITE,
+		     "an error occurred during Extras.itdb generation");
+	return -1;
     }
     if (mk_Genius(itdb, outpath) != 0) {
-	err++;
+	g_set_error (error, ITDB_ERROR, ITDB_ERROR_SQLITE,
+		     "an error occurred during Genius.itdb generation");
+	return -1;
     }
     if (mk_Library(itdb, album_ids, artist_ids, composer_ids, outpath) != 0) {
-	err++;
+	g_set_error (error, ITDB_ERROR, ITDB_ERROR_SQLITE,
+		     "an error occurred during Library.itdb generation");
+	return -1;
     }
     if (mk_Locations(itdb, outpath, uuid) != 0) {
-	err++;
+	g_set_error (error, ITDB_ERROR, ITDB_ERROR_SQLITE,
+		     "an error occurred during Locations.itdb generation");
+	return -1;
     }
 
     run_post_process_commands(itdb, outpath, uuid);
 
     if (!mk_Locations_cbk(itdb, outpath)) {
-	err++;
-    }
-
-    if (err > 0) {
+	g_set_error (error, ITDB_ERROR, ITDB_ERROR_SQLITE,
+		     "an error occurred during Locations.itdb.cbk generation");
 	return -1;
     }
+
     return 0;
 }
 
@@ -2278,9 +2286,8 @@ int itdb_sqlite_generate_itdbs(FExport *fexp)
 
     /* generate itdb files in temporary directory */
     if (build_itdb_files(fexp->itdb, fexp->albums, fexp->artists, fexp->composers, tmpdir,
-		     itdb_device_get_uuid(fexp->itdb->device)) != 0) {
-	g_set_error (&fexp->error, ITDB_ERROR, ITDB_ERROR_SQLITE,
-		     "Failed to generate sqlite database");
+		     itdb_device_get_uuid(fexp->itdb->device), &fexp->error) != 0) {
+	g_prefix_error (&fexp->error, "Failed to generate sqlite database: ");
 	res = -1;
 	goto leave;
     } else {
