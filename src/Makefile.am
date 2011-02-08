@@ -27,9 +27,10 @@ libgpod_la_SOURCES = 		\
 	pixmaps.c 		\
 	rijndael.c
 
+libgpod_la_CFLAGS =
 if WITH_INTERNAL_GCHECKSUM
 libgpod_la_SOURCES += gchecksum.c gchecksum.h
-libgpod_la_CFLAGS = -DWITH_INTERNAL_GCHECKSUM
+libgpod_la_CFLAGS += -DWITH_INTERNAL_GCHECKSUM
 endif
 
 libgpod_la_LDFLAGS = -version-info $(LIBGPOD_SO_VERSION) -no-undefined
@@ -60,7 +61,8 @@ INCLUDES=$(LIBGPOD_CFLAGS)
 LIBS=$(LIBGPOD_LIBS) $(Z_LIBS) -lm
 
 if HAVE_LIBIMOBILEDEVICE
-LIBS+=-limobiledevice
+LIBS+=$(LIBIMOBILEDEVICE_LIBS)
+libgpod_la_CFLAGS+=$(LIBIMOBILEDEVICE_CFLAGS)
 endif
 
 uninstall-hook:
