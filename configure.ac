@@ -156,11 +156,11 @@ if test "x$with_libimobiledevice" != "xno"; then
   fi
 
   if test "x$enable_libimobiledevice" = "xyes"; then
+      LIBIMOBILEDEVICE_REQ="libimobiledevice-1.0"
       AC_DEFINE(HAVE_LIBIMOBILEDEVICE, 1, [Define if you have libimobiledevice support])
-      AC_SUBST(LIBIMOBILEDEVICE_CFLAGS)
-      AC_SUBST(LIBIMOBILEDEVICE_LIBS)
   fi
 fi
+AC_SUBST(LIBIMOBILEDEVICE_REQ)
 AM_CONDITIONAL(HAVE_LIBIMOBILEDEVICE, test x"$enable_libimobiledevice" = xyes)
 
 dnl ***********************************************************************
