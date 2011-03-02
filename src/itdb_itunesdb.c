@@ -462,12 +462,12 @@ gchar * itdb_resolve_path (const gchar *root,
 	    continue;
 	}
 	file_stdcase = g_utf8_casefold(file_utf8,-1);
+	g_free(file_utf8);
 	found = !g_utf8_collate(file_stdcase,component_stdcase);
 	g_free(file_stdcase);
 	if(!found)
 	{
 	    /* This is not the matching entry */
-	    g_free(file_utf8);
 	    continue;
 	}
       
@@ -1347,6 +1347,18 @@ void itdb_free (Itdb_iTunesDB *itdb)
     {
 	g_list_foreach (itdb->playlists,
 			(GFunc)(itdb_playlist_free), NULL);
+
+	if (itdb->priv) {
+	    if (itdb->priv->mhsd5_playlists)
+	    {
+	    g_list_foreach (itdb->priv->mhsd5_playlists,
+	            (GFunc)(itdb_playlist_free), NULL);
+	    }
+
+	    if (itdb->priv->genius_cuid)
+	        g_free(itdb->priv->genius_cuid);
+	}
+
 	g_list_free (itdb->playlists);
 	g_list_foreach (itdb->tracks,
 			(GFunc)(itdb_track_free), NULL);
