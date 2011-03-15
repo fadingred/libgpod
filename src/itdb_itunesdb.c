@@ -233,6 +233,8 @@ enum MHOD_ID {
    (track) IDs before writing out the iTunesDB. */
 static const gint FIRST_IPOD_ID=52;
 
+static ItdbDeviceDirResolutionFunc device_dir_resolution_func;
+
 
 enum MHOD52_SORTTYPE {
     MHOD52_SORTTYPE_TITLE    = 0x03,
@@ -7720,7 +7722,14 @@ gchar *itdb_get_device_dir (const gchar *mountpoint)
 {
     g_return_val_if_fail (mountpoint, NULL);
 
+    if (device_dir_resolution_func)
+    {
+    return device_dir_resolution_func(mountpoint);
+    }
+    else
+    {
     return itdb_get_dir (mountpoint, "Device");
+    }
 }
 
 /**
@@ -8338,4 +8347,21 @@ static gboolean itdb_create_directories (Itdb_Device *device, GError **error)
     g_free (pbuf);
     g_free (podpath);
     return result;
+}
+
+
+/*------------------------------------------------------------------*\
+ *                                                                  *
+ *             Third party integration                              *
+ *                                                                  *
+\*------------------------------------------------------------------*/
+
+void itdb_set_device_dir_resolution (ItdbDeviceDirResolutionFunc func)
+{
+    device_dir_resolution_func = func;
+}
+
+ItdbDeviceDirResolutionFunc itdb_get_device_dir_resolution (void)
+{
+    return device_dir_resolution_func;
 }

@@ -2030,6 +2030,15 @@ gboolean itdb_init_ipod (const gchar *mountpoint,
 			 const gchar *ipod_name,
 			 GError **error);
 
+/* Additional third party integration points */
+
+/* Allows third party applications to store device directory
+ * in a different location. If you set the resolution function,
+ * make sure it ruturns a string that can be freed with g_free. */
+typedef gchar *(* ItdbDeviceDirResolutionFunc) (const gchar *mountpoint);
+void itdb_set_device_dir_resolution (ItdbDeviceDirResolutionFunc func);
+ItdbDeviceDirResolutionFunc itdb_get_device_dir_resolution (void);
+
 G_END_DECLS
 
 #endif
