@@ -3209,16 +3209,27 @@ itdb_parse_internal (Itdb_iTunesDB *itdb, gboolean compressed, GError **error)
 	itdb_hash72_extract_hash_info (fimp->itdb->device,
 				       (guchar *)fimp->fcontents->contents,
 				       fimp->fcontents->length);
-	if (playcounts_init (fimp))
+	if (!playcounts_init (fimp))
 	{
-	    if (parse_fimp (fimp, compressed))
-	    {
-		if (read_OTG_playlists (fimp))
+		const char *message = "unknown error";
+		if (fimp->error)
 		{
-		    success = TRUE;
+			message = fimp->error->message;
 		}
-	    }
+		g_warning (_("Failed to read playcounts: %s, trying to continue anyhow.\n"), message);
+		if (fimp->error)
+		{
+			g_error_free (fimp->error);
+			fimp->error = NULL;
+		}
 	}
+    if (parse_fimp (fimp, compressed))
+    {
+	if (read_OTG_playlists (fimp))
+	{
+	    success = TRUE;
+	}
+    }
     }
 
     if (fimp->error)
