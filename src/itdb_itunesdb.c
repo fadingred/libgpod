@@ -3029,6 +3029,8 @@ static gboolean parse_fimp (FImport *fimp, gboolean compressed)
     g_return_val_if_fail (fimp->fcontents->filename, FALSE);
 
     if (!looks_like_itunesdb (fimp)) {
+	if (fimp->fcontents && fimp->fcontents->error)
+	g_propagate_error (&fimp->error, fimp->fcontents->error);
 	return FALSE;
     }
 
